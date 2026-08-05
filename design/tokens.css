@@ -1,0 +1,101 @@
+/* Pavimentos Albufera — tokens del §8 del documento maestro.
+   Pegar en app/globals.css antes de las capas de Tailwind. */
+
+:root {
+  /* Color */
+  --fondo: #E9EAE6;
+  --fondo-alt: #DADCD6;
+  --tinta: #1B1E1C;
+  --tinta-media: #5C625E;
+  --pigmento: #D9A441;
+  --acero: #41535C;
+
+  /* Derivados. No sustituibles por otros valores. */
+  --pigmento-hover: #C6902F;
+  --sobre-tinta: #DADCD6;        /* texto secundario y separadores sobre --tinta */
+  --pendiente-oscuro: #9AA09B;   /* corchete atenuado sobre --tinta */
+  --error: #8C3A2B;
+
+  /* Tipografía */
+  --display: 'Archivo', system-ui, sans-serif;
+  --texto: 'Instrument Sans', system-ui, sans-serif;
+  --datos: 'Martian Mono', ui-monospace, monospace;
+
+  /* Escala cerrada */
+  --t-88: 88px; --t-64: 64px; --t-46: 46px; --t-34: 34px;
+  --t-26: 26px; --t-20: 20px; --t-16: 16px; --t-14: 14px;
+  --t-12: 12px; --t-11: 11px; --t-10: 10px;
+
+  /* Anclaje: alto de cabecera y desplazamiento de anclas */
+  --cabecera: 84px;
+  --cabecera-scroll: 60px;
+  --ancla-offset: 150px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--fondo);
+  color: var(--tinta);
+  font-family: var(--texto);
+  font-size: var(--t-16);
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+a { color: var(--tinta); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+a:hover { color: var(--acero); }
+
+::selection { background: var(--pigmento); color: var(--tinta); }
+
+/* Foco visible en todo elemento interactivo. Nunca outline: none. */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--pigmento);
+  outline-offset: 2px;
+}
+/* Sobre superficie ocre, el foco cambia a tinta para no desaparecer */
+:where(.btn-primario):focus-visible {
+  outline: 2px solid var(--tinta);
+  outline-offset: 3px;
+}
+
+/* Radio 0 en todo el sitio: decisión de identidad */
+:where(button, input, select, textarea, img, video, figure, article, aside) {
+  border-radius: 0;
+}
+
+/* Trama del bloque de posición de foto */
+.trama {
+  background-color: var(--fondo-alt);
+  background-image: repeating-linear-gradient(45deg,
+    rgba(27, 30, 28, 0.05) 0 8px, transparent 8px 18px);
+}
+.trama-fina {
+  background-image: repeating-linear-gradient(45deg,
+    rgba(27, 30, 28, 0.05) 0 6px, transparent 6px 14px);
+}
+
+/* Dato sin confirmar por el cliente */
+.pendiente {
+  color: var(--tinta-media);
+  border-bottom: 1px dotted var(--tinta-media);
+}
+.sobre-oscuro .pendiente {
+  color: var(--pendiente-oscuro);
+  border-bottom-color: var(--pendiente-oscuro);
+}
+
+/* Secciones destino del submenú anclado */
+[id^='seccion-'] { scroll-margin-top: var(--ancla-offset); }
+
+/* §8.6 — movimiento contenido, y desactivable */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

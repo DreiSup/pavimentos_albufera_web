@@ -1,0 +1,103 @@
+[
+  {
+    "slug": "moncada-impreso-espiga-117",
+    "titulo": "Entrada y porche en Moncada",
+    "municipio": "Moncada", "provincia": "Valencia",
+    "servicio": "impreso", "modelo": "espiga", "color": "117",
+    "superficie": null, "anio": 2025, "plazoDias": null,
+    "encargo": null, "ejecucion": null,
+    "imagenes": [], "destacado": true,
+    "_pendiente": ["superficie 180 sin confirmar", "plazoDias", "encargo", "ejecucion", "fotos a 2400px", "foto ANTES"]
+  },
+  {
+    "slug": "alzira-impreso-adoquin-irregular-107",
+    "titulo": "Adoquín irregular en Alzira",
+    "municipio": "Alzira", "provincia": "Valencia",
+    "servicio": "impreso", "modelo": "adoquin-irregular", "color": "107",
+    "superficie": null, "anio": null, "plazoDias": null,
+    "encargo": null, "ejecucion": null,
+    "imagenes": [], "destacado": true,
+    "_pendiente": ["superficie", "anio", "plazoDias", "encargo", "ejecucion", "fotos"]
+  },
+  {
+    "slug": "moraira-impreso-adoquin-arena",
+    "titulo": "Adoquín pequeño en Moraira",
+    "municipio": "Moraira", "provincia": "Alicante",
+    "servicio": "impreso", "modelo": "adoquin-pequeno", "color": "arena",
+    "superficie": null, "anio": 2025, "plazoDias": null,
+    "encargo": null, "ejecucion": null,
+    "imagenes": [], "destacado": true,
+    "_pendiente": ["superficie", "plazoDias", "encargo", "ejecucion", "fotos"]
+  },
+  {
+    "slug": "corbera-fratasado-arena",
+    "titulo": "Fratasado en Corbera",
+    "municipio": "Corbera", "provincia": "Valencia",
+    "servicio": "fratasado", "color": "arena",
+    "superficie": null, "anio": null, "plazoDias": null,
+    "encargo": null, "ejecucion": null,
+    "imagenes": [], "destacado": false,
+    "_pendiente": ["superficie", "anio", "encargo", "ejecucion", "fotos"]
+  },
+  {
+    "slug": "impreso-manta-gris",
+    "titulo": "Manta imitación roca de montaña",
+    "municipio": null, "provincia": null,
+    "servicio": "impreso", "modelo": "manta", "color": "gris",
+    "superficie": null, "anio": null, "plazoDias": null,
+    "encargo": null, "ejecucion": null,
+    "imagenes": [], "destacado": false,
+    "_pendiente": ["municipio", "provincia", "superficie", "anio", "encargo", "ejecucion", "fotos"]
+  },
+  {
+    "slug": "denia-impreso-piedra-inglesa",
+    "titulo": "Dos acabados de piedra inglesa en Denia",
+    "municipio": "Denia", "provincia": "Alicante",
+    "servicio": "impreso", "modelo": "piedra-inglesa", "color": "gris",
+    "superficie": null, "anio": null, "plazoDias": null,
+    "encargo": null, "ejecucion": null,
+    "imagenes": [], "destacado": true,
+    "fichaTecnica": {
+      "hormigon": "HM-20",
+      "espesor": "10 cm",
+      "arido": "12 mm",
+      "mallazo": "20×30 de 4 mm",
+      "fibra": "polipropileno",
+      "color": "4 kg/m²",
+      "acabados": ["piedra inglesa en gris mate", "piedra inglesa en crema"]
+    },
+    "_nota": "Única obra con ficha técnica real completa. Dos acabados en la misma vivienda: argumento de venta que la web actual no usa.",
+    "_pendiente": ["superficie", "anio", "encargo", "ejecucion", "fotos"]
+  },
+  {
+    "slug": "ribarroja-pulido",
+    "titulo": "Hormigón pulido en Ribarroja",
+    "municipio": "Ribarroja", "provincia": "Valencia",
+    "servicio": "pulido", "color": "gris",
+    "superficie": null, "anio": null, "plazoDias": null,
+    "encargo": null, "ejecucion": null,
+    "imagenes": [], "destacado": false,
+    "_pendiente": ["superficie", "anio", "encargo", "ejecucion", "fotos"]
+  },
+  {
+    "slug": "xabia-pulido",
+    "titulo": "Hormigón pulido en Xàbia",
+    "municipio": "Xàbia", "provincia": "Alicante",
+    "servicio": "pulido", "color": null,
+    "superficie": null, "anio": null, "plazoDias": null,
+    "encargo": null, "ejecucion": null,
+    "imagenes": [], "destacado": false,
+    "_pendiente": ["color", "superficie", "anio", "encargo", "ejecucion", "fotos"]
+  },
+  {
+    "slug": "godella-lavado-arido-visto",
+    "titulo": "Hormigón lavado en Godella",
+    "municipio": "Godella", "provincia": "Valencia",
+    "servicio": "lavado", "color": "gris",
+    "superficie": null, "anio": null, "plazoDias": null,
+    "encargo": null, "ejecucion": null,
+    "imagenes": [], "destacado": false,
+    "_nota": "El lavado añade clase 3, Rd > 45 de resistencia al deslizamiento.",
+    "_pendiente": ["superficie", "anio", "encargo", "ejecucion", "fotos"]
+  }
+]

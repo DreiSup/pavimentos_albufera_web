@@ -1,0 +1,380 @@
+# 02 · Pantallas
+
+Dos anchos normativos: **390 px** (móvil) y **1440 px** (escritorio). No son la misma pantalla
+reflowed; donde hay decisiones distintas están marcadas. Entre ambos, el diseño es fluido: los
+componentes mantienen sus métricas y las rejillas reducen columnas (4 → 2 → 1).
+
+Todas las páginas comparten cabecera (`01 §4.1`), pie (`§4.4`) y, en móvil, barra fija
+inferior (`§4.3`).
+
+---
+
+# A. Pantallas maquetadas
+
+Estas seis están en el prototipo con estado interactivo real. Reprodúcelas exactamente.
+
+## A1 · Home — `/`
+
+13 secciones numeradas. Copy literal del §7.1 del documento maestro.
+
+| # | Sección | Escritorio | Móvil |
+|---|---|---|---|
+| 01 | Hero | `1fr 1fr`. Titular 88 px a la izquierda, bloque de foto a sangre a la derecha con etiqueta técnica abajo. Alto mínimo del bloque: 660 px | Bloque de foto `3/4` con el titular a 46 px **dentro**, sobre la trama, y la etiqueta técnica abajo a la derecha. Debajo, entradilla y 2 botones de contorno a ancho completo |
+| 02 | Barra de confianza | Anclada, una línea, 4 datos | No anclada, 4 filas numeradas |
+| 03 | Por dónde empezar | `380px 1fr` + rejilla de 3×2 con imagen `4/3` | Lista de 6 filas de 76 px con miniatura cuadrada de 76 px a la izquierda |
+| 04 | Muestrario | Fondo `--fondo-alt`. Antetítulo + enlace-etiqueta a la derecha. Chips en una fila. Rejilla de 4 | Chips en carril deslizante. Rejilla de 2×2 con 4 muestras. Enlace-etiqueta al final |
+| 05 | Servicios | Rejilla de 3×2, imagen `16/10`, título 26 px | Columna, imagen `16/10`, título 20 px |
+| 06 | Precios | `1fr 1fr`: texto e incluye/no incluye a la izquierda, tabla a la derecha | Todo apilado. Tabla en filas `space-between` con el rango a la derecha |
+| 07 | Cómo trabajamos | 4 columnas, numeral 34 px en `--acero` sobre `border-top` | 4 filas, numeral 26 px en columna fija de 42 px |
+| 08 | Proyectos | Rejilla de 3×2, 6 tarjetas | Carrusel horizontal de tarjetas de 220 px |
+| 09 | Reseñas | `380px 1fr` + 3 estados vacíos en línea | 2 estados vacíos apilados |
+| 10 | Garantía | Fondo `--tinta`, `1fr 1fr`: titular a la izquierda, 2 párrafos a la derecha separados por `border-top` | Apilado, mismo fondo |
+| 11 | Zonas | `380px 1fr` + 3 anillos en columnas | 3 anillos en filas con `border-top` |
+| 12 | FAQ | `380px 1fr` + acordeón de 6 | Acordeón de 6, filas de 56 px |
+| 13 | Cierre | `1fr 1fr`: titular 64 px + 2 botones a la izquierda, formulario corto a la derecha | Titular 34 px, 2 botones, formulario corto |
+
+**Ocre en escritorio:** CTA del hero + chip activo del muestrario.
+**Ocre en móvil:** barra fija `Llamar` + chip activo del muestrario. Los CTA del hero y del
+cierre bajan a contorno.
+
+**Sección 09, reseñas.** No hay ni una reseña real. Se maqueta el **estado vacío honesto**:
+la estructura de la tarjeta con `[texto de la reseña]` y `[NOMBRE] · [MUNICIPIO] · [AÑO]`
+atenuados, más la nota de que sin reseñas verificables no se marca `AggregateRating`. La
+sección se sostiene con el dato del 30 % que repite. **Prohibido inventar testimonios.**
+
+Formulario corto del cierre: nombre, teléfono y desplegable de espacio. El formulario completo
+vive en `/presupuesto/`.
+
+## A2 · Servicio — `/hormigon-impreso/`
+
+**Plantilla de los 6 servicios.** 9 secciones. Copy de las 4 primeras del §7.2; las 5 restantes
+reutilizan literal el §7.1 filtrado a este servicio. Cero texto nuevo.
+
+| # | Sección | Notas |
+|---|---|---|
+| — | Migas | `INICIO / SERVICIOS / HORMIGÓN IMPRESO` |
+| — | Hero | `1fr 560px`. H1 a 64 px, entradilla, CTA ocre + contorno. Bloque de foto `4/3` con ficha |
+| — | Submenú | Anclado a 80 px, 7 anclas. Solo escritorio |
+| 01 | Aplicaciones | `380px 1fr`. Filas `300px 1fr`: nombre de aplicación en Archivo 26 px y matiz a la derecha |
+| 02 | Muestrario del servicio | Rejilla de 4 con los acabados de esta técnica, filtrados del inventario |
+| 03 | Ficha técnica | `380px 1fr` + tabla de 8 filas (`01 §3.8`, tercera variante) |
+| 04 | Cuándo NO elegir impreso | **Fondo `--tinta` a página completa.** `1fr 1fr`. 2 botones de contorno claro a los otros servicios |
+| 05 | Precio | `1fr 1fr`. Solo las 2 filas de este servicio, con el rango en mono 20 px. Calculadora reducida |
+| 06 | Cómo trabajamos | 4 columnas, idéntico a la home |
+| 07 | Obra ejecutada | 3 tarjetas de proyecto de esta técnica |
+| 08 | FAQ | Acordeón de 5, específicas del servicio |
+| 09 | Cierre | `1fr 1fr` con formulario de 3 campos |
+
+La sección 04 es la que más vende de toda la web y **ninguna competencia la tiene**: decirle al
+cliente cuándo no contratar este servicio. Va en negro a página completa por eso.
+
+En móvil no hay submenú: solo la barra de contacto. La ficha técnica se apila en pares.
+
+## A3 · Muestrario — `/acabados/`
+
+El elemento firma. 16 acabados, 8 con obra documentada.
+
+- **Hero:** `1fr 420px`, H1 64 px, contador `16 ACABADOS · 8 CON OBRA DOCUMENTADA` en el
+  antetítulo. **El contador es real, no decorativo**: se calcula del inventario con la regla de
+  `03-modelo-de-contenido.md §1.1` —documentada = proyecto con municipio confirmado—. No vale
+  `proyectos.length > 0`: eso daría 9 y contradiría al diseño.
+- **Barra de filtros anclada** a `top: 80px`, con `border-top` y `border-bottom` en `--tinta`:
+  - Fila 1: `TÉCNICA` — TODAS · IMPRESO · PULIDO · MICROCEMENTO · LAVADO · FRATASADO · DESACTIVADO
+  - Fila 2: `COLOR` — TODOS · 117 · 113 · 109 · 107 · GRIS · ARENA · CREMA
+  - Fila 3: resumen del filtro en mono 12 (`6 ACABADOS · IMPRESO · GRIS`) y, si hay filtro
+    aplicado, `QUITAR FILTROS ×`.
+  - La etiqueta de cada fila ocupa una columna fija de 84 px.
+- **Rejilla de 4** con las muestras (`01 §3.10`). Los dos ejes se combinan con AND.
+- **Estado vacío** (`01 §3.13`) cuando la combinación no existe. Probar `PULIDO` + `117`.
+- **Bloque «Cómo se lee un código»** en `--tinta`, `1fr 1fr`: a la izquierda el argumento, a la
+  derecha `IMPRESO / ESPIGA / C-117` en mono 20 px con las barras en `--acero`, y las tres
+  definiciones (técnica, modelo, color) en 3 columnas. Cierra con la advertencia honesta:
+  *el color final varía con la luz, el árido y el sellado; la muestra orienta, la obra manda*.
+- **Cierre** a una línea: titular + 2 botones.
+
+En móvil: dos carriles de chips deslizantes anclados arriba, rejilla de 2, resumen y
+`QUITAR ×` en la misma fila.
+
+El estado de los filtros se refleja en la URL (`?tecnica=impreso&color=gris`) para que sea
+compartible y para que Google pueda indexar combinaciones con obra real.
+
+## A4 · Ficha de proyecto — `/proyectos/[slug]/`
+
+Maquetada con la obra de Moncada. **Plantilla de las 11 obras.**
+
+- **Galería:** imagen principal `21/9` a ancho de contenido, y debajo 4 miniaturas `4/3` en
+  rejilla de 4 con `gap: 8px`. La seleccionada lleva `outline: 2px solid #1B1E1C` con
+  `outline-offset: -2px` (contorno en tinta, **no ocre**: no sumamos un tercer ocre).
+  La última miniatura es el `ANTES [pendiente]`.
+- **Cuerpo:** `1fr 420px`.
+  - Izquierda: H1 64 px y los dos bloques de narrativa, `EL ENCARGO` y `LA EJECUCIÓN`.
+  - Derecha: **ficha de obra anclada** (`position: sticky; top: 100px`) con 8 filas —
+    municipio, provincia, servicio, modelo, color, superficie, año, plazo — y debajo la tarjeta
+    del acabado empleado, que enlaza a `/acabados/[modelo]/`.
+- **Proyectos similares:** 3 tarjetas de la misma técnica, fondo `--fondo-alt`.
+- **Cierre:** titular + 2 botones, con el CTA ocre.
+
+**En móvil la ficha sube por delante de la narrativa**: quien entra a una obra busca el dato
+—modelo, color, m²— antes que el relato. El orden es H1 → ficha → encargo → ejecución.
+
+Los dos bloques de narrativa no existen como copy. Se maquetan con su estructura y longitud
+reales dentro de un `border: 1px dashed #5C625E`, indicando qué debe contar cada uno:
+`EL ENCARGO` = qué había antes, qué problema tenía y con qué condición llegó el cliente;
+`LA EJECUCIÓN` = qué se hizo y qué dificultad concreta tuvo esta obra.
+
+## A5 · Precios — `/precios/`
+
+- **Hero** `1fr 520px`, H1 64 px, antetítulo `PRECIOS ORIENTATIVOS · SIN IVA`.
+- **Tabla completa**, rejilla `1fr 300px 300px` con cabecera en mono 11
+  (`SERVICIO · USO · RANGO HABITUAL`). 8 filas. El rango en mono 20 px, entre corchetes
+  mientras no esté validado.
+- **Calculadora** en `--tinta`, `1fr 1fr`:
+  - Izquierda: argumento + **aviso de dato sin confirmar** en `border: 1px dashed #41535C`.
+  - Derecha: campo numérico de superficie (mono 20 px) + `input[type=range]` de 10 a 400 con
+    paso de 5 y `accent-color: #D9A441`; chips de `USO` (peatonal / vehículos / industrial) y
+    de `ESTADO DEL TERRENO` (limpio / con pavimento / sin preparar); resultado en Archivo 64 px
+    y detalle del cálculo en mono 12; CTA ocre.
+  - **Fórmula:** `superficie × [mín–máx del uso] × multiplicador del terreno`, redondeado a la
+    decena. Devuelve **siempre un rango**, nunca una cifra exacta, y con superficie 0 muestra
+    `—` y *«Escribe una superficie para ver el rango»*.
+- **Incluido siempre / se presupuesta aparte:** `1fr 1fr` de listas con separadores.
+- **Aviso de los 18 €/m²** en tarjeta `--fondo-alt`: el argumento comercial más fuerte de la
+  página. Explica por qué una oferta baja no incluye la solera completa.
+- **Cierre** sobre `--fondo-alt`.
+
+**Ocre:** chips activos de la calculadora + su CTA. La tabla no lleva ocre.
+
+## A6 · Lámina de sistema
+
+No es una página del sitio: es la referencia de tokens y componentes. Mantenerla actualizada
+cuando se añada un componente nuevo.
+
+---
+
+# B. Pantallas especificadas, pendientes de maquetar
+
+No requieren decisiones de diseño nuevas. Se componen con los componentes de `01` y el copy
+indicado. Si al implementarlas un componente no aguanta, **no improvises**: dilo.
+
+## B1 · Presupuesto — `/presupuesto/`
+
+La pantalla que cierra el embudo. Copy del §7.4.
+
+**Escritorio**, `1fr 1fr`:
+- Izquierda, columna anclada (`sticky; top: 100px`): H1 64 px *«Pide presupuesto»*, entradilla
+  *«Cuéntanos qué quieres pavimentar. Vamos a verlo sin coste y te damos un precio cerrado en
+  `[48 horas]`.»*, los 4 datos de confianza en formato de etiqueta técnica sobre `--tinta`, y
+  los dos accesos directos: `Llamar al [96X XXX XXX]` (relleno en tinta) y `WhatsApp` (contorno).
+- Derecha, formulario en una sola columna con `gap: 16px`. Campos en el orden del §7.4:
+
+| Campo | Tipo | Obligatorio |
+|---|---|---|
+| Nombre y apellidos | texto | sí |
+| Teléfono | tel | sí |
+| Email | email | no |
+| ¿Qué quieres pavimentar? | desplegable de 7 opciones | sí |
+| Superficie aproximada en m² | numérico, admite «no lo sé» | sí |
+| Municipio | texto | sí |
+| Cuéntanos algo más | textarea | no |
+| Sube una foto del espacio | archivo | no |
+| Acepto la política de privacidad | casilla | sí |
+
+Nombre y teléfono comparten fila (`1fr 1fr`); el resto ocupa el ancho.
+Botón de envío ocre a ancho completo: `Enviar y que me llamen`.
+
+**Microcopy literal**, sin reescribir:
+- Ayuda de superficie: *Un cálculo aproximado nos vale. Largo × ancho.*
+- Ayuda de la foto: *Con una foto podemos darte un rango antes incluso de la visita.*
+- Enviando: *Enviando…*
+- Confirmación: *Recibido. Te llamamos hoy mismo si nos escribes antes de las 18:00, y mañana a
+  primera hora si no.*
+- Error de teléfono: *Escribe un número de 9 cifras para que podamos llamarte.*
+- Error de envío: *No hemos podido enviarlo. Llámanos al `[teléfono]` o escríbenos por WhatsApp
+  y lo resolvemos ahora.*
+
+**Los cuatro estados:**
+
+1. **Vacío.** Bordes de campo en `#5C625E`. Botón activo.
+2. **Error de teléfono.** El campo pasa a `border: 2px solid #8C3A2B`, mensaje debajo en
+   `#8C3A2B` 600, `aria-invalid="true"` y foco movido al campo. El resto de campos conserva lo
+   escrito. Se valida al enviar, no al teclear.
+3. **Enviando.** Botón en estado deshabilitado (`01 §3.4`) con el texto *Enviando…*; los campos
+   en `readonly`. Sin *spinner*: la web no tiene animaciones de carga.
+4. **Confirmación.** El formulario se sustituye por un bloque en `--tinta` con el antetítulo
+   `RECIBIDO`, el mensaje de confirmación en 26 px, la etiqueta técnica con el resumen de lo
+   enviado (espacio, superficie, municipio) y dos salidas: `Ver el muestrario` y
+   `Ver proyectos`. **No se vuelve a pedir nada.**
+
+**Móvil:** todo en una columna, formulario primero después de la entradilla, datos de confianza
+al final. La barra fija inferior sigue presente: es la vía alternativa si el formulario asusta.
+
+Implementación: Server Action + Resend, honeypot oculto, límite de envíos por IP, validación
+de teléfono también en servidor. Adjunto: máximo 10 MB, tipos de imagen; si excede, error
+inline sin perder el resto del formulario.
+
+## B2 · Ficha de acabado — `/acabados/[modelo]/`
+
+Genera una página indexable por modelo. Ejemplo: `/acabados/espiga/`.
+
+- Migas `INICIO / ACABADOS / ESPIGA`.
+- **Muestra ampliada** a ancho de contenido en `4/3` (o `21/9` si la foto lo permite), con la
+  etiqueta técnica del modelo sobrepuesta.
+- **Cuerpo `1fr 420px`:** a la izquierda H1 *«Modelo espiga»* + descripción del dibujo del
+  molde y para qué espacios funciona; a la derecha ficha técnica anclada del modelo —técnica,
+  colores disponibles, espesor recomendado, antideslizamiento, usos.
+- **Colores disponibles en este modelo:** rejilla de 4 con la misma muestra en cada color
+  del catálogo que exista, cada una con su código. Si un color no tiene obra ejecutada, la
+  muestra va con el municipio entre corchetes.
+- **Obras donde se ha ejecutado:** 3 tarjetas de proyecto filtradas por este modelo. Si no hay
+  ninguna documentada, el estado vacío del `01 §3.13` con el texto adaptado.
+- **Enlace cruzado:** enlace-etiqueta al artículo del blog que explica la técnica, si existe.
+- Cierre con CTA ocre.
+- Enlace de vuelta al índice `/acabados/` en las migas y al final.
+
+## B3 · Índice de proyectos — `/proyectos/`
+
+Misma mecánica que el muestrario, con **cuatro ejes** en vez de dos.
+
+- Hero con H1 64 px y contador real de obras.
+- **Barra de filtros anclada** a `top: 80px`. Cuatro grupos:
+  `SERVICIO` · `MODELO` · `MUNICIPIO` · `AÑO`. Cada uno con su `TODOS`.
+- Rejilla de 3 con tarjetas de proyecto. Resumen del filtro + `QUITAR FILTROS ×`.
+- Estado vacío del `01 §3.13`.
+- Estado de los filtros en query params.
+
+**Decisión de filtros en móvil: hoja inferior, no acordeón ni chips.**
+Cuatro grupos con hasta 16 municipios no caben en carriles deslizantes —el usuario tendría que
+deslizar cuatro carriles a ciegas— y un acordeón empuja la rejilla fuera de pantalla justo
+cuando quiere comparar obras. Por eso:
+
+- En móvil, la barra anclada se reduce a **una sola fila**: botón de contorno
+  `FILTRAR (2)` —con el número de filtros activos— y el resumen `12 OBRAS`.
+- Al pulsarlo se abre una **hoja inferior** a pantalla casi completa (`--fondo`, sin radio,
+  `border-top: 1px solid #1B1E1C`), con los cuatro grupos de chips apilados y espacio para
+  respirar. Cabecera de la hoja con el título `FILTRAR` y una `×` de 44 px.
+  Pie de la hoja fijo con dos botones: `Quitar filtros` (contorno) y `Ver 12 obras` (ocre).
+- La hoja se cierra al aplicar, y la rejilla ya está filtrada al volver.
+- La hoja atrapa el foco mientras está abierta, se cierra con `Esc` y devuelve el foco al botón
+  que la abrió. `body` con `overflow: hidden` mientras está abierta.
+
+Este es el único componente nuevo de la segunda tanda. **Añádelo a la lámina de sistema** como
+componente 3.15, `hoja inferior de filtros`.
+
+## B4 · Página de zona — `/zonas/[municipio]/`
+
+**Solo donde haya obra ejecutada y documentada.** Sin obra no se crea la página: Google penaliza
+las *doorway pages*, y con 17 años de trabajos hay material real de sobra.
+
+Ejemplo normativo: **`/zonas/moraira/`** (impreso, adoquín pequeño, color arena, 2025). Es un
+municipio con perfil de cliente extranjero y segunda residencia, distinto al del área
+metropolitana, y el copy debe reflejarlo sin inventar datos.
+
+Estructura:
+- Migas `INICIO / ZONAS / MORAIRA`.
+- Hero `1fr 1fr`: H1 *«Pavimentos de hormigón en Moraira»*, entradilla con las obras reales
+  ejecutadas allí, y bloque de foto de la obra del municipio con su ficha.
+- **Obras en este municipio:** rejilla de 3 con las tarjetas reales. Es el contenido que
+  justifica la página.
+- **Servicios prestados aquí:** solo los que se han ejecutado de verdad en la zona, con enlace
+  a la página de servicio.
+- **Acabados usados en la zona:** rejilla de 4 con las muestras correspondientes.
+- Bloque de zona de servicio: distancia, si hay recargo de desplazamiento, y a partir de qué
+  superficie se atiende.
+- FAQ de 3, reutilizando las de la home.
+- **CTA local:** *«¿Quieres algo parecido en Moraira?»* con el CTA ocre.
+
+## B5 · Empresa — `/empresa/`
+
+Copy literal del §7.3.
+
+- H1 *«17 años poniendo hormigón en la Comunidad Valenciana»* a 64 px.
+- Entradilla con `[2009]` y `[X.000]` m² entre corchetes.
+- **Cómo trabajamos** — `[Equipo propio.]` El párrafo de la preparación del soporte va destacado:
+  es el argumento técnico. `1fr 1fr` con bloque de foto de obra en ejecución.
+- **Por qué nos vuelven a llamar** — el 30 % de repetición, sobre `--tinta` a página completa.
+- **También construimos pistas de pádel y pickleball** — enlace externo a padelalbufera.com,
+  como enlace-etiqueta, sin darle peso de sección propia.
+- Sin fotos de equipo mientras no las haya. **Cero stock.**
+
+## B6 · Blog — `/blog/` y `/blog/[slug]/`
+
+**La decisión de contenido más importante de la migración.** Las entradas actuales mezclan dos
+cosas que no son lo mismo:
+
+| Tipo | Ejemplo | Destino |
+|---|---|---|
+| **Parte de obra** | «Hormigón impreso en modelo espiga y color 117, proyecto en Moncada» | `/proyectos/[slug]/` con la plantilla de A4 |
+| **Artículo divulgativo** | «Hormigón desactivado con piedra vista: estética y funcionalidad» | `/blog/[slug]/` |
+
+Los partes de obra **no son artículos**: son fichas de proyecto y llevan ficha técnica y
+galería. El índice del blog se diseña asumiendo esa separación, así que solo contiene artículos.
+
+**Índice `/blog/`:**
+- H1 64 px, entradilla que explica qué se publica aquí.
+- Rejilla de 3 con tarjetas de artículo: imagen `16/10`, antetítulo con la técnica de la que
+  trata en mono 11, título en Archivo 26 px, entradilla de 2 líneas y fecha en mono 11.
+- **Bloque de enlace cruzado al final del índice**, sobre `--fondo-alt`: *«¿Buscas obra
+  ejecutada, no artículos?»* con enlace-etiqueta a `/proyectos/`. Resuelve visualmente que un
+  visitante que llega buscando obras no se quede en el blog.
+
+**Artículo `/blog/[slug]/`:**
+- Migas + H1 a 64 px + fecha y técnica en mono 11.
+- Imagen de apertura `21/9`.
+- **Cuerpo `1fr 320px`:** columna de texto con `max-width: 68ch` y **sumario anclado** a la
+  derecha (`sticky; top: 100px`) con los `h2` del artículo, marcando el activo en ocre. Es el
+  mismo componente que el submenú de servicio, en vertical.
+- Cuerpo del texto a 20 px con `line-height: 1.6`. `h2` a 34 px con `border-top` de separación.
+  Imágenes intercaladas a ancho de columna con pie en mono 11.
+- **Enlace cruzado, obligatorio en todo artículo:** tras el cuerpo, un bloque con las 3 tarjetas
+  de proyecto de la técnica que explica el artículo, con el antetítulo
+  `ESTA TÉCNICA, EJECUTADA`. Un artículo sobre desactivado lleva a los proyectos de desactivado.
+- CTA de cierre con el ocre.
+- En móvil el sumario se convierte en un bloque plegado al principio del artículo, no anclado.
+
+**La otra dirección del cruce:** la ficha de proyecto (A4) ya tiene la tarjeta del acabado
+empleado en su barra lateral; se le añade, debajo, un enlace-etiqueta al artículo que explica
+la técnica cuando exista. Es el mismo componente, con el antetítulo `CÓMO SE HACE`.
+
+## B7 · Legal — plantilla común
+
+Una sola plantilla para aviso legal, privacidad y cookies.
+
+- Sin hero. Migas, H1 a 46 px, y fecha de última actualización en mono 11.
+- Columna única de `max-width: 68ch` centrada, texto a 16 px, `h2` a 26 px con `border-top`.
+- Índice de secciones al principio como lista de enlaces-etiqueta.
+- Sin CTA, sin imágenes, sin ocre. Es la única página del sitio sin acento.
+- Pie normal.
+
+## B8 · Error 404
+
+- Antetítulo `ERROR 404`, H1 *«Esta página ya no está aquí»* a 64 px.
+- Explicación breve: la web se ha rehecho y algunas direcciones antiguas han cambiado.
+- **Tres salidas útiles** en rejilla de 3, con el componente de tarjeta: `Servicios`,
+  `Proyectos` y `Pedir presupuesto`, cada una con una línea de descripción.
+- Buscador no: el sitio tiene 20 páginas.
+- Registrar los 404 en analítica para vigilar redirecciones olvidadas durante 8 semanas.
+
+## B9 · Cabecera: estados pendientes
+
+El estado inicial de la cabecera, el pie completo y la barra fija de móvil **ya están
+resueltos** en las pantallas de la sección A. Faltan dos estados:
+
+**Estado tras hacer scroll (escritorio).** La cabecera se ancla y se comprime:
+- `height: 84px → 60px`, con transición de 150 ms y `ease-out`.
+- El logo pasa de dos líneas a una: `PAVIMENTOS ALBUFERA`, mono 12 en versalitas.
+- El teléfono desaparece; el botón de contorno se mantiene y pasa a `min-height: 44px`.
+- Aparece `border-bottom: 1px solid #1B1E1C` y fondo `--fondo` opaco (nunca translúcido).
+- Se desactiva con `prefers-reduced-motion: reduce`, que la deja fija a 60 px sin transición.
+- La barra de confianza y el submenú de servicio se anclan **debajo** de ella: recalcular sus
+  `top` a 60 px y el `scroll-margin-top` de las secciones a 130 px.
+
+**Menú desplegado en móvil.** Panel a pantalla completa, no deslizante lateral:
+- Fondo `--tinta` a pantalla completa, `padding: 18px`.
+- Cabecera del panel con el logo en `#E9EAE6` y una `×` de 44 px a la derecha.
+- Enlaces principales en Archivo 700 / 118 % a 34 px, uno por línea, `min-height: 56px`,
+  separados por `border-top: 1px solid #41535C`.
+- Debajo, en mono 11 color `#DADCD6`: el NAP completo y los enlaces legales.
+- Al pie del panel, los dos botones de contacto a ancho completo (`Llamar` ocre + `WhatsApp`
+  contorno claro).
+- Atrapa el foco, se cierra con `Esc`, `body` con `overflow: hidden`, y devuelve el foco al
+  botón de hamburguesa. Sin animación de deslizamiento: aparece y desaparece.

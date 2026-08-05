@@ -1,0 +1,18 @@
+[
+  { "slug": "espiga-117", "nombre": "Espiga", "modelo": "espiga", "color": "117", "codigo": "C-117", "servicio": "impreso", "proyectos": ["moncada-impreso-espiga-117"] },
+  { "slug": "espiga-113", "nombre": "Espiga", "modelo": "espiga", "color": "113", "codigo": "C-113", "servicio": "impreso", "proyectos": [] },
+  { "slug": "adoquin-irregular-107", "nombre": "Adoquín irregular", "modelo": "adoquin-irregular", "color": "107", "codigo": "C-107", "servicio": "impreso", "proyectos": ["alzira-impreso-adoquin-irregular-107"] },
+  { "slug": "adoquin-irregular-gris", "nombre": "Adoquín irregular", "modelo": "adoquin-irregular", "color": "gris", "codigo": "GRIS", "servicio": "impreso", "proyectos": [] },
+  { "slug": "adoquin-pequeno-arena", "nombre": "Adoquín pequeño", "modelo": "adoquin-pequeno", "color": "arena", "codigo": "ARENA", "servicio": "impreso", "proyectos": ["moraira-impreso-adoquin-arena"] },
+  { "slug": "adoquin-pequeno-109", "nombre": "Adoquín pequeño", "modelo": "adoquin-pequeno", "color": "109", "codigo": "C-109", "servicio": "impreso", "proyectos": [] },
+  { "slug": "manta-gris", "nombre": "Manta roca de montaña", "modelo": "manta", "color": "gris", "codigo": "GRIS", "servicio": "impreso", "proyectos": ["impreso-manta-gris"], "_nota": "Vinculado a un proyecto real, pero su municipio está sin confirmar: NO cuenta como obra documentada. Ver 03-modelo-de-contenido §1.1" },
+  { "slug": "silleria-grande-113", "nombre": "Sillería grande", "modelo": "silleria-grande", "color": "113", "codigo": "C-113", "servicio": "impreso", "proyectos": [] },
+  { "slug": "piedra-silleria-109", "nombre": "Piedra sillería", "modelo": "piedra-silleria", "color": "109", "codigo": "C-109", "servicio": "impreso", "proyectos": [] },
+  { "slug": "piedra-rodena-117", "nombre": "Piedra rodena", "modelo": "piedra-rodena", "color": "117", "codigo": "C-117", "servicio": "impreso", "proyectos": [] },
+  { "slug": "piedra-inglesa-gris", "nombre": "Piedra inglesa", "modelo": "piedra-inglesa", "color": "gris", "codigo": "GRIS MATE", "servicio": "impreso", "proyectos": ["denia-impreso-piedra-inglesa"] },
+  { "slug": "piedra-inglesa-crema", "nombre": "Piedra inglesa", "modelo": "piedra-inglesa", "color": "crema", "codigo": "CREMA", "servicio": "impreso", "proyectos": ["denia-impreso-piedra-inglesa"] },
+  { "slug": "fratasado-arena", "nombre": "Fratasado fino", "color": "arena", "codigo": "ARENA", "servicio": "fratasado", "proyectos": ["corbera-fratasado-arena"] },
+  { "slug": "pulido-gris", "nombre": "Pulido continuo", "color": "gris", "codigo": "GRIS", "servicio": "pulido", "proyectos": ["ribarroja-pulido"] },
+  { "slug": "microcemento-crema", "nombre": "Microcemento", "color": "crema", "codigo": "CREMA", "servicio": "microcemento", "proyectos": [] },
+  { "slug": "lavado-arido-visto", "nombre": "Árido visto", "color": "gris", "codigo": "GRIS", "servicio": "lavado", "proyectos": ["godella-lavado-arido-visto"] }
+]

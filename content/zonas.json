@@ -1,0 +1,41 @@
+[
+  {
+    "slug": "moraira", "municipio": "Moraira", "provincia": "Alicante", "anillo": 1,
+    "proyectos": ["moraira-impreso-adoquin-arena"],
+    "servicios": ["impreso"],
+    "_nota": "Página de zona normativa. Perfil de cliente extranjero y segunda residencia, distinto al del área metropolitana de Valencia."
+  },
+  {
+    "slug": "denia", "municipio": "Denia", "provincia": "Alicante", "anillo": 1,
+    "proyectos": ["denia-impreso-piedra-inglesa"], "servicios": ["impreso"]
+  },
+  {
+    "slug": "ribarroja", "municipio": "Ribarroja", "provincia": "Valencia", "anillo": 1,
+    "proyectos": ["ribarroja-pulido"], "servicios": ["pulido"]
+  },
+  {
+    "slug": "xabia", "municipio": "Xàbia", "provincia": "Alicante", "anillo": 1,
+    "proyectos": ["xabia-pulido"], "servicios": ["pulido"]
+  },
+  {
+    "slug": "godella", "municipio": "Godella", "provincia": "Valencia", "anillo": 1,
+    "proyectos": ["godella-lavado-arido-visto"], "servicios": ["lavado"]
+  },
+  {
+    "slug": "moncada", "municipio": "Moncada", "provincia": "Valencia", "anillo": 1,
+    "proyectos": ["moncada-impreso-espiga-117"], "servicios": ["impreso"]
+  },
+  {
+    "slug": "alzira", "municipio": "Alzira", "provincia": "Valencia", "anillo": 1,
+    "proyectos": ["alzira-impreso-adoquin-irregular-107"], "servicios": ["impreso"]
+  },
+  {
+    "slug": "corbera", "municipio": "Corbera", "provincia": "Valencia", "anillo": 1,
+    "proyectos": ["corbera-fratasado-arena"], "servicios": ["fratasado"]
+  },
+  {
+    "_comentario": "Municipios con obra citada por el cliente pero SIN proyecto documentado todavía. No generar ruta hasta que tengan al menos un proyecto con foto: Google penaliza las doorway pages.",
+    "_sinDocumentar": ["Torrent (Vedat)", "Ollería", "Carlet", "Catadau", "Turís", "Alfafar", "Benissa", "Sollana"],
+    "_sedeEmpresa": "Sollana"
+  }
+]
