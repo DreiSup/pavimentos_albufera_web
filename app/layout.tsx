@@ -5,6 +5,7 @@ import Cabecera from '@/components/layout/Cabecera'
 import Pie from '@/components/layout/Pie'
 import BarraMovil from '@/components/layout/BarraMovil'
 import Consentimiento from '@/components/layout/Consentimiento'
+import EventosGlobales from '@/components/layout/EventosGlobales'
 import { archivo, instrumentSans, martianMono } from './fuentes'
 import './globals.css'
 
@@ -43,6 +44,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Pie />
         <BarraMovil />
         <Consentimiento />
+        <EventosGlobales />
       </body>
     </html>
   )

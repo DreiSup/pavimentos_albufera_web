@@ -8,6 +8,7 @@ import Chip from '../ui/Chip'
 import { BotonEtiqueta } from '../ui/EnlaceEtiqueta'
 import MuestraAcabado from '../contenido/MuestraAcabado'
 import EstadoVacio from '../ui/EstadoVacio'
+import { registrarEvento } from '@/lib/eventos'
 
 export default function FiltrosAcabados({
   acabados,
@@ -29,6 +30,7 @@ export default function FiltrosAcabados({
     if (valor) params.set(clave, valor)
     else params.delete(clave)
     router.push(`?${params.toString()}`, { scroll: false })
+    registrarEvento('filtro_muestrario', { params: { [clave]: valor ?? 'todos' } })
   }
 
   function quitarFiltros() {

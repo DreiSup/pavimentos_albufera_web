@@ -1,8 +1,9 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Chip from '../ui/Chip'
 import Boton from '../ui/Boton'
+import { registrarEvento } from '@/lib/eventos'
 
 export type OpcionUso = { id: string; etiqueta: string; rango: [number, number] }
 
@@ -31,6 +32,16 @@ export default function Calculadora({ usos, reducida = false }: { usos: OpcionUs
     const max = redondearDecena(superficie * uso.rango[1] * terreno.multiplicador)
     return { min, max }
   }, [superficie, uso, terreno])
+
+  useEffect(() => {
+    if (!rango) return
+    const espera = setTimeout(() => {
+      registrarEvento('uso_calculadora', {
+        params: { superficie, uso: uso?.id, terreno: terreno.id, min: rango.min, max: rango.max },
+      })
+    }, 800)
+    return () => clearTimeout(espera)
+  }, [rango, superficie, uso, terreno])
 
   return (
     <div className="sobre-oscuro bg-tinta text-fondo px-[18px] py-8 md:px-lat-desktop md:py-12 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-[72px]">

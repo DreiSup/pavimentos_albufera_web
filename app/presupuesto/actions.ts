@@ -1,7 +1,9 @@
 'use server'
 
 import { z } from 'zod'
-import { headers } from 'next/headers'
+import { cookies, headers } from 'next/headers'
+import { enviarEventoCAPI } from '@/lib/meta-capi'
+import { sitio } from '@/lib/config'
 
 export type EstadoEnvio = {
   estado: 'inicial' | 'error' | 'enviando' | 'enviado'
@@ -21,6 +23,7 @@ const esquema = z.object({
   municipio: z.string().optional().default(''),
   mensaje: z.string().optional().default(''),
   privacidad: z.string().optional(),
+  evento_id: z.string().optional().default(''),
 })
 
 // Límite de envíos por IP: 3 / hora. En memoria — se reinicia con cada despliegue.
@@ -67,7 +70,7 @@ export async function enviarPresupuesto(
     }
   }
 
-  const { nombre, telefono, email, espacio, superficie, municipio, mensaje } = analizado.data
+  const { nombre, telefono, email, espacio, superficie, municipio, mensaje, evento_id: eventoId } = analizado.data
 
   const apiKey = process.env.RESEND_API_KEY
   const destino = process.env.EMAIL_DESTINO ?? 'comercial@pavimentos-albufera.com'
@@ -103,6 +106,41 @@ export async function enviarPresupuesto(
       }
     }
   }
+
+  const telegramToken = process.env.TELEGRAM_BOT_TOKEN
+  const telegramChat = process.env.TELEGRAM_CHAT_ID
+  if (telegramToken && telegramChat) {
+    try {
+      await fetch(`https://api.telegram.org/bot${telegramToken}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: telegramChat,
+          text: [
+            '🔔 Nuevo presupuesto',
+            `${nombre} · ${telefono}`,
+            espacio,
+            municipio || '—',
+          ].join('\n'),
+        }),
+        signal: AbortSignal.timeout(8000),
+      })
+    } catch {
+      // No bloquea el envío del presupuesto por un fallo de Telegram.
+    }
+  }
+
+  const listaCookies = await cookies()
+  await enviarEventoCAPI({
+    eventoId,
+    telefono,
+    email: email || undefined,
+    ip,
+    userAgent: listaCabeceras.get('user-agent') ?? '',
+    url: `${sitio.url}/presupuesto/`,
+    fbp: listaCookies.get('_fbp')?.value,
+    fbc: listaCookies.get('_fbc')?.value,
+  })
 
   return {
     estado: 'enviado',

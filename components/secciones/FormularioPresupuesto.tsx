@@ -1,11 +1,12 @@
 'use client'
 
-import { useActionState, useEffect, useRef } from 'react'
+import { useActionState, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { enviarPresupuesto, type EstadoEnvio } from '@/app/presupuesto/actions'
 import Campo, { claseInput } from '../ui/Campo'
 import Boton from '../ui/Boton'
 import { nap } from '@/lib/config'
+import { registrarEvento } from '@/lib/eventos'
 
 const estadoInicial: EstadoEnvio = { estado: 'inicial', errores: {} }
 
@@ -22,12 +23,29 @@ const ESPACIOS = [
 export default function FormularioPresupuesto({ variante = 'completo' }: { variante?: 'completo' | 'corto' }) {
   const [estado, accion, enviando] = useActionState(enviarPresupuesto, estadoInicial)
   const telefonoRef = useRef<HTMLInputElement>(null)
+  const [eventoId, setEventoId] = useState('')
+  const eventoDisparado = useRef(false)
+
+  useEffect(() => {
+    setEventoId(crypto.randomUUID())
+  }, [])
 
   useEffect(() => {
     if (estado.estado === 'error' && estado.errores.telefono) {
       telefonoRef.current?.focus()
     }
   }, [estado])
+
+  useEffect(() => {
+    if (estado.estado === 'enviado' && !eventoDisparado.current) {
+      eventoDisparado.current = true
+      registrarEvento('envio_formulario', {
+        metaEstandar: 'Lead',
+        metaEventId: eventoId,
+        params: { espacio: estado.resumen?.espacio, municipio: estado.resumen?.municipio },
+      })
+    }
+  }, [estado, eventoId])
 
   if (estado.estado === 'enviado') {
     return (
@@ -62,6 +80,7 @@ export default function FormularioPresupuesto({ variante = 'completo' }: { varia
       ) : null}
 
       <input type="text" name="empresa_web" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
+      <input type="hidden" name="evento_id" value={eventoId} />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Campo etiqueta="Nombre y apellidos" htmlFor="nombre" obligatorio>
