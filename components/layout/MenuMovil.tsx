@@ -100,10 +100,10 @@ export default function MenuMovil({
       </div>
 
       <div className="mt-auto pt-8 flex flex-col gap-[1px]">
-        <Boton variante="primario" href={nap.telefonoHref ?? '/presupuesto/'} anchoCompleto>
+        <Boton variante="primario" href={nap.telefonoHref ?? '/presupuesto/'} data-ubicacion="mobile_menu" anchoCompleto>
           Llamar
         </Boton>
-        <Boton variante="contorno" sobreOscuro href={nap.whatsappHref ?? '/presupuesto/'} anchoCompleto>
+        <Boton variante="contorno" sobreOscuro href={nap.whatsappHref ?? '/presupuesto/'} data-ubicacion="mobile_menu" anchoCompleto>
           WhatsApp
         </Boton>
       </div>

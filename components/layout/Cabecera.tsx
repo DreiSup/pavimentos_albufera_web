@@ -73,7 +73,7 @@ export default function Cabecera() {
 
         <div className="hidden md:flex items-center gap-5">
           {!conScroll && (
-            <a href={nap.telefonoHref ?? '#'} className="font-mono text-d-12 text-tinta-media no-underline">
+            <a href={nap.telefonoHref ?? '#'} data-ubicacion="header" className="font-mono text-d-12 text-tinta-media no-underline">
               {nap.telefono ?? `[${nap.telefonoMostrado}]`}
             </a>
           )}

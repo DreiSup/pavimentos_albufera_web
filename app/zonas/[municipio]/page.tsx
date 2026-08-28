@@ -11,6 +11,7 @@ import Migas from '@/components/layout/Migas'
 import Acordeon from '@/components/secciones/Acordeon'
 import { JsonLd, schemaFAQ } from '@/lib/schema'
 import { acabados, proyectosDe, zonaPorSlug, zonas } from '@/lib/datos'
+import { faqZona } from '@/content/faq'
 import { NOMBRE_SERVICIO, RUTA_SERVICIO } from '@/lib/tipos'
 
 export function generateStaticParams() {
@@ -31,23 +32,6 @@ export async function generateMetadata({
     alternates: { canonical: `/zonas/${zona.slug}/` },
   }
 }
-
-const faqZona = [
-  {
-    pregunta: '¿Cuánto tarda en poder pisarse?',
-    respuesta:
-      'Entre 24 y 48 horas para pisar y una semana para muebles o coches. El curado completo del hormigón son 28 días, pero puedes hacer vida normal mucho antes.',
-  },
-  {
-    pregunta: '¿Cada cuánto hay que resellar?',
-    respuesta:
-      'Cada 2 o 3 años en entradas de coche y zonas de piscina. Cada 5 o 6 en terrazas y jardines de uso peatonal. Nosotros te avisamos.',
-  },
-  {
-    pregunta: '¿Trabajáis para empresas y constructoras?',
-    respuesta: 'Sí. Naves industriales, parkings, urbanizaciones y obra civil. Pídenos referencias del sector.',
-  },
-]
 
 export default async function PaginaZona({ params }: { params: Promise<{ municipio: string }> }) {
   const { municipio } = await params

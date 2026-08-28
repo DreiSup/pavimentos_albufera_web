@@ -6,7 +6,7 @@ import { enviarPresupuesto, type EstadoEnvio } from '@/app/presupuesto/actions'
 import Campo, { claseInput } from '../ui/Campo'
 import Boton from '../ui/Boton'
 import { nap } from '@/lib/config'
-import { registrarEvento } from '@/lib/eventos'
+import { EVENTOS, registrarEvento, type Ubicacion } from '@/lib/eventos'
 
 const estadoInicial: EstadoEnvio = { estado: 'inicial', errores: {} }
 
@@ -20,11 +20,37 @@ const ESPACIOS = [
   'Otro',
 ]
 
-export default function FormularioPresupuesto({ variante = 'completo' }: { variante?: 'completo' | 'corto' }) {
+export default function FormularioPresupuesto({
+  variante = 'completo',
+  origen = 'unmarked',
+}: {
+  variante?: 'completo' | 'corto'
+  /**
+   * Zona de la web desde la que se envía. Sin esto, `form_submit` —que es la
+   * macro-conversión del sitio— no dice qué página convierte, y el mismo
+   * formulario se monta hoy en tres sitios distintos.
+   */
+  origen?: Ubicacion
+}) {
   const [estado, accion, enviando] = useActionState(enviarPresupuesto, estadoInicial)
   const telefonoRef = useRef<HTMLInputElement>(null)
   const [eventoId, setEventoId] = useState('')
+  const [errorFoto, setErrorFoto] = useState('')
   const eventoDisparado = useRef(false)
+
+  // Comprobación en cliente además de la del servidor. Una foto de móvil pasa
+  // de 4 MB con facilidad, y sin esto el usuario espera a que suba para que le
+  // rebote — o se topa con el corte de plataforma, que no da mensaje ninguno.
+  function comprobarFoto(evento: React.ChangeEvent<HTMLInputElement>) {
+    const archivo = evento.target.files?.[0]
+    if (!archivo) return setErrorFoto('')
+    if (archivo.size > 4 * 1024 * 1024) {
+      setErrorFoto('Esta foto pasa de 4 MB. Elige otra o redúcela antes de enviarla.')
+      evento.target.value = ''
+      return
+    }
+    setErrorFoto('')
+  }
 
   useEffect(() => {
     setEventoId(crypto.randomUUID())
@@ -39,13 +65,17 @@ export default function FormularioPresupuesto({ variante = 'completo' }: { varia
   useEffect(() => {
     if (estado.estado === 'enviado' && !eventoDisparado.current) {
       eventoDisparado.current = true
-      registrarEvento('envio_formulario', {
+      registrarEvento(EVENTOS.formSubmit, {
         metaEstandar: 'Lead',
         metaEventId: eventoId,
-        params: { espacio: estado.resumen?.espacio, municipio: estado.resumen?.municipio },
+        params: {
+          form_location: origen,
+          space_type: estado.resumen?.espacio,
+          municipality: estado.resumen?.municipio,
+        },
       })
     }
-  }, [estado, eventoId])
+  }, [estado, eventoId, origen])
 
   if (estado.estado === 'enviado') {
     return (
@@ -81,6 +111,7 @@ export default function FormularioPresupuesto({ variante = 'completo' }: { varia
 
       <input type="text" name="empresa_web" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
       <input type="hidden" name="evento_id" value={eventoId} />
+      <input type="hidden" name="origen" value={origen} />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Campo etiqueta="Nombre y apellidos" htmlFor="nombre" obligatorio>
@@ -138,22 +169,39 @@ export default function FormularioPresupuesto({ variante = 'completo' }: { varia
           <Campo
             etiqueta="Sube una foto del espacio"
             htmlFor="foto"
-            ayuda="Con una foto podemos darte un rango antes incluso de la visita."
+            ayuda="Con una foto podemos darte un rango antes incluso de la visita. Máximo 4 MB."
+            error={errorFoto || estado.errores.foto}
           >
-            <input id="foto" name="foto" type="file" accept="image/*" disabled={enviando} className={claseInput} />
+            <input
+              id="foto"
+              name="foto"
+              type="file"
+              accept="image/*"
+              onChange={comprobarFoto}
+              disabled={enviando}
+              className={claseInput}
+            />
           </Campo>
-
-          <label className="flex items-start gap-3 font-sans text-14 text-tinta-media">
-            <input type="checkbox" name="privacidad" required disabled={enviando} className="mt-1" />
-            <span>
-              He leído y acepto la{' '}
-              <Link href="/politica-de-privacidad/" className="text-tinta">
-                política de privacidad
-              </Link>
-              . *
-            </span>
-          </label>
         </>
+      ) : null}
+
+      {/* Fuera del condicional a propósito: la variante corta también recoge
+          nombre y teléfono, así que necesita el mismo consentimiento. Antes
+          solo la llevaba el formulario largo. */}
+      <label className="flex items-start gap-3 font-sans text-14 text-tinta-media">
+        <input type="checkbox" name="privacidad" required disabled={enviando} className="mt-1" />
+        <span>
+          He leído y acepto la{' '}
+          <Link href="/politica-de-privacidad/" className="text-tinta">
+            política de privacidad
+          </Link>
+          . *
+        </span>
+      </label>
+      {estado.errores.privacidad ? (
+        <p className="font-sans text-14 font-semibold text-error m-0" aria-live="polite">
+          {estado.errores.privacidad}
+        </p>
       ) : null}
 
       <Boton type="submit" variante="primario" anchoCompleto disabled={enviando}>

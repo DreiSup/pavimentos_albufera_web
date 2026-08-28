@@ -15,6 +15,7 @@ import Acordeon from '@/components/secciones/Acordeon'
 import FormularioPresupuesto from '@/components/secciones/FormularioPresupuesto'
 import { JsonLd, schemaFAQ } from '@/lib/schema'
 import { acabados, contarDocumentados, proyectos } from '@/lib/datos'
+import { faqHome } from '@/content/faq'
 import { NOMBRE_SERVICIO, RUTA_SERVICIO } from '@/lib/tipos'
 import { nap } from '@/lib/config'
 
@@ -57,38 +58,6 @@ const pasos = [
   { numero: '02', titulo: 'Presupuesto cerrado', texto: <>Te lo enviamos en <DatoPendiente>48 horas</DatoPendiente>, desglosado. Lo que pone es lo que se paga.</> },
   { numero: '03', titulo: 'Ejecución', texto: <><DatoPendiente>Equipo propio</DatoPendiente>. Una superficie de 80-100 m² se ejecuta en 2 o 3 días. Después necesita entre 24 y 48 horas sin pisar y 28 días para curar del todo.</> },
   { numero: '04', titulo: 'Garantía y mantenimiento', texto: '10 años. Y volvemos a resellar cuando toque.' },
-]
-
-const faqHome = [
-  {
-    pregunta: '¿Cuánto tarda en poder pisarse?',
-    respuesta:
-      'Entre 24 y 48 horas para pisar y una semana para muebles o coches. El curado completo del hormigón son 28 días, pero puedes hacer vida normal mucho antes.',
-  },
-  {
-    pregunta: '¿Se agrieta el hormigón impreso?',
-    respuesta:
-      'Bien ejecutado, no. Las grietas aparecen cuando falta mallazo, cuando la solera tiene menos de 10 cm o cuando no se han hecho las juntas de dilatación. Nosotros hacemos las tres cosas siempre.',
-  },
-  {
-    pregunta: '¿Se puede poner encima del suelo que ya tengo?',
-    respuesta:
-      'En hormigón impreso, no lo recomendamos: la adherencia y el espesor no quedan garantizados. En microcemento sí, y ahí está su gran ventaja: se aplica sobre azulejo, terrazo o gres sin picar nada.',
-  },
-  {
-    pregunta: '¿Cada cuánto hay que resellar?',
-    respuesta:
-      'Cada 2 o 3 años en entradas de coche y zonas de piscina. Cada 5 o 6 en terrazas y jardines de uso peatonal. Nosotros te avisamos.',
-  },
-  {
-    pregunta: '¿Qué pasa si el presupuesto que tengo es de 18 €/m²?',
-    respuesta:
-      'Que revises qué incluye. A ese precio no salen los materiales de una solera de 10 cm con mallazo y fibra. Normalmente falta el hormigón, el armado o el sellado, y aparece en la factura final.',
-  },
-  {
-    pregunta: '¿Trabajáis para empresas y constructoras?',
-    respuesta: 'Sí. Naves industriales, parkings, urbanizaciones y obra civil. Pídenos referencias del sector.',
-  },
 ]
 
 const proyectoHero = proyectos.find((p) => p.slug === 'moncada-impreso-espiga-117')!
@@ -463,16 +432,16 @@ export default function Home() {
               Te llamamos, vamos a verlo y te damos un precio cerrado. Sin coste y sin compromiso.
             </p>
             <div className="flex flex-col md:flex-row gap-3">
-              <Boton variante="tinta" href={nap.telefonoHref ?? '/presupuesto/'}>
+              <Boton variante="tinta" href={nap.telefonoHref ?? '/presupuesto/'} data-ubicacion="home_close">
                 Llamar al {nap.telefono ?? nap.telefonoMostrado}
               </Boton>
-              <Boton variante="contorno" href={nap.whatsappHref ?? '/presupuesto/'}>
+              <Boton variante="contorno" href={nap.whatsappHref ?? '/presupuesto/'} data-ubicacion="home_close">
                 Escribir por WhatsApp
               </Boton>
             </div>
             <p className="text-14 text-tinta-media m-0">O déjanos tus datos y te llamamos nosotros.</p>
           </div>
-          <FormularioPresupuesto variante="corto" />
+          <FormularioPresupuesto variante="corto" origen="home_close" />
         </div>
       </Aparece>
     </>

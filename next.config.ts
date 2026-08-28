@@ -5,6 +5,13 @@ const nextConfig: NextConfig = {
   images: {
     formats: ['image/avif', 'image/webp'],
   },
+  experimental: {
+    // El formulario admite una foto de hasta 4 MB. El límite por defecto de los
+    // Server Actions es 1 MB, y al superarlo el envío falla con un error opaco.
+    // Se deja en 5 para dar margen al resto del formulario, por debajo de los
+    // 4,5 MB que Vercel corta a nivel de plataforma.
+    serverActions: { bodySizeLimit: '5mb' },
+  },
   async redirects() {
     // trailingSlash:true normaliza la URL entrante antes de evaluar los
     // redirects, así que cada `source` tiene que llevar barra final para
@@ -15,7 +22,12 @@ const nextConfig: NextConfig = {
       { source: '/pavimentos-de-hormigon-pulido/', destination: '/hormigon-pulido/', permanent: true },
       { source: '/pavimentos-de-hormigon-lavado/', destination: '/hormigon-lavado/', permanent: true },
       { source: '/microcemento-decorativo/', destination: '/microcemento/', permanent: true },
-      { source: '/pavimentos-de-caucho/', destination: '/obra-publica/', permanent: true },
+      // ⚠️ Provisional. `design/05` §C decisión 6 —¿los pavimentos de caucho se
+      // mantienen como «Obra pública» o se retiran?— sigue sin contestar, y es
+      // una decisión de negocio, no de fotos. Mientras tanto va a la home en vez
+      // de a un 404. De las 164 fotos de la web viva solo hay 3 de caucho, a
+      // 800×600 y sin obra identificable: no dan para una página propia.
+      { source: '/pavimentos-de-caucho/', destination: '/', permanent: true },
 
       // Institucional y conversión
       { source: '/pavimentos-de-hormigon-valencia/', destination: '/empresa/', permanent: true },
@@ -71,15 +83,21 @@ const nextConfig: NextConfig = {
       { source: '/hormigon-impreso-en-moraira/', destination: '/zonas/moraira/', permanent: true },
       { source: '/hormigon-pulido-en-ribarroja-del-turia/', destination: '/zonas/ribarroja/', permanent: true },
       { source: '/hormigon-pulido-en-xabia/', destination: '/zonas/xabia/', permanent: true },
-      { source: '/hormigon-pulido-en-alicante/', destination: '/zonas/alicante/', permanent: true },
+      // Alicante NO tiene página de zona, y no debe tenerla: `content/zonas.json`
+      // solo genera ruta donde hay obra documentada con foto, porque Google
+      // penaliza las doorway pages (`design/05` §D). Van a su servicio.
+      { source: '/hormigon-pulido-en-alicante/', destination: '/hormigon-pulido/', permanent: true },
       { source: '/pavimentos-de-hormigon-impreso-en-denia/', destination: '/zonas/denia/', permanent: true },
       { source: '/hormigon-lavado-en-valencia-godella/', destination: '/zonas/godella/', permanent: true },
-      { source: '/microcemento-alicante-2021/', destination: '/zonas/alicante/', permanent: true },
+      { source: '/microcemento-alicante-2021/', destination: '/microcemento/', permanent: true },
 
       // Artículos divulgativos → /blog/
+      // ⚠️ Estos dos artículos NO existen en `content/articulos.json` (solo hay
+      // tres, y ninguno es de impreso). Van a la página de servicio, que es el
+      // destino temáticamente equivalente. Si algún día se escriben, se repunta.
       {
         source: '/pavimentos-de-hormigon-impreso-innovacion-y-estilo-para-tus-espacios/',
-        destination: '/blog/hormigon-impreso-innovacion-y-estilo/',
+        destination: '/hormigon-impreso/',
         permanent: true,
       },
       {
@@ -89,7 +107,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: '/descubriendo-la-elegancia-y-durabilidad-del-hormigon-impreso-en-valencia/',
-        destination: '/blog/hormigon-impreso-valencia-guia/',
+        destination: '/hormigon-impreso/',
         permanent: true,
       },
 

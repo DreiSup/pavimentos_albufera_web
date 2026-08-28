@@ -1,10 +1,15 @@
 import type { MetadataRoute } from 'next'
 import { sitio } from '@/lib/config'
 import { acabados, articulos, proyectos, zonas } from '@/lib/datos'
+import { SERVICIOS } from '@/content/servicios'
+
+// Las seis rutas de servicio salen del propio catálogo: añadir un servicio no
+// puede dejarlo fuera del sitemap por olvido.
+const rutasServicio = Object.values(SERVICIOS).map((s) => s.ruta)
 
 const rutasEstaticas = [
   '/',
-  '/hormigon-impreso/',
+  ...rutasServicio,
   '/acabados/',
   '/proyectos/',
   '/precios/',

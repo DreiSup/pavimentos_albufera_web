@@ -4,12 +4,19 @@ import { z } from 'zod'
 import { cookies, headers } from 'next/headers'
 import { enviarEventoCAPI } from '@/lib/meta-capi'
 import { sitio } from '@/lib/config'
+import { COOKIE_ATRIBUCION, COOKIE_CONSENTIMIENTO, COOKIE_REFERENCIA } from '@/lib/cookies'
 
 export type EstadoEnvio = {
   estado: 'inicial' | 'error' | 'enviando' | 'enviado'
   errores: Record<string, string>
   resumen?: { espacio: string; superficie: string; municipio: string }
 }
+
+// 4 MB, no los 10 que pedía `design/04` §6. El tope real no lo pone el
+// formulario: Vercel corta el cuerpo de una función en 4,5 MB, y los Server
+// Actions se ejecutan como función. Prometer 10 MB significaría un envío que
+// funciona en local y muere con un 413 opaco en producción.
+const MAX_FOTO = 4 * 1024 * 1024
 
 const esquema = z.object({
   nombre: z.string().min(1, 'Escribe tu nombre.'),
@@ -22,8 +29,11 @@ const esquema = z.object({
   superficie: z.string().optional().default(''),
   municipio: z.string().optional().default(''),
   mensaje: z.string().optional().default(''),
-  privacidad: z.string().optional(),
+  // El `required` del navegador no es validación: un envío sin JS o manipulado
+  // se la salta. Aquí es obligatorio de verdad.
+  privacidad: z.string().min(1, 'Tienes que aceptar la política de privacidad.'),
   evento_id: z.string().optional().default(''),
+  origen: z.string().optional().default('unmarked'),
 })
 
 // Límite de envíos por IP: 3 / hora. En memoria — se reinicia con cada despliegue.
@@ -40,6 +50,17 @@ function limitePorIp(ip: string) {
   return true
 }
 
+/** Convierte la cookie de atribución en líneas legibles para el email y el aviso. */
+function lineasAtribucion(bruto: string | undefined): string[] {
+  if (!bruto) return ['Origen: directo o sin marcar']
+  try {
+    const datos = JSON.parse(bruto) as Record<string, string>
+    return Object.entries(datos).map(([clave, valor]) => `${clave}: ${valor}`)
+  } catch {
+    return ['Origen: cookie ilegible']
+  }
+}
+
 export async function enviarPresupuesto(
   _prev: EstadoEnvio,
   formData: FormData,
@@ -49,6 +70,9 @@ export async function enviarPresupuesto(
   if (typeof honeypot === 'string' && honeypot.length > 0) {
     return { estado: 'enviado', errores: {} }
   }
+
+  const foto = formData.get('foto')
+  formData.delete('foto')
 
   const datos = Object.fromEntries(formData.entries())
   const analizado = esquema.safeParse(datos)
@@ -61,6 +85,22 @@ export async function enviarPresupuesto(
     return { estado: 'error', errores }
   }
 
+  // Adjunto opcional. Antes se renderizaba el campo y se descartaba el archivo
+  // en silencio, prometiendo algo que no se cumplía (04-desarrollo-y-deploy.md §6.4).
+  let adjunto: { filename: string; content: string } | undefined
+  if (foto instanceof File && foto.size > 0) {
+    if (!foto.type.startsWith('image/')) {
+      return { estado: 'error', errores: { foto: 'La foto tiene que ser una imagen.' } }
+    }
+    if (foto.size > MAX_FOTO) {
+      return { estado: 'error', errores: { foto: 'La foto no puede pasar de 4 MB.' } }
+    }
+    adjunto = {
+      filename: foto.name || 'foto.jpg',
+      content: Buffer.from(await foto.arrayBuffer()).toString('base64'),
+    }
+  }
+
   const listaCabeceras = await headers()
   const ip = listaCabeceras.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'anonimo'
   if (!limitePorIp(ip)) {
@@ -70,7 +110,31 @@ export async function enviarPresupuesto(
     }
   }
 
-  const { nombre, telefono, email, espacio, superficie, municipio, mensaje, evento_id: eventoId } = analizado.data
+  const {
+    nombre,
+    telefono,
+    email,
+    espacio,
+    superficie,
+    municipio,
+    mensaje,
+    origen,
+    evento_id: eventoIdEnviado,
+  } = analizado.data
+
+  // Si el formulario se envió antes de hidratar, el campo llega vacío. Sin un
+  // id, el Pixel y la CAPI no se pueden deduplicar.
+  const eventoId = eventoIdEnviado || crypto.randomUUID()
+
+  const listaCookies = await cookies()
+  // La misma referencia que se inyecta en los mensajes de WhatsApp. Que el lead
+  // de formulario y el de WhatsApp compartan código es lo que permite ver en el
+  // CRM que son la misma persona.
+  const referencia = listaCookies.get(COOKIE_REFERENCIA)?.value ?? '—'
+  const atribucion = [
+    `Referencia: ${referencia}`,
+    ...lineasAtribucion(listaCookies.get(COOKIE_ATRIBUCION)?.value),
+  ]
 
   const apiKey = process.env.RESEND_API_KEY
   const destino = process.env.EMAIL_DESTINO ?? 'comercial@pavimentos-albufera.com'
@@ -96,7 +160,12 @@ export async function enviarPresupuesto(
             `Superficie: ${superficie || '—'}`,
             `Municipio: ${municipio || '—'}`,
             `Mensaje: ${mensaje || '—'}`,
+            `Foto adjunta: ${adjunto ? 'sí' : 'no'}`,
+            '',
+            `Formulario de: ${origen}`,
+            ...atribucion,
           ].join('\n'),
+          ...(adjunto ? { attachments: [adjunto] } : {}),
         }),
       })
     } catch {
@@ -121,6 +190,9 @@ export async function enviarPresupuesto(
             `${nombre} · ${telefono}`,
             espacio,
             municipio || '—',
+            '',
+            `Desde: ${origen}`,
+            ...atribucion,
           ].join('\n'),
         }),
         signal: AbortSignal.timeout(8000),
@@ -130,17 +202,21 @@ export async function enviarPresupuesto(
     }
   }
 
-  const listaCookies = await cookies()
-  await enviarEventoCAPI({
-    eventoId,
-    telefono,
-    email: email || undefined,
-    ip,
-    userAgent: listaCabeceras.get('user-agent') ?? '',
-    url: `${sitio.url}/presupuesto/`,
-    fbp: listaCookies.get('_fbp')?.value,
-    fbc: listaCookies.get('_fbc')?.value,
-  })
+  // El email y el aviso salen siempre: son la ejecución del servicio que el
+  // usuario ha pedido. El evento a Meta es publicidad, y sin consentimiento no
+  // sale — ni siquiera con el teléfono hasheado.
+  if (listaCookies.get(COOKIE_CONSENTIMIENTO)?.value === 'aceptado') {
+    await enviarEventoCAPI({
+      eventoId,
+      telefono,
+      email: email || undefined,
+      ip,
+      userAgent: listaCabeceras.get('user-agent') ?? '',
+      url: `${sitio.url}/presupuesto/`,
+      fbp: listaCookies.get('_fbp')?.value,
+      fbc: listaCookies.get('_fbc')?.value,
+    })
+  }
 
   return {
     estado: 'enviado',

@@ -20,10 +20,10 @@ export default function Pie() {
 
         <div className="font-mono text-d-11 leading-[2.2] text-sobre-tinta flex flex-col">
           <span>{nap.direccionMostrada}</span>
-          <a href={nap.telefonoHref ?? '#'} className="text-sobre-tinta no-underline">
+          <a href={nap.telefonoHref ?? '#'} data-ubicacion="footer" className="text-sobre-tinta no-underline">
             {nap.telefono ?? `[${nap.telefonoMostrado}]`}
           </a>
-          <a href={`mailto:${nap.email}`} className="text-sobre-tinta no-underline">
+          <a href={`mailto:${nap.email}`} data-ubicacion="footer" className="text-sobre-tinta no-underline">
             {nap.email}
           </a>
         </div>

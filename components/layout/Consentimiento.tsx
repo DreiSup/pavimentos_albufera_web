@@ -3,37 +3,58 @@
 import Script from 'next/script'
 import { useEffect, useState } from 'react'
 import { sitio } from '@/lib/config'
+import {
+  COOKIE_CONSENTIMIENTO,
+  escribirCookie,
+  leerCookie,
+  type EstadoConsentimiento,
+} from '@/lib/cookies'
 import Boton from '../ui/Boton'
 
-const CLAVE = 'pa-consentimiento'
+const DIAS = 180
 
+/**
+ * Consent Mode v2 en modo avanzado.
+ *
+ * Los valores por defecto (`denied` en los cuatro) se declaran en `app/layout.tsx`
+ * con un `<script>` en línea, para que se ejecuten durante el parseo del HTML y
+ * **antes** de que `gtag.js` procese la cola de `dataLayer`. Aquí solo se carga
+ * la etiqueta y se manda el `update` cuando el usuario decide.
+ *
+ * Consecuencia buscada: con el consentimiento denegado Google recibe pings sin
+ * cookies y puede **modelar** las conversiones perdidas. Con el bloqueo duro
+ * anterior no llegaba nada y no había nada que modelar — y Google exige estas
+ * señales a los anunciantes del EEE que usen audiencias y remarketing.
+ *
+ * ⚠️ El Pixel de Meta sigue con bloqueo duro: Meta no tiene equivalente de
+ * Consent Mode, así que o hay consentimiento o no se carga.
+ */
 export default function Consentimiento() {
-  const [estado, setEstado] = useState<'pendiente' | 'aceptado' | 'rechazado'>('pendiente')
+  const [estado, setEstado] = useState<EstadoConsentimiento | 'pendiente'>('pendiente')
 
   useEffect(() => {
-    const guardado = window.localStorage.getItem(CLAVE)
+    const guardado = leerCookie(COOKIE_CONSENTIMIENTO)
     if (guardado === 'aceptado' || guardado === 'rechazado') setEstado(guardado)
   }, [])
 
-  function decidir(valor: 'aceptado' | 'rechazado') {
-    window.localStorage.setItem(CLAVE, valor)
+  useEffect(() => {
+    if (estado === 'pendiente') return
+    const concedido = estado === 'aceptado' ? 'granted' : 'denied'
+    window.gtag?.('consent', 'update', {
+      ad_storage: concedido,
+      ad_user_data: concedido,
+      ad_personalization: concedido,
+      analytics_storage: concedido,
+    })
+  }, [estado])
+
+  function decidir(valor: EstadoConsentimiento) {
+    escribirCookie(COOKIE_CONSENTIMIENTO, valor, DIAS)
     setEstado(valor)
   }
 
   return (
     <>
-      {estado === 'aceptado' && sitio.gaId ? (
-        <>
-          <Script src={`https://www.googletagmanager.com/gtag/js?id=${sitio.gaId}`} strategy="afterInteractive" />
-          <Script id="ga4" strategy="afterInteractive">
-            {`window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', '${sitio.gaId}');`}
-          </Script>
-        </>
-      ) : null}
-
       {estado === 'aceptado' && sitio.metaPixelId ? (
         <Script id="meta-pixel" strategy="afterInteractive">
           {`!function(f,b,e,v,n,t,s)
@@ -53,7 +74,7 @@ export default function Consentimiento() {
         <div className="fixed bottom-0 md:bottom-0 left-0 right-0 z-50 bg-tinta text-fondo px-[18px] py-4 md:px-lat-desktop md:py-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 md:mb-0 mb-[56px]">
           <p className="text-14 md:text-16 text-sobre-tinta m-0 max-w-[68ch]">
             Usamos analítica y publicidad para entender cómo se usa esta web y mostrarte anuncios
-            relevantes. No se carga nada hasta que aceptas.
+            relevantes. Hasta que aceptes no se guarda ninguna cookie de analítica ni de publicidad.
           </p>
           <div className="flex gap-3 shrink-0">
             <Boton variante="contorno" sobreOscuro type="button" onClick={() => decidir('rechazado')}>

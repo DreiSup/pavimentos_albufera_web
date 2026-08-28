@@ -27,3 +27,6 @@ next-env.d.ts
 
 # vercel
 .vercel
+
+# fotos originales descargadas de la web viva (no se commitean)
+/fotos-origen/

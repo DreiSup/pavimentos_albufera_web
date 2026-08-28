@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import Chip from '../ui/Chip'
 import Boton from '../ui/Boton'
-import { registrarEvento } from '@/lib/eventos'
+import { EVENTOS, registrarEvento } from '@/lib/eventos'
 
 export type OpcionUso = { id: string; etiqueta: string; rango: [number, number] }
 
@@ -36,8 +36,14 @@ export default function Calculadora({ usos, reducida = false }: { usos: OpcionUs
   useEffect(() => {
     if (!rango) return
     const espera = setTimeout(() => {
-      registrarEvento('uso_calculadora', {
-        params: { superficie, uso: uso?.id, terreno: terreno.id, min: rango.min, max: rango.max },
+      registrarEvento(EVENTOS.calculatorUse, {
+        params: {
+          surface_m2: superficie,
+          use_case: uso?.id,
+          ground_state: terreno.id,
+          estimate_min: rango.min,
+          estimate_max: rango.max,
+        },
       })
     }, 800)
     return () => clearTimeout(espera)

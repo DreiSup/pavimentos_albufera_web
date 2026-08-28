@@ -6,6 +6,9 @@ import Pie from '@/components/layout/Pie'
 import BarraMovil from '@/components/layout/BarraMovil'
 import Consentimiento from '@/components/layout/Consentimiento'
 import EventosGlobales from '@/components/layout/EventosGlobales'
+import Atribucion from '@/components/layout/Atribucion'
+import ProfundidadScroll from '@/components/layout/ProfundidadScroll'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import { archivo, instrumentSans, martianMono } from './fuentes'
 import './globals.css'
 
@@ -30,6 +33,33 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="es" className={`${archivo.variable} ${instrumentSans.variable} ${martianMono.variable}`}>
       <body className="font-sans text-tinta bg-fondo min-h-dvh flex flex-col">
+        {/*
+          Consent Mode v2: los cuatro permisos arrancan DENEGADOS.
+
+          ⚠️ Este script CARGA gtag.js él mismo, en la última línea y a propósito.
+          La versión anterior dejaba el `<Script src>` a next/script y confiaba en
+          el orden del documento — y al comprobarlo sobre el HTML generado, Next
+          colocaba gtag.js en la posición 1451 y este bloque en la 2180. Un
+          `consent default` que llega después de que gtag.js vacíe la cola de
+          dataLayer no es un consent default. Inyectándolo aquí el orden deja de
+          depender de dónde decida Next poner cada etiqueta.
+
+          El `update` a 'granted' lo manda Consentimiento.tsx cuando el usuario acepta.
+        */}
+        {sitio.gaId ? (
+          <script
+            // eslint-disable-next-line react/no-danger
+            dangerouslySetInnerHTML={{
+              __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)};
+gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied',wait_for_update:500});
+gtag('set','ads_data_redaction',true);
+gtag('set','url_passthrough',true);
+gtag('js',new Date());
+gtag('config','${sitio.gaId}');
+(function(){var s=document.createElement('script');s.async=1;s.src='https://www.googletagmanager.com/gtag/js?id=${sitio.gaId}';document.head.appendChild(s)})();`,
+            }}
+          />
+        ) : null}
         <JsonLd data={schemaNegocioLocal()} />
         <a
           href="#contenido"
@@ -45,6 +75,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <BarraMovil />
         <Consentimiento />
         <EventosGlobales />
+        <Atribucion />
+        <ProfundidadScroll />
+        <SpeedInsights />
       </body>
     </html>
   )

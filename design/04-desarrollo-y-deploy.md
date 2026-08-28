@@ -55,7 +55,17 @@ components/
 
 content/             acabados.json · proyectos.json · zonas.json · blog/*.mdx
 lib/                 datos.ts (carga y filtros) · schema.ts (JSON-LD) · config.ts (NAP)
+
+public/              una carpeta por concepto del modelo de contenido
+├── marca/           logotipo y variantes
+├── obras/           fotos de proyecto        → Proyecto.imagenes[].src
+├── acabados/        muestras macro           → Acabado.muestra
+└── blog/            imagen de apertura       → Articulo.imagenApertura
 ```
+
+Los iconos de pestaña y las imágenes de compartición no van en `public/`: son convenciones de
+archivo de Next 15 y viven en `app/` (`icon.svg`, `apple-icon.png`, `opengraph-image.png`).
+Las reglas de nomenclatura están en `public/README.md`.
 
 Rutas generadas estáticamente con `generateStaticParams` desde los JSON de `content/`.
 Todo SSG; ISR solo si más adelante entra un CMS.
@@ -219,6 +229,8 @@ WhatsApp con mensaje predefinido:
   espiga en color 117»*. Nunca el nombre del archivo.
 - Originales a 2400 px de ancho mínimo. **Bloqueante:** los de producción están a 500×400.
 - Mientras falten, `<BloquePosicion>` — no imágenes provisionales de stock.
+- Se guardan en `public/` por concepto (`obras/`, `acabados/`, `blog/`, `marca/`) y se nombran
+  según `public/README.md`. Se sube el original: `next/image` genera los formatos y tamaños.
 
 ## 8. Rendimiento
 
