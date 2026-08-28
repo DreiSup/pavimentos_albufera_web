@@ -103,6 +103,14 @@ y al ponerlas en las seis páginas `/microcemento/` acababa preguntando si se ag
 impreso. `/microcemento/` no lleva FAQ porque ninguna pregunta del catálogo le aplica sin
 reescribirla, y reescribirla es copy nuevo.
 
+**Fotografía.** Las **125 fotos útiles** de la mediateca de la web viva están en `public/obras/`:
+14 atribuidas a 8 de los 9 proyectos y enlazadas desde `Proyecto.imagenes[]`, y 111 en
+`_sin-atribuir/` con el nombre original. Los criterios de descarte y las advertencias están en
+`public/obras/INVENTARIO.md`. ⚠️ **Nada de esto se ve todavía: el repo no renderiza ni una imagen**
+—cero `next/image`, todos los huecos son `<BloquePosicion>`—, así que falta el componente que las
+pinte. Y los `alt` están compuestos con los datos del proyecto, no describen la foto: nadie las ha
+abierto.
+
 ### Pendiente, y no es código
 
 - 🔴 **Propiedad GA4 propia** (no la de la web viva: es otro negocio) + dimensiones registradas.
@@ -110,6 +118,8 @@ reescribirla, y reescribirla es copy nuevo.
   supera y es un fondo de plantilla; 77 están por debajo de 1200 px. Hay que revisar el umbral o
   hacer sesión nueva.
 - 🔴 **`xabia-pulido` está publicado sin ninguna foto.**
+- 🔴 **Falta el componente de imagen.** Hasta que exista, las 125 fotos son archivos inertes.
+- ⚠️ **Repasar a ojo** los `alt` y el `tipo` de las 14 atribuidas, y las 111 de `_sin-atribuir/`.
 - ⚠️ **`/microcemento/` y `/hormigon-desactivado/` se publican finas**: cero proyectos documentados.
 - ⚠️ **Decisión 6 de `design/05` §C sin contestar** (¿caucho como «Obra pública» o se retira?).
   `/pavimentos-de-caucho/` va provisionalmente a `/`.
