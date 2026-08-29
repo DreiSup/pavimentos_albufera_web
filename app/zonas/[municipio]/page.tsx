@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 import Aparece from '@/components/ui/Aparece'
 import AntetituloSeccion from '@/components/ui/AntetituloSeccion'
 import Boton from '@/components/ui/Boton'
-import BloquePosicion from '@/components/contenido/BloquePosicion'
+import Foto from '@/components/contenido/Foto'
 import EtiquetaTecnica from '@/components/datos/EtiquetaTecnica'
 import TarjetaProyecto from '@/components/contenido/TarjetaProyecto'
 import MuestraAcabado from '@/components/contenido/MuestraAcabado'
@@ -57,8 +57,11 @@ export default async function PaginaZona({ params }: { params: Promise<{ municip
             Obra real ejecutada en {zona.municipio}: {zona.servicios.map((s) => NOMBRE_SERVICIO[s]).join(', ').toLowerCase()}.
           </p>
         </div>
-        <BloquePosicion
+        <Foto
+          imagen={primerProyecto?.imagenes[0]}
           proporcion="4/3"
+          prioridad
+          tamanos="(min-width: 768px) 50vw, 100vw"
           etiqueta={
             primerProyecto ? (
               <EtiquetaTecnica lineas={[`${zona.municipio.toUpperCase()} · ${zona.provincia.toUpperCase()}`]} />

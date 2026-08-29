@@ -2,7 +2,7 @@ import Aparece from '@/components/ui/Aparece'
 import AntetituloSeccion from '@/components/ui/AntetituloSeccion'
 import Boton from '@/components/ui/Boton'
 import { EnlaceEtiqueta } from '@/components/ui/EnlaceEtiqueta'
-import BloquePosicion from '@/components/contenido/BloquePosicion'
+import Foto from '@/components/contenido/Foto'
 import EtiquetaTecnica from '@/components/datos/EtiquetaTecnica'
 import DatoPendiente from '@/components/datos/DatoPendiente'
 import TablaFichaTecnica from '@/components/datos/TablaFichaTecnica'
@@ -107,8 +107,11 @@ export default function PaginaServicio({ servicio }: { servicio: Servicio }) {
           </div>
         </div>
         <div className="order-1 md:order-2">
-          <BloquePosicion
+          <Foto
+            imagen={servicio.imagenHero}
             proporcion="4/3"
+            prioridad
+            tamanos="(min-width: 768px) 50vw, 100vw"
             etiqueta={<EtiquetaTecnica lineas={servicio.etiquetaHero} />}
           />
         </div>

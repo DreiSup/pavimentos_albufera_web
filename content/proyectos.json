@@ -15,17 +15,17 @@
     "imagenes": [
       {
         "src": "/obras/moncada-impreso-espiga-117-2025.jpg",
-        "alt": "Hormigón impreso modelo espiga color 117 en Moncada",
+        "alt": "Plaza pavimentada en hormigón impreso con despiece en espiga, con un alcorque circular y arbolado alrededor.",
         "tipo": "final"
       },
       {
         "src": "/obras/moncada-impreso-espiga-117-2025-2.jpg",
-        "alt": "Hormigón impreso modelo espiga color 117 en Moncada",
+        "alt": "Pavimento de hormigón impreso en espiga de tono ocre claro ante un bloque de viviendas.",
         "tipo": "final"
       },
       {
         "src": "/obras/moncada-impreso-espiga-117-2025-3.jpg",
-        "alt": "Hormigón impreso modelo espiga color 117 en Moncada",
+        "alt": "Calzada y acera de hormigón impreso en espiga frente a un bloque de viviendas de ladrillo.",
         "tipo": "final"
       }
     ],
@@ -35,7 +35,7 @@
       "plazoDias",
       "encargo",
       "ejecucion",
-      "fotos a 2400px",
+      "fotos a 2400 px",
       "foto ANTES"
     ]
   },
@@ -54,13 +54,13 @@
     "ejecucion": null,
     "imagenes": [
       {
-        "src": "/obras/alzira-impreso-adoquin-irregular-107.jpg",
-        "alt": "Hormigón impreso modelo adoquín irregular color 107 en Alzira",
+        "src": "/obras/alzira-impreso-adoquin-irregular-107-2.jpg",
+        "alt": "Explanada de hormigón impreso en adoquín irregular de tono rojizo, entre pinos, con el terreno natural al fondo.",
         "tipo": "final"
       },
       {
-        "src": "/obras/alzira-impreso-adoquin-irregular-107-2.jpg",
-        "alt": "Hormigón impreso modelo adoquín irregular color 107 en Alzira",
+        "src": "/obras/alzira-impreso-adoquin-irregular-107.jpg",
+        "alt": "Camino de hormigón impreso en adoquín irregular rojizo bordeando un muro de piedra, a la sombra de los árboles.",
         "tipo": "final"
       }
     ],
@@ -71,7 +71,7 @@
       "plazoDias",
       "encargo",
       "ejecucion",
-      "fotos"
+      "fotos a 2400 px"
     ]
   },
   {
@@ -90,7 +90,7 @@
     "imagenes": [
       {
         "src": "/obras/moraira-impreso-adoquin-pequeno-arena-2025.jpg",
-        "alt": "Hormigón impreso modelo adoquín pequeño color arena en Moraira",
+        "alt": "Rampa de acceso de hormigón impreso en adoquín pequeño de tono arena, entre un muro encalado y otro de mampostería.",
         "tipo": "final"
       }
     ],
@@ -100,7 +100,7 @@
       "plazoDias",
       "encargo",
       "ejecucion",
-      "fotos"
+      "fotos a 2400 px"
     ]
   },
   {
@@ -118,12 +118,12 @@
     "imagenes": [
       {
         "src": "/obras/corbera-fratasado-arena.jpg",
-        "alt": "Hormigón fratasado color arena en Corbera",
+        "alt": "Patio de hormigón fratasado de tono arena alrededor de un olivo, con el paisaje al fondo.",
         "tipo": "final"
       },
       {
         "src": "/obras/corbera-fratasado-arena-2.jpg",
-        "alt": "Hormigón fratasado color arena en Corbera",
+        "alt": "Paso de hormigón fratasado de tono arena junto a la fachada de piedra de una masía.",
         "tipo": "final"
       }
     ],
@@ -133,7 +133,7 @@
       "anio",
       "encargo",
       "ejecucion",
-      "fotos"
+      "fotos a 2400 px"
     ]
   },
   {
@@ -151,13 +151,13 @@
     "ejecucion": null,
     "imagenes": [
       {
-        "src": "/obras/impreso-manta-gris.jpg",
-        "alt": "Hormigón impreso modelo manta color gris",
+        "src": "/obras/impreso-manta-gris-2.jpg",
+        "alt": "Pavimento de hormigón impreso gris con despiece rectangular y cenefa de adoquín en el borde.",
         "tipo": "final"
       },
       {
-        "src": "/obras/impreso-manta-gris-2.jpg",
-        "alt": "Hormigón impreso modelo manta color gris",
+        "src": "/obras/impreso-manta-gris.jpg",
+        "alt": "Paso lateral de hormigón gris continuo entre la fachada de una vivienda y el muro de la parcela.",
         "tipo": "final"
       }
     ],
@@ -169,8 +169,9 @@
       "anio",
       "encargo",
       "ejecucion",
-      "fotos"
-    ]
+      "fotos a 2400 px"
+    ],
+    "_nota": "⚠️ Las dos fotos no muestran la textura de roca de montaña que anuncia el modelo: una tiene despiece rectangular y la otra es hormigón continuo sin estampar. Contrastar el modelo con el dueño antes de darlo por bueno."
   },
   {
     "slug": "denia-impreso-piedra-inglesa",
@@ -188,7 +189,7 @@
     "imagenes": [
       {
         "src": "/obras/denia-impreso-piedra-inglesa-gris.jpg",
-        "alt": "Hormigón impreso modelo piedra inglesa color gris en Denia",
+        "alt": "Patio de hormigón impreso en piedra inglesa de tono gris ante una vivienda blanca con palmeras.",
         "tipo": "final"
       }
     ],
@@ -211,7 +212,7 @@
       "anio",
       "encargo",
       "ejecucion",
-      "fotos"
+      "fotos a 2400 px"
     ]
   },
   {
@@ -229,7 +230,7 @@
     "imagenes": [
       {
         "src": "/obras/ribarroja-pulido-gris.jpg",
-        "alt": "Hormigón pulido color gris en Ribarroja",
+        "alt": "Planta de aparcamiento cubierta con solera de hormigón pulido gris entre pilares.",
         "tipo": "final"
       }
     ],
@@ -239,7 +240,7 @@
       "anio",
       "encargo",
       "ejecucion",
-      "fotos"
+      "fotos a 2400 px"
     ]
   },
   {
@@ -280,12 +281,12 @@
     "imagenes": [
       {
         "src": "/obras/godella-lavado-gris.jpg",
-        "alt": "Hormigón lavado color gris en Godella",
+        "alt": "Fuente circular rodeada de hormigón lavado con árido visto, con un zócalo de azulejo al fondo.",
         "tipo": "final"
       },
       {
         "src": "/obras/godella-lavado-gris-2.jpg",
-        "alt": "Hormigón lavado color gris en Godella",
+        "alt": "Paseo de hormigón lavado con árido visto entre dos franjas de césped.",
         "tipo": "final"
       }
     ],
@@ -296,7 +297,7 @@
       "anio",
       "encargo",
       "ejecucion",
-      "fotos"
+      "fotos a 2400 px"
     ]
   }
 ]

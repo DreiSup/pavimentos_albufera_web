@@ -44,6 +44,53 @@ color y municipio, ya confirmados en `proyectos.json`— y **no describen lo que
 porque nadie las ha abierto todavía**. Igual que `tipo: "final"`, que es el supuesto por defecto:
 alguna puede ser de proceso o de detalle. Las dos cosas hay que repasarlas a ojo.
 
+## 2026-08-28 — abiertas y revisadas a ojo, las 125
+
+Se generaron hojas de contacto de las 125 y se miraron una a una. Lo que ya no es una
+suposición:
+
+- **Los 14 `alt` de la raíz están reescritos** describiendo lo que sale en la foto, no los
+  datos del proyecto. Su `tipo: "final"` queda confirmado: ninguna es de proceso ni de detalle.
+- **No hay ni una sola foto de ANTES** en las 125. El hueco `ANTES` de la galería de proyecto
+  se queda en bloque de posición: reetiquetar una foto de proceso como ANTES sería un dato falso.
+- 🔴 **`impreso-manta-gris`: las fotos no encajan con el modelo.** Una tiene despiece
+  rectangular y la otra es hormigón continuo sin estampar. Ninguna enseña la textura de roca de
+  montaña que anuncia el nombre. Está anotado en `content/proyectos.json`; hay que contrastarlo
+  con el dueño antes de darlo por bueno.
+
+### 🔴 No usar — 15 archivos, y siguen aquí a propósito
+
+No se borran: eso descuadraría los recuentos de arriba y son material del cliente. Simplemente
+no se referencian desde `content/`.
+
+| Archivos | Motivo |
+|---|---|
+| `career-firefighter-relaxing-job-162540.jpeg`, `construction-site-build-construction-work-159306.jpeg`, `construction_worker_concrete_hummer_vibrator_job_site_labor_task-755423.jpg`, `image-1.png`, `614ffdfdd52fa96bacb7edf2ccaf-1452223.jpg`, `testimonial.png` | **Stock.** Bombero, obra genérica, operario con vibrador, dos hombres con casco señalando planos, bodegón de maquillaje y mapamundi de plantilla. `design/03` y la regla de proyecto prohíben stock, y de personas explícitamente |
+| Los 7 `WhatsApp-Image-2025-09-26-at-*` | 🔴 **Son pistas de pádel y pickleball, no pavimentos.** Uno se titula «pista de padel» en la mediateca; al abrirlos, los siete lo son. Es el negocio de **Padel Albufera**, no el de Pavimentos, y son además las fotos más nuevas de la biblioteca. Ver `padel-albufera/` en el vault: mezclar los dos negocios ya ha producido un error real |
+| `image.jpg` | Bodegón de palas y pelotas de pádel/pickleball. Mismo caso |
+| `pavimentos-de-hormigon-impreso.jpg` | Es un **collage** de dos fotos (piscina + pista de pádel) montado como banner de cabecera, no una fotografía |
+
+Con esto, el material realmente utilizable de la mediateca son **110 fotos**, no 125.
+
+### En uso hoy — 35 referencias desde `content/`
+
+Las de `_sin-atribuir/` se citan **con su nombre original**, sin renombrar ni mover: se ha visto
+qué enseñan, pero no de qué obra son, y el nombre de la raíz (`municipio-servicio-modelo-color-año`)
+afirmaría un municipio y un año que nadie ha confirmado. El nombre de archivo no aparece nunca
+en pantalla, así que no cuesta nada dejarlas donde están.
+
+`scripts/verificar-imagenes.mjs` falla el build si alguna de esas 35 rutas deja de existir o se
+queda sin `alt`. `next build` no lo detecta: un `src` de `next/image` mal escrito compila limpio.
+
+**El modelo de las cuatro fotos sin proyecto que sí se usan** —sillería grande, piedra sillería,
+piedra rodena y la de microcemento— sale del `title` de la mediateca de WordPress, no del dueño.
+Sostiene la afirmación que hace la pantalla (solo el modelo), no más: por eso ninguna de ellas
+entra como muestra de un acabado, que sí lleva el código de color impreso al lado.
+
+⚠️ **Y siguen sin cumplir los 2400 px.** Que ahora se vean no cambia el reparto de resoluciones
+de más arriba: la web se publica con fotos por debajo del umbral que `design/05` §A1 llama
+bloqueante. O se revisa el umbral o hay sesión nueva. Es decisión, no código.
+
 ## Material que abre trabajo
 
 **Siete obras identificables que no son ninguno de los 9 proyectos**, con municipio, modelo y color

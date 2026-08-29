@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { CODIGO_COLOR, NOMBRE_MODELO, NOMBRE_SERVICIO } from '@/lib/tipos'
 import type { Proyecto } from '@/lib/tipos'
-import BloquePosicion from './BloquePosicion'
+import Foto from './Foto'
 import DatoPendiente from '../datos/DatoPendiente'
 
 export default function TarjetaProyecto({
@@ -19,7 +19,11 @@ export default function TarjetaProyecto({
       href={`/proyectos/${proyecto.slug}/`}
       className={`flex flex-col no-underline ${fondo === 'alt' ? 'bg-fondo-alt' : 'bg-fondo'}`}
     >
-      <BloquePosicion proporcion="4/3" />
+      <Foto
+        imagen={proyecto.imagenes[0]}
+        proporcion="4/3"
+        tamanos="(min-width: 768px) 30vw, 88vw"
+      />
       <div className="flex flex-col gap-2 px-[14px] py-[12px] md:px-5 md:py-[18px] md:pb-[22px]">
         <h3 className="font-display font-bold fs-h3 text-16 md:text-20 leading-[1.2] text-tinta m-0">
           {proyecto.titulo}

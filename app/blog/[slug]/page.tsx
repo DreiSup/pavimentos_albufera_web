@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Aparece from '@/components/ui/Aparece'
 import Boton from '@/components/ui/Boton'
-import BloquePosicion from '@/components/contenido/BloquePosicion'
+import Foto from '@/components/contenido/Foto'
 import Migas from '@/components/layout/Migas'
 import TarjetaProyecto from '@/components/contenido/TarjetaProyecto'
 import { articuloPorSlug, articulos, proyectosPorServicio } from '@/lib/datos'
@@ -49,7 +49,12 @@ export default async function Articulo({ params }: { params: Promise<{ slug: str
       </section>
 
       <section className="px-[18px] md:px-lat-desktop pb-8 md:pb-14">
-        <BloquePosicion proporcion="21/9" />
+        <Foto
+          imagen={articulo.imagenApertura}
+          proporcion="21/9"
+          prioridad
+          tamanos="100vw"
+        />
       </section>
 
       <Aparece as="section" className="px-[18px] md:px-lat-desktop py-9 md:py-22">

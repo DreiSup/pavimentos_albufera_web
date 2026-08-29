@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "postbuild": "node scripts/verificar-redirecciones.mjs",
+    "postbuild": "node scripts/verificar-redirecciones.mjs && node scripts/verificar-imagenes.mjs",
     "start": "next start",
     "lint": "next lint"
   },

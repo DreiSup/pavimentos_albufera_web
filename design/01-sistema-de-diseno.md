@@ -277,9 +277,26 @@ gap entre imagen y etiqueta: 14px (escritorio) / 10px (móvil)
 seleccionada  outline: 2px solid #D9A441; outline-offset: -2px
 ```
 
-### 3.11 Bloque de posición de foto
+### 3.11 Fotografía de obra, y su bloque de posición
 
-Sustituye a cualquier imagen provisional mientras no haya originales.
+Son un solo componente con dos estados. La pantalla nunca decide entre uno y otro: pide la
+foto y, si no la hay, sale el bloque. Así la ausencia de original sigue siendo visible y no se
+tapa con nada.
+
+**Estado con foto.** Sin tratamiento: ni filtro, ni velo, ni sombra, ni radio, ni marco.
+
+```
+recorte: object-fit: cover, centrado, dentro de la proporción del hueco
+fondo mientras carga: #DADCD6
+alt obligatorio y descriptivo — describe lo que se ve, no el proyecto que la origina
++ etiqueta técnica (3.8) sobrepuesta cuando la foto representa una obra concreta
+```
+
+**Nada de texto sobre la foto.** El sistema no tiene velo ni degradado, así que sobre una
+imagen el contraste deja de poder comprobarse. Los titulares van delante o detrás de la foto,
+nunca encima. La etiqueta técnica (3.8) es la única excepción: lleva su propio fondo opaco.
+
+**Estado sin foto.** Sustituye a cualquier imagen provisional mientras no haya originales.
 
 ```
 background: #DADCD6
@@ -299,7 +316,7 @@ Proporciones: `21/9` galería principal de proyecto · `4/3` tarjetas y hero de 
 
 ```
 fondo: #DADCD6 sobre --fondo, o #E9EAE6 sobre --fondo-alt
-imagen 4/3 (bloque de posición)
+imagen 4/3 (fotografía de obra, 3.11)
 padding del cuerpo: 18px 20px 22px (escritorio) / 12px 14px 16px (móvil)
 título  Archivo 700 / 115 % · 20px (escritorio) / 16px (móvil) · line-height 1.2
 ficha   Martian Mono 11px / 10px · line-height 1.9 · color: #41535C

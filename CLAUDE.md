@@ -47,7 +47,7 @@ La especificación completa está en `design/`. **Léela antes de escribir códi
 - Cada `[corchete]` sustituido por un dato real es un commit que además elimina su tratamiento
   visual.
 
-## Estado — actualizado 2026-08-27
+## Estado — actualizado 2026-08-28
 
 Auditoría del repo contra el plan de medición, y su implementación. Build, lint y `tsc` limpios;
 **47 rutas, todas estáticas**.
@@ -103,24 +103,46 @@ y al ponerlas en las seis páginas `/microcemento/` acababa preguntando si se ag
 impreso. `/microcemento/` no lleva FAQ porque ninguna pregunta del catálogo le aplica sin
 reescribirla, y reescribirla es copy nuevo.
 
-**Fotografía.** Las **125 fotos útiles** de la mediateca de la web viva están en `public/obras/`:
-14 atribuidas a 8 de los 9 proyectos y enlazadas desde `Proyecto.imagenes[]`, y 111 en
-`_sin-atribuir/` con el nombre original. Los criterios de descarte y las advertencias están en
-`public/obras/INVENTARIO.md`. ⚠️ **Nada de esto se ve todavía: el repo no renderiza ni una imagen**
-—cero `next/image`, todos los huecos son `<BloquePosicion>`—, así que falta el componente que las
-pinte. Y los `alt` están compuestos con los datos del proyecto, no describen la foto: nadie las ha
-abierto.
+**Fotografía. La web ya se ve.** `components/contenido/Foto.tsx` envuelve `next/image` y **cae en
+`<BloquePosicion>` cuando no hay imagen**: ninguna pantalla decide entre foto y hueco, pide la foto
+y el componente resuelve. Por eso el tratamiento de pendiente sigue apareciendo solo donde falta el
+original de verdad —`xabia-pulido`, el hueco `ANTES`, seis de los dieciséis acabados— y no hay que
+acordarse de quitarlo.
+
+Los datos viven en los campos que el modelo de contenido ya tenía: `Proyecto.imagenes[]`,
+`Acabado.muestra` (ampliado de `string` a `Imagen`, para que el `alt` no sea opcional),
+`Articulo.imagenApertura`, más `Servicio.imagenHero`/`imagenTarjeta` en `content/servicios.tsx` y
+`content/modelos.ts` para el hero de `/acabados/[modelo]/`. La zona deriva la suya del primer
+proyecto: no hay dato nuevo.
+
+- Las **125 fotos se han abierto una a una** y los 14 `alt` de la raíz están reescritos
+  describiendo la foto, no el proyecto. **15 no se usan y no se borran**: 6 de stock, 8 de pistas
+  de pádel —otro negocio— y un collage. Todo anotado en `public/obras/INVENTARIO.md`.
+- Las de `_sin-atribuir/` se citan **con su nombre original**. Renombrarlas al patrón de la raíz
+  afirmaría municipio y año que nadie ha confirmado; el nombre no se ve en pantalla.
+- 🔴 **`next build` tampoco valida el `src` de `next/image`.** Un `src` mal escrito compila limpio
+  y en producción es un hueco vacío. `scripts/verificar-imagenes.mjs` corre en `postbuild`, junto al
+  de las redirecciones, y falla el build.
+- ⚠️ **Se publica por debajo de los 2400 px.** Ninguna de las 125 los alcanza. `design/05` §A1 llama
+  a eso bloqueante de publicación: o se revisa el umbral o hay sesión nueva. La etiqueta del bloque
+  de posición —«PENDIENTE · ORIGINAL A 2400 PX»— sigue siendo cierta donde aparece.
+- El presupuesto de JS sube de **111 a 116 kB** en la home. Ya estaba por encima de los 100 KB
+  antes de esta sesión (103 kB solo de chunk compartido); `next/image` añade ~5 kB.
 
 ### Pendiente, y no es código
 
 - 🔴 **Propiedad GA4 propia** (no la de la web viva: es otro negocio) + dimensiones registradas.
 - 🔴 **Bloqueante de los 2400 px:** ninguna de las 164 fotos de la web viva lo cumple —solo 1 lo
   supera y es un fondo de plantilla; 77 están por debajo de 1200 px. Hay que revisar el umbral o
-  hacer sesión nueva.
-- 🔴 **`xabia-pulido` está publicado sin ninguna foto.**
-- 🔴 **Falta el componente de imagen.** Hasta que exista, las 125 fotos son archivos inertes.
-- ⚠️ **Repasar a ojo** los `alt` y el `tipo` de las 14 atribuidas, y las 111 de `_sin-atribuir/`.
-- ⚠️ **`/microcemento/` y `/hormigon-desactivado/` se publican finas**: cero proyectos documentados.
+  hacer sesión nueva. **La web ya está publicando con ellas.**
+- 🔴 **`xabia-pulido` está publicado sin ninguna foto**, y no hay ninguna candidata en la mediateca.
+- 🔴 **Pistas de pádel en la mediateca de Pavimentos:** las 8 fotos más nuevas de la web viva son de
+  Padel Albufera. No se usan aquí. Es del dueño saber por qué están ahí.
+- ⚠️ **`impreso-manta-gris`:** sus dos fotos no enseñan la textura de roca de montaña que anuncia el
+  modelo. Contrastar el modelo con el dueño.
+- ⚠️ **Ninguna foto de ANTES** en las 125. El hueco de la galería de proyecto se queda pendiente.
+- ⚠️ **`/microcemento/` y `/hormigon-desactivado/` siguen sin un solo proyecto documentado**, aunque
+  ya tengan foto de portada.
 - ⚠️ **Decisión 6 de `design/05` §C sin contestar** (¿caucho como «Obra pública» o se retira?).
   `/pavimentos-de-caucho/` va provisionalmente a `/`.
 
@@ -130,8 +152,10 @@ abierto.
 npm run dev
 npm run build       # debe pasar sin warnings antes de cada commit
                     # incluye postbuild: verifica los destinos de las 301
+                    # y que toda foto citada exista en public/ con alt
 npm run lint
 node scripts/verificar-redirecciones.mjs   # suelto, tras un build
+node scripts/verificar-imagenes.mjs        # suelto, no necesita build
 ```
 
 Para probar la medición en local hace falta un `.env.local` con `NEXT_PUBLIC_TELEFONO`,

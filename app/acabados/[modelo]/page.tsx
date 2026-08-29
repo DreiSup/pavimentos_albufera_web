@@ -4,8 +4,9 @@ import Aparece from '@/components/ui/Aparece'
 import Boton from '@/components/ui/Boton'
 import { EnlaceEtiqueta } from '@/components/ui/EnlaceEtiqueta'
 import EstadoVacio from '@/components/ui/EstadoVacio'
-import BloquePosicion from '@/components/contenido/BloquePosicion'
+import Foto from '@/components/contenido/Foto'
 import EtiquetaTecnica from '@/components/datos/EtiquetaTecnica'
+import { IMAGEN_MODELO } from '@/content/modelos'
 import DatoPendiente from '@/components/datos/DatoPendiente'
 import FichaObra from '@/components/datos/FichaObra'
 import MuestraAcabado from '@/components/contenido/MuestraAcabado'
@@ -49,8 +50,11 @@ export default async function FichaAcabado({ params }: { params: Promise<{ model
       <Migas items={[{ nombre: 'Acabados', href: '/acabados/' }, { nombre }]} />
 
       <section className="px-[18px] md:px-lat-desktop pb-8 md:pb-14">
-        <BloquePosicion
+        <Foto
+          imagen={IMAGEN_MODELO[modelo]}
           proporcion="4/3"
+          prioridad
+          tamanos="100vw"
           etiqueta={<EtiquetaTecnica lineas={['IMPRESO', `MODELO ${nombre.toUpperCase()}`]} />}
         />
       </section>

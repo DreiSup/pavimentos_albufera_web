@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 import Aparece from '@/components/ui/Aparece'
 import Boton from '@/components/ui/Boton'
 import { EnlaceEtiqueta } from '@/components/ui/EnlaceEtiqueta'
-import BloquePosicion from '@/components/contenido/BloquePosicion'
+import Foto from '@/components/contenido/Foto'
 import FichaObra from '@/components/datos/FichaObra'
 import DatoPendiente from '@/components/datos/DatoPendiente'
 import TarjetaProyecto from '@/components/contenido/TarjetaProyecto'
@@ -58,12 +58,26 @@ export default async function FichaProyecto({ params }: { params: Promise<{ slug
 
       {/* Galería */}
       <section className="px-[18px] md:px-lat-desktop pb-3 flex flex-col gap-2">
-        <BloquePosicion proporcion="21/9" />
+        <Foto imagen={proyecto.imagenes[0]} proporcion="21/9" prioridad tamanos="100vw" />
         <div className="grid grid-cols-4 gap-2">
-          <BloquePosicion proporcion="4/3" className="outline outline-2 outline-tinta -outline-offset-2" />
-          <BloquePosicion proporcion="4/3" />
-          <BloquePosicion proporcion="4/3" />
-          <BloquePosicion proporcion="4/3" etiqueta={<span className="absolute bottom-2 right-2 font-mono text-d-10 text-tinta-media bg-fondo px-1">ANTES</span>} />
+          {[0, 1, 2].map((i) => (
+            <Foto
+              key={i}
+              imagen={proyecto.imagenes[i]}
+              proporcion="4/3"
+              tamanos="25vw"
+              className={i === 0 ? 'outline outline-2 outline-tinta -outline-offset-2' : ''}
+            />
+          ))}
+          {/* Ninguna de las 125 fotos de la mediateca de la web viva es un ANTES.
+              Mientras no la haya, este hueco se queda en bloque de posición: una
+              foto de proceso reetiquetada como ANTES sería un dato falso. */}
+          <Foto
+            imagen={proyecto.imagenes.find((img) => img.tipo === 'antes')}
+            proporcion="4/3"
+            tamanos="25vw"
+            etiqueta={<span className="absolute bottom-2 right-2 font-mono text-d-10 text-tinta-media bg-fondo px-1">ANTES</span>}
+          />
         </div>
       </section>
 

@@ -4,7 +4,7 @@ import Aparece from '@/components/ui/Aparece'
 import AntetituloSeccion from '@/components/ui/AntetituloSeccion'
 import Boton from '@/components/ui/Boton'
 import { EnlaceEtiqueta } from '@/components/ui/EnlaceEtiqueta'
-import BloquePosicion from '@/components/contenido/BloquePosicion'
+import Foto from '@/components/contenido/Foto'
 import EtiquetaTecnica from '@/components/datos/EtiquetaTecnica'
 import DatoPendiente from '@/components/datos/DatoPendiente'
 import MuestraAcabado from '@/components/contenido/MuestraAcabado'
@@ -16,6 +16,7 @@ import FormularioPresupuesto from '@/components/secciones/FormularioPresupuesto'
 import { JsonLd, schemaFAQ } from '@/lib/schema'
 import { acabados, contarDocumentados, proyectos } from '@/lib/datos'
 import { faqHome } from '@/content/faq'
+import { SERVICIOS } from '@/content/servicios'
 import { NOMBRE_SERVICIO, RUTA_SERVICIO } from '@/lib/tipos'
 import { nap } from '@/lib/config'
 
@@ -27,12 +28,60 @@ export const metadata: Metadata = {
 }
 
 const espacios = [
-  { titulo: 'Entrada de garaje', texto: 'Aguanta el paso de coches sin agrietarse.' },
-  { titulo: 'Porche y terraza', texto: 'El acabado que más piden nuestros clientes.' },
-  { titulo: 'Contorno de piscina', texto: 'Antideslizante y frío al sol.' },
-  { titulo: 'Interior de vivienda', texto: 'Continuo, sin juntas, fácil de limpiar.' },
-  { titulo: 'Patio y jardín', texto: 'Integrado con el entorno, sin mantenimiento.' },
-  { titulo: 'Nave, parking o local', texto: 'Resistente al tránsito pesado y a los ácidos.' },
+  {
+    titulo: 'Entrada de garaje',
+    texto: 'Aguanta el paso de coches sin agrietarse.',
+    imagen: {
+      src: '/obras/_sin-atribuir/b8c06394-3d87-41a8-92bb-7486e9b912de.jpeg',
+      alt: 'Explanada de hormigón impreso gris ante la puerta basculante de un garaje.',
+      tipo: 'final' as const,
+    },
+  },
+  {
+    titulo: 'Porche y terraza',
+    texto: 'El acabado que más piden nuestros clientes.',
+    imagen: {
+      src: '/obras/_sin-atribuir/5da4504f-2c7e-4fee-897b-fe0ed0a4a3a1.jpeg',
+      alt: 'Porche cubierto con solera de hormigón fratasado claro, con sofás y el jardín al fondo.',
+      tipo: 'final' as const,
+    },
+  },
+  {
+    titulo: 'Contorno de piscina',
+    texto: 'Antideslizante y frío al sol.',
+    imagen: {
+      src: '/obras/_sin-atribuir/4d88392b-d7b1-4d77-900b-82db9f0ecd29.jpeg',
+      alt: 'Contorno de piscina de hormigón continuo en tono tostado ante una vivienda encalada.',
+      tipo: 'final' as const,
+    },
+  },
+  {
+    titulo: 'Interior de vivienda',
+    texto: 'Continuo, sin juntas, fácil de limpiar.',
+    imagen: {
+      src: '/obras/_sin-atribuir/WhatsApp-Image-2023-08-22-at-09.08.18.jpeg',
+      alt: 'Estancia con arcos y suelo de hormigón pulido continuo que se prolonga hasta el porche.',
+      tipo: 'final' as const,
+    },
+  },
+  {
+    titulo: 'Patio y jardín',
+    texto: 'Integrado con el entorno, sin mantenimiento.',
+    imagen: {
+      src: '/obras/_sin-atribuir/hormigon-impreso-2.jpg',
+      alt: 'Jardín con olivos, césped y un pavimento de hormigón de tono ocre que rodea los alcorques.',
+      tipo: 'final' as const,
+    },
+  },
+  {
+    titulo: 'Nave, parking o local',
+    texto: 'Resistente al tránsito pesado y a los ácidos.',
+    imagen: {
+      src: '/obras/ribarroja-pulido-gris.jpg',
+      alt: 'Planta de aparcamiento cubierta con solera de hormigón pulido gris entre pilares.',
+      tipo: 'final' as const,
+    },
+  },
 ]
 
 const servicios = [
@@ -90,27 +139,22 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="relative">
-          <BloquePosicion
+        <div className="flex flex-col gap-4">
+          {/* En móvil el h1 va delante de la foto, no encima: sobre una imagen
+              el contraste deja de ser comprobable y el sistema no tiene velo. */}
+          <h1 className="md:hidden font-display font-extrabold fs-hero text-46 leading-[1.05] text-tinta m-0">
+            Hormigón que se ve bien 20 años después
+          </h1>
+          {/* Una sola imagen para los dos anchos: `display:none` no evita la
+              descarga, así que dos <Image> serían dos descargas. */}
+          {/* La 4/3 de escritorio es el hueco grande: va la foto apaisada, que
+              es 1200×900 y encaja sin recorte. En móvil se recorta a 3/4. */}
+          <Foto
+            imagen={proyectoHero.imagenes[0]}
             proporcion="3/4"
-            className="md:hidden"
-            etiqueta={
-              <EtiquetaTecnica
-                lineas={['MONCADA · VALENCIA', 'IMPRESO · MODELO ESPIGA · COLOR 117', <>
-                  <DatoPendiente>180</DatoPendiente> m² · 2025
-                </>]}
-              />
-            }
-          >
-            <div className="absolute top-6 left-4 right-4">
-              <h1 className="font-display font-extrabold fs-hero text-46 leading-[1.05] text-tinta m-0">
-                Hormigón que se ve bien 20 años después
-              </h1>
-            </div>
-          </BloquePosicion>
-          <BloquePosicion
-            proporcion="4/3"
-            className="hidden md:block md:min-h-[660px] md:h-full"
+            prioridad
+            tamanos="(min-width: 768px) 50vw, 100vw"
+            className="md:aspect-[4/3] md:min-h-[660px] md:h-full"
             etiqueta={
               <EtiquetaTecnica
                 lineas={['MONCADA · VALENCIA', 'IMPRESO · MODELO ESPIGA · COLOR 117', <>
@@ -160,7 +204,12 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 md:grid-rows-2 gap-[2px] bg-tinta p-[2px]">
             {espacios.map((e) => (
               <div key={e.titulo} className="bg-fondo flex md:flex-col gap-4 md:gap-3">
-                <BloquePosicion proporcion="4/3" className="w-[76px] h-[76px] md:w-full md:h-auto shrink-0" />
+                <Foto
+                  imagen={e.imagen}
+                  proporcion="4/3"
+                  tamanos="(min-width: 768px) 30vw, 76px"
+                  className="w-[76px] h-[76px] md:w-full md:h-auto shrink-0"
+                />
                 <div className="flex flex-col gap-1 py-2 md:py-0 md:px-4 md:pb-4">
                   <h3 className="font-display font-bold fs-h3 text-16 md:text-20 m-0">{e.titulo}</h3>
                   <p className="text-14 md:text-16 text-tinta-media m-0">{e.texto}</p>
@@ -219,7 +268,11 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {servicios.map((s) => (
               <Link key={s.id} href={RUTA_SERVICIO[s.id]} className="flex flex-col gap-3 no-underline">
-                <BloquePosicion proporcion="16/10" />
+                <Foto
+                  imagen={SERVICIOS[s.id].imagenTarjeta}
+                  proporcion="16/10"
+                  tamanos="(min-width: 768px) 30vw, 100vw"
+                />
                 <h3 className="font-display font-bold fs-h3 text-20 md:text-26 text-tinta m-0">
                   {NOMBRE_SERVICIO[s.id]}
                 </h3>

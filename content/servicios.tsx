@@ -3,7 +3,7 @@ import DatoPendiente from '@/components/datos/DatoPendiente'
 import type { OpcionUso } from '@/components/secciones/Calculadora'
 import type { PreguntaFAQ } from '@/components/secciones/Acordeon'
 import { PREGUNTAS } from '@/content/faq'
-import type { ServicioId } from '@/lib/tipos'
+import type { Imagen, ServicioId } from '@/lib/tipos'
 
 /**
  * Contenido de las seis páginas de servicio. Antes solo existía `/hormigon-impreso/`,
@@ -32,6 +32,10 @@ export type Servicio = {
   h1: string
   entradilla: string
   etiquetaHero: string[]
+  /** Hero de la página de servicio. Sin ella el hueco vuelve a `<BloquePosicion>`. */
+  imagenHero?: Imagen
+  /** Tarjeta del servicio en la home. Distinta de la del hero a propósito. */
+  imagenTarjeta?: Imagen
   /** Solo donde hay copy aprobado que lo respalde. Si no, la sección no se renderiza. */
   aplicaciones?: { intro: string; lista: Aplicacion[] }
   fichaTecnica: { etiqueta: string; valor: ReactNode }[]
@@ -90,6 +94,16 @@ export const SERVICIOS: Record<ServicioId, Servicio> = {
     entradilla:
       'Textura de piedra natural, adoquín o madera sobre una solera continua. Sin juntas donde crezca la hierba, sin baldosas que se levanten y con un mantenimiento que se reduce a barrer.',
     etiquetaHero: ['IMPRESO', 'ESPESOR 10 CM · HA-25 · EHE-08'],
+    imagenHero: {
+      src: '/obras/_sin-atribuir/WhatsApp-Image-2021-07-23-at-10.36.09-3.jpeg',
+      alt: 'Solárium de hormigón impreso ocre alrededor de una piscina, con un olivo plantado en un alcorque y pinar al fondo.',
+      tipo: 'final',
+    },
+    imagenTarjeta: {
+      src: '/obras/_sin-atribuir/hormigon-impreso-economico-valencia.jpg',
+      alt: 'Acceso de hormigón impreso de tono rojizo entre setos recortados, ante la puerta de un garaje.',
+      tipo: 'final',
+    },
     aplicaciones: {
       intro:
         'El impreso es el acabado que mejor funciona en exterior. Es impermeable, aguanta el paso de coches, resiste manchas de grasa y aceite y no se decolora con el sol si lleva el sellado adecuado.',
@@ -142,6 +156,16 @@ export const SERVICIOS: Record<ServicioId, Servicio> = {
     h1: 'Hormigón pulido en Valencia, Castellón y Alicante',
     entradilla: 'Superficie lisa y brillante. De la nave industrial al salón de casa.',
     etiquetaHero: ['PULIDO', 'HA-25 · EHE-08'],
+    imagenHero: {
+      src: '/obras/_sin-atribuir/WhatsApp-Image-2023-08-22-at-09.08.17-1.jpeg',
+      alt: 'Interior diáfano con solera de hormigón pulido gris que refleja el ventanal como un espejo.',
+      tipo: 'final',
+    },
+    imagenTarjeta: {
+      src: '/obras/_sin-atribuir/pavimento-hormigon-pulido-castellon-1.jpg',
+      alt: 'Terraza de hormigón pulido claro ante una vivienda blanca de líneas rectas.',
+      tipo: 'final',
+    },
     aplicaciones: {
       intro:
         'Es el acabado de interior y de gran superficie: continuo, sin juntas donde se acumule suciedad y con la resistencia de una solera de hormigón.',
@@ -180,6 +204,16 @@ export const SERVICIOS: Record<ServicioId, Servicio> = {
     h1: 'Microcemento en Valencia, Castellón y Alicante',
     entradilla: 'Renueva suelos y paredes sin levantar lo que ya tienes.',
     etiquetaHero: ['MICROCEMENTO', 'SOBRE SOPORTE EXISTENTE'],
+    imagenHero: {
+      src: '/obras/_sin-atribuir/microcemento-4.jpg',
+      alt: 'Estancia con suelo y banco corrido de microcemento gris, con láminas enmarcadas en la pared.',
+      tipo: 'final',
+    },
+    imagenTarjeta: {
+      src: '/obras/_sin-atribuir/microcemento-valencia-1.jpg',
+      alt: 'Encimera de baño de microcemento con dos lavabos sobre encimera y frente continuo sin juntas.',
+      tipo: 'final',
+    },
     aplicaciones: {
       intro:
         'Es el único de los seis que no necesita solera nueva: se aplica sobre azulejo, terrazo o gres sin picar nada, así que no hay escombro ni obra.',
@@ -222,6 +256,16 @@ export const SERVICIOS: Record<ServicioId, Servicio> = {
     h1: 'Hormigón lavado en Valencia, Castellón y Alicante',
     entradilla: 'Árido visto, antideslizante. Ideal para zonas de paso y piscinas.',
     etiquetaHero: ['LAVADO', 'ÁRIDO VISTO · CLASE 3'],
+    imagenHero: {
+      src: '/obras/_sin-atribuir/hormigon-lavado-2.jpg',
+      alt: 'Dos paños contiguos de hormigón lavado, uno de árido oscuro y otro dorado, separados por una banda de piedra.',
+      tipo: 'detalle',
+    },
+    imagenTarjeta: {
+      src: '/obras/godella-lavado-gris-2.jpg',
+      alt: 'Paseo de hormigón lavado con árido visto entre dos franjas de césped.',
+      tipo: 'final',
+    },
     faq: FAQ_SOLERA,
     aplicaciones: {
       intro:
@@ -248,6 +292,16 @@ export const SERVICIOS: Record<ServicioId, Servicio> = {
     h1: 'Hormigón fratasado en Valencia, Castellón y Alicante',
     entradilla: 'Acabado fino y mate. Sobrio, moderno y económico.',
     etiquetaHero: ['FRATASADO', 'HA-25 · EHE-08'],
+    imagenHero: {
+      src: '/obras/_sin-atribuir/5da4504f-2c7e-4fee-897b-fe0ed0a4a3a1.jpeg',
+      alt: 'Porche cubierto con solera de hormigón fratasado claro, con sofás y el jardín al fondo.',
+      tipo: 'final',
+    },
+    imagenTarjeta: {
+      src: '/obras/_sin-atribuir/4d88392b-d7b1-4d77-900b-82db9f0ecd29.jpeg',
+      alt: 'Contorno de piscina de hormigón fratasado en tono tostado ante una vivienda encalada.',
+      tipo: 'final',
+    },
     faq: FAQ_SOLERA,
     fichaTecnica: [
       { etiqueta: 'ESPESOR', valor: <><DatoPendiente>espesor</DatoPendiente> cm</> },
@@ -267,6 +321,16 @@ export const SERVICIOS: Record<ServicioId, Servicio> = {
     h1: 'Hormigón desactivado en Valencia, Castellón y Alicante',
     entradilla: 'Piedra vista con la resistencia de una solera.',
     etiquetaHero: ['DESACTIVADO', 'PIEDRA VISTA · HA-25'],
+    imagenHero: {
+      src: '/obras/_sin-atribuir/791ae455-ca8a-4ae9-a9fb-5d01ca9b554b.jpeg',
+      alt: 'Rampa de hormigón desactivado con la piedra vista, entre muros de mampostería, ante la entrada de una vivienda.',
+      tipo: 'final',
+    },
+    imagenTarjeta: {
+      src: '/obras/_sin-atribuir/184fae6c-4c1c-464b-96dc-c44e906e2b64.jpeg',
+      alt: 'Primer plano del árido de un hormigón desactivado, con los cantos rodados al descubierto.',
+      tipo: 'detalle',
+    },
     faq: FAQ_SOLERA,
     fichaTecnica: [
       { etiqueta: 'ESPESOR', valor: <><DatoPendiente>espesor</DatoPendiente> cm</> },
