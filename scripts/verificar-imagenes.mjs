@@ -119,6 +119,7 @@ const estrechas = [] // por debajo del suelo: error
 const heroEstrechos = [] // a sangre por debajo de 1600: error
 const bajoObjetivo = [] // por debajo del objetivo: aviso, no error
 const ilegibles = []
+let medidas = 0 // las que se han podido medir: el denominador del aviso
 
 for (const [src, donde] of referencias) {
   const ruta = resolve(raiz, 'public', src.slice(1))
@@ -132,6 +133,7 @@ for (const [src, donde] of referencias) {
     ilegibles.push(src)
     continue
   }
+  medidas++
   if (ancho < SUELO) estrechas.push([src, ancho, donde])
   else if (aSangre.has(src) && ancho < A_SANGRE) heroEstrechos.push([src, ancho, donde])
   if (ancho < OBJETIVO) bajoObjetivo.push([src, ancho])
@@ -182,9 +184,10 @@ if (ilegibles.length) {
   console.log(`  ⚠ ${ilegibles.length} de formato no legible por este script: ${ilegibles.join(', ')}`)
 }
 if (bajoObjetivo.length) {
-  const total = referencias.size
+  // El denominador son las MEDIDAS, no las referenciadas: un SVG o un formato que
+  // este script no sabe leer no ha superado el objetivo, simplemente no cuenta.
   console.log(
-    `  ⚠ ${total - bajoObjetivo.length}/${total} llegan al objetivo de ${OBJETIVO} px; ` +
+    `  ⚠ ${medidas - bajoObjetivo.length}/${medidas} llegan al objetivo de ${OBJETIVO} px; ` +
       `${bajoObjetivo.length} no. Reparto y detalle en public/obras/INVENTARIO.md`,
   )
 }

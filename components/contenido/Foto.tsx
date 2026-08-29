@@ -4,7 +4,7 @@ import type { Imagen } from '@/lib/tipos'
 import BloquePosicion, { PROPORCIONES } from './BloquePosicion'
 
 /**
- * Fotografía de obra (01-sistema-de-diseno.md §3.12).
+ * Fotografía de obra (01-sistema-de-diseno.md §3.11).
  *
  * Sin `imagen` cae en `<BloquePosicion>`: la ausencia de original sigue siendo
  * visible, no se maquilla. Por eso todas las pantallas usan este componente y
