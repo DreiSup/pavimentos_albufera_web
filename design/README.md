@@ -160,7 +160,8 @@ Sin gestor de estado global. Sin cliente de datos: todo llega por props desde el
 
 ## 10. Fotografía — regla innegociable (§8.5)
 
-**Cero fotos de stock de personas.** Solo entra: obra terminada a 2400 px mínimo de ancho,
+**Cero fotos de stock de personas.** Solo entra: obra terminada a 1600 px mínimo de ancho
+(suelo duro 800 px — `design/05` §C #13, que supersede los 2400 px del documento maestro),
 obra en ejecución, detalle macro de textura para el muestrario, y equipo real si están dispuestos.
 
 Mientras no lleguen los originales, **no se usan imágenes provisionales**: se usa el

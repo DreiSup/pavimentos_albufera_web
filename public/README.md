@@ -34,8 +34,11 @@ archivo de Next 15 y van en `app/` (`icon.svg`, `apple-icon.png`, `opengraph-ima
 - **El nombre del archivo nunca aparece en pantalla.** El `alt` es descriptivo y obligatorio:
   describe lo que se ve en la foto, no los datos del proyecto que la origina.
   `scripts/verificar-imagenes.mjs` falla el build si falta.
-- Originales a 2400 px de ancho mínimo. Se sube el original; `next/image` genera AVIF y WebP.
-  ⚠️ Ninguna de las 125 fotos heredadas de la web viva lo cumple. Ver `obras/INVENTARIO.md`.
+- **Anchos mínimos, verificados en el build** (`design/05` §C #13):
+  **suelo 800 px** y **1600 px si la imagen va a sangre** —hoy los `imagenHero` de
+  `content/servicios.tsx`— fallan el build. **Objetivo 1600 px** para toda foto nueva: no falla,
+  se informa. Se sube el original; `next/image` genera AVIF y WebP.
+  ⚠️ 19 de las 35 publicadas no llegan al objetivo, y son las de obra. Ver `obras/INVENTARIO.md`.
 - Sin fotos de stock. Mientras falte el original, la pantalla usa `<BloquePosicion>`.
 - El logotipo **no** sustituye al del sitio: la cabecera y el pie lo componen con tipografía
   (`design/01-sistema-de-diseno.md §logo`).

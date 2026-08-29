@@ -303,7 +303,7 @@ background: #DADCD6
 background-image: repeating-linear-gradient(45deg,
   rgba(27,30,28,0.05) 0 8px, transparent 8px 18px)     ← 0 6px / 6px 14px en bloques pequeños
 etiqueta  Martian Mono 11px · color: #5C625E · letter-spacing: 0.05em
-          texto:  PENDIENTE · ORIGINAL A 2400 PX
+          texto:  PENDIENTE · ORIGINAL A 1600 PX
 + etiqueta técnica (3.8) sobrepuesta cuando el bloque representa una obra concreta
 ```
 

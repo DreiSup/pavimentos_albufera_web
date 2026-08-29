@@ -47,7 +47,7 @@ La especificación completa está en `design/`. **Léela antes de escribir códi
 - Cada `[corchete]` sustituido por un dato real es un commit que además elimina su tratamiento
   visual.
 
-## Estado — actualizado 2026-08-28
+## Estado — actualizado 2026-08-29
 
 Auditoría del repo contra el plan de medición, y su implementación. Build, lint y `tsc` limpios;
 **47 rutas, todas estáticas**.
@@ -123,19 +123,28 @@ proyecto: no hay dato nuevo.
 - 🔴 **`next build` tampoco valida el `src` de `next/image`.** Un `src` mal escrito compila limpio
   y en producción es un hueco vacío. `scripts/verificar-imagenes.mjs` corre en `postbuild`, junto al
   de las redirecciones, y falla el build.
-- ⚠️ **Se publica por debajo de los 2400 px.** Ninguna de las 125 los alcanza. `design/05` §A1 llama
-  a eso bloqueante de publicación: o se revisa el umbral o hay sesión nueva. La etiqueta del bloque
-  de posición —«PENDIENTE · ORIGINAL A 2400 PX»— sigue siendo cierta donde aparece.
+- ✅ **El umbral fotográfico ya no es una cifra inalcanzable.** `design/05` §C #13 (2026-08-29)
+  retira los 2400 px —que **ninguna de las 164 originales cumple**— y pone tres, verificados
+  midiendo el archivo: **suelo 800 px** y **1600 px a sangre** fallan el build; **objetivo 1600 px**
+  solo informa. La etiqueta del bloque de posición dice ahora «ORIGINAL A 1600 PX».
+- 🔴 **Y el número que hay que mirar no es cuántas cumplen, sino cuáles no.** Las 19 de 35 que no
+  llegan al objetivo son **las de obra documentada** —898 a 1200 px, salvo Denia a 2048— y son
+  justo las que `app/proyectos/[slug]/page.tsx:61` sirve **a sangre**, `sizes="100vw"` en 21/9.
+  Las de 1600+ son casi todas de `_sin-atribuir/`: **la foto que mejor se ve es la que menos se
+  puede afirmar.** Eso, y no el umbral, es lo que justifica una sesión nueva.
 - El presupuesto de JS sube de **111 a 116 kB** en la home. Ya estaba por encima de los 100 KB
   antes de esta sesión (103 kB solo de chunk compartido); `next/image` añade ~5 kB.
 
 ### Pendiente, y no es código
 
 - 🔴 **Propiedad GA4 propia** (no la de la web viva: es otro negocio) + dimensiones registradas.
-- 🔴 **Bloqueante de los 2400 px:** ninguna de las 164 fotos de la web viva lo cumple —solo 1 lo
-  supera y es un fondo de plantilla; 77 están por debajo de 1200 px. Hay que revisar el umbral o
-  hacer sesión nueva. **La web ya está publicando con ellas.**
+- 🔴 **Sesión fotográfica de las 8 obras documentadas, a 1600 px o más.** Ya no es «revisar el
+  umbral» —eso está decidido—, es material que falta y tiene destinatario concreto: las fotos que
+  van a sangre en `/proyectos/[slug]/`.
 - 🔴 **`xabia-pulido` está publicado sin ninguna foto**, y no hay ninguna candidata en la mediateca.
+  **Decidido el 2026-08-29: se queda con el hueco honesto de `<BloquePosicion>`.** Retirarlo no era
+  borrar una entrada de `proyectos.json`: `/zonas/xabia/` cuelga solo de él y es destino de la 301
+  de `/hormigon-pulido-en-xabia/`, así que quitarlo degradaba una URL de zona a una de servicio.
 - 🔴 **Pistas de pádel en la mediateca de Pavimentos:** las 8 fotos más nuevas de la web viva son de
   Padel Albufera. No se usan aquí. Es del dueño saber por qué están ahí.
 - ⚠️ **`impreso-manta-gris`:** sus dos fotos no enseñan la textura de roca de montaña que anuncia el

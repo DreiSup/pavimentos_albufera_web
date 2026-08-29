@@ -23,8 +23,12 @@ De las **164** imágenes de la mediateca quedan **125** aquí. Se descartaron:
 
 ## 🔴 Lo que hay que saber antes de usarlas
 
-**Ninguna cumple el mínimo de 2400 px que fija `design/05` §A1 como bloqueante de publicación.**
-De las 164 originales solo una lo supera, y es un fondo de plantilla. El reparto real por ancho:
+✅ **El umbral se revisó el 2026-08-29 y ya no es bloqueante de publicación.** `design/05` §C #13
+sustituye los 2400 px por tres umbrales —suelo 800, a sangre 1600, objetivo 1600— y
+`scripts/verificar-imagenes.mjs` los comprueba **midiendo el archivo**, no leyendo el nombre.
+
+**Ninguna de las 164 llega a los 2400 px de antes.** Solo una lo supera, y es un fondo de plantilla.
+El reparto de las 164 originales:
 
 | Ancho | Nº |
 |---|---|
@@ -33,8 +37,28 @@ De las 164 originales solo una lo supera, y es un fondo de plantilla. El reparto
 | 1200 – 1600 px | 40 |
 | < 1200 px | 77 |
 
-O se revisa ese umbral, o se ejecuta la alternativa que el propio `design/05` §D ya prevé: sesión
-fotográfica nueva en 2-3 obras recientes.
+⚠️ **Ese reparto engaña, porque no es el de las que se publican.** De las **125 copiadas a `public/`**,
+38 llegan a 1600 px y **ninguna a 2400**; de las **35 que la web cita de verdad**, 16 llegan a 1600 y
+19 no. Medido con el mismo lector de cabeceras que usa el build.
+
+🔴 **Y el dato que importa no es cuántas, sino cuáles.** Las 19 que no llegan son **las de obra
+documentada**, que son precisamente las que van a sangre:
+
+| Foto de proyecto | Ancho |
+|---|---|
+| `denia-impreso-piedra-inglesa-gris.jpg` | 2048 |
+| `moncada-impreso-espiga-117-2025{,-2,-3}.jpg` · `alzira-…-107-2.jpg` · `impreso-manta-gris-2.jpg` | 1200 |
+| `ribarroja-pulido-gris.jpg` | 960 |
+| `moraira-…-2025.jpg` · `godella-lavado-gris{,-2}.jpg` · `alzira-…-107.jpg` · `corbera-…-2.jpg` · `impreso-manta-gris.jpg` | 900 |
+| `corbera-fratasado-arena.jpg` | 898 |
+
+`app/proyectos/[slug]/page.tsx:61` las sirve a `sizes="100vw"` en 21/9. **Las de 1600 px o más son
+casi todas de `_sin-atribuir/`**, o sea que la foto que mejor se ve es la que menos se puede afirmar,
+y la que sí se puede fechar y situar es la que peor se ve.
+
+**Eso es lo que justifica la sesión fotográfica nueva que `design/05` §D prevé**, y le da objetivo
+concreto: las 8 obras documentadas, a 1600 px o más. No es «faltan fotos» — es que sobran fotos
+anónimas y faltan las de las obras que sí se pueden nombrar.
 
 **`xabia-pulido` no tiene ninguna foto.** Se buscó «xabia», «xàbia», «javea» y «jábea» en nombre,
 `title` y `alt` de las 164: cero coincidencias. El proyecto está publicado en el sitemap igualmente.
@@ -87,9 +111,9 @@ piedra rodena y la de microcemento— sale del `title` de la mediateca de WordPr
 Sostiene la afirmación que hace la pantalla (solo el modelo), no más: por eso ninguna de ellas
 entra como muestra de un acabado, que sí lleva el código de color impreso al lado.
 
-⚠️ **Y siguen sin cumplir los 2400 px.** Que ahora se vean no cambia el reparto de resoluciones
-de más arriba: la web se publica con fotos por debajo del umbral que `design/05` §A1 llama
-bloqueante. O se revisa el umbral o hay sesión nueva. Es decisión, no código.
+✅ **Y ya no chocan contra un umbral inalcanzable:** el de 2400 px se retiró el 2026-08-29
+(`design/05` §C #13). Siguen por debajo del **objetivo** de 1600 px, que el build informa sin fallar;
+lo que no pueden es bajar del suelo de 800 ni ir a sangre por debajo de 1600, y eso sí falla.
 
 ## Material que abre trabajo
 

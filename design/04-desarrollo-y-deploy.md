@@ -227,7 +227,8 @@ WhatsApp con mensaje predefinido:
 - `priority` **solo** en la imagen del hero de cada página.
 - `alt` descriptivo obligatorio: *«Entrada de garaje en Moncada con hormigón impreso modelo
   espiga en color 117»*. Nunca el nombre del archivo.
-- Originales a 2400 px de ancho mínimo. **Bloqueante:** los de producción están a 500×400.
+- Anchos mínimos: **suelo 800 px**, y **1600 px** para toda imagen a sangre. `design/05` §C #13
+  fija los tres umbrales y `scripts/verificar-imagenes.mjs` los verifica en el build.
 - Mientras falten, `<BloquePosicion>` — no imágenes provisionales de stock.
 - Se guardan en `public/` por concepto (`obras/`, `acabados/`, `blog/`, `marca/`) y se nombran
   según `public/README.md`. Se sube el original: `next/image` genera los formatos y tamaños.

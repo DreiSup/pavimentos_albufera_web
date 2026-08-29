@@ -31,7 +31,7 @@ export default function BloquePosicion({
       className={`relative trama ${fina ? 'trama-fina' : ''} ${PROPORCIONES[proporcion]} ${className}`}
     >
       <span className="absolute top-3 left-3 font-mono text-d-11 tracking-[0.05em] text-tinta-media">
-        PENDIENTE · ORIGINAL A 2400 PX
+        PENDIENTE · ORIGINAL A 1600 PX
       </span>
       {etiqueta ? <div className="absolute bottom-0 right-0">{etiqueta}</div> : null}
       {children}
