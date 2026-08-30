@@ -82,6 +82,8 @@ caucho) y las 5 páginas de servicio restantes, que se derivan de la plantilla d
 | `03-modelo-de-contenido.md` | Tipos TypeScript, catálogo real y datos de las obras |
 | `04-desarrollo-y-deploy.md` | Estructura Next.js, redirecciones 301, schema, GitHub y Vercel |
 | `05-pendientes-y-decisiones.md` | Datos sin confirmar y decisiones de diseño tomadas |
+| `06-plan-rendimiento-y-medicion.md` | 🆕 Plan ejecutable de velocidad, GA4/Meta/Ads y landings de campaña, por olas |
+| `07-auditoria-decisiones-y-veredictos.md` | 🆕 El porqué del 06: las 8 decisiones arbitradas y los veredictos de landings |
 | `tokens.css` | Variables CSS listas para pegar |
 | `tailwind.config.ts` | Configuración de Tailwind con los tokens |
 | `data/acabados.json` | 16 acabados del muestrario, con obra asociada |

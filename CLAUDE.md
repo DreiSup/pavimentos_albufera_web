@@ -9,6 +9,8 @@ La especificación completa está en `design/`. **Léela antes de escribir códi
 - `design/03-modelo-de-contenido.md` — tipos, catálogo real, datos de obra
 - `design/04-desarrollo-y-deploy.md` — rutas, redirecciones 301, schema, despliegue
 - `design/05-pendientes-y-decisiones.md` — datos sin confirmar y decisiones tomadas
+- `design/06-plan-rendimiento-y-medicion.md` — plan por olas: velocidad, medición y landings
+- `design/07-auditoria-decisiones-y-veredictos.md` — el porqué del 06
 - `design/Pavimentos Albufera.dc.html` — prototipo. **Referencia visual, no código a copiar**
 
 ## Reglas de este proyecto
@@ -47,7 +49,42 @@ La especificación completa está en `design/`. **Léela antes de escribir códi
 - Cada `[corchete]` sustituido por un dato real es un commit que además elimina su tratamiento
   visual.
 
-## Estado — actualizado 2026-08-29
+## Estado — actualizado 2026-08-30
+
+### 🆕 Auditoría de rendimiento y medición → `design/06`
+
+El repo se ha auditado entero contra el encargo de velocidad + Google Ads + Facebook Ads.
+**61 agentes, 132 hallazgos (24 críticos), 502 veredictos adversariales.** El plan ejecutable
+está en `design/06-plan-rendimiento-y-medicion.md` y el porqué de sus decisiones en `design/07`.
+
+🔴 **Nada del plan está ejecutado todavía, y el dueño no ha visto ni un hallazgo.** Antes de
+tocar código, leer la sección «Cómo se hizo este plan» del 06: dice qué no está verificado.
+La prueba 1.25 en un iPhone real es lo primero, porque si falla se cae el mecanismo primario
+de toda la arquitectura de medición.
+
+Los cuatro hallazgos que reordenan el trabajo:
+
+- 🔴 **`/proyectos/` y `/acabados/` sirven un HTML sin contenido.** `useSearchParams()` en los
+  filtros bota la frontera a cliente: **0 `<img>`** en su HTML frente a 23 en la home. Las 9
+  tarjetas de obra y las 16 muestras, con sus 25 enlaces internos, no existen hasta que hidratan
+  ~124 kB. De esos dos índices cuelgan 17 de las 47 rutas.
+- 🔴 **El hash del teléfono que va a Meta CAPI no lleva prefijo de país.** Empareja **0 % en el
+  100 % de los envíos**. Es el único dato fuerte que este negocio captura siempre.
+- 🔴 **Todo lo que mide llamadas y WhatsApp vive en `useEffect`**, y los CTA se pintan en servidor.
+  En esa ventana un toque pierde el evento, el `reference_code` y el `gclid`. Decisión tomada:
+  se mide con el atributo HTML **`ping`** contra `app/api/evento/route.ts`, que **funciona sin
+  hidratar**; `sendBeacon` queda de respaldo. → `design/07`
+- 🔴 **El honeypot fabrica las conversiones falsas que debía evitar:** devuelve éxito y el cliente
+  dispara `form_submit` y `Lead` desde ahí. Y el `catch` de Resend hace `return`, así que un fallo
+  de email cancela también Telegram y CAPI, sin ningún punto previo donde el lead quede grabado.
+
+⚠️ **El presupuesto de 100 KB queda retirado por inalcanzable** y se sustituye por brotli q11 con
+techo duro de 112 kB por ruta. Nadie había fijado la unidad: se llevaba meses midiendo contra un
+número que no existía. → `design/07`
+
+---
+
+### Estado anterior — 2026-08-29
 
 Auditoría del repo contra el plan de medición, y su implementación. Build, lint y `tsc` limpios;
 **47 rutas, todas estáticas**.
