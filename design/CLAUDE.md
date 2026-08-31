@@ -38,8 +38,27 @@ La especificación completa está en `design/`. **Léela antes de escribir códi
 **Técnica**
 
 - Componentes de servidor por defecto. `'use client'` solo donde hay estado real.
-- Presupuesto de JS inicial: **100 KB comprimido**. Sin librerías de animación, de iconos ni de
-  formularios.
+- **Presupuesto de JS inicial — unidad fijada el 2026-08-30.** Se mide en **brotli q11**, sumando
+  archivo a archivo los `<script src>` sin `noModule` del HTML prerenderizado de cada ruta. **No es
+  la columna de `next build`:** esa es gzip ‑9 y se calcula sobre `app-build-manifest.json`, que
+  omite `chunks/444` y `chunks/app/layout` —7,5 kB brotli por ruta que las 45 páginas sí descargan.
+  Tampoco se concatenan los archivos antes de comprimir: cada chunk es una respuesta HTTP
+  independiente. El payload RSC en línea (`self.__next_f.push`, 68,9 kB crudos en la home) son
+  bytes de HTML y quedan fuera de este número a propósito.
+  - Suelo del framework con 0 B propios: **86,5 kB**. Suelo real del sitio, con `chunks/444` y
+    `chunks/app/layout`, que las 45 rutas piden: **94,0 kB**.
+  - Hoy: 97,1 kB las tres legales · 99,3 `/precios` · 105,7 la home · 107,1 las seis de servicio
+    (máximo del sitio).
+  - **Techo duro, rompe el build: 112 kB por ruta. Objetivo informativo: 105 kB.**
+  - El presupuesto viejo de **cien kilobytes queda retirado**: con 94,0 kB de suelo dejaba 6 kB
+    para todo el código propio del proyecto.
+  - El **JS de terceros va aparte** y hoy es 0. `gtag.js` (146,9 kB br) y `fbevents.js`
+    (110,1 kB br) no entran nunca en este número.
+  - El techo es un detector de regresión determinista sobre nuestro bundle, no una afirmación
+    sobre los bytes que entrega el CDN: Vercel no documenta su calidad de brotli. Con un preview
+    desplegado se contrasta el `content-length` de
+    `curl -sI -H 'Accept-Encoding: br' <preview>/_next/static/chunks/4bd1b696-*.js` contra 46.749.
+- Sin librerías de animación, de iconos ni de formularios.
 - `trailingSlash: true` fijo.
 - Sin `AggregateRating` mientras no haya reseñas verificables.
 - 44 px de objetivo táctil, foco de teclado visible siempre, contraste AA,

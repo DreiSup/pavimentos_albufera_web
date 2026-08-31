@@ -56,7 +56,6 @@ const config: Config = {
         'lat-movil': '18px',
         'lat-desktop': '48px',
         cabecera: '84px',
-        'cabecera-scroll': '60px',
       },
       maxWidth: { lectura: '68ch', contenido: '1344px' },
       transitionDuration: { cabecera: '150ms' },

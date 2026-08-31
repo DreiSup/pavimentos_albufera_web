@@ -1,0 +1,26 @@
+{
+  "ci": {
+    "collect": {
+      "startServerCommand": "npm run start -- --port 4173",
+      "startServerReadyPattern": "Ready in",
+      "startServerReadyTimeout": 60000,
+      "numberOfRuns": 3,
+      "url": [
+        "http://localhost:4173/",
+        "http://localhost:4173/hormigon-impreso/",
+        "http://localhost:4173/proyectos/",
+        "http://localhost:4173/acabados/",
+        "http://localhost:4173/acabados/?tecnica=impreso",
+        "http://localhost:4173/proyectos/denia-impreso-piedra-inglesa/",
+        "http://localhost:4173/proyectos/xabia-pulido/",
+        "http://localhost:4173/acabados/espiga/",
+        "http://localhost:4173/presupuesto/"
+      ]
+    },
+    "upload": {
+      "target": "filesystem",
+      "outputDir": "./informes-lighthouse",
+      "reportFilenamePattern": "%%PATHNAME%%-%%DATETIME%%.report.%%EXTENSION%%"
+    }
+  }
+}

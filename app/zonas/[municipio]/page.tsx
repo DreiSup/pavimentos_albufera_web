@@ -26,10 +26,16 @@ export async function generateMetadata({
   const { municipio } = await params
   const zona = zonaPorSlug(municipio)
   if (!zona) return {}
+  // Una zona sin ninguna foto de obra es lo que Google llama «doorway abuse»: la página
+  // se sirve igual —es destino de 301— pero no se pide que se indexe. Los enlaces sí se
+  // siguen. Se mira el conjunto de proyectos, no solo el primero: el hueco del hero no
+  // basta para retirar del índice una zona que sí tiene obra fotografiada más abajo.
+  const sinFoto = !proyectosDe(zona.proyectos).some((p) => p.imagenes.length > 0)
   return {
     title: `Pavimentos de hormigón en ${zona.municipio}`,
     description: `Obra real de hormigón ejecutada en ${zona.municipio}, ${zona.provincia}. Servicios, acabados y proyectos documentados.`,
     alternates: { canonical: `/zonas/${zona.slug}/` },
+    ...(sinFoto ? { robots: { index: false, follow: true } } : {}),
   }
 }
 
@@ -41,6 +47,17 @@ export default async function PaginaZona({ params }: { params: Promise<{ municip
   const proyectos = proyectosDe(zona.proyectos)
   const acabadosZona = acabados.filter((a) => a.proyectos.some((slug) => zona.proyectos.includes(slug)))
   const primerProyecto = proyectos[0]
+
+  // El hero de la zona es la primera foto del primer proyecto, y esa MISMA foto
+  // vuelve a salir más abajo en su tarjeta de obra y —cuando el acabado la usa
+  // de muestra— en el muestrario. Con tres `sizes` distintos son tres
+  // peticiones a `/_next/image?` del mismo JPEG en la misma pantalla. Los dos
+  // huecos de abajo adoptan el `sizes` del hero, que ya se descarga con
+  // `prioridad`: salen de su caché en vez de abrir una descarga propia. Nunca al
+  // revés — degradar el `sizes` del hero serviría 1080 px en una caja de 1440
+  // sobre el LCP de estas ocho rutas.
+  const TAMANOS_HERO = '(min-width: 768px) 50vw, 100vw'
+  const fotoHero = primerProyecto?.imagenes[0]?.src
 
   return (
     <>
@@ -61,7 +78,7 @@ export default async function PaginaZona({ params }: { params: Promise<{ municip
           imagen={primerProyecto?.imagenes[0]}
           proporcion="4/3"
           prioridad
-          tamanos="(min-width: 768px) 50vw, 100vw"
+          tamanos={TAMANOS_HERO}
           etiqueta={
             primerProyecto ? (
               <EtiquetaTecnica lineas={[`${zona.municipio.toUpperCase()} · ${zona.provincia.toUpperCase()}`]} />
@@ -77,7 +94,11 @@ export default async function PaginaZona({ params }: { params: Promise<{ municip
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {proyectos.map((p) => (
-              <TarjetaProyecto key={p.slug} proyecto={p} />
+              <TarjetaProyecto
+                key={p.slug}
+                proyecto={p}
+                tamanos={p.imagenes[0]?.src === fotoHero ? TAMANOS_HERO : undefined}
+              />
             ))}
           </div>
         </div>
@@ -110,7 +131,11 @@ export default async function PaginaZona({ params }: { params: Promise<{ municip
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-[14px_10px] md:gap-[32px_24px]">
               {acabadosZona.map((a) => (
-                <MuestraAcabado key={a.slug} acabado={a} />
+                <MuestraAcabado
+                  key={a.slug}
+                  acabado={a}
+                  tamanos={a.muestra?.src === fotoHero ? TAMANOS_HERO : undefined}
+                />
               ))}
             </div>
           </div>

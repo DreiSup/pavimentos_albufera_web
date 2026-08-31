@@ -4,6 +4,45 @@ const nextConfig: NextConfig = {
   trailingSlash: true,
   images: {
     formats: ['image/avif', 'image/webp'],
+    // El defecto de Next menos 3840, más 1536. `imageSizes` se deja sin declarar:
+    // su defecto sirve, y ningún `sizes` del repo pide un peldaño que no cubra.
+    // 3840 sobra. La foto más ancha del repo son 2048 px, y `optimizeImage()`
+    // redimensiona con `withoutEnlargement`, así que w=3840 devuelve el MISMO
+    // archivo que w=2048: `denia-impreso-piedra-inglesa-gris.jpg` da 387,4 kB y
+    // sha256 `ae53a79f134c6e60` en los dos anchos. Es una transformación
+    // facturada que entrega bytes duplicados.
+    // 1536 falta. Con el defecto, el srcset de un `sizes="100vw"` salta de 1200
+    // a 1920, y en ese hueco caen el iPhone Plus (414×3), el Pro Max (430×3),
+    // el tablet retina (768×2) y el portátil de 1440 a DPR 1. En el hero a
+    // sangre de `/proyectos/[slug]/`, que es el LCP, la misma foto pesa 334,5 kB
+    // AVIF a w=1920 y 252,4 kB a w=1536: −82,1 kB, −25 %. Añadir un peldaño no
+    // cuesta bytes nunca: para las fuentes más estrechas que 1536,
+    // `withoutEnlargement` lo deja byte a byte igual a 1920.
+    deviceSizes: [640, 750, 828, 1080, 1200, 1536, 1920, 2048],
+    // `image-optimizer.js` solo valida el parámetro `q` si esta lista existe; el
+    // ancho lo valida siempre. Sin declararla, `/_next/image?…&q=1..100` abre
+    // 16 anchos × 2 formatos × 100 calidades = 3.200 transformaciones
+    // facturables por foto de origen; con la lista, 32. Hoy no cambia ni un
+    // byte servido —nada del repo pasa `quality`, y `Foto.tsx` ni lo acepta ni
+    // lo reenvía—, pero deja fijado el 75 que Next 16 exigirá declarar.
+    // ⚠️ Todo `quality` nuevo hay que añadirlo aquí: fuera de la lista la
+    // petición devuelve un 400 en producción, y el build no avisa.
+    qualities: [75],
+    // El defecto son 60 s: cada foto optimizada revalida cada minuto. El coste
+    // recurrente es una revalidación, no una recodificación, pero son 31 días
+    // de caché de navegador que no se estaban cobrando. 2678400 s = 31 días.
+    // ⚠️ La contrapartida, que no es teórica. Next emite este valor tal cual
+    // como `max-age` del NAVEGADOR (`image-optimizer.js`: `public,
+    // max-age=${maxAge}, must-revalidate`), y las URLs `/_next/image?url=…` no
+    // llevan hash de contenido. El pendiente número uno de CLAUDE.md es la
+    // sesión fotográfica de las 8 obras documentadas, que sustituye esos
+    // ficheros CON EL MISMO NOMBRE: quien ya haya visto la ficha seguiría
+    // viendo la foto vieja hasta 31 días. Con los 60 s de defecto el problema
+    // no existía. Regla que lo cierra, y hay que respetarla: **toda foto
+    // sustituida cambia de nombre de archivo**. Eso obliga a tocar
+    // `content/*.json`, y ahí sí lo ve `scripts/verificar-imagenes.mjs`. Si no
+    // se quiere asumir esa regla, hay que bajar el TTL a días.
+    minimumCacheTTL: 2678400,
   },
   experimental: {
     // El formulario admite una foto de hasta 4 MB. El límite por defecto de los

@@ -84,7 +84,8 @@ export default function MenuMovil({
 
       <div className="mt-8 font-mono text-d-11 text-sobre-tinta leading-[2.2] flex flex-col gap-1">
         <span>{nap.direccionMostrada}</span>
-        <span>{nap.telefono ?? nap.telefonoMostrado}</span>
+        {/* Entre corchetes mientras sea reserva, igual que `Pie` y `Cabecera`. */}
+        <span>{nap.telefono ?? `[${nap.telefonoMostrado}]`}</span>
         <span>{nap.email}</span>
         <div className="flex gap-4 mt-2">
           <Link href="/aviso-legal/" onClick={onCerrar} className="text-sobre-tinta no-underline">

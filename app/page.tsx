@@ -8,7 +8,7 @@ import Foto from '@/components/contenido/Foto'
 import EtiquetaTecnica from '@/components/datos/EtiquetaTecnica'
 import DatoPendiente from '@/components/datos/DatoPendiente'
 import MuestraAcabado from '@/components/contenido/MuestraAcabado'
-import TarjetaProyecto from '@/components/contenido/TarjetaProyecto'
+import TarjetaProyecto, { TAMANOS_TARJETA_PROYECTO } from '@/components/contenido/TarjetaProyecto'
 import Chip from '@/components/ui/Chip'
 import BarraConfianza from '@/components/layout/BarraConfianza'
 import Acordeon from '@/components/secciones/Acordeon'
@@ -16,7 +16,7 @@ import FormularioPresupuesto from '@/components/secciones/FormularioPresupuesto'
 import { JsonLd, schemaFAQ } from '@/lib/schema'
 import { acabados, contarDocumentados, proyectos } from '@/lib/datos'
 import { faqHome } from '@/content/faq'
-import { SERVICIOS } from '@/content/servicios'
+import { PASOS, SERVICIOS } from '@/content/servicios'
 import { NOMBRE_SERVICIO, RUTA_SERVICIO } from '@/lib/tipos'
 import { nap } from '@/lib/config'
 
@@ -102,16 +102,38 @@ const filasPrecios = [
   { trabajo: 'Hormigón lavado', rango: '30-42' },
 ]
 
-const pasos = [
-  { numero: '01', titulo: 'Visita y medición', texto: 'Vamos a verlo. Sin coste y sin compromiso. Medimos, comprobamos el estado del terreno y el acceso para el camión.' },
-  { numero: '02', titulo: 'Presupuesto cerrado', texto: <>Te lo enviamos en <DatoPendiente>48 horas</DatoPendiente>, desglosado. Lo que pone es lo que se paga.</> },
-  { numero: '03', titulo: 'Ejecución', texto: <><DatoPendiente>Equipo propio</DatoPendiente>. Una superficie de 80-100 m² se ejecuta en 2 o 3 días. Después necesita entre 24 y 48 horas sin pisar y 28 días para curar del todo.</> },
-  { numero: '04', titulo: 'Garantía y mantenimiento', texto: '10 años. Y volvemos a resellar cuando toque.' },
-]
-
 const proyectoHero = proyectos.find((p) => p.slug === 'moncada-impreso-espiga-117')!
 const muestraHome = acabados.filter((a) => a.proyectos.length > 0).slice(0, 4)
 const proyectosHome = [...proyectos].sort((a, b) => Number(b.destacado) - Number(a.destacado)).slice(0, 6)
+
+// Cuatro secciones de la home pueden enseñar la MISMA foto de origen: el hero y
+// la tarjeta de obra de Moncada; una muestra de acabado y la tarjeta de la obra
+// que la ejecutó; y la miniatura de un espacio y la tarjeta de su servicio. Dos
+// `sizes` distintos sobre un mismo JPEG son dos peticiones a `/_next/image?` en
+// la misma pantalla, y no una petición grande y otra barata: son dos ficheros
+// enteros. Con la MISMA URL el navegador reutiliza incluso el mapa de bits ya
+// descodificado, así que la miniatura de 76 px no paga nada por recibir el
+// archivo grande que la página se estaba descargando de todas formas.
+//
+// El orden de precedencia es el del hueco más ancho, nunca al revés: degradar
+// el `sizes` de un hero para hacerlo coincidir con una tarjeta serviría una
+// imagen corta sobre el LCP. Y la regla se aplica **solo a la foto que se
+// repite**: las otras cinco miniaturas de espacio siguen pidiendo 76 px, que es
+// lo que miden.
+const TAMANOS_HERO_HOME = '(min-width: 768px) 50vw, 100vw'
+const TAMANOS_TARJETA_SERVICIO = '(min-width: 768px) 30vw, 100vw'
+const TAMANOS_MINIATURA_ESPACIO = '(min-width: 768px) 30vw, 76px'
+const fotoHero = proyectoHero.imagenes[0]?.src
+const fotosDeObra = new Set(proyectosHome.map((p) => p.imagenes[0]?.src).filter(Boolean))
+const fotosDeServicio = new Set(servicios.map((s) => SERVICIOS[s.id].imagenTarjeta?.src).filter(Boolean))
+
+function tamanosCompartidos(src?: string) {
+  if (!src) return undefined
+  if (src === fotoHero) return TAMANOS_HERO_HOME
+  if (fotosDeObra.has(src)) return TAMANOS_TARJETA_PROYECTO
+  if (fotosDeServicio.has(src)) return TAMANOS_TARJETA_SERVICIO
+  return undefined
+}
 const totalAcabados = acabados.length
 const documentados = contarDocumentados()
 
@@ -153,7 +175,7 @@ export default function Home() {
             imagen={proyectoHero.imagenes[0]}
             proporcion="3/4"
             prioridad
-            tamanos="(min-width: 768px) 50vw, 100vw"
+            tamanos={TAMANOS_HERO_HOME}
             className="md:aspect-[4/3] md:min-h-[660px] md:h-full"
             etiqueta={
               <EtiquetaTecnica
@@ -207,7 +229,7 @@ export default function Home() {
                 <Foto
                   imagen={e.imagen}
                   proporcion="4/3"
-                  tamanos="(min-width: 768px) 30vw, 76px"
+                  tamanos={tamanosCompartidos(e.imagen?.src) ?? TAMANOS_MINIATURA_ESPACIO}
                   className="w-[76px] h-[76px] md:w-full md:h-auto shrink-0"
                 />
                 <div className="flex flex-col gap-1 py-2 md:py-0 md:px-4 md:pb-4">
@@ -246,7 +268,11 @@ export default function Home() {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-[14px_10px] md:gap-[32px_24px]">
             {muestraHome.map((a) => (
-              <MuestraAcabado key={a.slug} acabado={a} />
+              <MuestraAcabado
+                key={a.slug}
+                acabado={a}
+                tamanos={tamanosCompartidos(a.muestra?.src)}
+              />
             ))}
           </div>
 
@@ -271,7 +297,9 @@ export default function Home() {
                 <Foto
                   imagen={SERVICIOS[s.id].imagenTarjeta}
                   proporcion="16/10"
-                  tamanos="(min-width: 768px) 30vw, 100vw"
+                  tamanos={
+                    tamanosCompartidos(SERVICIOS[s.id].imagenTarjeta?.src) ?? TAMANOS_TARJETA_SERVICIO
+                  }
                 />
                 <h3 className="font-display font-bold fs-h3 text-20 md:text-26 text-tinta m-0">
                   {NOMBRE_SERVICIO[s.id]}
@@ -341,7 +369,7 @@ export default function Home() {
             </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-8">
-            {pasos.map((p) => (
+            {PASOS.map((p) => (
               <div key={p.numero} className="flex md:flex-col gap-4">
                 <span className="font-display font-bold fs-h2 text-26 md:text-34 text-acero w-[42px] md:w-auto shrink-0 md:border-t md:border-tinta md:pt-4">
                   {p.numero}
@@ -378,7 +406,11 @@ export default function Home() {
           <div className="flex md:grid md:grid-cols-3 gap-6 overflow-x-auto -mx-[18px] px-[18px] md:mx-0 md:px-0">
             {proyectosHome.map((p) => (
               <div key={p.slug} className="min-w-[220px] shrink-0 md:min-w-0 md:shrink">
-                <TarjetaProyecto proyecto={p} fondo="base" />
+                <TarjetaProyecto
+                  proyecto={p}
+                  fondo="base"
+                  tamanos={p.imagenes[0]?.src === fotoHero ? TAMANOS_HERO_HOME : undefined}
+                />
               </div>
             ))}
           </div>
@@ -485,8 +517,13 @@ export default function Home() {
               Te llamamos, vamos a verlo y te damos un precio cerrado. Sin coste y sin compromiso.
             </p>
             <div className="flex flex-col md:flex-row gap-3">
-              <Boton variante="tinta" href={nap.telefonoHref ?? '/presupuesto/'} data-ubicacion="home_close">
-                Llamar al {nap.telefono ?? nap.telefonoMostrado}
+              <Boton
+                variante="tinta"
+                href={nap.telefonoHref ?? '/presupuesto/'}
+                data-ubicacion="home_close"
+                className="sobre-oscuro"
+              >
+                Llamar al {nap.telefono ?? <DatoPendiente>{nap.telefonoMostrado}</DatoPendiente>}
               </Boton>
               <Boton variante="contorno" href={nap.whatsappHref ?? '/presupuesto/'} data-ubicacion="home_close">
                 Escribir por WhatsApp

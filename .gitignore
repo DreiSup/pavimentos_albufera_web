@@ -30,3 +30,13 @@ next-env.d.ts
 
 # fotos originales descargadas de la web viva (no se commitean)
 /fotos-origen/
+
+# informes de Lighthouse (no se commitean)
+#
+# Se tomaron contra `http://localhost:4173` con throttling simulado: el
+# `server-response-time` que miden son 30 ms de un servidor local. En Vercel eso
+# pasa por CDN, con brotli del edge y caché de imagen distinta, así que los
+# números absolutos no se parecen. La línea base de verdad se toma desplegando
+# el commit anterior como preview y midiendo ahí.
+/.lighthouseci/
+/informes-lighthouse/

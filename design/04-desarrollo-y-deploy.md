@@ -235,7 +235,9 @@ WhatsApp con mensaje predefinido:
 
 ## 8. Rendimiento
 
-Objetivos: **LCP < 2,0 s en 4G · CLS < 0,05 · INP < 200 ms · JS inicial < 100 KB comprimido.**
+Objetivos: **LCP < 2,0 s en 4G · CLS < 0,05 · INP < 200 ms · JS inicial ≤ 112 kB brotli q11 por
+ruta** —techo duro que rompe el build; objetivo informativo 105 kB. La unidad y el ámbito, en
+`CLAUDE.md`.
 
 - Componentes de servidor por defecto. `'use client'` solo en: filtros del muestrario y del
   índice, acordeón, calculadora, formulario, menú móvil, hoja de filtros y submenú anclado.

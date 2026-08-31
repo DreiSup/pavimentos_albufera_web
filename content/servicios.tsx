@@ -23,6 +23,21 @@ import type { Imagen, ServicioId } from '@/lib/tipos'
 
 type Aplicacion = { nombre: string; texto: string }
 
+/**
+ * Las secciones numeradas del cuerpo de `PaginaServicio`. Es una unión y no
+ * `string` para que un `ocultarSecciones` con una errata no compile: el
+ * numerado y el submenú se construyen de esta lista, y un id que no existe
+ * ocultaría exactamente nada sin decirlo.
+ */
+export type SeccionServicio =
+  | 'seccion-aplicaciones'
+  | 'seccion-muestrario'
+  | 'seccion-ficha'
+  | 'seccion-cuando-no'
+  | 'seccion-precio'
+  | 'seccion-como'
+  | 'seccion-obra'
+
 export type Servicio = {
   id: ServicioId
   ruta: string
@@ -44,6 +59,20 @@ export type Servicio = {
   usosCalculadora?: OpcionUso[]
   /** Sin preguntas aplicables no hay sección de FAQ ni marcado `FAQPage`. */
   faq?: PreguntaFAQ[]
+
+  /*
+   * Los tres campos de abajo son la recomposición de campaña. Las seis rutas de
+   * servicio NO los declaran: los pone `content/landings.ts` sobre una copia del
+   * servicio, para que `/lp/<slug>/` sea la misma plantilla con secciones
+   * desactivadas y no una plantilla clonada que diverja en un mes.
+   */
+
+  /** Secciones que la landing no monta. Hoy solo la ficha técnica: las seis la llenan de corchetes. */
+  ocultarSecciones?: readonly SeccionServicio[]
+  /** Pone los CTA de llamada y WhatsApp en el hero y en el cierre, en `tinta`/`contorno`. Nunca ocre. */
+  ctaContacto?: boolean
+  /** Exime del `<Aparece>` el cierre con CTA + formulario, que es el bloque de conversión. */
+  sinAparece?: boolean
 }
 
 /**
@@ -80,6 +109,46 @@ const FICHA_SOLERA: { etiqueta: string; valor: ReactNode }[] = [
   { etiqueta: 'JUNTAS DE DILATACIÓN', valor: <>Cada <DatoPendiente>16-25</DatoPendiente> m²</> },
   { etiqueta: 'TRÁNSITO PEATONAL', valor: '24-48 h' },
   { etiqueta: 'CURADO COMPLETO', valor: '28 días' },
+]
+
+/**
+ * Los cuatro pasos de «Cómo trabajamos». Vive aquí porque lo montan dos
+ * pantallas —la home y las seis páginas de servicio— y estaba copiado en las
+ * dos: `PaginaServicio.tsx` y `app/page.tsx` tenían el mismo texto escrito dos
+ * veces, que es la manera segura de que dentro de un mes digan cosas distintas.
+ */
+export const PASOS: { numero: string; titulo: string; texto: ReactNode }[] = [
+  {
+    numero: '01',
+    titulo: 'Visita y medición',
+    texto:
+      'Vamos a verlo. Sin coste y sin compromiso. Medimos, comprobamos el estado del terreno y el acceso para el camión.',
+  },
+  {
+    numero: '02',
+    titulo: 'Presupuesto cerrado',
+    texto: (
+      <>
+        Te lo enviamos en <DatoPendiente>48 horas</DatoPendiente>, desglosado. Lo que pone es lo que
+        se paga.
+      </>
+    ),
+  },
+  {
+    numero: '03',
+    titulo: 'Ejecución',
+    texto: (
+      <>
+        <DatoPendiente>Equipo propio</DatoPendiente>. Una superficie de 80-100 m² se ejecuta en 2 o 3
+        días. Después necesita entre 24 y 48 horas sin pisar y 28 días para curar del todo.
+      </>
+    ),
+  },
+  {
+    numero: '04',
+    titulo: 'Garantía y mantenimiento',
+    texto: '10 años. Y volvemos a resellar cuando toque.',
+  },
 ]
 
 export const SERVICIOS: Record<ServicioId, Servicio> = {

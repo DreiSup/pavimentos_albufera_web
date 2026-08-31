@@ -1,13 +1,14 @@
+import type { ReactNode } from 'react'
 import Aparece from '@/components/ui/Aparece'
 import AntetituloSeccion from '@/components/ui/AntetituloSeccion'
 import Boton from '@/components/ui/Boton'
 import { EnlaceEtiqueta } from '@/components/ui/EnlaceEtiqueta'
 import Foto from '@/components/contenido/Foto'
-import EtiquetaTecnica from '@/components/datos/EtiquetaTecnica'
 import DatoPendiente from '@/components/datos/DatoPendiente'
+import EtiquetaTecnica from '@/components/datos/EtiquetaTecnica'
 import TablaFichaTecnica from '@/components/datos/TablaFichaTecnica'
 import MuestraAcabado from '@/components/contenido/MuestraAcabado'
-import TarjetaProyecto from '@/components/contenido/TarjetaProyecto'
+import TarjetaProyecto, { TAMANOS_TARJETA_PROYECTO } from '@/components/contenido/TarjetaProyecto'
 import EstadoVacio from '@/components/ui/EstadoVacio'
 import Migas from '@/components/layout/Migas'
 import SubmenuServicio from '@/components/secciones/SubmenuServicio'
@@ -16,7 +17,10 @@ import Acordeon from '@/components/secciones/Acordeon'
 import FormularioPresupuesto from '@/components/secciones/FormularioPresupuesto'
 import { JsonLd, schemaFAQ, schemaServicio } from '@/lib/schema'
 import { acabadosPorServicio, proyectosPorServicio } from '@/lib/datos'
-import type { Servicio } from '@/content/servicios'
+import { nap } from '@/lib/config'
+import type { Ubicacion } from '@/lib/eventos'
+import { PASOS } from '@/content/servicios'
+import type { SeccionServicio, Servicio } from '@/content/servicios'
 
 /**
  * Plantilla única de las seis páginas de servicio.
@@ -32,47 +36,77 @@ import type { Servicio } from '@/content/servicios'
  * con las reseñas.
  */
 
-const PASOS = [
-  {
-    numero: '01',
-    titulo: 'Visita y medición',
-    texto:
-      'Vamos a verlo. Sin coste y sin compromiso. Medimos, comprobamos el estado del terreno y el acceso para el camión.',
-  },
-  {
-    numero: '02',
-    titulo: 'Presupuesto cerrado',
-    texto: (
-      <>
-        Te lo enviamos en <DatoPendiente>48 horas</DatoPendiente>, desglosado. Lo que pone es lo que
-        se paga.
-      </>
-    ),
-  },
-  {
-    numero: '03',
-    titulo: 'Ejecución',
-    texto: (
-      <>
-        <DatoPendiente>Equipo propio</DatoPendiente>. Una superficie de 80-100 m² se ejecuta en 2 o 3
-        días. Después necesita entre 24 y 48 horas sin pisar y 28 días para curar del todo.
-      </>
-    ),
-  },
-  {
-    numero: '04',
-    titulo: 'Garantía y mantenimiento',
-    texto: '10 años. Y volvemos a resellar cuando toque.',
-  },
-]
+type Seccion = { id: SeccionServicio; texto: string }
+
+/**
+ * Llamada y WhatsApp, en `tinta`/`contorno` — nunca en ocre. Es el mismo par
+ * que cierra la home, recompuesto: aquí no se escribe copy nuevo.
+ *
+ * ⚠️ Sin `NEXT_PUBLIC_TELEFONO` ni `NEXT_PUBLIC_WHATSAPP` los dos href caen a
+ * `/presupuesto/` y el botón no tiene número que anunciar. Una landing de
+ * campaña así **no se despliega**: reproduce el problema de cero caminos de
+ * contacto que la ola 1 existe para cerrar. Dos cosas lo sostienen y hacen
+ * falta las dos. Una, la reserva va en `<DatoPendiente>`, porque un número
+ * inventado en el CTA de mayor intención comercial del sitio es exactamente lo
+ * que CLAUDE.md prohíbe maquillar; la clase `sobre-oscuro` es para que los corchetes
+ * mantengan contraste AA sobre el botón de tinta. Y dos,
+ * `scripts/verificar-landings.mjs` rompe el build en un despliegue de
+ * producción si la reserva llega al HTML: un comentario no impide desplegar.
+ */
+function CtaContacto({ ubicacion }: { ubicacion: Ubicacion }) {
+  return (
+    <div className="flex flex-col md:flex-row gap-3">
+      <Boton
+        variante="tinta"
+        href={nap.telefonoHref ?? '/presupuesto/'}
+        data-ubicacion={ubicacion}
+        className="sobre-oscuro"
+      >
+        Llamar al {nap.telefono ?? <DatoPendiente>{nap.telefonoMostrado}</DatoPendiente>}
+      </Boton>
+      <Boton
+        variante="contorno"
+        href={nap.whatsappHref ?? '/presupuesto/'}
+        data-ubicacion={ubicacion}
+      >
+        Escribir por WhatsApp
+      </Boton>
+    </div>
+  )
+}
+
+/**
+ * El cierre es el bloque de conversión, y es el único de los nueve `<Aparece>`
+ * del cuerpo que la landing exime: así no depende de que hidrate un
+ * `IntersectionObserver` para verse. El hero no entra en la cuenta —ya es un
+ * `<section>` normal—, así que ahí no había nada que desactivar.
+ */
+function Cierre({ sinAparece, children }: { sinAparece?: boolean; children: ReactNode }) {
+  const clases = 'px-[18px] md:px-lat-desktop py-9 md:py-22'
+  return sinAparece ? (
+    <section className={clases}>{children}</section>
+  ) : (
+    <Aparece as="section" className={clases}>
+      {children}
+    </Aparece>
+  )
+}
 
 export default function PaginaServicio({ servicio }: { servicio: Servicio }) {
   const acabados = acabadosPorServicio(servicio.id)
   const proyectos = proyectosPorServicio(servicio.id).slice(0, 3)
 
+  // Una muestra del muestrario y una tarjeta de obra pueden ser la MISMA foto:
+  // `corbera-fratasado-arena.jpg` sale en las dos secciones de
+  // `/hormigon-fratasado/`. Con dos `sizes` distintos son dos peticiones a
+  // `/_next/image?` del mismo JPEG. Gana el `sizes` de la tarjeta, que es el
+  // hueco más ancho: pedir una vez el archivo grande cuesta menos que pedir el
+  // grande y además el pequeño. El hero no entra —su foto no se repite abajo—.
+  const fotosDeObra = new Set(proyectos.map((p) => p.imagenes[0]?.src).filter(Boolean))
+
   // El numerado sigue el orden real de las secciones presentes. Si un servicio
   // no tiene rango de precio aprobado, no hay hueco vacío ni número saltado.
-  const secciones = [
+  const todas: (Seccion | null)[] = [
     servicio.aplicaciones ? { id: 'seccion-aplicaciones', texto: 'Aplicaciones' } : null,
     { id: 'seccion-muestrario', texto: 'Muestrario' },
     { id: 'seccion-ficha', texto: 'Ficha técnica' },
@@ -80,10 +114,25 @@ export default function PaginaServicio({ servicio }: { servicio: Servicio }) {
     servicio.usosCalculadora ? { id: 'seccion-precio', texto: 'Precio' } : null,
     { id: 'seccion-como', texto: 'Cómo trabajamos' },
     { id: 'seccion-obra', texto: 'Obra ejecutada' },
-  ].filter((s): s is { id: string; texto: string } => s !== null)
+  ]
 
-  const numero = (id: string) => String(secciones.findIndex((s) => s.id === id) + 1).padStart(2, '0')
+  // `ocultarSecciones` se aplica aquí y en ningún otro sitio: filtrando esta
+  // lista, el submenú, el numerado y el cuerpo cuentan lo mismo. Si se
+  // comprobara sección por sección, ocultar la ficha técnica dejaría un número
+  // saltado y un ancla del submenú apuntando a un id que no existe.
+  const secciones = todas.filter(
+    (s): s is Seccion => s !== null && !(servicio.ocultarSecciones ?? []).includes(s.id),
+  )
+
+  const monta = (id: SeccionServicio) => secciones.some((s) => s.id === id)
+  const numero = (id: SeccionServicio) =>
+    String(secciones.findIndex((s) => s.id === id) + 1).padStart(2, '0')
   const anclas = secciones.map((s) => ({ id: s.id, texto: `${numero(s.id)} · ${s.texto}` }))
+
+  // `ctaContacto` solo lo declara la recomposición de campaña, así que es
+  // también lo que separa el tráfico de pago del orgánico en los informes: sin
+  // él `lp_close` no se emitiría nunca.
+  const ubicacionCierre: Ubicacion = servicio.ctaContacto ? 'lp_close' : 'service_close'
 
   return (
     <>
@@ -97,21 +146,32 @@ export default function PaginaServicio({ servicio }: { servicio: Servicio }) {
             {servicio.h1}
           </h1>
           <p className="text-16 md:text-20 text-tinta-media max-w-[52ch] m-0">{servicio.entradilla}</p>
-          <div className="flex flex-col md:flex-row gap-3">
-            <Boton variante="primario" href="/presupuesto/">
-              Pedir presupuesto
-            </Boton>
-            <Boton variante="contorno" href="#seccion-muestrario">
-              Ver acabados
-            </Boton>
-          </div>
+          {/* En la landing el hero llama y escribe; en la página de servicio pide
+              presupuesto. Nunca las dos cosas: cuatro botones en un hero no son
+              dos roles de ocre, son ninguno. */}
+          {servicio.ctaContacto ? (
+            <CtaContacto ubicacion="lp_hero" />
+          ) : (
+            <div className="flex flex-col md:flex-row gap-3">
+              <Boton variante="primario" href="/presupuesto/">
+                Pedir presupuesto
+              </Boton>
+              <Boton variante="contorno" href="#seccion-muestrario">
+                Ver acabados
+              </Boton>
+            </div>
+          )}
         </div>
         <div className="order-1 md:order-2">
+          {/* En escritorio el hero cae en la pista fija de 560 px del grid de
+              arriba, no en media ventana: con `50vw` el navegador pedía w=1920
+              en 1920 a DPR 2, donde 1200 ya cubre los 560×2. El `100vw` de
+              móvil se queda, y con él el `PATRON_HERO` de las verificaciones. */}
           <Foto
             imagen={servicio.imagenHero}
             proporcion="4/3"
             prioridad
-            tamanos="(min-width: 768px) 50vw, 100vw"
+            tamanos="(min-width: 768px) 560px, 100vw"
             etiqueta={<EtiquetaTecnica lineas={servicio.etiquetaHero} />}
           />
         </div>
@@ -119,7 +179,7 @@ export default function PaginaServicio({ servicio }: { servicio: Servicio }) {
 
       <SubmenuServicio anclas={anclas} />
 
-      {servicio.aplicaciones ? (
+      {servicio.aplicaciones && monta('seccion-aplicaciones') ? (
         <Aparece as="section" id="seccion-aplicaciones" className="px-[18px] md:px-lat-desktop py-9 md:py-22">
           <div className="grid grid-cols-1 md:grid-cols-[380px_1fr] gap-8 md:gap-16">
             <div className="flex flex-col gap-4">
@@ -145,40 +205,52 @@ export default function PaginaServicio({ servicio }: { servicio: Servicio }) {
       ) : null}
 
       {/* Muestrario del servicio */}
-      <Aparece as="section" id="seccion-muestrario" className="bg-fondo-alt px-[18px] md:px-lat-desktop py-9 md:py-22">
-        <div className="flex flex-col gap-6">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <AntetituloSeccion numero={numero('seccion-muestrario')}>Muestrario del servicio</AntetituloSeccion>
-            {acabados.length > 0 ? (
-              <EnlaceEtiqueta href={`/acabados/?tecnica=${servicio.id}`}>
-                Ver todos los acabados de {servicio.nombre.toLowerCase()} →
-              </EnlaceEtiqueta>
-            ) : null}
-          </div>
-          {acabados.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-[14px_10px] md:gap-[32px_24px]">
-              {acabados.map((a) => (
-                <MuestraAcabado key={a.slug} acabado={a} />
-              ))}
+      {monta('seccion-muestrario') ? (
+        <Aparece as="section" id="seccion-muestrario" className="bg-fondo-alt px-[18px] md:px-lat-desktop py-9 md:py-22">
+          <div className="flex flex-col gap-6">
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <AntetituloSeccion numero={numero('seccion-muestrario')}>Muestrario del servicio</AntetituloSeccion>
+              {acabados.length > 0 ? (
+                <EnlaceEtiqueta href={`/acabados/?tecnica=${servicio.id}`}>
+                  Ver todos los acabados de {servicio.nombre.toLowerCase()} →
+                </EnlaceEtiqueta>
+              ) : null}
             </div>
-          ) : (
-            <EstadoVacio
-              titulo="Todavía no hemos subido el muestrario de este acabado"
-              texto="Solo enseñamos acabados con obra ejecutada de verdad. Pregúntanos y te enseñamos las muestras que tenemos."
-            />
-          )}
-        </div>
-      </Aparece>
+            {acabados.length > 0 ? (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-[14px_10px] md:gap-[32px_24px]">
+                {acabados.map((a) => (
+                  <MuestraAcabado
+                    key={a.slug}
+                    acabado={a}
+                    tamanos={
+                      a.muestra?.src && fotosDeObra.has(a.muestra.src)
+                        ? TAMANOS_TARJETA_PROYECTO
+                        : undefined
+                    }
+                  />
+                ))}
+              </div>
+            ) : (
+              <EstadoVacio
+                titulo="Todavía no hemos subido el muestrario de este acabado"
+                texto="Solo enseñamos acabados con obra ejecutada de verdad. Pregúntanos y te enseñamos las muestras que tenemos."
+              />
+            )}
+          </div>
+        </Aparece>
+      ) : null}
 
       {/* Ficha técnica */}
-      <Aparece as="section" id="seccion-ficha" className="px-[18px] md:px-lat-desktop py-9 md:py-22">
-        <div className="grid grid-cols-1 md:grid-cols-[380px_1fr] gap-8 md:gap-16">
-          <AntetituloSeccion numero={numero('seccion-ficha')}>Ficha técnica</AntetituloSeccion>
-          <TablaFichaTecnica filas={servicio.fichaTecnica} />
-        </div>
-      </Aparece>
+      {monta('seccion-ficha') ? (
+        <Aparece as="section" id="seccion-ficha" className="px-[18px] md:px-lat-desktop py-9 md:py-22">
+          <div className="grid grid-cols-1 md:grid-cols-[380px_1fr] gap-8 md:gap-16">
+            <AntetituloSeccion numero={numero('seccion-ficha')}>Ficha técnica</AntetituloSeccion>
+            <TablaFichaTecnica filas={servicio.fichaTecnica} />
+          </div>
+        </Aparece>
+      ) : null}
 
-      {servicio.cuandoNo ? (
+      {servicio.cuandoNo && monta('seccion-cuando-no') ? (
         <Aparece
           as="section"
           id="seccion-cuando-no"
@@ -202,7 +274,7 @@ export default function PaginaServicio({ servicio }: { servicio: Servicio }) {
         </Aparece>
       ) : null}
 
-      {servicio.usosCalculadora ? (
+      {servicio.usosCalculadora && monta('seccion-precio') ? (
         <Aparece as="section" id="seccion-precio" className="px-[18px] md:px-lat-desktop py-9 md:py-22">
           <div className="flex flex-col gap-6">
             <AntetituloSeccion numero={numero('seccion-precio')}>Precio</AntetituloSeccion>
@@ -212,43 +284,47 @@ export default function PaginaServicio({ servicio }: { servicio: Servicio }) {
       ) : null}
 
       {/* Cómo trabajamos */}
-      <Aparece as="section" id="seccion-como" className="bg-fondo-alt px-[18px] md:px-lat-desktop py-9 md:py-22">
-        <div className="flex flex-col gap-8">
-          <AntetituloSeccion numero={numero('seccion-como')}>Cómo trabajamos</AntetituloSeccion>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-8">
-            {PASOS.map((p) => (
-              <div key={p.numero} className="flex md:flex-col gap-4">
-                <span className="font-display font-bold fs-h2 text-26 md:text-34 text-acero w-[42px] md:w-auto shrink-0 md:border-t md:border-tinta md:pt-4">
-                  {p.numero}
-                </span>
-                <div className="flex flex-col gap-1">
-                  <h3 className="font-display font-bold fs-h3 text-20 m-0">{p.titulo}</h3>
-                  <p className="text-14 md:text-16 text-tinta-media m-0">{p.texto}</p>
+      {monta('seccion-como') ? (
+        <Aparece as="section" id="seccion-como" className="bg-fondo-alt px-[18px] md:px-lat-desktop py-9 md:py-22">
+          <div className="flex flex-col gap-8">
+            <AntetituloSeccion numero={numero('seccion-como')}>Cómo trabajamos</AntetituloSeccion>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-8">
+              {PASOS.map((p) => (
+                <div key={p.numero} className="flex md:flex-col gap-4">
+                  <span className="font-display font-bold fs-h2 text-26 md:text-34 text-acero w-[42px] md:w-auto shrink-0 md:border-t md:border-tinta md:pt-4">
+                    {p.numero}
+                  </span>
+                  <div className="flex flex-col gap-1">
+                    <h3 className="font-display font-bold fs-h3 text-20 m-0">{p.titulo}</h3>
+                    <p className="text-14 md:text-16 text-tinta-media m-0">{p.texto}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </Aparece>
-
-      {/* Obra ejecutada */}
-      <Aparece as="section" id="seccion-obra" className="px-[18px] md:px-lat-desktop py-9 md:py-22">
-        <div className="flex flex-col gap-6">
-          <AntetituloSeccion numero={numero('seccion-obra')}>Obra ejecutada</AntetituloSeccion>
-          {proyectos.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {proyectos.map((p) => (
-                <TarjetaProyecto key={p.slug} proyecto={p} />
               ))}
             </div>
-          ) : (
-            <EstadoVacio
-              titulo="Todavía no hemos publicado obra de este acabado"
-              texto="Lo hemos ejecutado, pero aún no tenemos la ficha con fotos propias montada. Pídenos referencias y te las pasamos."
-            />
-          )}
-        </div>
-      </Aparece>
+          </div>
+        </Aparece>
+      ) : null}
+
+      {/* Obra ejecutada */}
+      {monta('seccion-obra') ? (
+        <Aparece as="section" id="seccion-obra" className="px-[18px] md:px-lat-desktop py-9 md:py-22">
+          <div className="flex flex-col gap-6">
+            <AntetituloSeccion numero={numero('seccion-obra')}>Obra ejecutada</AntetituloSeccion>
+            {proyectos.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {proyectos.map((p) => (
+                  <TarjetaProyecto key={p.slug} proyecto={p} />
+                ))}
+              </div>
+            ) : (
+              <EstadoVacio
+                titulo="Todavía no hemos publicado obra de este acabado"
+                texto="Lo hemos ejecutado, pero aún no tenemos la ficha con fotos propias montada. Pídenos referencias y te las pasamos."
+              />
+            )}
+          </div>
+        </Aparece>
+      ) : null}
 
       {/* FAQ — solo las preguntas que aplican a ESTE servicio. Si no hay
           ninguna, no se renderiza sección vacía ni marcado `FAQPage` de más. */}
@@ -265,7 +341,7 @@ export default function PaginaServicio({ servicio }: { servicio: Servicio }) {
       ) : null}
 
       {/* Cierre */}
-      <Aparece as="section" className="px-[18px] md:px-lat-desktop py-9 md:py-22">
+      <Cierre sinAparece={servicio.sinAparece}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16">
           <div className="flex flex-col gap-6">
             <h2 className="font-display font-bold fs-hero text-34 md:text-64 m-0">
@@ -274,10 +350,18 @@ export default function PaginaServicio({ servicio }: { servicio: Servicio }) {
             <p className="text-16 md:text-20 text-tinta-media m-0">
               Te llamamos, vamos a verlo y te damos un precio cerrado. Sin coste y sin compromiso.
             </p>
+            {servicio.ctaContacto ? (
+              <>
+                <CtaContacto ubicacion="lp_close" />
+                <p className="text-14 text-tinta-media m-0">
+                  O déjanos tus datos y te llamamos nosotros.
+                </p>
+              </>
+            ) : null}
           </div>
-          <FormularioPresupuesto variante="corto" origen="service_close" />
+          <FormularioPresupuesto variante="corto" origen={ubicacionCierre} />
         </div>
-      </Aparece>
+      </Cierre>
     </>
   )
 }

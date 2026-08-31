@@ -1,11 +1,15 @@
 import type { Metadata } from 'next'
-import { Suspense } from 'react'
 import Aparece from '@/components/ui/Aparece'
 import AntetituloSeccion from '@/components/ui/AntetituloSeccion'
 import Boton from '@/components/ui/Boton'
 import Migas from '@/components/layout/Migas'
-import FiltrosAcabados from '@/components/secciones/FiltrosAcabados'
+import MuestraAcabado from '@/components/contenido/MuestraAcabado'
+import FiltrosAcabados, {
+  type AcabadoFiltrable,
+  type GrupoAcabados,
+} from '@/components/secciones/FiltrosAcabados'
 import { acabados, coloresEnUso, contarDocumentados, tecnicasEnUso } from '@/lib/datos'
+import { CODIGO_COLOR, NOMBRE_SERVICIO } from '@/lib/tipos'
 
 export const metadata: Metadata = {
   title: 'Muestrario de acabados de hormigón impreso',
@@ -16,10 +20,34 @@ export const metadata: Metadata = {
 
 const total = acabados.length
 const documentados = contarDocumentados()
-const tecnicas = tecnicasEnUso()
-const colores = coloresEnUso()
+
+const grupos: GrupoAcabados[] = [
+  {
+    clave: 'tecnica',
+    etiqueta: 'Técnica',
+    todos: 'Todas',
+    opciones: tecnicasEnUso().map((t) => ({ valor: t, nombre: NOMBRE_SERVICIO[t] })),
+  },
+  {
+    clave: 'color',
+    etiqueta: 'Color',
+    todos: 'Todos',
+    opciones: coloresEnUso().map((c) => ({ valor: c, nombre: CODIGO_COLOR[c] })),
+  },
+]
 
 export default function Acabados() {
+  /**
+   * Las muestras se arman aquí, en servidor, y cruzan la frontera ya hechas.
+   * `FiltrosAcabados` solo elige cuáles se enseñan, así que las 16 muestras con
+   * sus fotos y sus enlaces salen en el HTML estático sin esperar a hidratar.
+   */
+  const muestras: AcabadoFiltrable[] = acabados.map((a) => ({
+    clave: a.slug,
+    valores: { tecnica: a.servicio, color: a.color },
+    muestra: <MuestraAcabado key={a.slug} acabado={a} />,
+  }))
+
   return (
     <>
       <Migas items={[{ nombre: 'Acabados' }]} />
@@ -42,9 +70,7 @@ export default function Acabados() {
       </section>
 
       <div className="px-[18px] md:px-lat-desktop">
-        <Suspense>
-          <FiltrosAcabados acabados={acabados} tecnicas={tecnicas} colores={colores} />
-        </Suspense>
+        <FiltrosAcabados muestras={muestras} grupos={grupos} />
       </div>
 
       <Aparece

@@ -27,7 +27,11 @@ export default function Foto({
   className?: string
   /** `sizes` de next/image. Sin él asume 100vw y sirve un original de más. */
   tamanos: string
-  /** Solo en la imagen sobre el pliegue de cada pantalla. Una por pantalla. */
+  /**
+   * Solo en la imagen sobre el pliegue de cada pantalla. Una por pantalla.
+   * `priority` de next/image emite el preload, pero no marca el `<img>`: por eso
+   * va además `fetchPriority="high"`, que es lo que ordena la cola de descarga.
+   */
   prioridad?: boolean
   children?: ReactNode
 }) {
@@ -52,6 +56,7 @@ export default function Foto({
         fill
         sizes={tamanos}
         priority={prioridad}
+        fetchPriority={prioridad ? 'high' : undefined}
         className="object-cover"
       />
       {etiqueta ? <div className="absolute bottom-0 right-0">{etiqueta}</div> : null}

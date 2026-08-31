@@ -14,6 +14,14 @@ import Boton from '../ui/Boton'
 const DIAS = 180
 
 /**
+ * `lib/config.ts` expone `metaPixelId` tal cual viene del entorno, sin el
+ * `.trim() || undefined` que sí llevan sus vecinos. Se normaliza aquí para que
+ * una variable puesta pero en blanco cuente como ausente y no se renderice el
+ * `<Script>` con un ID vacío.
+ */
+const PIXEL_ID = sitio.metaPixelId?.trim()
+
+/**
  * Consent Mode v2 en modo avanzado.
  *
  * Los valores por defecto (`denied` en los cuatro) se declaran en `app/layout.tsx`
@@ -55,17 +63,42 @@ export default function Consentimiento() {
 
   return (
     <>
-      {estado === 'aceptado' && sitio.metaPixelId ? (
+      {/*
+        Snippet oficial de Meta con **una sola** modificación: la inserción del
+        `<script src=…fbevents.js>` ya no ocurre en la misma tarea que el clic de
+        «Aceptar», sino en `requestIdleCallback`. `fbevents.js` son 107.502 B gzip
+        y ~190 ms de hilo principal bloqueado a 4×, y hasta ahora caían justo
+        encima de la interacción que los provoca.
+
+        No se descarga menos: se descarga **más tarde**. El coste se mueve fuera
+        de la ventana de la interacción, que es donde se mide y donde se nota.
+
+        Por qué el stub sí se instala de inmediato: `registrarEvento`
+        (`lib/eventos.ts`) llama a `window.fbq?.(…)`, con encadenamiento opcional.
+        Si `fbq` no existe todavía, el evento no se encola: se pierde en silencio.
+        El stub —que es barato— se declara ya, y `init` y `PageView` se quedan en
+        `fbq.queue` hasta que la librería real la vacíe. Por lo mismo la
+        estrategia sigue siendo `afterInteractive` y no `lazyOnload`: retrasar el
+        stub sería retrasar la cola, que es justo lo que no queremos.
+
+        `requestIdleCallback` no existe en Safari anterior a 17 —la mitad del
+        tráfico de este negocio es iPhone—, de ahí el `setTimeout`. Y el
+        `timeout: 3000` está para que en una pestaña ocupada el ocioso llegue
+        igualmente. Contrapartida asumida: quien acepte y cierre dentro de esa
+        ventana no manda `PageView`.
+      */}
+      {estado === 'aceptado' && PIXEL_ID ? (
         <Script id="meta-pixel" strategy="afterInteractive">
-          {`!function(f,b,e,v,n,t,s)
+          {`!function(f,b,e,v,n,t,s,d)
             {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
             n.callMethod.apply(n,arguments):n.queue.push(arguments)};
             if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-            n.queue=[];t=b.createElement(e);t.async=!0;
+            n.queue=[];d=function(){t=b.createElement(e);t.async=!0;
             t.src=v;s=b.getElementsByTagName(e)[0];
-            s.parentNode.insertBefore(t,s)}(window, document,'script',
+            s.parentNode.insertBefore(t,s)};
+            f.requestIdleCallback?f.requestIdleCallback(d,{timeout:3000}):f.setTimeout(d,1000)}(window, document,'script',
             'https://connect.facebook.net/en_US/fbevents.js');
-            fbq('init', '${sitio.metaPixelId}');
+            fbq('init', '${PIXEL_ID}');
             fbq('track', 'PageView');`}
         </Script>
       ) : null}

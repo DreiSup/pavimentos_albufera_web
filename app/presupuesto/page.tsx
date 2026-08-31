@@ -39,8 +39,13 @@ export default function Presupuesto() {
             {/* Mismo par de CTA que el bloque `md:hidden` de abajo, duplicado por breakpoint.
                 Llevan ubicación distinta a propósito: con la misma etiqueta el dato es inservible. */}
             <div className="hidden md:flex flex-col gap-3">
-              <Boton variante="tinta" href={nap.telefonoHref ?? '#'} data-ubicacion="quote_aside">
-                Llamar al {nap.telefono ?? nap.telefonoMostrado}
+              <Boton
+              variante="tinta"
+              href={nap.telefonoHref ?? '#'}
+              data-ubicacion="quote_aside"
+              className="sobre-oscuro"
+            >
+                Llamar al {nap.telefono ?? <DatoPendiente>{nap.telefonoMostrado}</DatoPendiente>}
               </Boton>
               <Boton variante="contorno" href={nap.whatsappHref ?? '#'} data-ubicacion="quote_aside">
                 WhatsApp
@@ -53,8 +58,13 @@ export default function Presupuesto() {
           </div>
 
           <div className="md:hidden order-3 flex flex-col gap-3">
-            <Boton variante="tinta" href={nap.telefonoHref ?? '#'} data-ubicacion="quote_below_form">
-              Llamar al {nap.telefono ?? nap.telefonoMostrado}
+            <Boton
+              variante="tinta"
+              href={nap.telefonoHref ?? '#'}
+              data-ubicacion="quote_below_form"
+              className="sobre-oscuro"
+            >
+              Llamar al {nap.telefono ?? <DatoPendiente>{nap.telefonoMostrado}</DatoPendiente>}
             </Boton>
             <Boton variante="contorno" href={nap.whatsappHref ?? '#'} data-ubicacion="quote_below_form">
               WhatsApp

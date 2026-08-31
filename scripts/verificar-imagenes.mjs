@@ -14,9 +14,10 @@
  * Los tres umbrales, y por qué son tres y no uno (`design/05` §C #13):
  *
  *   SUELO (800 px)     Nada por debajo se publica. Falla el build.
- *   A_SANGRE (1600 px) La imagen que ocupa el ancho de la ventana —hoy los
- *                      `imagenHero` de `content/servicios.tsx`— no admite menos.
- *                      Falla el build.
+ *   A_SANGRE (1600 px) La imagen que ocupa el ancho de la ventana —los
+ *                      `imagenHero` de `content/servicios.tsx` y el hero 21/9
+ *                      de cada ficha de obra— no admite menos. Falla el build,
+ *                      salvo las de `HEREDADAS_A_SANGRE`, que avisan.
  *   OBJETIVO (1600 px) Lo que se pide a toda foto nueva. NO falla: hoy no lo
  *                      cumple ni la mitad del material heredado, y convertirlo
  *                      en error dejaría la web sin galería de obra. Se informa
@@ -42,6 +43,39 @@ const PATRON = /["'](\/(?:obras|acabados|blog|marca)\/[^"'\s]+?\.(?:jpg|jpeg|png
 
 /** Los `src` declarados como `imagenHero`, que se sirven a `sizes="100vw"`. */
 const PATRON_HERO = /imagenHero:\s*\{\s*src:\s*'([^']+)'/g
+
+/** La pantalla de obra, de la que sale el otro grupo de fotos a sangre. */
+const PANTALLA_OBRA = 'app/proyectos/[slug]/page.tsx'
+
+/**
+ * Excepción con fecha de caducidad. NO es un umbral relajado.
+ *
+ * Los heroes de obra que hoy se sirven a sangre por debajo de `A_SANGRE`. Son
+ * el material que hay: las ocho obras documentadas están fotografiadas a
+ * 898-1200 px y la sesión nueva a 1600 px sigue pendiente (`design/05` §C, «la
+ * obra documentada es la peor fotografiada»). Romper el build con ellas
+ * dejaría el repo rojo hasta esa sesión, así que aquí avisan en vez de fallar.
+ *
+ * Cada línea apunta el ancho medido hoy, y ESO es lo que le pone fecha: el día
+ * que una de estas fotos se sustituya por su original nuevo el ancho dejará de
+ * coincidir, la excepción no le aplicará y pasará a juzgarse por el umbral,
+ * sin que nadie tenga que acordarse de tocar este archivo. Una foto a sangre
+ * que no esté en esta lista falla el build desde el primer día. Cuando la
+ * lista se quede vacía se borra, y el guardián queda sin excepciones.
+ *
+ * ⚠ La auditoría de `design/06` nombraba cuatro —las de 898-960 px—. Medidas
+ * las ocho, son siete las que no llegan a 1600: las tres de 1200 px son la
+ * misma deuda y la misma sesión pendiente, no un caso aparte.
+ */
+const HEREDADAS_A_SANGRE = new Map([
+  ['/obras/corbera-fratasado-arena.jpg', 898],
+  ['/obras/godella-lavado-gris.jpg', 900],
+  ['/obras/moraira-impreso-adoquin-pequeno-arena-2025.jpg', 900],
+  ['/obras/ribarroja-pulido-gris.jpg', 960],
+  ['/obras/alzira-impreso-adoquin-irregular-107-2.jpg', 1200],
+  ['/obras/impreso-manta-gris-2.jpg', 1200],
+  ['/obras/moncada-impreso-espiga-117-2025.jpg', 1200],
+])
 
 function archivosDe(dir, exts) {
   const salida = []
@@ -114,9 +148,39 @@ for (const archivo of fuentes) {
   for (const [, src] of texto.matchAll(PATRON_HERO)) aSangre.add(src)
 }
 
+/**
+ * El otro grupo de fotos a sangre, que hasta ahora se colaba: `PANTALLA_OBRA`
+ * renderiza `proyecto.imagenes[0]` en 21/9 con `prioridad` y `tamanos="100vw"`.
+ * Nada en el JSON distingue esa foto de las demás del mismo array —las
+ * miniaturas 1 y 2 salen a 25vw—, así que la condición sale de la posición:
+ * primer elemento de `imagenes`, proyecto por proyecto.
+ */
+const proyectos = JSON.parse(readFileSync(resolve(raiz, 'content/proyectos.json'), 'utf8'))
+for (const proyecto of proyectos) {
+  const hero = proyecto.imagenes?.[0]
+  if (hero?.src) aSangre.add(hero.src)
+}
+
+/**
+ * Ese acoplamiento es invisible desde aquí: si la pantalla deja de servir
+ * `imagenes[0]` a sangre, este script seguiría exigiendo 1600 px a la foto
+ * equivocada y nadie se enteraría. Aviso y no error, porque la comprobación es
+ * textual y una reescritura legítima de la pantalla puede despistarla.
+ *
+ * Las dos condiciones van dentro de la MISMA etiqueta —de `imagenes[0]` al `>`
+ * que la cierra—, y no sueltas por el archivo: la miniatura de la línea 75
+ * también dice `100vw`, así que buscarlas por separado daría por vivo el
+ * acoplamiento aunque el hero cambiara de `sizes`, que es justo lo que hay que
+ * detectar.
+ */
+const rutaPantallaObra = resolve(raiz, PANTALLA_OBRA)
+const textoPantallaObra = existsSync(rutaPantallaObra) ? readFileSync(rutaPantallaObra, 'utf8') : ''
+const acoplamientoVivo = /imagenes\[0\][^>]*?100vw/.test(textoPantallaObra)
+
 const rotas = []
 const estrechas = [] // por debajo del suelo: error
 const heroEstrechos = [] // a sangre por debajo de 1600: error
+const heroHeredados = [] // a sangre por debajo de 1600, con excepción apuntada: aviso
 const bajoObjetivo = [] // por debajo del objetivo: aviso, no error
 const ilegibles = []
 let medidas = 0 // las que se han podido medir: el denominador del aviso
@@ -135,9 +199,19 @@ for (const [src, donde] of referencias) {
   }
   medidas++
   if (ancho < SUELO) estrechas.push([src, ancho, donde])
-  else if (aSangre.has(src) && ancho < A_SANGRE) heroEstrechos.push([src, ancho, donde])
+  else if (aSangre.has(src) && ancho < A_SANGRE) {
+    // La excepción vale solo mientras la foto siga siendo EXACTAMENTE la de
+    // aquel día: mismo archivo, mismo ancho. En cuanto cambia, se juzga.
+    if (HEREDADAS_A_SANGRE.get(src) === ancho) heroHeredados.push([src, ancho])
+    else heroEstrechos.push([src, ancho, donde])
+  }
   if (ancho < OBJETIVO) bajoObjetivo.push([src, ancho])
 }
+
+/** Excepciones que ya no aplican: la foto llegó, o dejó de servirse a sangre. */
+const heredadasCaducadas = [...HEREDADAS_A_SANGRE.keys()].filter(
+  (src) => !heroHeredados.some(([heredada]) => heredada === src),
+)
 
 /** El `alt` es obligatorio: `public/README.md`. Vacío = imagen muda para lectores. */
 const sinAlt = []
@@ -182,6 +256,29 @@ if (rotas.length || sinAlt.length || estrechas.length || heroEstrechos.length) {
 console.log(`✓ ${referencias.size} fotos verificadas contra public/.`)
 if (ilegibles.length) {
   console.log(`  ⚠ ${ilegibles.length} de formato no legible por este script: ${ilegibles.join(', ')}`)
+}
+if (heroHeredados.length) {
+  console.log(
+    `  ⚠ ${heroHeredados.length} fotos se sirven a sangre por debajo de ${A_SANGRE} px y avisan\n` +
+      '    en vez de fallar, a la espera de la sesión fotográfica de la obra documentada:',
+  )
+  for (const [src, ancho] of [...heroHeredados].sort((a, b) => a[1] - b[1])) {
+    console.log(`      ${String(ancho).padStart(4)} px  ${src}`)
+  }
+}
+if (heredadasCaducadas.length) {
+  console.log(
+    '  ⚠ Excepciones de HEREDADAS_A_SANGRE que ya no aplican —la foto llegó, cambió\n' +
+      '    o dejó de servirse a sangre—. Quita su línea de este script:\n' +
+      heredadasCaducadas.map((src) => `      ${src}`).join('\n'),
+  )
+}
+if (!acoplamientoVivo) {
+  console.log(
+    `  ⚠ ${PANTALLA_OBRA} ya no dice \`proyecto.imagenes[0]\` con \`100vw\`.\n` +
+      '    Este script sigue exigiendo el mínimo a sangre a esa primera foto: revisa\n' +
+      '    si el hero de la ficha de obra cambió de origen o de tamaño.',
+  )
 }
 if (bajoObjetivo.length) {
   // El denominador son las MEDIDAS, no las referenciadas: un SVG o un formato que

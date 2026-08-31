@@ -7,6 +7,12 @@ import { SERVICIOS } from '@/content/servicios'
 // puede dejarlo fuera del sitemap por olvido.
 const rutasServicio = Object.values(SERVICIOS).map((s) => s.ruta)
 
+// ⚠️ Las cuatro landings de `/lp/<slug>/` NO entran aquí, y su ausencia es la
+// decisión, no un olvido: son páginas de campaña con `robots: index:false`, y
+// un sitemap que declara lo que se pide no indexar se contradice a sí mismo.
+// `content/landings.ts` las deriva del mismo catálogo que estas seis rutas, así
+// que la tentación de mapearlas también aquí va a volver: no se hace.
+
 const rutasEstaticas = [
   '/',
   ...rutasServicio,

@@ -354,19 +354,39 @@ Una sola plantilla para aviso legal, privacidad y cookies.
 - Buscador no: el sitio tiene 20 páginas.
 - Registrar los 404 en analítica para vigilar redirecciones olvidadas durante 8 semanas.
 
-## B9 · Cabecera: estados pendientes
+## B9 · Cabecera: estado con scroll y menú de móvil
 
 El estado inicial de la cabecera, el pie completo y la barra fija de móvil **ya están
-resueltos** en las pantallas de la sección A. Faltan dos estados:
+resueltos** en las pantallas de la sección A. Aquí van los otros dos estados, los dos ya
+implementados:
 
-**Estado tras hacer scroll (escritorio).** La cabecera se ancla y se comprime:
-- `height: 84px → 60px`, con transición de 150 ms y `ease-out`.
-- El logo pasa de dos líneas a una: `PAVIMENTOS ALBUFERA`, mono 12 en versalitas.
-- El teléfono desaparece; el botón de contorno se mantiene y pasa a `min-height: 44px`.
+**Estado tras hacer scroll.** La cabecera se ancla y cambia de aspecto, pero **no de tamaño**.
+Enmendado el 2026-08-31; deroga las tres cláusulas que animaban la altura:
+
+- **La altura es constante: 70 px en móvil y 84 px desde 768 px.** ~~`height: 84px → 60px`~~.
+  Animar `height` sobre un elemento sticky que está en el flujo era la única animación no
+  compuesta del sitio y tenía dos costes medidos: CLS en cada scroll, porque los 24 px empujan
+  todo lo que hay debajo; y un salto al aterrizar con `#ancla` —el caso de un anuncio—, porque
+  el HTML llega expandido, el efecto ve el scroll ya hecho y la sección anclada se mueve bajo
+  el cursor.
+- El logo pasa de dos líneas a una: `PAVIMENTOS ALBUFERA`, mono 12 en versalitas. **Las dos
+  variantes se apilan en la misma celda de rejilla y se cruzan por `opacity`**, que sí compone;
+  así el ancho del logotipo tampoco cambia y la navegación no se desplaza.
+- El teléfono desaparece **por `visibility`**, que conserva su hueco —`display:none` movería el
+  botón— y lo saca del orden de tabulación. ~~El botón de contorno pasa a `min-height: 44px`~~:
+  **se queda en `min-height: 56px`**. Los 44 px existían para caber en una barra de 60 px, y la
+  barra ya no se comprime.
 - Aparece `border-bottom: 1px solid #1B1E1C` y fondo `--fondo` opaco (nunca translúcido).
-- Se desactiva con `prefers-reduced-motion: reduce`, que la deja fija a 60 px sin transición.
-- La barra de confianza y el submenú de servicio se anclan **debajo** de ella: recalcular sus
-  `top` a 60 px y el `scroll-margin-top` de las secciones a 130 px.
+- Los 150 ms y el `ease-out` se conservan, ahora sobre `opacity` y `visibility`.
+  `prefers-reduced-motion: reduce` los anula desde el bloque global de `app/globals.css`, sin
+  nada que declarar aquí.
+- La barra de confianza, el submenú de servicio y las dos barras de filtro se anclan **debajo**
+  de ella leyendo `--cabecera-actual`. ~~Recalcular sus `top` a 60 px~~: esa variable ya no la
+  reescribe ningún efecto, la fija una media query en `app/globals.css` —70 px hasta 768 px,
+  84 px a partir de ahí— y espeja el `h-[70px] md:h-cabecera` del `<header>`. **Si se cambia la
+  altura de la cabecera hay que cambiarla también ahí**, o los sticky se pegan por debajo del
+  borde y el contenido corre por la franja. El `scroll-margin-top` de las secciones se queda en
+  150 px: el peor caso es escritorio con submenú, 84 + 56 = 140.
 
 **Menú desplegado en móvil.** Panel a pantalla completa, no deslizante lateral:
 - Fondo `--tinta` a pantalla completa, `padding: 18px`.

@@ -3,7 +3,13 @@ import type { Config } from 'tailwindcss'
 /** Pavimentos Albufera — Tailwind con los tokens del §8.
  *  Escala cerrada a propósito: no hay valores intermedios. */
 const config: Config = {
-  content: ['./app/**/*.{ts,tsx,mdx}', './components/**/*.{ts,tsx}', './content/**/*.mdx'],
+  content: [
+    './app/**/*.{ts,tsx,mdx}',
+    './components/**/*.{ts,tsx}',
+    // El catálogo vive en .tsx, no en .mdx: con el glob viejo no se escaneaba.
+    './content/**/*.{ts,tsx,mdx}',
+    './lib/**/*.{ts,tsx}',
+  ],
   theme: {
     // Se reemplaza la paleta por defecto: solo existen estos colores.
     colors: {
@@ -50,11 +56,15 @@ const config: Config = {
     },
     extend: {
       minHeight: { tactil: '44px', campo: '48px', boton: '56px' },
+      // El objetivo táctil también necesita ancho: `min-w-tactil` se usaba sin existir.
+      minWidth: { tactil: '44px' },
       spacing: {
+        // Alto de sección en escritorio (design/01 §2.5, «72–88 px arriba y abajo»).
+        // No es un valor intermedio: es el par de `py-9` (36 px) en móvil.
+        22: '5.5rem',
         'lat-movil': '18px',
         'lat-desktop': '48px',
         cabecera: '84px',
-        'cabecera-scroll': '60px',
       },
       maxWidth: { lectura: '68ch', contenido: '1344px' },
       transitionDuration: { cabecera: '150ms' },

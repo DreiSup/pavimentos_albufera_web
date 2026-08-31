@@ -1,57 +1,115 @@
 'use client'
 
-import { useMemo } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import type { Acabado, ColorId, ServicioId } from '@/lib/tipos'
-import { CODIGO_COLOR, NOMBRE_SERVICIO } from '@/lib/tipos'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import Chip from '../ui/Chip'
 import { BotonEtiqueta } from '../ui/EnlaceEtiqueta'
-import MuestraAcabado from '../contenido/MuestraAcabado'
 import EstadoVacio from '../ui/EstadoVacio'
 import { EVENTOS, registrarEvento } from '@/lib/eventos'
 
+export type ClaveAcabado = 'tecnica' | 'color'
+
+/**
+ * Una fila de la barra. `todos` es el texto del chip que quita el filtro, y va
+ * en el dato porque la fila de técnica dice «Todas» y la de color «Todos».
+ */
+export type GrupoAcabados = {
+  clave: ClaveAcabado
+  etiqueta: string
+  todos: string
+  opciones: { valor: string; nombre: string }[]
+}
+
+/**
+ * Una muestra ya renderizada en servidor más los dos valores por los que se
+ * filtra. La muestra viaja como nodo, no como dato: así `MuestraAcabado` —y con
+ * él `next/image` y los JSON de `lib/datos`, que importa para resolver el
+ * municipio— se quedan fuera del bundle de cliente.
+ *
+ * La `key` se pone al crear el nodo en la página, no aquí: envolver cada muestra
+ * en un `<div key>` haría de ese div el hijo de la rejilla.
+ */
+export type AcabadoFiltrable = {
+  clave: string
+  valores: Record<ClaveAcabado, string>
+  muestra: ReactNode
+}
+
+type Seleccion = Record<ClaveAcabado, string | null>
+
+const SIN_FILTROS: Seleccion = { tecnica: null, color: null }
+const CLAVES = Object.keys(SIN_FILTROS) as ClaveAcabado[]
+
 export default function FiltrosAcabados({
-  acabados,
-  tecnicas,
-  colores,
+  muestras,
+  grupos,
 }: {
-  acabados: Acabado[]
-  tecnicas: ServicioId[]
-  colores: ColorId[]
+  muestras: AcabadoFiltrable[]
+  grupos: GrupoAcabados[]
 }) {
-  const router = useRouter()
-  const searchParams = useSearchParams()
+  const [filtros, setFiltros] = useState<Seleccion>(SIN_FILTROS)
 
-  const tecnica = searchParams.get('tecnica') as ServicioId | null
-  const color = searchParams.get('color') as ColorId | null
+  /**
+   * El estado manda y la URL lo sigue, nunca al revés. Leer la URL en el render
+   * con `useSearchParams` es lo que sacaba las 16 muestras del HTML estático.
+   * Aquí se lee una sola vez, al montar, para que `?tecnica=impreso&color=gris`
+   * —el enlace compartible que pide 02-pantallas §A3— siga funcionando.
+   */
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const inicial = { ...SIN_FILTROS }
+    for (const clave of CLAVES) inicial[clave] = params.get(clave)
+    if (CLAVES.some((clave) => inicial[clave])) setFiltros(inicial)
+  }, [])
 
-  function actualizar(clave: 'tecnica' | 'color', valor: string | null) {
-    const params = new URLSearchParams(searchParams.toString())
-    if (valor) params.set(clave, valor)
-    else params.delete(clave)
-    router.push(`?${params.toString()}`, { scroll: false })
+  function aplicar(siguiente: Seleccion) {
+    setFiltros(siguiente)
+
+    const params = new URLSearchParams()
+    for (const clave of CLAVES) {
+      const valor = siguiente[clave]
+      if (valor) params.set(clave, valor)
+    }
+    const cadena = params.toString()
+    // `replaceState` y no `router.push`: aquí no se cambia de página, y cada
+    // navegación del App Router contaba como un `page_view` más en GA4.
+    window.history.replaceState(
+      null,
+      '',
+      `${window.location.pathname}${cadena ? `?${cadena}` : ''}`,
+    )
+  }
+
+  function actualizar(clave: ClaveAcabado, valor: string | null) {
+    aplicar({ ...filtros, [clave]: valor })
     registrarEvento(EVENTOS.samplesFilter, {
       params: { filter_type: clave, filter_value: valor ?? 'todos' },
     })
   }
 
   function quitarFiltros() {
-    router.push('?', { scroll: false })
+    aplicar(SIN_FILTROS)
+    // Poner un filtro se medía y quitarlos todos de golpe no, así que el embudo
+    // de filtrado quedaba cojo por un lado. Mismo vocabulario del contrato: no
+    // hay nombre ni parámetro nuevo que registrar en GA4.
+    registrarEvento(EVENTOS.samplesFilter, {
+      params: { filter_type: 'todos', filter_value: 'todos' },
+    })
   }
 
-  const filtrados = useMemo(() => {
-    return acabados.filter((a) => {
-      if (tecnica && a.servicio !== tecnica) return false
-      if (color && a.color !== color) return false
-      return true
-    })
-  }, [acabados, tecnica, color])
+  const filtrados = useMemo(
+    () => muestras.filter((m) => CLAVES.every((c) => !filtros[c] || m.valores[c] === filtros[c])),
+    [muestras, filtros],
+  )
 
-  const hayFiltro = Boolean(tecnica || color)
+  const hayFiltro = CLAVES.some((clave) => filtros[clave])
   const resumen = [
     `${filtrados.length} ACABADO${filtrados.length === 1 ? '' : 'S'}`,
-    tecnica ? NOMBRE_SERVICIO[tecnica].toUpperCase() : null,
-    color ? CODIGO_COLOR[color] : null,
+    ...grupos.map((grupo) => {
+      const valor = filtros[grupo.clave]
+      if (!valor) return null
+      const opcion = grupo.opciones.find((o) => o.valor === valor)
+      return (opcion?.nombre ?? valor).toUpperCase()
+    }),
   ]
     .filter(Boolean)
     .join(' · ')
@@ -59,32 +117,27 @@ export default function FiltrosAcabados({
   return (
     <div className="flex flex-col gap-6">
       <div className="sticky [top:var(--cabecera-actual)] z-10 bg-fondo border-t border-b border-tinta py-3 flex flex-col gap-2">
-        <div className="flex gap-3 overflow-x-auto">
-          <span className="font-mono text-d-11 text-acero w-[84px] shrink-0 flex items-center">TÉCNICA</span>
-          <div className="flex gap-2">
-            <Chip activo={!tecnica} onClick={() => actualizar('tecnica', null)}>
-              Todas
-            </Chip>
-            {tecnicas.map((t) => (
-              <Chip key={t} activo={tecnica === t} onClick={() => actualizar('tecnica', t)}>
-                {NOMBRE_SERVICIO[t]}
+        {grupos.map((grupo) => (
+          <div key={grupo.clave} className="flex gap-3 overflow-x-auto">
+            <span className="font-mono text-d-11 text-acero w-[84px] shrink-0 flex items-center">
+              {grupo.etiqueta.toUpperCase()}
+            </span>
+            <div className="flex gap-2">
+              <Chip activo={!filtros[grupo.clave]} onClick={() => actualizar(grupo.clave, null)}>
+                {grupo.todos}
               </Chip>
-            ))}
+              {grupo.opciones.map((o) => (
+                <Chip
+                  key={o.valor}
+                  activo={filtros[grupo.clave] === o.valor}
+                  onClick={() => actualizar(grupo.clave, o.valor)}
+                >
+                  {o.nombre}
+                </Chip>
+              ))}
+            </div>
           </div>
-        </div>
-        <div className="flex gap-3 overflow-x-auto">
-          <span className="font-mono text-d-11 text-acero w-[84px] shrink-0 flex items-center">COLOR</span>
-          <div className="flex gap-2">
-            <Chip activo={!color} onClick={() => actualizar('color', null)}>
-              Todos
-            </Chip>
-            {colores.map((c) => (
-              <Chip key={c} activo={color === c} onClick={() => actualizar('color', c)}>
-                {CODIGO_COLOR[c]}
-              </Chip>
-            ))}
-          </div>
-        </div>
+        ))}
         <div className="flex items-center gap-4 pt-1">
           <span className="font-mono text-d-12 text-tinta">{resumen}</span>
           {hayFiltro ? (
@@ -97,9 +150,7 @@ export default function FiltrosAcabados({
 
       {filtrados.length > 0 ? (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-[14px_10px] md:gap-[32px_24px]">
-          {filtrados.map((a) => (
-            <MuestraAcabado key={a.slug} acabado={a} />
-          ))}
+          {filtrados.map((m) => m.muestra)}
         </div>
       ) : (
         <EstadoVacio

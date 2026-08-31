@@ -189,7 +189,12 @@ border-bottom: 2px solid #1B1E1C
 texto en mayúsculas terminado en →     p. ej.  VER TODOS LOS PROYECTOS →
 ```
 
-### 3.6 Chip de filtro
+### 3.6 Chip de filtro y de dato
+
+Con acción es un `<button aria-pressed>`; **sin acción es un `<span>`** con el mismo aspecto y
+el mismo estado activo. La variante sin acción existe para los recuentos que no filtran nada
+—«Todas (16)» en la home—: un botón que no hace nada es una promesa falsa para el teclado y el
+lector de pantalla, y además arrastraba el componente entero al paquete de cliente de la home.
 
 ```
 min-height: 44px · padding: 0 18px (escritorio) / 0 14px (móvil)
@@ -361,8 +366,12 @@ activo   font-weight: 600 + border-bottom: 2px solid #1B1E1C
 derecha  teléfono en Martian Mono 12px color #5C625E  +  botón de contorno «Pedir presupuesto»
 ```
 
-**Pendiente de maquetar** (`02-pantallas.md §B9`): estado compacto tras hacer scroll y menú
-desplegado en móvil. El estado inicial y la barra fija de móvil ya están resueltos.
+En móvil la caja mide 70 px, y `--cabecera-actual` de `tokens.css` lo espeja con una media
+query: es el `top` del que cuelgan la barra de confianza, el submenú de servicio y las dos
+barras de filtro. **La altura no se anima nunca** (`02-pantallas.md §B9`): el estado compacto
+tras hacer scroll cruza las dos variantes del logotipo por `opacity` y oculta el teléfono por
+`visibility`, y el botón de contorno se queda en 56 px. El menú desplegado en móvil está en
+`02-pantallas.md §B9`.
 
 ### 4.2 Barra de confianza
 

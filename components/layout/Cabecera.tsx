@@ -15,6 +15,28 @@ const enlaces = [
   { href: '/blog/', texto: 'Blog' },
 ]
 
+/**
+ * 01-sistema-de-diseno.md §4.1 y 02-pantallas.md §B9.
+ *
+ * **La altura es fija y no se anima.** El estado compacto se pintaba antes
+ * animando `height` sobre un elemento sticky que está en el flujo: la única
+ * animación no compuesta del sitio, con dos costes medidos. Uno, CLS en cada
+ * scroll, porque los 84 → 60 px empujan todo lo que hay debajo. Y dos, un salto
+ * en hidratación al aterrizar con `#ancla` —el caso de un anuncio—: el HTML
+ * llega expandido, el efecto ve el scroll ya hecho y la sección anclada se
+ * mueve bajo el cursor del visitante.
+ *
+ * Ahora la caja mide siempre lo mismo y el cambio de estado viaja por `opacity`,
+ * que sí compone. Las dos variantes del logotipo se apilan en la misma celda de
+ * rejilla y se cruzan; el teléfono se oculta con `visibility`, que conserva su
+ * hueco —`display:none` movería el botón— y lo saca del orden de tabulación.
+ * Los 150 ms y el `ease-out` de §B9 se conservan; `prefers-reduced-motion` ya
+ * los anula en `app/globals.css`, sin nada que añadir aquí.
+ *
+ * Consecuencia: `--cabecera-actual` es constante y se queda en el valor de
+ * `app/globals.css`. Ya no hay efecto que lo reescriba, y por eso los cinco
+ * `sticky` que se cuelgan de él dejan de saltar al hidratar.
+ */
 export default function Cabecera() {
   const pathname = usePathname()
   const [conScroll, setConScroll] = useState(false)
@@ -28,30 +50,33 @@ export default function Cabecera() {
   }, [])
 
   useEffect(() => {
-    document.documentElement.style.setProperty('--cabecera-actual', conScroll ? '60px' : '84px')
-  }, [conScroll])
-
-  useEffect(() => {
     setMenuAbierto(false)
   }, [pathname])
 
   return (
-    <header
-      className={`sticky top-0 z-30 bg-fondo border-b border-tinta transition-[height] duration-cabecera ease-out flex items-center px-[18px] md:px-lat-desktop ${
-        conScroll ? 'h-[60px]' : 'h-[70px] md:h-cabecera'
-      }`}
-    >
+    <header className="sticky top-0 z-30 bg-fondo border-b border-tinta h-[70px] md:h-cabecera flex items-center px-[18px] md:px-lat-desktop">
       <div className="flex items-center justify-between w-full max-w-contenido mx-auto">
-        <Link href="/" className="no-underline text-tinta">
-          {conScroll ? (
-            <span className="font-mono text-d-12 uppercase tracking-[0.05em]">Pavimentos Albufera</span>
-          ) : (
-            <span className="font-display font-extrabold fs-logo text-16 tracking-[0.02em] leading-[1.15] block">
-              PAVIMENTOS
-              <br />
-              ALBUFERA
-            </span>
-          )}
+        {/* Las dos variantes ocupan la misma celda: el ancho del logotipo no
+            cambia al comprimirse, así que la navegación no se desplaza. */}
+        <Link href="/" className="no-underline text-tinta grid items-center">
+          <span
+            aria-hidden={!conScroll}
+            className={`col-start-1 row-start-1 font-mono text-d-12 uppercase tracking-[0.05em] transition-opacity duration-cabecera ease-out ${
+              conScroll ? 'opacity-100' : 'opacity-0'
+            }`}
+          >
+            Pavimentos Albufera
+          </span>
+          <span
+            aria-hidden={conScroll}
+            className={`col-start-1 row-start-1 font-display font-extrabold fs-logo text-16 tracking-[0.02em] leading-[1.15] block transition-opacity duration-cabecera ease-out ${
+              conScroll ? 'opacity-0' : 'opacity-100'
+            }`}
+          >
+            PAVIMENTOS
+            <br />
+            ALBUFERA
+          </span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-7">
@@ -72,12 +97,27 @@ export default function Cabecera() {
         </nav>
 
         <div className="hidden md:flex items-center gap-5">
-          {!conScroll && (
-            <a href={nap.telefonoHref ?? '#'} data-ubicacion="header" className="font-mono text-d-12 text-tinta-media no-underline">
-              {nap.telefono ?? `[${nap.telefonoMostrado}]`}
-            </a>
-          )}
-          <Boton variante="contorno" href="/presupuesto/" className={conScroll ? '!min-h-tactil' : ''}>
+          {/* `visibility` y no `display`: el hueco se conserva y el botón no se
+              mueve. La transición declara las dos propiedades para que el número
+              se desvanezca en vez de irse de golpe, y durante esos 150 ms sigue
+              siendo visible: de ahí el `aria-hidden` y el `tabIndex`, que lo
+              retiran del lector y del tabulador desde el primer fotograma. */}
+          <a
+            href={nap.telefonoHref ?? '#'}
+            data-ubicacion="header"
+            aria-hidden={conScroll}
+            tabIndex={conScroll ? -1 : undefined}
+            className={`font-mono text-d-12 text-tinta-media no-underline transition-[opacity,visibility] duration-cabecera ease-out ${
+              conScroll ? 'invisible opacity-0' : 'opacity-100'
+            }`}
+          >
+            {nap.telefono ?? `[${nap.telefonoMostrado}]`}
+          </a>
+          {/* El botón ya no encoge: los 44 px de §B9 existían para caber en una
+              barra de 60 px, y la barra ya no se comprime. `min-h-boton` (56 px)
+              está por encima del objetivo táctil, y así desaparece el último
+              cambio de caja que el scroll provocaba en la cabecera. */}
+          <Boton variante="contorno" href="/presupuesto/">
             Pedir presupuesto
           </Boton>
         </div>

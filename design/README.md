@@ -106,8 +106,9 @@ caucho) y las 5 páginas de servicio restantes, que se derivan de la plantilla d
 | Analítica | GA4 + Search Console con consentimiento RGPD |
 
 Objetivos de rendimiento, no negociables: **LCP < 2,0 s en 4G · CLS < 0,05 · INP < 200 ms ·
-JS inicial < 100 KB comprimido.** La web actual está muy lejos; es la ganancia más automática
-de la migración. Cualquier dependencia que ponga en riesgo el presupuesto de JS se descarta.
+JS inicial ≤ 112 kB brotli q11 por ruta** —techo duro; objetivo 105 kB. La unidad y el ámbito,
+en `CLAUDE.md`. La web actual está muy lejos; es la ganancia más automática de la migración.
+Cualquier dependencia que ponga en riesgo el presupuesto de JS se descarta.
 
 ## 7. Interacciones y comportamiento
 

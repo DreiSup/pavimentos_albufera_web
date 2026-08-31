@@ -6,7 +6,8 @@ import { enviarPresupuesto, type EstadoEnvio } from '@/app/presupuesto/actions'
 import Campo, { claseInput } from '../ui/Campo'
 import Boton from '../ui/Boton'
 import { nap } from '@/lib/config'
-import { EVENTOS, registrarEvento, type Ubicacion } from '@/lib/eventos'
+import { EVENTOS, MONEDA, registrarEvento, type Ubicacion } from '@/lib/eventos'
+import { COOKIE_REFERENCIA, leerCookie } from '@/lib/cookies'
 
 const estadoInicial: EstadoEnvio = { estado: 'inicial', errores: {} }
 
@@ -26,7 +27,7 @@ export default function FormularioPresupuesto({
 }: {
   variante?: 'completo' | 'corto'
   /**
-   * Zona de la web desde la que se envía. Sin esto, `form_submit` —que es la
+   * Zona de la web desde la que se envía. Sin esto, `generate_lead` —que es la
    * macro-conversión del sitio— no dice qué página convierte, y el mismo
    * formulario se monta hoy en tres sitios distintos.
    */
@@ -65,13 +66,21 @@ export default function FormularioPresupuesto({
   useEffect(() => {
     if (estado.estado === 'enviado' && !eventoDisparado.current) {
       eventoDisparado.current = true
-      registrarEvento(EVENTOS.formSubmit, {
+      registrarEvento(EVENTOS.generateLead, {
         metaEstandar: 'Lead',
         metaEventId: eventoId,
         params: {
           form_location: origen,
           space_type: estado.resumen?.espacio,
           municipality: estado.resumen?.municipio,
+          // Las dos claves de unión con el lead que llega al buzón. `event_id`
+          // es el mismo que el Server Action manda a Meta CAPI; `reference_code`
+          // el que viaja dentro del mensaje de WhatsApp y del aviso de Telegram.
+          // Sin ellas, una fila de GA4 no se puede cruzar con ningún lead real:
+          // se sabe que alguien convirtió, no quién.
+          event_id: eventoId,
+          reference_code: leerCookie(COOKIE_REFERENCIA) ?? '',
+          currency: MONEDA,
         },
       })
     }

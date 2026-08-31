@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "postbuild": "node scripts/verificar-redirecciones.mjs && node scripts/verificar-imagenes.mjs",
+    "postbuild": "node scripts/verificar-redirecciones.mjs && node scripts/verificar-imagenes.mjs && node scripts/verificar-presupuesto.mjs && node scripts/verificar-lcp-visible.mjs && node scripts/verificar-landings.mjs",
     "start": "next start",
     "lint": "next lint"
   },
@@ -17,6 +17,7 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@lhci/cli": "0.15.1",
     "@types/node": "^22.10.7",
     "@types/react": "^19.0.7",
     "@types/react-dom": "^19.0.3",

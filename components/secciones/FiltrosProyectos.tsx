@@ -1,79 +1,99 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import type { ModeloId, Proyecto, ServicioId } from '@/lib/tipos'
-import { NOMBRE_MODELO, NOMBRE_SERVICIO } from '@/lib/tipos'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import Chip from '../ui/Chip'
 import Boton from '../ui/Boton'
 import { BotonEtiqueta } from '../ui/EnlaceEtiqueta'
-import TarjetaProyecto from '../contenido/TarjetaProyecto'
 import EstadoVacio from '../ui/EstadoVacio'
 
-type Grupo = { clave: 'servicio' | 'modelo' | 'municipio' | 'anio'; etiqueta: string; opciones: string[] }
+export type ClaveFiltro = 'servicio' | 'modelo' | 'municipio' | 'anio'
+
+/** Un grupo de la barra, con la etiqueta visible de cada opción ya resuelta en servidor. */
+export type GrupoFiltro = {
+  clave: ClaveFiltro
+  etiqueta: string
+  opciones: { valor: string; nombre: string }[]
+}
+
+/**
+ * Una obra ya renderizada en servidor (`tarjeta`) más los cuatro valores por los
+ * que se filtra. La tarjeta viaja como nodo, no como dato: así `TarjetaProyecto`
+ * —y con él `next/image` y `content/proyectos.json`— se quedan fuera del bundle
+ * de cliente, que solo decide cuáles de las tarjetas ya hechas se enseñan.
+ *
+ * La `key` se pone al crear el nodo en la página, no aquí: si se envolviera cada
+ * tarjeta en un `<div key>` ese div pasaría a ser el hijo de la rejilla y las
+ * tarjetas dejarían de igualarse en altura.
+ */
+export type ObraFiltrable = {
+  clave: string
+  valores: Record<ClaveFiltro, string | null>
+  tarjeta: ReactNode
+}
+
+type Seleccion = Record<ClaveFiltro, string | null>
+
+const SIN_FILTROS: Seleccion = { servicio: null, modelo: null, municipio: null, anio: null }
+const CLAVES = Object.keys(SIN_FILTROS) as ClaveFiltro[]
 
 export default function FiltrosProyectos({
-  proyectos,
-  servicios,
-  modelos,
-  municipios,
-  anios,
+  obras,
+  grupos,
 }: {
-  proyectos: Proyecto[]
-  servicios: ServicioId[]
-  modelos: ModeloId[]
-  municipios: string[]
-  anios: number[]
+  obras: ObraFiltrable[]
+  grupos: GrupoFiltro[]
 }) {
-  const router = useRouter()
-  const searchParams = useSearchParams()
+  const [filtros, setFiltros] = useState<Seleccion>(SIN_FILTROS)
   const [hojaAbierta, setHojaAbierta] = useState(false)
 
-  const filtros = {
-    servicio: searchParams.get('servicio'),
-    modelo: searchParams.get('modelo'),
-    municipio: searchParams.get('municipio'),
-    anio: searchParams.get('anio'),
+  /**
+   * El estado manda y la URL lo sigue, nunca al revés. Leer la URL en el render
+   * con `useSearchParams` es lo que sacaba la rejilla entera del HTML estático:
+   * las 9 tarjetas y sus enlaces no existían hasta que hidrataba el cliente.
+   * Aquí se lee una sola vez, al montar, para que un enlace compartido con
+   * `?municipio=…` siga aplicando su filtro.
+   */
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const inicial = { ...SIN_FILTROS }
+    for (const clave of CLAVES) inicial[clave] = params.get(clave)
+    if (CLAVES.some((clave) => inicial[clave])) setFiltros(inicial)
+  }, [])
+
+  function aplicar(siguiente: Seleccion) {
+    setFiltros(siguiente)
+
+    const params = new URLSearchParams()
+    for (const clave of CLAVES) {
+      const valor = siguiente[clave]
+      if (valor) params.set(clave, valor)
+    }
+    const cadena = params.toString()
+    // `replaceState` y no `router.push`: aquí no se cambia de página, y cada
+    // navegación del App Router contaba como un `page_view` más en GA4.
+    window.history.replaceState(
+      null,
+      '',
+      `${window.location.pathname}${cadena ? `?${cadena}` : ''}`,
+    )
   }
 
-  const grupos: Grupo[] = [
-    { clave: 'servicio', etiqueta: 'Servicio', opciones: servicios.map((s) => NOMBRE_SERVICIO[s]) },
-    { clave: 'modelo', etiqueta: 'Modelo', opciones: modelos.map((m) => NOMBRE_MODELO[m]) },
-    { clave: 'municipio', etiqueta: 'Municipio', opciones: municipios },
-    { clave: 'anio', etiqueta: 'Año', opciones: anios.map(String) },
-  ]
-
-  const valorDe: Record<Grupo['clave'], (o: string) => string> = {
-    servicio: (etiqueta) => servicios.find((s) => NOMBRE_SERVICIO[s] === etiqueta) ?? etiqueta,
-    modelo: (etiqueta) => modelos.find((m) => NOMBRE_MODELO[m] === etiqueta) ?? etiqueta,
-    municipio: (etiqueta) => etiqueta,
-    anio: (etiqueta) => etiqueta,
-  }
-
-  function actualizar(clave: Grupo['clave'], valor: string | null) {
-    const params = new URLSearchParams(searchParams.toString())
-    if (valor) params.set(clave, valor)
-    else params.delete(clave)
-    router.push(`?${params.toString()}`, { scroll: false })
+  function actualizar(clave: ClaveFiltro, valor: string | null) {
+    aplicar({ ...filtros, [clave]: valor })
   }
 
   function quitarFiltros() {
-    router.push('?', { scroll: false })
+    aplicar(SIN_FILTROS)
     setHojaAbierta(false)
   }
 
-  const filtrados = useMemo(() => {
-    return proyectos.filter((p) => {
-      if (filtros.servicio && p.servicio !== filtros.servicio) return false
-      if (filtros.modelo && p.modelo !== filtros.modelo) return false
-      if (filtros.municipio && p.municipio !== filtros.municipio) return false
-      if (filtros.anio && String(p.anio) !== filtros.anio) return false
-      return true
-    })
-  }, [proyectos, filtros.servicio, filtros.modelo, filtros.municipio, filtros.anio])
+  const filtradas = useMemo(
+    () => obras.filter((o) => CLAVES.every((c) => !filtros[c] || o.valores[c] === filtros[c])),
+    [obras, filtros],
+  )
 
-  const numFiltros = Object.values(filtros).filter(Boolean).length
-  const resumen = `${filtrados.length} OBRA${filtrados.length === 1 ? '' : 'S'}`
+  const numFiltros = CLAVES.filter((clave) => filtros[clave]).length
+  const resumen = `${filtradas.length} OBRA${filtradas.length === 1 ? '' : 'S'}`
 
   return (
     <div className="flex flex-col gap-6">
@@ -88,18 +108,15 @@ export default function FiltrosProyectos({
               <Chip activo={!filtros[grupo.clave]} onClick={() => actualizar(grupo.clave, null)}>
                 Todos
               </Chip>
-              {grupo.opciones.map((o) => {
-                const valor = valorDe[grupo.clave](o)
-                return (
-                  <Chip
-                    key={o}
-                    activo={filtros[grupo.clave] === valor}
-                    onClick={() => actualizar(grupo.clave, valor)}
-                  >
-                    {o}
-                  </Chip>
-                )
-              })}
+              {grupo.opciones.map((o) => (
+                <Chip
+                  key={o.valor}
+                  activo={filtros[grupo.clave] === o.valor}
+                  onClick={() => actualizar(grupo.clave, o.valor)}
+                >
+                  {o.nombre}
+                </Chip>
+              ))}
             </div>
           </div>
         ))}
@@ -125,7 +142,6 @@ export default function FiltrosProyectos({
         <HojaFiltros
           grupos={grupos}
           filtros={filtros}
-          valorDe={valorDe}
           resumen={resumen}
           onActualizar={actualizar}
           onQuitar={quitarFiltros}
@@ -133,11 +149,9 @@ export default function FiltrosProyectos({
         />
       ) : null}
 
-      {filtrados.length > 0 ? (
+      {filtradas.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {filtrados.map((p) => (
-            <TarjetaProyecto key={p.slug} proyecto={p} />
-          ))}
+          {filtradas.map((o) => o.tarjeta)}
         </div>
       ) : (
         <EstadoVacio
@@ -153,17 +167,15 @@ export default function FiltrosProyectos({
 function HojaFiltros({
   grupos,
   filtros,
-  valorDe,
   resumen,
   onActualizar,
   onQuitar,
   onCerrar,
 }: {
-  grupos: Grupo[]
-  filtros: Record<Grupo['clave'], string | null>
-  valorDe: Record<Grupo['clave'], (o: string) => string>
+  grupos: GrupoFiltro[]
+  filtros: Seleccion
   resumen: string
-  onActualizar: (clave: Grupo['clave'], valor: string | null) => void
+  onActualizar: (clave: ClaveFiltro, valor: string | null) => void
   onQuitar: () => void
   onCerrar: () => void
 }) {
@@ -214,18 +226,15 @@ function HojaFiltros({
               <Chip activo={!filtros[grupo.clave]} onClick={() => onActualizar(grupo.clave, null)}>
                 Todos
               </Chip>
-              {grupo.opciones.map((o) => {
-                const valor = valorDe[grupo.clave](o)
-                return (
-                  <Chip
-                    key={o}
-                    activo={filtros[grupo.clave] === valor}
-                    onClick={() => onActualizar(grupo.clave, valor)}
-                  >
-                    {o}
-                  </Chip>
-                )
-              })}
+              {grupo.opciones.map((o) => (
+                <Chip
+                  key={o.valor}
+                  activo={filtros[grupo.clave] === o.valor}
+                  onClick={() => onActualizar(grupo.clave, o.valor)}
+                >
+                  {o.nombre}
+                </Chip>
+              ))}
             </div>
           </div>
         ))}

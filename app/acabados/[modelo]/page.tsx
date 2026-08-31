@@ -45,6 +45,12 @@ export default async function FichaAcabado({ params }: { params: Promise<{ model
   const proyectos = proyectosPorModelo(modelo).slice(0, 3)
   const articulo = articuloQueExplica('impreso')
 
+  // `IMAGEN_MODELO` es el hero a sangre de esta pantalla, y la misma foto vuelve
+  // a salir abajo como muestra de color y como tarjeta de obra. Los dos huecos
+  // de abajo adoptan el `sizes` del hero para que sea UNA descarga y no tres.
+  const TAMANOS_HERO = '100vw'
+  const fotoHero = IMAGEN_MODELO[modelo]?.src
+
   return (
     <>
       <Migas items={[{ nombre: 'Acabados', href: '/acabados/' }, { nombre }]} />
@@ -54,12 +60,16 @@ export default async function FichaAcabado({ params }: { params: Promise<{ model
           imagen={IMAGEN_MODELO[modelo]}
           proporcion="4/3"
           prioridad
-          tamanos="100vw"
+          tamanos={TAMANOS_HERO}
           etiqueta={<EtiquetaTecnica lineas={['IMPRESO', `MODELO ${nombre.toUpperCase()}`]} />}
         />
       </section>
 
-      <Aparece as="section" className="px-[18px] md:px-lat-desktop py-9 md:py-22">
+      {/* Envoltorio sin Aparece: la clase .aparece arranca en opacity:0, así que
+          el contenido de esta sección —el h1 incluido— no se pintaba hasta que
+          hidrataba. Queda descartado también animation-timeline: view() como
+          sustituto. Las demás secciones de la página sí siguen apareciendo. */}
+      <section className="px-[18px] md:px-lat-desktop py-9 md:py-22">
         <div className="grid grid-cols-1 md:grid-cols-[1fr_420px] gap-8 md:gap-16">
           <div className="flex flex-col gap-4">
             <h1 className="font-display font-extrabold fs-hero text-46 md:text-64 leading-[1.05] m-0">
@@ -81,7 +91,7 @@ export default async function FichaAcabado({ params }: { params: Promise<{ model
             ]}
           />
         </div>
-      </Aparece>
+      </section>
 
       <Aparece as="section" className="bg-fondo-alt px-[18px] md:px-lat-desktop py-9 md:py-22">
         <div className="flex flex-col gap-6">
@@ -90,7 +100,11 @@ export default async function FichaAcabado({ params }: { params: Promise<{ model
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-[14px_10px] md:gap-[32px_24px]">
             {variantes.map((v) => (
-              <MuestraAcabado key={v.slug} acabado={v} />
+              <MuestraAcabado
+                key={v.slug}
+                acabado={v}
+                tamanos={v.muestra?.src === fotoHero ? TAMANOS_HERO : undefined}
+              />
             ))}
           </div>
         </div>
@@ -104,7 +118,11 @@ export default async function FichaAcabado({ params }: { params: Promise<{ model
           {proyectos.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {proyectos.map((p) => (
-                <TarjetaProyecto key={p.slug} proyecto={p} />
+                <TarjetaProyecto
+                  key={p.slug}
+                  proyecto={p}
+                  tamanos={p.imagenes[0]?.src === fotoHero ? TAMANOS_HERO : undefined}
+                />
               ))}
             </div>
           ) : (
