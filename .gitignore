@@ -40,3 +40,7 @@ next-env.d.ts
 # el commit anterior como preview y midiendo ahí.
 /.lighthouseci/
 /informes-lighthouse/
+
+# logotipo original que suelta el usuario, no es activo del repo:
+# las variantes derivadas viven en public/marca/
+/img/

@@ -26,8 +26,32 @@ archivo de Next 15 y van en `app/` (`icon.svg`, `apple-icon.png`, `opengraph-ima
   cuando el dueño confirme a qué obra pertenecen.
 - `acabados/` — el `slug` del acabado: `espiga-117.jpg`.
 - `blog/` — el `slug` del artículo: `guia-hormigon-pulido.jpg`.
-- `marca/` — `logo.svg` (uso general) y `logo.png` (campo `logo` del JSON-LD, que no admite SVG
-  de forma fiable).
+- `marca/` — cuatro archivos, todos recortados del mismo original de 1881 × 836 px que entregó
+  el dueño. **No hay `logo.svg`**: el original es un mapa de bits con degradados en cada elipse
+  de la senda, y vectorizarlo lo redibujaría.
+
+  | Archivo | Qué lleva | Dónde se pinta |
+  |---|---|---|
+  | `logo.png` | bloque completo: senda, wordmark y claim | Solo el campo `logo` del JSON-LD (`lib/schema.tsx`). Es el único sitio donde el claim se lee, porque no lo escala ninguna caja de la interfaz |
+  | `logo-texto.png` | wordmark, color de marca | `Cabecera` |
+  | `logo-texto-claro.png` | wordmark, variante clara | `MenuMovil` |
+  | `logo-marca-claro.png` | senda + wordmark, variante clara | `Pie` |
+
+  **Por qué hay variante clara.** El navy del original (`#000D2A`) mide **1,1 : 1** contra
+  `--tinta`: sobre el pie o el menú móvil el logotipo no se ve poco, no se ve. La variante clara
+  lleva el wordmark a `--fondo` con el azul en `#8FB4D6` —tinte derivado, solo del logotipo,
+  anotado en `design/01` §2.1—, y **la senda invierte su luminancia de forma continua**, no por
+  umbral: la losa cercana pasa a lo más claro y la lejana se apaga, así que la profundidad se
+  conserva leída desde un fondo oscuro. Con un umbral binario cada elipse se parte en manchas.
+
+  **Por qué el claim no se pinta en la interfaz.** `HORMIGÓN IMPRESO | PULIDO | LAVADO` necesita
+  que el bloque completo mida **336 px de ancho** para que esa línea llegue a los 10 px que
+  `design/01` §2.4 fija como suelo absoluto de la monoespaciada. En la cabecera sale a 3-4 px y
+  en el pie a 9,3. Publicarlo borroso sería maquillar un dato ilegible, que es justo lo que este
+  repo no hace en ningún otro sitio.
+
+  **Anchos.** Los tres de interfaz son de **900 px**, que es 3× la mayor caja en que se pintan
+  (276, 230 y 222 px CSS). `logo.png` conserva los 1818 px del original recortado.
 
 ## Reglas
 

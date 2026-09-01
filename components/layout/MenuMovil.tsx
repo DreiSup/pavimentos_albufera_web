@@ -54,9 +54,19 @@ export default function MenuMovil({
       className="fixed inset-0 z-40 bg-tinta text-fondo p-[18px] flex flex-col overflow-y-auto"
     >
       <div className="flex items-center justify-between">
-        <span className="font-display font-extrabold fs-logo text-16 tracking-[0.02em] text-fondo">
-          PAVIMENTOS ALBUFERA
-        </span>
+        {/* Wordmark en variante clara: mismo criterio que la cabecera, y aquí
+            además el panel es `--tinta` a pantalla completa. El panel solo se
+            monta al abrirlo, así que este archivo no entra en la carga inicial
+            de ninguna ruta. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/marca/logo-texto-claro.png"
+          alt="Pavimentos Albufera"
+          width={230}
+          height={20}
+          decoding="async"
+          className="h-[20px] w-[230px]"
+        />
         <button
           type="button"
           aria-label="Cerrar menú"

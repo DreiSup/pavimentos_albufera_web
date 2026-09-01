@@ -144,7 +144,9 @@ input[type='range'] {
   accent-color: var(--pigmento);
 }
 
-/* Eje de anchura de Archivo (§2.3). Solo estos cuatro valores, nunca otros. */
+/* Eje de anchura de Archivo (§2.3). Solo estos tres valores, nunca otros.
+   El cuarto, `.fs-logo` a 118 %, se retira: era exclusivo del logotipo
+   tipográfico y desde que el logotipo es una imagen no lo usaba nadie. */
 .fs-hero {
   font-stretch: 125%;
 }
@@ -153,7 +155,4 @@ input[type='range'] {
 }
 .fs-h3 {
   font-stretch: 115%;
-}
-.fs-logo {
-  font-stretch: 118%;
 }

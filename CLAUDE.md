@@ -19,6 +19,10 @@ La especificación completa está en `design/`. **Léela antes de escribir códi
 
 - Tokens: `#E9EAE6` fondo · `#DADCD6` fondo alterno · `#1B1E1C` tinta · `#5C625E` tinta media ·
   `#D9A441` pigmento · `#41535C` acero. No añadir colores.
+- **Única excepción, y no se extiende: el logotipo.** Desde el 2026-09-01 la identidad es un
+  archivo del dueño con dos azules propios (`#000D2A` y `#014BA2`), más `#8FB4D6` derivado para
+  la variante clara. Empieza y acaba en `public/marca/`: ningún texto, borde, fondo ni estado
+  del sitio usa esos valores. → `design/01` §2.1
 - `border-radius: 0` en todo. Una sola sombra en toda la web: la de la barra fija de móvil.
 - Escala tipográfica cerrada: 12 / 14 / 16 / 20 / 26 / 34 / 46 / 64 / 88. Nada intermedio.
 - Tres familias: Archivo Expanded (display), Instrument Sans (texto), Martian Mono (datos).

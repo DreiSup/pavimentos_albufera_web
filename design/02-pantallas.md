@@ -369,9 +369,12 @@ Enmendado el 2026-08-31; deroga las tres cláusulas que animaban la altura:
   todo lo que hay debajo; y un salto al aterrizar con `#ancla` —el caso de un anuncio—, porque
   el HTML llega expandido, el efecto ve el scroll ya hecho y la sección anclada se mueve bajo
   el cursor.
-- El logo pasa de dos líneas a una: `PAVIMENTOS ALBUFERA`, mono 12 en versalitas. **Las dos
-  variantes se apilan en la misma celda de rejilla y se cruzan por `opacity`**, que sí compone;
-  así el ancho del logotipo tampoco cambia y la navegación no se desplaza.
+- ~~El logo pasa de dos líneas a una: `PAVIMENTOS ALBUFERA`, mono 12 en versalitas. Las dos
+  variantes se apilan en la misma celda de rejilla y se cruzan por `opacity`.~~ **Derogado el
+  2026-09-01: el logotipo no cambia con el scroll.** Desde que es una imagen (`01 §4.1`) su caja
+  es fija, así que el problema que resolvía el cruce —que el ancho del logotipo se moviera al
+  comprimirse la barra y desplazara la navegación— no llega a plantearse. Se queda una sola
+  imagen, idéntica con scroll y sin él.
 - El teléfono desaparece **por `visibility`**, que conserva su hueco —`display:none` movería el
   botón— y lo saca del orden de tabulación. ~~El botón de contorno pasa a `min-height: 44px`~~:
   **se queda en `min-height: 56px`**. Los 44 px existían para caber en una barra de 60 px, y la
@@ -390,8 +393,9 @@ Enmendado el 2026-08-31; deroga las tres cláusulas que animaban la altura:
 
 **Menú desplegado en móvil.** Panel a pantalla completa, no deslizante lateral:
 - Fondo `--tinta` a pantalla completa, `padding: 18px`.
-- Cabecera del panel con el logo en `#E9EAE6` y una `×` de 44 px a la derecha.
-- Enlaces principales en Archivo 700 / 118 % a 34 px, uno por línea, `min-height: 56px`,
+- Cabecera del panel con el logo —`/marca/logo-texto-claro.png`, 20 px de alto— y una `×` de
+  44 px a la derecha.
+- Enlaces principales en Archivo 700 / 115 % a 34 px, uno por línea, `min-height: 56px`,
   separados por `border-top: 1px solid #41535C`.
 - Debajo, en mono 11 color `#DADCD6`: el NAP completo y los enlaces legales.
 - Al pie del panel, los dos botones de contacto a ancho completo (`Llamar` ocre + `WhatsApp`

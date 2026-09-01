@@ -134,6 +134,11 @@ const fuentes = [
   ...archivosDe(resolve(raiz, 'content'), ['.ts', '.tsx', '.json']),
   ...archivosDe(resolve(raiz, 'app'), ['.ts', '.tsx']),
   ...archivosDe(resolve(raiz, 'components'), ['.ts', '.tsx']),
+  // `lib/` faltaba, y no era inocuo: `lib/schema.tsx` nombra el logotipo que va
+  // al campo `logo` del JSON-LD, o sea la imagen que Google enseña, y era la
+  // única referencia a `public/` que ningún verificador miraba. Mismo agujero
+  // que `tailwind.config.ts` ya había tapado en su glob de contenido.
+  ...archivosDe(resolve(raiz, 'lib'), ['.ts', '.tsx']),
 ]
 
 const referencias = new Map() // src -> [archivos que la nombran]
@@ -183,7 +188,7 @@ const heroEstrechos = [] // a sangre por debajo de 1600: error
 const heroHeredados = [] // a sangre por debajo de 1600, con excepción apuntada: aviso
 const bajoObjetivo = [] // por debajo del objetivo: aviso, no error
 const ilegibles = []
-let medidas = 0 // las que se han podido medir: el denominador del aviso
+let medidas = 0 // fotos medidas: el denominador del aviso del objetivo
 
 for (const [src, donde] of referencias) {
   const ruta = resolve(raiz, 'public', src.slice(1))
@@ -197,7 +202,10 @@ for (const [src, donde] of referencias) {
     ilegibles.push(src)
     continue
   }
-  medidas++
+  // El denominador del objetivo cuenta fotos, no activos de marca: si sumara
+  // los cuatro del logotipo, el aviso diría «23/43 llegan» y la cifra mejoraría
+  // sola sin que se hubiera fotografiado ni una obra más.
+  if (!src.startsWith('/marca/')) medidas++
   if (ancho < SUELO) estrechas.push([src, ancho, donde])
   else if (aSangre.has(src) && ancho < A_SANGRE) {
     // La excepción vale solo mientras la foto siga siendo EXACTAMENTE la de
@@ -205,7 +213,14 @@ for (const [src, donde] of referencias) {
     if (HEREDADAS_A_SANGRE.get(src) === ancho) heroHeredados.push([src, ancho])
     else heroEstrechos.push([src, ancho, donde])
   }
-  if (ancho < OBJETIVO) bajoObjetivo.push([src, ancho])
+  // El objetivo mide **deuda fotográfica**: cuánta obra documentada sigue sin
+  // una toma decente. `/marca/` no es fotografía y no se juzga por su nitidez
+  // sino por su caja de render, que vive en el CSS y desde aquí no se ve: el
+  // logotipo de la cabecera se pinta a 276 px CSS y el archivo mide 900, o sea
+  // 3× para un DPR 3. Exigirle 1600 px obligaría a servir cuatro veces los
+  // píxeles que cualquier pantalla puede usar —21 kB por carga— para no ensuciar
+  // un contador que habla de otra cosa. El SUELO sí le aplica y lo cumple.
+  if (ancho < OBJETIVO && !src.startsWith('/marca/')) bajoObjetivo.push([src, ancho])
 }
 
 /** Excepciones que ya no aplican: la foto llegó, o dejó de servirse a sangre. */

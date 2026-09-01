@@ -20,6 +20,17 @@ export const ID_NEGOCIO = `${sitio.url}/#negocio`
  */
 const perfiles: string[] = []
 
+/**
+ * El bloque completo del logotipo —senda, wordmark y claim—, que es el único
+ * archivo donde el claim se lee: aquí no lo escala ninguna caja de la interfaz.
+ *
+ * Va escrito como cadena literal a propósito, y no interpolado dentro de la
+ * plantilla de abajo: el `PATRON` de `scripts/verificar-imagenes.mjs` busca
+ * `'/marca/…'` entre comillas, así que así el archivo entra en el verificador y
+ * el build falla si alguien lo mueve o lo borra. Dentro de un `${}` no lo vería.
+ */
+const RUTA_LOGO = '/marca/logo.png'
+
 export function schemaNegocioLocal() {
   return {
     '@context': 'https://schema.org',
@@ -27,6 +38,7 @@ export function schemaNegocioLocal() {
     '@id': ID_NEGOCIO,
     name: nap.nombre,
     url: sitio.url,
+    logo: `${sitio.url}${RUTA_LOGO}`,
     email: nap.email,
     ...(nap.telefonoHref ? { telephone: nap.telefonoHref.replace('tel:', '') } : {}),
     ...(perfiles.length > 0 ? { sameAs: perfiles } : {}),

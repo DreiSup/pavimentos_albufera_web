@@ -26,12 +26,14 @@ const enlaces = [
  * llega expandido, el efecto ve el scroll ya hecho y la sección anclada se
  * mueve bajo el cursor del visitante.
  *
- * Ahora la caja mide siempre lo mismo y el cambio de estado viaja por `opacity`,
- * que sí compone. Las dos variantes del logotipo se apilan en la misma celda de
- * rejilla y se cruzan; el teléfono se oculta con `visibility`, que conserva su
- * hueco —`display:none` movería el botón— y lo saca del orden de tabulación.
- * Los 150 ms y el `ease-out` de §B9 se conservan; `prefers-reduced-motion` ya
- * los anula en `app/globals.css`, sin nada que añadir aquí.
+ * Ahora la caja mide siempre lo mismo y el único cambio de estado que queda
+ * viaja por `visibility`: el teléfono se oculta conservando su hueco
+ * —`display:none` movería el botón— y sale del orden de tabulación. El
+ * logotipo ya no cruza dos variantes por `opacity`: desde que es una imagen de
+ * caja fija (`design/02` §B9, enmendado) no hay nada que comprimir, así que se
+ * queda igual con scroll y sin él. Los 150 ms y el `ease-out` de §B9 se
+ * conservan; `prefers-reduced-motion` ya los anula en `app/globals.css`, sin
+ * nada que añadir aquí.
  *
  * Consecuencia: `--cabecera-actual` es constante y se queda en el valor de
  * `app/globals.css`. Ya no hay efecto que lo reescriba, y por eso los cinco
@@ -56,27 +58,35 @@ export default function Cabecera() {
   return (
     <header className="sticky top-0 z-30 bg-fondo border-b border-tinta h-[70px] md:h-cabecera flex items-center px-[18px] md:px-lat-desktop">
       <div className="flex items-center justify-between w-full max-w-contenido mx-auto">
-        {/* Las dos variantes ocupan la misma celda: el ancho del logotipo no
-            cambia al comprimirse, así que la navegación no se desplaza. */}
-        <Link href="/" className="no-underline text-tinta grid items-center">
-          <span
-            aria-hidden={!conScroll}
-            className={`col-start-1 row-start-1 font-mono text-d-12 uppercase tracking-[0.05em] transition-opacity duration-cabecera ease-out ${
-              conScroll ? 'opacity-100' : 'opacity-0'
-            }`}
-          >
-            Pavimentos Albufera
-          </span>
-          <span
-            aria-hidden={conScroll}
-            className={`col-start-1 row-start-1 font-display font-extrabold fs-logo text-16 tracking-[0.02em] leading-[1.15] block transition-opacity duration-cabecera ease-out ${
-              conScroll ? 'opacity-0' : 'opacity-100'
-            }`}
-          >
-            PAVIMENTOS
-            <br />
-            ALBUFERA
-          </span>
+        {/* El logotipo es una sola imagen y no cambia con el scroll. Las dos
+            variantes tipográficas —dos líneas y una línea— existían para que el
+            ancho no se moviera al comprimirse la cabecera; con una imagen de
+            caja fija ese problema no llega a plantearse. Va el wordmark solo:
+            el bloque completo mete la senda de losas encima y el claim debajo,
+            y en una barra de 70-84 px eso deja las palabras a 6-8 px de altura
+            de mayúscula. El bloque completo vive en el pie, que sí tiene sitio.
+            `design/01` §4.1 y `design/02` §B9. */}
+        <Link href="/" className="no-underline text-tinta flex items-center">
+          {/* `<img>` y no `next/image`, medido: la cabecera y el pie viven en el
+              layout, así que meter el componente de imagen aquí lo mete en las
+              49 rutas. Cuesta **+5,1 kB brotli** en las que hoy no lo cargan
+              —las tres legales pasan de 97,7 a 102,8— y sube el máximo del sitio
+              de 108,2 a 109,3 kB, o sea la mitad del margen que queda hasta el
+              techo de 112. A cambio no da nada: el logotipo es de caja fija, no
+              tiene `srcset` que resolver, y el archivo ya está servido al ancho
+              que se pinta. El original de 1881 px vive en `logo.png`, que es el
+              del JSON-LD; este pesa 8,9 kB. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/marca/logo-texto.png"
+            alt="Pavimentos Albufera"
+            width={276}
+            height={24}
+            /* Sobre el pliegue en las 49 rutas, así que no es perezosa. */
+            loading="eager"
+            decoding="async"
+            className="h-[20px] w-[230px] md:h-[24px] md:w-[276px]"
+          />
         </Link>
 
         <nav className="hidden md:flex items-center gap-7">
