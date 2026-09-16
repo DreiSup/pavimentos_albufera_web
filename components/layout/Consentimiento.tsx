@@ -7,16 +7,38 @@ import Boton from '../ui/Boton'
 
 const CLAVE = 'pa-consentimiento'
 
+type Decision = 'aceptado' | 'rechazado'
+type Estado = Decision | 'pendiente'
+
+function decisionGuardada(): Estado {
+  try {
+    const guardado = window.localStorage.getItem(CLAVE)
+    return guardado === 'aceptado' || guardado === 'rechazado' ? guardado : 'pendiente'
+  } catch {
+    // Almacenamiento bloqueado (navegación privada): se vuelve a preguntar.
+    return 'pendiente'
+  }
+}
+
 export default function Consentimiento() {
-  const [estado, setEstado] = useState<'pendiente' | 'aceptado' | 'rechazado'>('pendiente')
+  /**
+   * `null` = todavía no se sabe qué decidió esta persona. Mientras no se sepa no se
+   * pinta nada: ni en el servidor ni en el primer render del cliente. Así el servidor y
+   * la hidratación coinciden —no hay desajuste— y el aviso deja de parpadear para quien
+   * ya aceptó o rechazó. GA4 y Meta Pixel siguen sin cargarse salvo con 'aceptado'.
+   */
+  const [estado, setEstado] = useState<Estado | null>(null)
 
   useEffect(() => {
-    const guardado = window.localStorage.getItem(CLAVE)
-    if (guardado === 'aceptado' || guardado === 'rechazado') setEstado(guardado)
+    setEstado(decisionGuardada())
   }, [])
 
-  function decidir(valor: 'aceptado' | 'rechazado') {
-    window.localStorage.setItem(CLAVE, valor)
+  function decidir(valor: Decision) {
+    try {
+      window.localStorage.setItem(CLAVE, valor)
+    } catch {
+      // Sin almacenamiento la decisión vale para esta sesión y nada más.
+    }
     setEstado(valor)
   }
 
@@ -50,7 +72,13 @@ export default function Consentimiento() {
       ) : null}
 
       {estado === 'pendiente' ? (
-        <div className="fixed bottom-0 md:bottom-0 left-0 right-0 z-50 bg-tinta text-fondo px-[18px] py-4 md:px-lat-desktop md:py-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 md:mb-0 mb-[56px]">
+        // En móvil se apoya justo encima de la barra fija (§4.3, 56 px): ni la tapa ni la
+        // barra lo tapa. Desplazamiento con `bottom`, no con margen suelto.
+        <div
+          role="region"
+          aria-label="Consentimiento de cookies"
+          className="fixed bottom-[56px] md:bottom-0 left-0 right-0 z-50 bg-tinta text-fondo px-[18px] py-4 md:px-lat-desktop md:py-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-3"
+        >
           <p className="text-14 md:text-16 text-sobre-tinta m-0 max-w-[68ch]">
             Usamos analítica y publicidad para entender cómo se usa esta web y mostrarte anuncios
             relevantes. No se carga nada hasta que aceptas.

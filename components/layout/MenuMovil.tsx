@@ -1,24 +1,37 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, type RefObject } from 'react'
 import { nap } from '@/lib/config'
 import Boton from '../ui/Boton'
 
 export default function MenuMovil({
   onCerrar,
   enlaces,
+  disparadorRef,
 }: {
   onCerrar: () => void
   enlaces: { href: string; texto: string }[]
+  /** Botón que abrió el panel: el foco vuelve a él al cerrarse (02-pantallas.md §B9). */
+  disparadorRef?: RefObject<HTMLButtonElement | null>
 }) {
   const panelRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    const disparador = disparadorRef?.current
     document.body.style.overflow = 'hidden'
     const primerFoco = panelRef.current?.querySelector<HTMLElement>('a, button')
     primerFoco?.focus()
 
+    return () => {
+      document.body.style.overflow = ''
+      // Se cierre como se cierre —Esc, la ×, un enlace o un cambio de ruta— quien
+      // navega con teclado vuelve al botón de hamburguesa, no al principio del documento.
+      disparador?.focus()
+    }
+  }, [disparadorRef])
+
+  useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') {
         onCerrar()
@@ -39,10 +52,7 @@ export default function MenuMovil({
     }
 
     document.addEventListener('keydown', onKeyDown)
-    return () => {
-      document.body.style.overflow = ''
-      document.removeEventListener('keydown', onKeyDown)
-    }
+    return () => document.removeEventListener('keydown', onKeyDown)
   }, [onCerrar])
 
   return (

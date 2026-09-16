@@ -15,7 +15,12 @@ const nextConfig: NextConfig = {
       { source: '/pavimentos-de-hormigon-pulido/', destination: '/hormigon-pulido/', permanent: true },
       { source: '/pavimentos-de-hormigon-lavado/', destination: '/hormigon-lavado/', permanent: true },
       { source: '/microcemento-decorativo/', destination: '/microcemento/', permanent: true },
-      { source: '/pavimentos-de-caucho/', destination: '/obra-publica/', permanent: true },
+      // Los pavimentos de caucho quedan fuera de alcance por decisión del cliente
+      // (README §4), así que `/obra-publica/` no existe y esta 301 aterrizaba en un
+      // 404, que es peor que no redirigir. Se repunta a la home, la alternativa que
+      // ya contempla 04-desarrollo-y-deploy.md («o '/' si se retira»). Si algún día
+      // se publica la vertical de obra pública, este destino vuelve a cambiar.
+      { source: '/pavimentos-de-caucho/', destination: '/', permanent: true },
 
       // Institucional y conversión
       { source: '/pavimentos-de-hormigon-valencia/', destination: '/empresa/', permanent: true },

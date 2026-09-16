@@ -16,6 +16,9 @@ export default function MuestraAcabado({
   const proyecto = documentado ? proyectoPorSlug(acabado.proyectos[0]) : undefined
 
   return (
+    // Los acabados con molde se agrupan por modelo (`/acabados/espiga/`); los de
+    // las técnicas sin molde van por su propio slug (`/acabados/pulido-gris/`).
+    // `app/acabados/[modelo]/page.tsx` genera las dos formas.
     <Link
       href={`/acabados/${acabado.modelo ?? acabado.slug}/`}
       className="flex flex-col gap-[10px] md:gap-[14px] no-underline group"

@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { nap } from '@/lib/config'
 import Boton from '../ui/Boton'
 import MenuMovil from './MenuMovil'
@@ -15,10 +15,31 @@ const enlaces = [
   { href: '/blog/', texto: 'Blog' },
 ]
 
+/**
+ * Altura de la cabecera, en un único sitio y en CSS (01-sistema-de-diseno.md §4.1 y
+ * 02-pantallas.md §B9). De `--cabecera-actual` cuelgan la propia cabecera y todas las
+ * barras pegajosas que se anclan bajo ella —barra de confianza, filtros del muestrario,
+ * índice de proyectos y submenú de servicio—, así que no pueden desajustarse.
+ *
+ *   móvil       44 px de objetivo táctil + 14 px de padding arriba y abajo (§2.5) = 72
+ *   escritorio  84 px (§4.1)
+ *   compacta    60 px tras hacer scroll (§B9), con el ancla de sección a 130 px
+ *
+ * Va en CSS y no en JS para que valga ya en el primer pintado y en cada punto de ruptura
+ * sin medir nada. `html:root` gana por especificidad al valor de arranque de globals.css
+ * sea cual sea el orden en que se sirvan las hojas de estilo.
+ */
+const ALTURAS = `
+html:root{--cabecera-actual:72px}
+@media (min-width:768px){html:root{--cabecera-actual:84px}}
+html:root[data-cabecera='compacta']{--cabecera-actual:60px;--ancla-offset:130px}
+`
+
 export default function Cabecera() {
   const pathname = usePathname()
   const [conScroll, setConScroll] = useState(false)
   const [menuAbierto, setMenuAbierto] = useState(false)
+  const disparadorRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     const onScroll = () => setConScroll(window.scrollY > 40)
@@ -27,20 +48,25 @@ export default function Cabecera() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
+  // El estado compacto se publica como atributo: la aritmética de alturas es de CSS.
   useEffect(() => {
-    document.documentElement.style.setProperty('--cabecera-actual', conScroll ? '60px' : '84px')
+    const raiz = document.documentElement
+    if (conScroll) raiz.dataset.cabecera = 'compacta'
+    else delete raiz.dataset.cabecera
   }, [conScroll])
 
   useEffect(() => {
     setMenuAbierto(false)
   }, [pathname])
 
+  const cerrarMenu = useCallback(() => setMenuAbierto(false), [])
+
   return (
-    <header
-      className={`sticky top-0 z-30 bg-fondo border-b border-tinta transition-[height] duration-cabecera ease-out flex items-center px-[18px] md:px-lat-desktop ${
-        conScroll ? 'h-[60px]' : 'h-[70px] md:h-cabecera'
-      }`}
-    >
+    <header className="sticky top-0 z-30 h-[var(--cabecera-actual)] bg-fondo border-b border-tinta transition-[height] duration-cabecera ease-out flex items-center px-[18px] md:px-lat-desktop">
+      <style href="pa-cabecera-alturas" precedence="default">
+        {ALTURAS}
+      </style>
+
       <div className="flex items-center justify-between w-full max-w-contenido mx-auto">
         <Link href="/" className="no-underline text-tinta">
           {conScroll ? (
@@ -61,6 +87,7 @@ export default function Cabecera() {
               <Link
                 key={enlace.href}
                 href={enlace.href}
+                aria-current={activo ? 'page' : undefined}
                 className={`min-h-tactil inline-flex items-center font-sans text-16 no-underline ${
                   activo ? 'font-semibold border-b-2 border-tinta' : 'font-medium'
                 }`}
@@ -82,9 +109,14 @@ export default function Cabecera() {
           </Boton>
         </div>
 
+        {/* Solo abre: mientras el panel está delante, este botón queda debajo y es el
+            panel quien tiene su propio «Cerrar menú». Por eso la etiqueta no cambia;
+            el estado lo lleva aria-expanded. */}
         <button
+          ref={disparadorRef}
           type="button"
           aria-label="Abrir menú"
+          aria-haspopup="dialog"
           aria-expanded={menuAbierto}
           onClick={() => setMenuAbierto(true)}
           className="md:hidden inline-flex items-center justify-center min-w-tactil min-h-tactil"
@@ -95,7 +127,9 @@ export default function Cabecera() {
         </button>
       </div>
 
-      {menuAbierto ? <MenuMovil onCerrar={() => setMenuAbierto(false)} enlaces={enlaces} /> : null}
+      {menuAbierto ? (
+        <MenuMovil onCerrar={cerrarMenu} enlaces={enlaces} disparadorRef={disparadorRef} />
+      ) : null}
     </header>
   )
 }
