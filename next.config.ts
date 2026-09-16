@@ -76,15 +76,19 @@ const nextConfig: NextConfig = {
       { source: '/hormigon-impreso-en-moraira/', destination: '/zonas/moraira/', permanent: true },
       { source: '/hormigon-pulido-en-ribarroja-del-turia/', destination: '/zonas/ribarroja/', permanent: true },
       { source: '/hormigon-pulido-en-xabia/', destination: '/zonas/xabia/', permanent: true },
-      { source: '/hormigon-pulido-en-alicante/', destination: '/zonas/alicante/', permanent: true },
+      // Sin obra documentada en Alicante, /zonas/alicante/ no se genera: estas dos van
+      // a su página de servicio, que cubre la misma intención sin caer en un 404.
+      { source: '/hormigon-pulido-en-alicante/', destination: '/hormigon-pulido/', permanent: true },
       { source: '/pavimentos-de-hormigon-impreso-en-denia/', destination: '/zonas/denia/', permanent: true },
       { source: '/hormigon-lavado-en-valencia-godella/', destination: '/zonas/godella/', permanent: true },
-      { source: '/microcemento-alicante-2021/', destination: '/zonas/alicante/', permanent: true },
+      { source: '/microcemento-alicante-2021/', destination: '/microcemento/', permanent: true },
 
-      // Artículos divulgativos → /blog/
+      // Artículos divulgativos → /blog/. Dos de los tres destinos previstos no existen
+      // todavía en content/articulos.json: van a la página de servicio que los explica,
+      // y volverán al artículo en cuanto se redacte.
       {
         source: '/pavimentos-de-hormigon-impreso-innovacion-y-estilo-para-tus-espacios/',
-        destination: '/blog/hormigon-impreso-innovacion-y-estilo/',
+        destination: '/hormigon-impreso/',
         permanent: true,
       },
       {
@@ -94,7 +98,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: '/descubriendo-la-elegancia-y-durabilidad-del-hormigon-impreso-en-valencia/',
-        destination: '/blog/hormigon-impreso-valencia-guia/',
+        destination: '/hormigon-impreso/',
         permanent: true,
       },
 
