@@ -1,10 +1,10 @@
 import type { Metadata } from 'next'
-import { Suspense } from 'react'
 import Aparece from '@/components/ui/Aparece'
 import AntetituloSeccion from '@/components/ui/AntetituloSeccion'
 import Boton from '@/components/ui/Boton'
 import Migas from '@/components/layout/Migas'
 import FiltrosAcabados from '@/components/secciones/FiltrosAcabados'
+import MuestraAcabado from '@/components/contenido/MuestraAcabado'
 import { acabados, coloresEnUso, contarDocumentados, tecnicasEnUso } from '@/lib/datos'
 
 export const metadata: Metadata = {
@@ -42,9 +42,26 @@ export default function Acabados() {
       </section>
 
       <div className="px-[18px] md:px-lat-desktop">
-        <Suspense>
-          <FiltrosAcabados acabados={acabados} tecnicas={tecnicas} colores={colores} />
-        </Suspense>
+        {/*
+          Las 16 muestras se pintan en servidor y viajan como `children`: el HTML estático
+          de /acabados/ lleva la rejilla entera y sus enlaces a /acabados/[modelo]/.
+          El componente de filtros solo las oculta; nunca las monta.
+          Cada envoltorio lleva sus valores de filtro en `data-*`, y `[&[hidden]]:hidden`
+          para que el atributo `hidden` gane al `display: grid` que estira la tarjeta.
+        */}
+        <FiltrosAcabados tecnicas={tecnicas} colores={colores} total={total}>
+          {acabados.map((acabado) => (
+            <div
+              key={acabado.slug}
+              data-filtrable=""
+              data-tecnica={acabado.servicio}
+              data-color={acabado.color}
+              className="grid [&[hidden]]:hidden"
+            >
+              <MuestraAcabado acabado={acabado} />
+            </div>
+          ))}
+        </FiltrosAcabados>
       </div>
 
       <Aparece

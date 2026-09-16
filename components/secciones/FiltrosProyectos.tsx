@@ -1,40 +1,49 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import type { ModeloId, Proyecto, ServicioId } from '@/lib/tipos'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import type { MouseEvent, ReactNode } from 'react'
+import type { ModeloId, ServicioId } from '@/lib/tipos'
 import { NOMBRE_MODELO, NOMBRE_SERVICIO } from '@/lib/tipos'
 import Chip from '../ui/Chip'
 import Boton from '../ui/Boton'
 import { BotonEtiqueta } from '../ui/EnlaceEtiqueta'
-import TarjetaProyecto from '../contenido/TarjetaProyecto'
 import EstadoVacio from '../ui/EstadoVacio'
+import { useFiltrosDeRejilla } from './filtros-en-url'
+import type { Filtros } from './filtros-en-url'
 
-type Grupo = { clave: 'servicio' | 'modelo' | 'municipio' | 'anio'; etiqueta: string; opciones: string[] }
+/** Los cuatro ejes del índice de obras (README §8). Constante de módulo: identidad estable. */
+const CLAVES = ['servicio', 'modelo', 'municipio', 'anio'] as const
+
+type Clave = (typeof CLAVES)[number]
+type Grupo = { clave: Clave; etiqueta: string; opciones: string[] }
 
 export default function FiltrosProyectos({
-  proyectos,
   servicios,
   modelos,
   municipios,
   anios,
+  total,
+  children,
 }: {
-  proyectos: Proyecto[]
   servicios: ServicioId[]
   modelos: ModeloId[]
   municipios: string[]
   anios: number[]
+  total: number
+  /**
+   * Las obras, renderizadas en servidor por `app/proyectos/page.tsx`: una tarjeta por
+   * hijo, envuelta en `[data-filtrable]` con sus valores de filtro. Llegan como
+   * `children` para que `TarjetaProyecto` siga siendo de servidor.
+   */
+  children: ReactNode
 }) {
-  const router = useRouter()
-  const searchParams = useSearchParams()
+  const { filtros, actualizar, quitar, rejilla, visibles, numFiltros } = useFiltrosDeRejilla(
+    CLAVES,
+    total,
+  )
   const [hojaAbierta, setHojaAbierta] = useState(false)
-
-  const filtros = {
-    servicio: searchParams.get('servicio'),
-    modelo: searchParams.get('modelo'),
-    municipio: searchParams.get('municipio'),
-    anio: searchParams.get('anio'),
-  }
+  // El elemento que abrió la hoja, para devolverle el foco al cerrarla.
+  const abridor = useRef<HTMLElement | null>(null)
 
   const grupos: Grupo[] = [
     { clave: 'servicio', etiqueta: 'Servicio', opciones: servicios.map((s) => NOMBRE_SERVICIO[s]) },
@@ -43,37 +52,32 @@ export default function FiltrosProyectos({
     { clave: 'anio', etiqueta: 'Año', opciones: anios.map(String) },
   ]
 
-  const valorDe: Record<Grupo['clave'], (o: string) => string> = {
+  const valorDe: Record<Clave, (o: string) => string> = {
     servicio: (etiqueta) => servicios.find((s) => NOMBRE_SERVICIO[s] === etiqueta) ?? etiqueta,
     modelo: (etiqueta) => modelos.find((m) => NOMBRE_MODELO[m] === etiqueta) ?? etiqueta,
     municipio: (etiqueta) => etiqueta,
     anio: (etiqueta) => etiqueta,
   }
 
-  function actualizar(clave: Grupo['clave'], valor: string | null) {
-    const params = new URLSearchParams(searchParams.toString())
-    if (valor) params.set(clave, valor)
-    else params.delete(clave)
-    router.push(`?${params.toString()}`, { scroll: false })
+  function abrirHoja(evento: MouseEvent<HTMLButtonElement>) {
+    abridor.current = evento.currentTarget
+    setHojaAbierta(true)
   }
+
+  // Identidad estable: la hoja la usa como dependencia de su efecto, y si cambiara en
+  // cada render el foco volvería al principio cada vez que se pulsa un chip.
+  const cerrarHoja = useCallback(() => {
+    setHojaAbierta(false)
+    abridor.current?.focus()
+  }, [])
 
   function quitarFiltros() {
-    router.push('?', { scroll: false })
-    setHojaAbierta(false)
+    quitar()
+    if (hojaAbierta) cerrarHoja()
   }
 
-  const filtrados = useMemo(() => {
-    return proyectos.filter((p) => {
-      if (filtros.servicio && p.servicio !== filtros.servicio) return false
-      if (filtros.modelo && p.modelo !== filtros.modelo) return false
-      if (filtros.municipio && p.municipio !== filtros.municipio) return false
-      if (filtros.anio && String(p.anio) !== filtros.anio) return false
-      return true
-    })
-  }, [proyectos, filtros.servicio, filtros.modelo, filtros.municipio, filtros.anio])
-
-  const numFiltros = Object.values(filtros).filter(Boolean).length
-  const resumen = `${filtrados.length} OBRA${filtrados.length === 1 ? '' : 'S'}`
+  const vacio = visibles === 0
+  const resumen = `${visibles} OBRA${visibles === 1 ? '' : 'S'}`
 
   return (
     <div className="flex flex-col gap-6">
@@ -104,7 +108,9 @@ export default function FiltrosProyectos({
           </div>
         ))}
         <div className="flex items-center gap-4 pt-1">
-          <span className="font-mono text-d-12 text-tinta">{resumen}</span>
+          <span className="font-mono text-d-12 text-tinta" aria-live="polite">
+            {resumen}
+          </span>
           {numFiltros > 0 ? (
             <BotonEtiqueta onClick={quitarFiltros} className="border-b-0">
               Quitar filtros ×
@@ -115,10 +121,12 @@ export default function FiltrosProyectos({
 
       {/* Móvil: fila única con hoja inferior (01 §3.15) */}
       <div className="md:hidden sticky [top:var(--cabecera-actual)] z-10 bg-fondo border-t border-b border-tinta py-3 flex items-center justify-between gap-3">
-        <Boton variante="contorno" type="button" onClick={() => setHojaAbierta(true)} className="!min-h-tactil">
+        <Boton variante="contorno" type="button" onClick={abrirHoja} className="!min-h-tactil">
           {numFiltros > 0 ? `Filtrar (${numFiltros})` : 'Filtrar'}
         </Boton>
-        <span className="font-mono text-d-12 text-tinta">{resumen}</span>
+        <span className="font-mono text-d-12 text-tinta" aria-live="polite">
+          {resumen}
+        </span>
       </div>
 
       {hojaAbierta ? (
@@ -129,23 +137,22 @@ export default function FiltrosProyectos({
           resumen={resumen}
           onActualizar={actualizar}
           onQuitar={quitarFiltros}
-          onCerrar={() => setHojaAbierta(false)}
+          onCerrar={cerrarHoja}
         />
       ) : null}
 
-      {filtrados.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {filtrados.map((p) => (
-            <TarjetaProyecto key={p.slug} proyecto={p} />
-          ))}
-        </div>
-      ) : (
+      {/* La rejilla no se desmonta al filtrar: se ocultan las tarjetas ya pintadas. */}
+      <div ref={rejilla} className={vacio ? 'hidden' : 'grid grid-cols-1 md:grid-cols-3 gap-6'}>
+        {children}
+      </div>
+
+      {vacio ? (
         <EstadoVacio
           titulo="No hay obras con esta combinación"
           texto="Solo enseñamos obra ejecutada de verdad. Quita un filtro o pregúntanos directamente."
           onQuitarFiltros={quitarFiltros}
         />
-      )}
+      ) : null}
     </div>
   )
 }
@@ -160,10 +167,10 @@ function HojaFiltros({
   onCerrar,
 }: {
   grupos: Grupo[]
-  filtros: Record<Grupo['clave'], string | null>
-  valorDe: Record<Grupo['clave'], (o: string) => string>
+  filtros: Filtros<Clave>
+  valorDe: Record<Clave, (o: string) => string>
   resumen: string
-  onActualizar: (clave: Grupo['clave'], valor: string | null) => void
+  onActualizar: (clave: Clave, valor: string | null) => void
   onQuitar: () => void
   onCerrar: () => void
 }) {
@@ -171,12 +178,29 @@ function HojaFiltros({
 
   useEffect(() => {
     document.body.style.overflow = 'hidden'
-    const primerFoco = panelRef.current?.querySelector<HTMLElement>('button')
+    const primerFoco = panelRef.current?.querySelector<HTMLElement>('a, button')
     primerFoco?.focus()
 
+    // Mismo patrón de trampa de foco que `components/layout/MenuMovil.tsx`.
     function onKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape') onCerrar()
+      if (e.key === 'Escape') {
+        onCerrar()
+        return
+      }
+      if (e.key !== 'Tab' || !panelRef.current) return
+      const focables = panelRef.current.querySelectorAll<HTMLElement>('a, button')
+      if (focables.length === 0) return
+      const primero = focables[0]
+      const ultimo = focables[focables.length - 1]
+      if (e.shiftKey && document.activeElement === primero) {
+        e.preventDefault()
+        ultimo.focus()
+      } else if (!e.shiftKey && document.activeElement === ultimo) {
+        e.preventDefault()
+        primero.focus()
+      }
     }
+
     document.addEventListener('keydown', onKeyDown)
     return () => {
       document.body.style.overflow = ''

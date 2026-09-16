@@ -1,53 +1,50 @@
 'use client'
 
-import { useMemo } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import type { Acabado, ColorId, ServicioId } from '@/lib/tipos'
+import type { ReactNode } from 'react'
+import type { ColorId, ServicioId } from '@/lib/tipos'
 import { CODIGO_COLOR, NOMBRE_SERVICIO } from '@/lib/tipos'
 import Chip from '../ui/Chip'
 import { BotonEtiqueta } from '../ui/EnlaceEtiqueta'
-import MuestraAcabado from '../contenido/MuestraAcabado'
 import EstadoVacio from '../ui/EstadoVacio'
 import { registrarEvento } from '@/lib/eventos'
+import { useFiltrosDeRejilla } from './filtros-en-url'
+
+/** Los dos ejes del muestrario (README §8). Constante de módulo: identidad estable. */
+const CLAVES = ['tecnica', 'color'] as const
 
 export default function FiltrosAcabados({
-  acabados,
   tecnicas,
   colores,
+  total,
+  children,
 }: {
-  acabados: Acabado[]
   tecnicas: ServicioId[]
   colores: ColorId[]
+  total: number
+  /**
+   * La rejilla completa, renderizada en servidor por `app/acabados/page.tsx`:
+   * una muestra por hijo, envuelta en `[data-filtrable]` con sus valores de filtro.
+   * Llega como `children` para que `MuestraAcabado` siga siendo de servidor y no
+   * entre en el bundle de cliente.
+   */
+  children: ReactNode
 }) {
-  const router = useRouter()
-  const searchParams = useSearchParams()
+  const { filtros, actualizar, quitar, rejilla, visibles } = useFiltrosDeRejilla(CLAVES, total)
 
-  const tecnica = searchParams.get('tecnica') as ServicioId | null
-  const color = searchParams.get('color') as ColorId | null
-
-  function actualizar(clave: 'tecnica' | 'color', valor: string | null) {
-    const params = new URLSearchParams(searchParams.toString())
-    if (valor) params.set(clave, valor)
-    else params.delete(clave)
-    router.push(`?${params.toString()}`, { scroll: false })
+  function cambiar(clave: (typeof CLAVES)[number], valor: string | null) {
+    actualizar(clave, valor)
     registrarEvento('filtro_muestrario', { params: { [clave]: valor ?? 'todos' } })
   }
 
-  function quitarFiltros() {
-    router.push('?', { scroll: false })
-  }
+  // Para el resumen solo vale un valor que exista en el inventario; los chips, en
+  // cambio, miran el valor crudo, así una URL con un valor inventado no marca ninguno.
+  const tecnica = tecnicas.find((t) => t === filtros.tecnica)
+  const color = colores.find((c) => c === filtros.color)
 
-  const filtrados = useMemo(() => {
-    return acabados.filter((a) => {
-      if (tecnica && a.servicio !== tecnica) return false
-      if (color && a.color !== color) return false
-      return true
-    })
-  }, [acabados, tecnica, color])
-
-  const hayFiltro = Boolean(tecnica || color)
+  const hayFiltro = Boolean(filtros.tecnica || filtros.color)
+  const vacio = visibles === 0
   const resumen = [
-    `${filtrados.length} ACABADO${filtrados.length === 1 ? '' : 'S'}`,
+    `${visibles} ACABADO${visibles === 1 ? '' : 'S'}`,
     tecnica ? NOMBRE_SERVICIO[tecnica].toUpperCase() : null,
     color ? CODIGO_COLOR[color] : null,
   ]
@@ -60,11 +57,11 @@ export default function FiltrosAcabados({
         <div className="flex gap-3 overflow-x-auto">
           <span className="font-mono text-d-11 text-acero w-[84px] shrink-0 flex items-center">TÉCNICA</span>
           <div className="flex gap-2">
-            <Chip activo={!tecnica} onClick={() => actualizar('tecnica', null)}>
+            <Chip activo={!filtros.tecnica} onClick={() => cambiar('tecnica', null)}>
               Todas
             </Chip>
             {tecnicas.map((t) => (
-              <Chip key={t} activo={tecnica === t} onClick={() => actualizar('tecnica', t)}>
+              <Chip key={t} activo={filtros.tecnica === t} onClick={() => cambiar('tecnica', t)}>
                 {NOMBRE_SERVICIO[t]}
               </Chip>
             ))}
@@ -73,39 +70,45 @@ export default function FiltrosAcabados({
         <div className="flex gap-3 overflow-x-auto">
           <span className="font-mono text-d-11 text-acero w-[84px] shrink-0 flex items-center">COLOR</span>
           <div className="flex gap-2">
-            <Chip activo={!color} onClick={() => actualizar('color', null)}>
+            <Chip activo={!filtros.color} onClick={() => cambiar('color', null)}>
               Todos
             </Chip>
             {colores.map((c) => (
-              <Chip key={c} activo={color === c} onClick={() => actualizar('color', c)}>
+              <Chip key={c} activo={filtros.color === c} onClick={() => cambiar('color', c)}>
                 {CODIGO_COLOR[c]}
               </Chip>
             ))}
           </div>
         </div>
         <div className="flex items-center gap-4 pt-1">
-          <span className="font-mono text-d-12 text-tinta">{resumen}</span>
+          <span className="font-mono text-d-12 text-tinta" aria-live="polite">
+            {resumen}
+          </span>
           {hayFiltro ? (
-            <BotonEtiqueta onClick={quitarFiltros} className="border-b-0">
+            <BotonEtiqueta onClick={quitar} className="border-b-0">
               Quitar filtros ×
             </BotonEtiqueta>
           ) : null}
         </div>
       </div>
 
-      {filtrados.length > 0 ? (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-[14px_10px] md:gap-[32px_24px]">
-          {filtrados.map((a) => (
-            <MuestraAcabado key={a.slug} acabado={a} />
-          ))}
-        </div>
-      ) : (
+      {/* La rejilla no se desmonta al filtrar: se ocultan los envoltorios ya pintados. */}
+      <div
+        ref={rejilla}
+        className={
+          vacio ? 'hidden' : 'grid grid-cols-2 md:grid-cols-4 gap-[14px_10px] md:gap-[32px_24px]'
+        }
+      >
+        {children}
+      </div>
+
+      {vacio ? (
         <EstadoVacio
           titulo="No hay acabados con esta combinación"
           texto="Solo enseñamos acabados con obra ejecutada de verdad. Quita un filtro o pregúntanos por este acabado directamente."
-          onQuitarFiltros={quitarFiltros}
+          onQuitarFiltros={quitar}
         />
-      )}
+      ) : null}
     </div>
   )
 }
