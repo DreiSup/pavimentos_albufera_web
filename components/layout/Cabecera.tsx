@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { nap } from '@/lib/config'
 import Boton from '../ui/Boton'
+import Logo from './Logo'
 import MenuMovil from './MenuMovil'
 
 const enlaces = [
@@ -69,15 +70,7 @@ export default function Cabecera() {
 
       <div className="flex items-center justify-between w-full max-w-contenido mx-auto">
         <Link href="/" className="no-underline text-tinta">
-          {conScroll ? (
-            <span className="font-mono text-d-12 uppercase tracking-[0.05em]">Pavimentos Albufera</span>
-          ) : (
-            <span className="font-display font-extrabold fs-logo text-16 tracking-[0.02em] leading-[1.15] block">
-              PAVIMENTOS
-              <br />
-              ALBUFERA
-            </span>
-          )}
+          <Logo variante={conScroll ? 'compacto' : 'apilado'} />
         </Link>
 
         <nav className="hidden md:flex items-center gap-7">

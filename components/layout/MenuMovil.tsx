@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useEffect, useRef, type RefObject } from 'react'
 import { nap } from '@/lib/config'
 import Boton from '../ui/Boton'
+import Logo from './Logo'
 
 export default function MenuMovil({
   onCerrar,
@@ -64,9 +65,7 @@ export default function MenuMovil({
       className="fixed inset-0 z-40 bg-tinta text-fondo p-[18px] flex flex-col overflow-y-auto"
     >
       <div className="flex items-center justify-between">
-        <span className="font-display font-extrabold fs-logo text-16 tracking-[0.02em] text-fondo">
-          PAVIMENTOS ALBUFERA
-        </span>
+        <Logo variante="linea" />
         <button
           type="button"
           aria-label="Cerrar menú"

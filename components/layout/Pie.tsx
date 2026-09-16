@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Logo from './Logo'
 import { nap } from '@/lib/config'
 import { RUTA_SERVICIO, NOMBRE_SERVICIO } from '@/lib/tipos'
 
@@ -11,11 +12,7 @@ export default function Pie() {
     <footer className="bg-tinta text-fondo px-[18px] py-10 md:px-lat-desktop md:py-14 md:pb-10">
       <div className="max-w-contenido mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-10">
         <div>
-          <span className="font-display font-extrabold fs-logo text-16 tracking-[0.02em] leading-[1.15] block">
-            PAVIMENTOS
-            <br />
-            ALBUFERA
-          </span>
+          <Logo />
         </div>
 
         <div className="font-mono text-d-11 leading-[2.2] text-sobre-tinta flex flex-col">
