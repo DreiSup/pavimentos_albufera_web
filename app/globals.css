@@ -16,6 +16,16 @@
   --pendiente-oscuro: #9aa09b;
   --error: #8c3a2b;
 
+  /* Velo del titular sobre fotografía (design/01 §2.8). No es un color nuevo:
+     es `--tinta` con alfa. El 0,68 no es a ojo, está medido —ver el §2.8— para
+     que `--fondo` conserve 4,79 : 1 sobre un píxel BLANCO PURO, que es el peor
+     fondo posible. Así la garantía no depende de qué foto se ponga mañana. */
+  --velo: rgba(27, 30, 28, 0.68);
+
+  /* Vuelta completa del carrusel del hero (design/01 §3.15), repartida entre
+     sus cuatro diapositivas: 6 s de foto cada una. */
+  --carrusel-ciclo: 24s;
+
   --cabecera: 84px;
   --ancla-offset: 150px;
   /* Espeja el `h-[70px] md:h-cabecera` de `components/layout/Cabecera.tsx`. La
@@ -150,6 +160,53 @@ a {
          igual para una sección corta que para una larga. */
       animation-range: entry 80px entry 380px;
     }
+  }
+}
+
+/* Velo sobre fotografía (§2.8). Su único trabajo es sostener el contraste del
+   titular del hero de móvil; no es un tratamiento estético reutilizable. */
+.velo {
+  background: var(--velo);
+}
+
+/* Carrusel de fotografía de obra (§3.15). Sin JavaScript.
+   El estado BASE es lo que importa: una sola foto visible, la primera. Sin
+   animación —movimiento reducido, o navegador que no la soporte— eso es lo que
+   queda, y es una portada correcta, no un apilamiento. */
+.carrusel__paso {
+  opacity: 0;
+}
+.carrusel__paso:first-child {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Cuatro diapositivas: cada una ocupa una cuarta parte del ciclo, con el
+     cruce en los tres puntos porcentuales que separan 22 de 25 y 97 de 100.
+     La que entra sube mientras la anterior baja: el fondo nunca asoma. */
+  @keyframes carrusel {
+    0%,
+    22% {
+      opacity: 1;
+    }
+    25%,
+    97% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  .carrusel__paso {
+    /* La forma abreviada reinicia `animation-delay`, así que el escalonado va
+       DESPUÉS. Mismo cuidado que en `.aparece` con `animation-timeline`. */
+    animation: carrusel var(--carrusel-ciclo) linear infinite;
+    animation-delay: calc(var(--carrusel-i) * var(--carrusel-ciclo) / 4);
+    /* Sin relleno a propósito: durante su retardo, cada diapositiva se queda en
+       su `opacity` base —0 para las tres que esperan— en vez de adelantar el
+       fotograma 0 %, que las encendería todas a la vez en el primer segundo. */
+    animation-fill-mode: none;
   }
 }
 
