@@ -123,11 +123,10 @@ const proyectosHome = [...proyectos].sort((a, b) => Number(b.destacado) - Number
 // El orden de precedencia es el del hueco más ancho, nunca al revés: degradar
 // el `sizes` de un hero para hacerlo coincidir con una tarjeta serviría una
 // imagen corta sobre el LCP. Y la regla se aplica **solo a la foto que se
-// repite**: las otras cinco miniaturas de espacio siguen pidiendo 76 px, que es
-// lo que miden.
+// repite**: las otras cinco fotos de espacio siguen pidiendo su media columna.
 const TAMANOS_HERO_HOME = '(min-width: 768px) 50vw, 100vw'
 const TAMANOS_TARJETA_SERVICIO = '(min-width: 768px) 30vw, 100vw'
-const TAMANOS_MINIATURA_ESPACIO = '(min-width: 768px) 30vw, 76px'
+const TAMANOS_ESPACIO = '(min-width: 768px) 30vw, 50vw'
 const fotoHero = proyectoHero.imagenes[0]?.src
 const fotosDeObra = new Set(proyectosHome.map((p) => p.imagenes[0]?.src).filter(Boolean))
 const fotosDeServicio = new Set(servicios.map((s) => SERVICIOS[s.id].imagenTarjeta?.src).filter(Boolean))
@@ -232,16 +231,26 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 md:grid-rows-2 gap-[2px] bg-tinta p-[2px]">
+          {/* En móvil la sección era una lista de seis filas con una miniatura
+              CUADRADA de 76 px a la izquierda: un sello, no una fotografía. La
+              sección existe para que el visitante reconozca su espacio —un porche,
+              una entrada de garaje— y a 76 px no se reconoce nada.
+              Pasa a rejilla de dos columnas con la foto a 4/3 y el texto debajo,
+              la misma tarjeta que ya usaba escritorio. Dos columnas y no una:
+              apiladas a ancho completo serían seis fotos de 354×265, ~1.600 px de
+              scroll antes de llegar al Muestrario, y next/image pediría candidatos
+              de 1080 px seis veces. A 50vw la celda mide 174 px y el candidato cae
+              en 640. → `design/02` §A1, enmendado el 2026-09-17. */}
+          <div className="grid grid-cols-2 md:grid-cols-3 md:grid-rows-2 gap-[2px] bg-tinta p-[2px]">
             {espacios.map((e) => (
-              <div key={e.titulo} className="bg-fondo flex md:flex-col gap-4 md:gap-3">
+              <div key={e.titulo} className="bg-fondo flex flex-col gap-3">
                 <Foto
                   imagen={e.imagen}
                   proporcion="4/3"
-                  tamanos={tamanosCompartidos(e.imagen?.src) ?? TAMANOS_MINIATURA_ESPACIO}
-                  className="w-[76px] h-[76px] md:w-full md:h-auto shrink-0"
+                  tamanos={tamanosCompartidos(e.imagen?.src) ?? TAMANOS_ESPACIO}
+                  className="w-full"
                 />
-                <div className="flex flex-col gap-1 py-2 md:py-0 md:px-4 md:pb-4">
+                <div className="flex flex-col gap-1 px-3 pb-3 md:px-4 md:pb-4">
                   <h3 className="font-display font-bold fs-h3 text-16 md:text-20 m-0">{e.titulo}</h3>
                   <p className="text-14 md:text-16 text-tinta-media m-0">{e.texto}</p>
                 </div>
