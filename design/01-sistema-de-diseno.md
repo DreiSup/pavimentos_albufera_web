@@ -59,6 +59,18 @@ Todos los demás botones son de contorno o de relleno en tinta. Cualquier ocre q
 uno de esos dos roles, sobra. En móvil, la acción primaria persistente es la barra fija
 inferior, así que **los CTA del hero y del cierre bajan a contorno** para no competir con ella.
 
+**Excepción del hero de la home, decidida por el dueño el 2026-09-17.** El `Ver acabados` del
+hero de `/` es **ocre también en móvil**, así que esa pantalla enseña dos ocres de acción a la
+vez: ese botón y el `Llamar` de la barra fija. El dueño lo sabe y lo elige: con los dos botones
+del hero en contorno no se distinguía cuál era la acción principal, y prefiere perder la
+jerarquía frente a la barra antes que perderla entre los dos botones que tiene delante.
+
+Es **excepción de pantalla, no enmienda de la regla**: no se extiende al cierre de la home —sus
+dos botones siguen en tinta y contorno— ni a ninguna otra ruta. El párrafo de arriba sigue
+siendo la norma en las 50 restantes. Y no relaja nada del foco: `btn-primario` cambia el
+`outline` a `--tinta`, que es el único que contrasta sobre ocre, y viene ya dentro de la
+variante `primario` de `Boton`.
+
 Los antetítulos de sección van siempre en `--acero` sobre fondo claro y en `--fondo-alt` sobre
 fondo oscuro. **Nunca en ocre**: no son acciones.
 
@@ -180,9 +192,63 @@ geométrica con la tipografía display del sitio no es la marca de la empresa, y
 obligaba a abrir una excepción en la paleta que ya no hace falta. Queda en el historial por
 si algún día se quiere un logotipo que sí escale y se recoloree.
 
+### 2.8 El velo
+
+**Pieza nueva del sistema, 2026-09-17.** Hasta esta fecha el sistema **no tenía velo**, y por eso
+un comentario de `app/page.tsx` justificaba haber sacado el titular de encima de la foto del
+hero: sobre fotografía real el contraste deja de ser comprobable. El dueño ha decidido que el
+titular vuelva a ir encima. La decisión no se cumple pintando texto claro sobre una foto: se
+cumple añadiendo la pieza que faltaba, con su valor medido.
+
+| Token | Valor | Uso |
+|---|---|---|
+| `--velo` | `rgba(27, 30, 28, 0.68)` | Capa entre una fotografía y el texto que se pinta sobre ella |
+
+**No es un color nuevo.** Es `--tinta` con alfa, así que la paleta de seis del §2.1 sigue
+cerrada: no hay un séptimo hex en ninguna parte.
+
+**De dónde sale el 0,68.** No de mirar una captura. Se compone el velo sobre **cada píxel** de
+la foto igual que lo hace el navegador —en sRGB— y se busca el píxel que deja el contraste WCAG
+de `--fondo` (`#E9EAE6`) **más bajo**, sobre el recorte `3/4` real de un teléfono de 390 px
+(354 × 472 con `object-cover`). No se promedia: un promedio pasa por alto el reflejo de sol de
+40 px sobre el que cae una letra.
+
+| Fondo bajo el velo | Píxel más claro | Contraste de `--fondo` |
+|---|---|---|
+| **Blanco puro `#FFFFFF`** — el peor fondo que puede existir | — | **4,79 : 1** |
+| Moncada, impreso espiga 117 | `#FFFFFF` | 4,79 : 1 |
+| Denia, piedra inglesa gris | `#FFFFFF` | 4,79 : 1 |
+| Alzira, adoquín irregular 107 | `#FFFFFF` | 4,79 : 1 |
+| Corbera, fratasado arena | `rgb(255,247,220)` | 4,98 : 1 |
+| Negro puro | — | 15,26 : 1 |
+
+El número que manda es el primero, y las tres filas siguientes explican por qué: **tres de las
+cuatro fotos del carrusel tienen cielo quemado a blanco puro**, así que su peor caso real *es*
+el peor caso absoluto. Diseñar el velo contra `#FFFFFF` no es pesimismo de laboratorio, es
+describir lo que hay en pantalla — y de paso deja la garantía AA sin depender de qué foto se
+ponga mañana.
+
+Por debajo de `0,67` esa garantía se pierde (4,48 : 1 medido a 0,66). Con `0,68` quedan 0,29
+puntos de margen sobre el 4,5 : 1 que AA pide a texto normal —el titular es texto grande y le
+bastaría 3 : 1—, y la foto conserva el 32 % de su luz, suficiente para que se lea la textura,
+que es lo único que un muestrario de material tiene que enseñar.
+
+El cálculo se reproduce con cualquier implementación de la fórmula de luminancia relativa de
+WCAG 2.1; lo que no se puede cambiar sin rehacer la tabla es el recorte —`3/4` a 390 px— porque
+`object-cover` decide qué parte de la foto se ve y, con ella, cuál es el píxel más claro.
+
+**Dónde se usa, y dónde no.** Solo donde un texto del sitio se pinta encima de una fotografía.
+Hoy eso es un sitio: el hero de la home **por debajo de 768 px**. En escritorio el titular
+tiene su propia columna, no pisa nada, y el velo se retira —`md:hidden`— para que las fotos se
+vean como son. No es un tratamiento estético reutilizable: un velo que aparece donde no hace
+falta es una foto oscurecida sin motivo.
+
+La etiqueta técnica (§3.8) **no necesita velo y no cuenta como excepción**: trae su propio fondo
+`--tinta` opaco, y el velo compuesto sobre `--tinta` da exactamente `--tinta`.
+
 ## 3. Componentes base
 
-Los 14 componentes con los que se compone todo el sitio. Cualquier pantalla nueva se construye
+Los 15 componentes con los que se compone todo el sitio. Cualquier pantalla nueva se construye
 con estos; si hace falta uno nuevo, se crea en este mismo lenguaje y se añade aquí.
 
 ### 3.1 Botón primario (ocre)
@@ -400,6 +466,46 @@ formato:  04 · MUESTRARIO      (numeral de dos cifras, punto medio, nombre en m
 ```
 
 La numeración es continua dentro de la página y sirve al lector como índice implícito.
+
+### 3.15 Carrusel de fotografía de obra
+
+**Componente nuevo, 2026-09-17.** Decisión del dueño: el hero de la home enseña varias fotos
+que cambian solas, sin gesto táctil. `components/contenido/CarruselFotos.tsx`.
+
+```
+marco       relative · overflow: hidden · fondo --fondo-alt · la proporción del hueco
+            (3/4 en móvil, altura de la celda en escritorio). radius 0, sin sombra
+diapositiva absolute inset-0 · una <Image fill object-cover> + su etiqueta técnica (§3.8)
+            abajo a la derecha, que se funde CON su foto y no con el carrusel
+pase        @keyframes de opacidad · ciclo 24 s · 4 diapositivas · 6 s cada una
+            cruce de 3 puntos porcentuales (≈0,7 s) entre una y la siguiente
+estado base opacity: 0 · la PRIMERA opacity: 1
+```
+
+Cuatro cosas que definen el componente, y ninguna es decorativa:
+
+- **Componente de servidor, cero bytes de JavaScript.** El proyecto no admite librerías de
+  animación y aquí no hace falta ninguna: todo el pase es CSS. El presupuesto de la ruta no se
+  mueve.
+- **El estado base es la portada correcta, no un apilamiento.** Con `prefers-reduced-motion:
+  reduce`, o en un navegador que no anime, lo que queda es una sola foto fija. La animación
+  entera vive dentro de un `@media (prefers-reduced-motion: no-preference)`; **no se delega en
+  el `@media reduce` global** de `globals.css`, que solo recorta duración e iteraciones y
+  dejaría los `animation-delay` vivos — «no autopasa» tiene que ser una declaración, no un
+  efecto secundario.
+- **Solo la primera foto es prioritaria.** Es la candidata a LCP y la única precargada. Las
+  demás salen perezosas para no disputarle la cola de descarga. Están dentro del viewport, así
+  que el navegador las pedirá igual, pero después y con menos prioridad.
+- **El `@keyframes` está escrito para cuatro diapositivas.** CSS no sabe repartir «1/n» sin
+  JavaScript. Con otro número se escribe el `@keyframes` de ese número; fingir que el
+  componente es genérico sería mentir sobre lo que hace.
+
+⚠️ **Lo que este componente NO tiene: control de pausa.** La WCAG 2.2.2 (nivel A) pide poder
+parar el contenido que se mueve o se actualiza solo durante más de cinco segundos, y un pase de
+fotos lo es. `prefers-reduced-motion` cubre a quien lo tiene activado, que no es lo mismo.
+Se puede resolver sin JavaScript —un `<input type="checkbox">` con `:checked ~` y
+`animation-play-state: paused`— pero eso añade un control al hero que el dueño no ha pedido y
+cambia cómo se ve la portada. **Queda abierto, a la vista, en vez de darse por cumplido.**
 
 ## 4. Elementos transversales
 

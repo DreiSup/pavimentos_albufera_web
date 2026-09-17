@@ -15,32 +15,46 @@ Estas seis están en el prototipo con estado interactivo real. Reprodúcelas exa
 
 ## A1 · Home — `/`
 
-13 secciones numeradas. Copy literal del §7.1 del documento maestro.
+**11 secciones numeradas. Enmienda del 2026-09-17, por decisión del dueño.** Eran 13. Copy
+literal del §7.1 del documento maestro.
 
 | # | Sección | Escritorio | Móvil |
 |---|---|---|---|
-| 01 | Hero | `1fr 1fr`. Titular 88 px a la izquierda, bloque de foto a sangre a la derecha con etiqueta técnica abajo. Alto mínimo del bloque: 660 px | Bloque de foto `3/4` con el titular a 46 px **dentro**, sobre la trama, y la etiqueta técnica abajo a la derecha. Debajo, entradilla y 2 botones de contorno a ancho completo |
+| 01 | Hero | `1fr 1fr`. Titular 88 px a la izquierda, **carrusel** a sangre a la derecha con etiqueta técnica abajo. Alto mínimo del bloque: 660 px. Sin velo: el titular no pisa la foto | **Carrusel** `3/4` con el titular a 46 px **dentro, sobre el velo** (`01 §2.8`), y la etiqueta técnica abajo a la derecha. Debajo, entradilla y 2 botones a ancho completo |
 | 02 | Barra de confianza | Anclada, una línea, 4 datos | No anclada, 4 filas numeradas |
-| 03 | Por dónde empezar | `380px 1fr` + rejilla de 3×2 con imagen `4/3` | Lista de 6 filas de 76 px con miniatura cuadrada de 76 px a la izquierda |
-| 04 | Muestrario | Fondo `--fondo-alt`. Antetítulo + enlace-etiqueta a la derecha. Chips en una fila. Rejilla de 4 | Chips en carril deslizante. Rejilla de 2×2 con 4 muestras. Enlace-etiqueta al final |
-| 05 | Servicios | Rejilla de 3×2, imagen `16/10`, título 26 px | Columna, imagen `16/10`, título 20 px |
-| 06 | Precios | `1fr 1fr`: texto e incluye/no incluye a la izquierda, tabla a la derecha | Todo apilado. Tabla en filas `space-between` con el rango a la derecha |
-| 07 | Cómo trabajamos | 4 columnas, numeral 34 px en `--acero` sobre `border-top` | 4 filas, numeral 26 px en columna fija de 42 px |
-| 08 | Proyectos | Rejilla de 3×2, 6 tarjetas | Carrusel horizontal de tarjetas de 220 px |
-| 09 | Reseñas | `380px 1fr` + 3 estados vacíos en línea | 2 estados vacíos apilados |
-| 10 | Garantía | Fondo `--tinta`, `1fr 1fr`: titular a la izquierda, 2 párrafos a la derecha separados por `border-top` | Apilado, mismo fondo |
-| 11 | Zonas | `380px 1fr` + 3 anillos en columnas | 3 anillos en filas con `border-top` |
-| 12 | FAQ | `380px 1fr` + acordeón de 6 | Acordeón de 6, filas de 56 px |
-| 13 | Cierre | `1fr 1fr`: titular 64 px + 2 botones a la izquierda, formulario corto a la derecha | Titular 34 px, 2 botones, formulario corto |
+| 03 | Por dónde empezar | `380px 1fr` + rejilla de 3×2 con imagen `4/3` | Rejilla de **2 columnas** con imagen `4/3` a ancho de celda y el texto debajo |
+| 04 | Servicios | Fondo `--fondo-alt`. Rejilla de 3×2, imagen `16/10`, título 26 px | Columna, imagen `16/10`, título 20 px |
+| 05 | Muestrario | Antetítulo + enlace-etiqueta a la derecha. Chips en una fila. Rejilla de 4 | Chips en carril deslizante. Rejilla de 2×2 con 4 muestras. Enlace-etiqueta al final |
+| 06 | Cómo trabajamos | Fondo `--fondo-alt`. 4 columnas, numeral 34 px en `--acero` sobre `border-top` | 4 filas, numeral 26 px en columna fija de 42 px |
+| 07 | Proyectos | Rejilla de 3×3, **las 9 obras documentadas** | Carrusel horizontal de tarjetas de 220 px, las 9 |
+| 08 | Garantía | Fondo `--tinta`, `1fr 1fr`: titular a la izquierda, 2 párrafos a la derecha separados por `border-top` | Apilado, mismo fondo |
+| 09 | Zonas | `380px 1fr` + 3 anillos en columnas. El tercero cierra con un enlace-etiqueta `CONSÚLTANOS →` a `/presupuesto/` | 3 anillos en filas con `border-top` |
+| 10 | FAQ | `380px 1fr` + acordeón de 6 | Acordeón de 6, filas de 56 px |
+| 11 | Cierre | `1fr 1fr`: titular 64 px + 2 botones a la izquierda, formulario corto a la derecha | Titular 34 px, 2 botones, formulario corto |
+
+**El fondo alterno lo da la posición, no la sección.** Al retirar Precios e intercambiar
+Servicios y Muestrario quedaban tres bloques base seguidos, así que el alterno se reparte otra
+vez para que el ritmo de `01 §2.1` siga siendo el de antes.
 
 **Ocre en escritorio:** CTA del hero + chip activo del muestrario.
-**Ocre en móvil:** barra fija `Llamar` + chip activo del muestrario. Los CTA del hero y del
-cierre bajan a contorno.
+**Ocre en móvil:** barra fija `Llamar` + chip activo del muestrario **+ el CTA del hero**, que
+por decisión del dueño del 2026-09-17 se queda en ocre y **no baja a contorno**. La excepción y
+su porqué están en `01 §2.2`. El CTA del cierre sí sigue la regla.
 
-**Sección 09, reseñas.** No hay ni una reseña real. Se maqueta el **estado vacío honesto**:
-la estructura de la tarjeta con `[texto de la reseña]` y `[NOMBRE] · [MUNICIPIO] · [AÑO]`
-atenuados, más la nota de que sin reseñas verificables no se marca `AggregateRating`. La
-sección se sostiene con el dato del 30 % que repite. **Prohibido inventar testimonios.**
+### Lo que se retiró de esta pantalla el 2026-09-17
+
+Las dos por decisión del dueño, y **retiradas del árbol, no ocultas con `display:none`**: lo que
+no se pinta tampoco se descarga ni se indexa.
+
+- **Precios** (era la 06). Los rangos de €/m² y la tabla salen de la portada; el dueño no quiere
+  precios en la web. Con ella se fue el único enlace a `/precios/` que quedaba dentro del
+  `<main>` de la home. ⚠️ **La cabecera sigue enlazando `/precios/`** — `components/layout/
+  Cabecera.tsx`, fuera del alcance de esta pantalla.
+- **Reseñas** (era la 09). Pintaba tres tarjetas con `[texto de la reseña]` y `[NOMBRE] ·
+  [MUNICIPIO] · [AÑO]`: estado vacío honesto, pero vacío. El dueño traerá reseñas reales.
+  **No se pierde copy:** el dato del 30 % que repite, que era lo único real de la sección,
+  ya estaba literal en Garantía. Sigue **prohibido inventar testimonios** y sigue sin
+  `AggregateRating` mientras no haya reseñas verificables.
 
 Formulario corto del cierre: nombre, teléfono y desplegable de espacio. El formulario completo
 vive en `/presupuesto/`.
