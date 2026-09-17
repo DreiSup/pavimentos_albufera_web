@@ -418,19 +418,33 @@ apila la senda de losas encima y el claim debajo: en una barra de 70-84 px eso d
 a 6-8 px de altura de mayúscula y el claim en 3-4 px. El bloque completo se pinta en el pie
 (§4.4), que es el único sitio del sitio con alto para él.
 
-**Esta cabecera empieza en 1280 px, no en 768. Enmienda del 2026-09-17, medida sobre el DOM.**
-Los tres bloques de la fila suman **1011,8 px** de ancho natural —logotipo 276 + nav 416,6 +
-teléfono 99 + hueco 20 + botón 200— y los 48 px de gutter ponen 96 más: hacen falta **1108 px de
-ancho de contenido** para que quepan pegados y ~1164 para que respiren. Encendida en 768 px el
-resultado medido era el logotipo aplastado de 276 a 36 px —una imagen de caja fija que al
-encogerse se deforma—, el teléfono en tres líneas y el botón en dos. **1024 px tampoco llega**:
-928 px de contenido para 1011,8 de hijos, 84 px de déficit. A 1280 el contenido es 1265 px y
-sobran 157 para los dos huecos.
+**Esta cabecera empieza en `cabecera-ancha` = 1180 px, no en 768. Enmienda del 2026-09-17,
+medida sobre el DOM.** Es un punto de ruptura **propio del proyecto**, declarado en
+`tailwind.config.ts` (`extend.screens`), porque ninguno de los de serie cae donde esta fila cabe:
+`lg` (1024) se queda corto y `xl` (1280) deja fuera al iPad en horizontal, que es tráfico real.
 
-Entre 768 y 1279 vale **la cabecera de móvil**: logotipo + hamburguesa, con `MenuMovil` y la
+Las cifras, con el nav ya sin `/precios/` (4 enlaces):
+
+| Ancho de ventana | Contenido útil | Hijos | Hueco a cada lado | Veredicto |
+|---|---|---|---|---|
+| 1024 | 913 px | 928,4 px | **0 px** | ❌ Los tres bloques pegados, y 15,4 px robados al gutter derecho |
+| **1180** | **1069 px** | 928,4 px | **70,3 px** | ✅ Logotipo a 276 px, teléfono y botón en una línea, gutter intacto |
+| 1280 | 1169 px | 928,4 px | 120,3 px | ✅ |
+
+Los **928,4 px de hijos** son logotipo 276 + nav 333,3 + (teléfono 99 + hueco 20 + botón 200,1);
+el contenido útil descuenta los 96 px de gutter y los 15 de la barra de scroll de escritorio. El
+suelo aritmético —hueco cero— son 1039,4 px de ventana, y **caber al byte no es caber**: a 1024
+nada se rompe visiblemente, porque el logotipo lleva `shrink-0` y el teléfono `white-space:
+nowrap`, así que el fallo no se ve roto, se ve apretado.
+
+Por debajo de 1180 vale **la cabecera de móvil**: logotipo + hamburguesa, con `MenuMovil` y la
 barra fija de §4.3, que se esconde en el mismo punto. No es una banda sin navegación: es el
 estado de móvil, completo y ya diseñado, en una ventana más ancha. **Punto de ruptura del nav
-(1280) y altura de la caja (768) son dos cosas distintas** y no se mueven juntas.
+(1180) y altura de la caja (768) son dos cosas distintas** y no se mueven juntas.
+
+⚠️ `cabecera-ancha` nombra esta fila y la barra de §4.3, y nada más. Los `xl:` que quedan en el
+repo —submenú de servicio, filtros, hero de servicio, calculadora, ficha técnica— responden a
+pistas de rejilla propias, con su propia cifra en `02-pantallas.md`, y no siguen a la cabecera.
 
 En móvil la caja mide 70 px, y `--cabecera-actual` de `tokens.css` lo espeja con una media
 query: es el `top` del que cuelgan la barra de confianza, el submenú de servicio y las dos
@@ -468,9 +482,9 @@ box-shadow: 0 -6px 18px rgba(27,30,28,0.18)
 Siempre visible en móvil, en todas las páginas. **Es el CTA primario de móvil**, y por eso
 consume el único ocre de acción de la pantalla.
 
-**Se esconde en 1280 px, no en 768** (enmienda del 2026-09-17): sigue a la cabecera de §4.1,
-que empieza donde de verdad cabe. Moverla sola dejaría la banda 768–1279 sin nav visible y sin
-barra de contacto a la vez.
+**Se esconde en `cabecera-ancha` = 1180 px, no en 768** (enmienda del 2026-09-17): sigue a la
+cabecera de §4.1, que empieza donde de verdad cabe. Las dos se mueven juntas, siempre: mover
+una sola deja una banda de anchos sin nav visible y sin barra de contacto a la vez.
 
 ### 4.4 Pie de página
 

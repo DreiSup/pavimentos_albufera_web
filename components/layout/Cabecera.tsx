@@ -44,23 +44,41 @@ const enlaces = [
  * `app/globals.css`. Ya no hay efecto que lo reescriba, y por eso los cinco
  * `sticky` que se cuelgan de él dejan de saltar al hidratar.
  *
- * **La cabecera de escritorio empieza en `xl` (1280 px), no en `md`.** Medido
- * sobre el DOM: los tres bloques de la fila suman **1011,8 px** de ancho natural
- * —logotipo 276 + nav 416,6 + teléfono/botón 319,1— y los `px-lat-desktop`
- * ponen 96 más. Hacen falta **1108 px de ancho de contenido** para que quepan
- * pegados y ~1164 para que respiren. Encendiéndola en `md` (768) el resultado
- * medido era: el logotipo aplastado de 276 a 36 px —imagen de caja fija sin
- * `shrink-0`, o sea deformada—, el teléfono en tres líneas y el botón en dos,
- * y el nav arrancando a 0 px del logotipo. `lg` (1024) tampoco llega: deja
- * 928 px de contenido para 1011,8 de hijos, 84 px de déficit. A 1280 el
- * contenido es 1265 px y sobran 157 para los dos huecos.
+ * **La cabecera de escritorio empieza en `cabecera-ancha` (1180 px), no en `md`
+ * ni en `xl`.** El punto de ruptura es propio —`tailwind.config.ts`,
+ * `extend.screens`— porque ninguno de los de serie cae donde esta fila cabe.
+ * Medido sobre el DOM, ya sin el enlace de `/precios/`: los tres bloques suman
+ * **928,4 px** de ancho natural —logotipo 276 + nav 333,3 + teléfono 99 y
+ * botón 200,1 con su hueco de 20—, y los `px-lat-desktop` ponen 96 más. Con la
+ * barra de scroll de escritorio (15 px) el suelo a hueco cero son **1039,4 px
+ * de ventana**.
  *
- * Entre 768 y 1279 vale la cabecera de móvil —logotipo + hamburguesa— con su
+ * Por qué 1180 y no 1024, medido a los dos anchos encendiendo la fila a la
+ * fuerza:
+ *
+ * - **1024 no cabe.** Deja 913 px de contenido para 928,4 de hijos: los tres
+ *   bloques quedan pegados —0 px entre logotipo y nav, 0 px entre nav y
+ *   teléfono— y el botón se come 15,4 px del gutter derecho. El logotipo y el
+ *   teléfono aguantan (276 px y una línea) porque llevan `shrink-0` y
+ *   `whitespace-nowrap`, así que no se ve roto: se ve apretado, que es peor de
+ *   detectar. No hay scroll horizontal porque el desbordamiento se lo traga el
+ *   padding.
+ * - **1180 cabe con holgura:** 1069 px de contenido, **70,3 px de hueco a cada
+ *   lado**, logotipo a sus 276 px, teléfono en una línea, botón en una línea y
+ *   los 48 px de gutter intactos. Es el ancho del iPad en horizontal.
+ *
+ * Por debajo de 1180 vale la cabecera de móvil —logotipo + hamburguesa— con su
  * `MenuMovil` y su `BarraMovil`, que es un estado completo y ya diseñado
  * (`design/01` §4.3, `design/02` §B9), no un hueco sin navegación. Por eso
- * `BarraMovil` cambia su `md:hidden` por `xl:hidden` en el mismo commit: si se
- * moviera solo el nav, esa banda se quedaría sin nav Y sin barra de CTA.
+ * `BarraMovil` esconde en `cabecera-ancha`, el mismo punto: si se moviera solo
+ * el nav, la banda de en medio se quedaría sin nav Y sin barra de CTA.
  * → `design/01` §4.1, enmendado.
+ *
+ * ⚠️ `cabecera-ancha` nombra esta fila y nada más. Los `xl:` que quedan en
+ * `SubmenuServicio`, `FiltrosProyectos`, `PaginaServicio`, `Calculadora` y
+ * `TablaFichaTecnica` responden a pistas de rejilla propias —el submenú, por
+ * ejemplo, pide 1259 px de contenido según `design/02`— y no siguen a la
+ * cabecera.
  *
  * ⚠️ La ALTURA no se mueve de `md`: `design/02` §B9 la fija en «70 px en móvil
  * y 84 px desde 768 px» y de ella cuelgan por `--cabecera-actual` los cinco
@@ -123,7 +141,7 @@ export default function Cabecera() {
           />
         </Link>
 
-        <nav className="hidden xl:flex items-center gap-7">
+        <nav className="hidden cabecera-ancha:flex items-center gap-7">
           {enlaces.map((enlace) => {
             const activo = pathname?.startsWith(enlace.href)
             return (
@@ -140,7 +158,7 @@ export default function Cabecera() {
           })}
         </nav>
 
-        <div className="hidden xl:flex items-center gap-5">
+        <div className="hidden cabecera-ancha:flex items-center gap-5">
           {/* `visibility` y no `display`: el hueco se conserva y el botón no se
               mueve. La transición declara las dos propiedades para que el número
               se desvanezca en vez de irse de golpe, y durante esos 150 ms sigue
@@ -181,7 +199,7 @@ export default function Cabecera() {
           aria-label="Abrir menú"
           aria-expanded={menuAbierto}
           onClick={() => setMenuAbierto(true)}
-          className="xl:hidden inline-flex items-center justify-center min-w-tactil min-h-tactil"
+          className="cabecera-ancha:hidden inline-flex items-center justify-center min-w-tactil min-h-tactil"
         >
           <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M3 6h18M3 12h18M3 18h18" stroke="#1B1E1C" strokeWidth="2" />

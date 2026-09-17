@@ -91,8 +91,13 @@ Por debajo de 1280 px cada una usa **su propio tratamiento apilado, el de móvil
 descrito: el hero se reparte en dos mitades con el H1 a 46 px, la ficha técnica se apila «en
 pares» como dice el párrafo de arriba, las aplicaciones apilan nombre y matiz, la calculadora
 va a una columna y **el submenú no se pinta**, que es lo que ya dice «Solo escritorio» dos
-párrafos más arriba. Es el mismo punto donde siguen la cabecera de móvil (`01 §4.1`) y la barra
-de contacto (`01 §4.3`).
+párrafos más arriba.
+
+⚠️ Estos 1280 px **ya no coinciden** con la cabecera: desde el 2026-09-17 la de escritorio y la
+barra de contacto de móvil se mueven en `cabecera-ancha` = 1180 px (`01 §4.1` y §4.3), porque
+esa fila cabe ahí y estas pistas no —la del hero pide 1278 px de contenido y la del submenú
+1259—. Entre 1180 y 1279 se ve, a propósito, **nav de escritorio con la plantilla apilada**: son
+dos medidas distintas de dos cosas distintas, y forzar una a la otra rompe la que no cabe.
 
 ⚠️ **Y una regla que esto rompe, sin arreglar en esta pasada.** Con la barra de contacto visible
 hasta 1279, entre 768 y 1279 hay **dos ocres de acción** en las seis páginas de servicio: el
@@ -300,8 +305,10 @@ Misma mecánica que el muestrario, con **cuatro ejes** en vez de dos.
   y **466 px entre 768 y 1279**. Medio viewport de barra fija sobre la rejilla que el visitante
   quiere comparar es justo lo que rechaza la decisión de abajo, y su motivo —«hasta 16
   municipios no caben»— sigue siendo cierto a 960 px. Así que **por debajo de 1280 px manda la
-  hoja inferior**, que es además donde siguen la cabecera de móvil (`01 §4.1`) y la barra de
-  contacto (`01 §4.3`).
+  hoja inferior**. ⚠️ Desde el 2026-09-17 este umbral **ya no coincide** con el de la cabecera
+  (`cabecera-ancha` = 1180, `01 §4.1` y §4.3): entre 1180 y 1279 se ve nav de escritorio con la
+  hoja inferior de filtros. Los dos estados están diseñados y el botón `FILTRAR` sigue a la
+  vista; lo que no cabe a ese ancho es la barra de chips, no el nav.
 
 **Decisión de filtros en móvil: hoja inferior, no acordeón ni chips.**
 Cuatro grupos con hasta 16 municipios no caben en carriles deslizantes —el usuario tendría que

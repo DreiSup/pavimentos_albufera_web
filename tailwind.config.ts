@@ -55,6 +55,25 @@ const config: Config = {
       88: ['88px', { lineHeight: '1.02', letterSpacing: '-0.03em' }],
     },
     extend: {
+      screens: {
+        // Punto de ruptura propio de la cabecera de escritorio, y solo de ella:
+        // la barra completa —logotipo + nav + teléfono + botón— y la barra fija
+        // de contacto de móvil, que es su pareja y se apaga en el mismo punto.
+        //
+        // La cifra sale del DOM, con el nav ya sin `/precios/`: logotipo 276 +
+        // nav 333,3 + teléfono y botón 319,1 = **928,4 px de hijos**, más los
+        // 96 px de `px-lat-desktop`. Con la barra de scroll de escritorio
+        // (15 px) el suelo a hueco cero son **1039,4 px**, así que 1024 no
+        // llega: deja los tres bloques pegados y se come 15,4 px del gutter
+        // derecho. A 1180 quedan **70,3 px de hueco a cada lado** y el gutter
+        // intacto: es el ancho del iPad en horizontal, que es el caso que
+        // pedía el dueño. → `design/01` §4.1
+        //
+        // ⚠️ No es «el escritorio» del proyecto: el resto de la maqueta usa
+        // `md` (768) para pasar a dos columnas y `xl` (1280) donde una pista de
+        // rejilla concreta lo exige. Esta clave nombra una cosa y solo una.
+        'cabecera-ancha': '1180px',
+      },
       minHeight: { tactil: '44px', campo: '48px', boton: '56px' },
       // El objetivo táctil también necesita ancho: `min-w-tactil` se usaba sin existir.
       minWidth: { tactil: '44px' },
