@@ -18,8 +18,23 @@ export const metadata: Metadata = {
   alternates: { canonical: '/acabados/' },
 }
 
-const total = acabados.length
-const documentados = contarDocumentados()
+/**
+ * El muestrario publica solo los acabados que tienen muestra fotográfica. Los
+ * seis que no la tienen salían con el bloque de posición —PENDIENTE · ORIGINAL A
+ * 1600 PX—, seis huecos rayados entre diez fotos, y en la rejilla de dos de
+ * móvil eso es media pantalla de nada. Se buscó foto para los seis en la
+ * mediateca (`public/obras/INVENTARIO.md`) y ninguno hizo match: sin foto que
+ * enseñe ese modelo EN ESE COLOR, la tarjeta no se pinta.
+ *
+ * Es un filtro de presentación, no un borrado: las seis entradas siguen en
+ * `content/acabados.json`, así que `/acabados/[modelo]/` sigue generando sus
+ * rutas —`piedra-silleria` y `piedra-rodena` cuelgan solo de ellas— y el
+ * `sitemap` sigue citándolas. El día que llegue la foto, basta con el `muestra`.
+ */
+const visibles = acabados.filter((a) => a.muestra)
+
+const total = visibles.length
+const documentados = contarDocumentados(visibles)
 
 /**
  * Una sola fila de chips, la de técnica. La de color se retiró el 2026-09-17
@@ -31,16 +46,16 @@ const grupoTecnica: GrupoAcabados = {
   clave: 'tecnica',
   etiqueta: 'Técnica',
   todos: 'Todas',
-  opciones: tecnicasEnUso().map((t) => ({ valor: t, nombre: NOMBRE_SERVICIO[t] })),
+  opciones: tecnicasEnUso(visibles).map((t) => ({ valor: t, nombre: NOMBRE_SERVICIO[t] })),
 }
 
 export default function Acabados() {
   /**
    * Las muestras se arman aquí, en servidor, y cruzan la frontera ya hechas.
-   * `FiltrosAcabados` solo elige cuáles se enseñan, así que las 16 muestras con
-   * sus fotos y sus enlaces salen en el HTML estático sin esperar a hidratar.
+   * `FiltrosAcabados` solo elige cuáles se enseñan, así que las diez muestras
+   * con sus fotos y sus enlaces salen en el HTML estático sin esperar a hidratar.
    */
-  const muestras: AcabadoFiltrable[] = acabados.map((a) => ({
+  const muestras: AcabadoFiltrable[] = visibles.map((a) => ({
     clave: a.slug,
     valores: { tecnica: a.servicio },
     muestra: <MuestraAcabado key={a.slug} acabado={a} />,

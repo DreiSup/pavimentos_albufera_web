@@ -58,8 +58,14 @@ export function proyectosPorModelo(modelo: ModeloId, excluir?: string): Proyecto
   return proyectos.filter((p) => p.modelo === modelo && p.slug !== excluir)
 }
 
-export function tecnicasEnUso(): ServicioId[] {
-  const set = new Set(acabados.map((a) => a.servicio))
+/**
+ * Las técnicas presentes en una lista de acabados. Acepta la lista, como
+ * `contarDocumentados`, porque el muestrario solo publica los acabados con
+ * muestra y sus chips tienen que salir de lo que de verdad se pinta: una opción
+ * de filtro que no puede dar resultados es una promesa incumplida.
+ */
+export function tecnicasEnUso(lista: Acabado[] = acabados): ServicioId[] {
+  const set = new Set(lista.map((a) => a.servicio))
   return Array.from(set)
 }
 

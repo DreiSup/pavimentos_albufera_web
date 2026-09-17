@@ -104,10 +104,20 @@ es que ahora pasa en 512 px más de ancho.
 
 ## A3 · Muestrario — `/acabados/`
 
-El elemento firma. 16 acabados, 8 con obra documentada.
+El elemento firma. 16 acabados en el catálogo; **desde el 2026-09-17 se publican los 10 que
+tienen muestra fotográfica**, 7 de ellos con obra documentada.
 
-- **Hero:** `1fr 420px`, H1 64 px, contador `16 ACABADOS · 8 CON OBRA DOCUMENTADA` en el
-  antetítulo. **El contador es real, no decorativo**: se calcula del inventario con la regla de
+- **Solo se pinta el acabado que tiene foto.** Enmienda del 2026-09-17, por encargo del dueño.
+  Los seis sin muestra salían con el bloque de posición (`01 §3.12`), y seis huecos rayados
+  entre diez fotos son, en la rejilla de dos de móvil, media pantalla de nada. Se buscó original
+  para los seis en la mediateca y **ninguno hizo match**: la muestra lleva el código de color
+  impreso al lado, así que exige una foto que enseñe ese modelo **en ese color**, y eso solo lo
+  sostiene el dato, no el parecido. Queda anotado en `public/obras/INVENTARIO.md`.
+  Es un filtro de presentación, **no un borrado**: las seis entradas siguen en
+  `content/acabados.json` y `/acabados/[modelo]/` sigue generando sus rutas —`piedra-silleria` y
+  `piedra-rodena` cuelgan solo de ellas—. El día que llegue la foto, vuelven solas.
+- **Hero:** `1fr 420px`, H1 64 px, contador `10 ACABADOS · 7 CON OBRA DOCUMENTADA` en el
+  antetítulo. **El contador es real, no decorativo**: cuenta lo que se pinta, con la regla de
   `03-modelo-de-contenido.md §1.1` —documentada = proyecto con municipio confirmado—. No vale
   `proyectos.length > 0`: eso daría 9 y contradiría al diseño.
 - **Barra de filtros anclada** a `top: 80px`, con `border-top` y `border-bottom` en `--tinta`:
