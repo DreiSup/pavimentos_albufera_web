@@ -244,13 +244,42 @@ export default function Home() {
         </div>
       </Aparece>
 
-      {/* 04 · Muestrario */}
+      {/* 04 · Servicios */}
       <Aparece as="section" className="bg-fondo-alt px-[18px] md:px-lat-desktop py-9 md:py-22">
+        <div className="flex flex-col gap-8">
+          <div className="flex flex-col gap-2">
+            <AntetituloSeccion numero="04">Servicios</AntetituloSeccion>
+            <h2 className="font-display font-bold fs-h2 text-34 md:text-46 m-0">
+              Todo lo que se puede hacer con hormigón
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {servicios.map((s) => (
+              <Link key={s.id} href={RUTA_SERVICIO[s.id]} className="flex flex-col gap-3 no-underline">
+                <Foto
+                  imagen={SERVICIOS[s.id].imagenTarjeta}
+                  proporcion="16/10"
+                  tamanos={
+                    tamanosCompartidos(SERVICIOS[s.id].imagenTarjeta?.src) ?? TAMANOS_TARJETA_SERVICIO
+                  }
+                />
+                <h3 className="font-display font-bold fs-h3 text-20 md:text-26 text-tinta m-0">
+                  {NOMBRE_SERVICIO[s.id]}
+                </h3>
+                <p className="text-16 text-tinta-media m-0">{s.texto}</p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </Aparece>
+
+      {/* 05 · Muestrario */}
+      <Aparece as="section" className="px-[18px] md:px-lat-desktop py-9 md:py-22">
         {/* El enlace-etiqueta también era un nodo duplicado (arriba en escritorio,
             al final en móvil). Ahora es uno solo y lo coloca la rejilla. */}
         <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] items-end gap-6 md:gap-x-16">
           <div className="flex flex-col gap-2">
-            <AntetituloSeccion numero="04">Muestrario</AntetituloSeccion>
+            <AntetituloSeccion numero="05">Muestrario</AntetituloSeccion>
             <h2 className="font-display font-bold fs-h2 text-34 md:text-46 m-0">
               Elige el acabado antes de que empecemos
             </h2>
@@ -287,37 +316,8 @@ export default function Home() {
         </div>
       </Aparece>
 
-      {/* 05 · Servicios */}
-      <Aparece as="section" className="px-[18px] md:px-lat-desktop py-9 md:py-22">
-        <div className="flex flex-col gap-8">
-          <div className="flex flex-col gap-2">
-            <AntetituloSeccion numero="05">Servicios</AntetituloSeccion>
-            <h2 className="font-display font-bold fs-h2 text-34 md:text-46 m-0">
-              Todo lo que se puede hacer con hormigón
-            </h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {servicios.map((s) => (
-              <Link key={s.id} href={RUTA_SERVICIO[s.id]} className="flex flex-col gap-3 no-underline">
-                <Foto
-                  imagen={SERVICIOS[s.id].imagenTarjeta}
-                  proporcion="16/10"
-                  tamanos={
-                    tamanosCompartidos(SERVICIOS[s.id].imagenTarjeta?.src) ?? TAMANOS_TARJETA_SERVICIO
-                  }
-                />
-                <h3 className="font-display font-bold fs-h3 text-20 md:text-26 text-tinta m-0">
-                  {NOMBRE_SERVICIO[s.id]}
-                </h3>
-                <p className="text-16 text-tinta-media m-0">{s.texto}</p>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </Aparece>
-
       {/* 06 · Cómo trabajamos */}
-      <Aparece as="section" className="px-[18px] md:px-lat-desktop py-9 md:py-22">
+      <Aparece as="section" className="bg-fondo-alt px-[18px] md:px-lat-desktop py-9 md:py-22">
         <div className="flex flex-col gap-8">
           <div className="flex flex-col gap-2">
             <AntetituloSeccion numero="06">Cómo trabajamos</AntetituloSeccion>
@@ -342,7 +342,7 @@ export default function Home() {
       </Aparece>
 
       {/* 07 · Proyectos */}
-      <Aparece as="section" className="bg-fondo-alt px-[18px] md:px-lat-desktop py-9 md:py-22">
+      <Aparece as="section" className="px-[18px] md:px-lat-desktop py-9 md:py-22">
         <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] items-end gap-6 md:gap-x-16">
           <div className="flex flex-col gap-2">
             <AntetituloSeccion numero="07">Proyectos</AntetituloSeccion>
@@ -358,9 +358,11 @@ export default function Home() {
           <div className="flex md:grid md:grid-cols-3 gap-6 overflow-x-auto -mx-[18px] px-[18px] md:mx-0 md:px-0 md:col-span-2">
             {proyectosHome.map((p) => (
               <div key={p.slug} className="min-w-[220px] shrink-0 md:min-w-0 md:shrink">
+                {/* La sección vuelve a fondo base con la nueva alternancia, así que la
+                    tarjeta recupera su fondo alterno: es el contraste lo que la separa
+                    de la página, no un color fijo. */}
                 <TarjetaProyecto
                   proyecto={p}
-                  fondo="base"
                   tamanos={p.imagenes[0]?.src === fotoHero ? TAMANOS_HERO_HOME : undefined}
                 />
               </div>
