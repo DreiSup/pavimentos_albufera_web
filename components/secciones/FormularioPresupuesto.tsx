@@ -35,6 +35,7 @@ export default function FormularioPresupuesto({
 }) {
   const [estado, accion, enviando] = useActionState(enviarPresupuesto, estadoInicial)
   const telefonoRef = useRef<HTMLInputElement>(null)
+  const emailRef = useRef<HTMLInputElement>(null)
   const [eventoId, setEventoId] = useState('')
   const [errorFoto, setErrorFoto] = useState('')
   const eventoDisparado = useRef(false)
@@ -57,10 +58,15 @@ export default function FormularioPresupuesto({
     setEventoId(crypto.randomUUID())
   }, [])
 
+  // `design/02` §B1, estado 2: el foco va al campo rechazado. Estaba escrito
+  // solo para el teléfono porque era el único error que se pintaba; ahora que
+  // el del email también se ve, el foco tiene que poder llegar a él o el
+  // mensaje aparece en un sitio al que el teclado no lleva. El teléfono manda
+  // cuando fallan los dos: es el dato por el que se llama.
   useEffect(() => {
-    if (estado.estado === 'error' && estado.errores.telefono) {
-      telefonoRef.current?.focus()
-    }
+    if (estado.estado !== 'error') return
+    if (estado.errores.telefono) telefonoRef.current?.focus()
+    else if (estado.errores.email) emailRef.current?.focus()
   }, [estado])
 
   useEffect(() => {
@@ -140,11 +146,30 @@ export default function FormularioPresupuesto({
         </Campo>
       </div>
 
-      {variante === 'completo' ? (
-        <Campo etiqueta="Email" htmlFor="email">
-          <input id="email" name="email" type="email" readOnly={enviando} className={claseInput} />
-        </Campo>
-      ) : null}
+      {/* Fuera del condicional, como la casilla de privacidad: el dueño pide
+          nombre, teléfono y correo en todo formulario de contacto. Sigue siendo
+          OPCIONAL en las dos —un campo obligatorio de más en el cierre de la
+          home cuesta conversión, y `design/02` §B1 lo marca «no»—, así que en
+          la corta añade una vía de respuesta sin añadir una barrera.
+
+          `error` no es defensa preventiva: `type="email"` acepta `juan@empresa`
+          y `juan@empresa.c`, que zod rechaza. Sin esta línea el servidor
+          devolvía el error y el formulario se repintaba mudo. */}
+      <Campo etiqueta="Email" htmlFor="email" error={estado.errores.email}>
+        <input
+          ref={emailRef}
+          id="email"
+          name="email"
+          type="email"
+          inputMode="email"
+          autoComplete="email"
+          autoCapitalize="none"
+          spellCheck={false}
+          readOnly={enviando}
+          aria-invalid={Boolean(estado.errores.email)}
+          className={claseInput}
+        />
+      </Campo>
 
       <Campo etiqueta="¿Qué quieres pavimentar?" htmlFor="espacio" obligatorio>
         <select id="espacio" name="espacio" required disabled={enviando} className={claseInput}>
