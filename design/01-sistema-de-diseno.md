@@ -507,6 +507,21 @@ Se puede resolver sin JavaScript —un `<input type="checkbox">` con `:checked ~
 `animation-play-state: paused`— pero eso añade un control al hero que el dueño no ha pedido y
 cambia cómo se ve la portada. **Queda abierto, a la vista, en vez de darse por cumplido.**
 
+⚠️ **Y las cuatro diapositivas están SIEMPRE en el árbol de accesibilidad.** `opacity: 0` no
+retira contenido: un lector de pantalla recorre los cuatro `alt` y las cuatro etiquetas
+técnicas del hero, con o sin movimiento reducido. No se arregla quitando los `alt` —son
+obligatorios (`public/README.md`)— ni con `aria-hidden` en las tres que esperan, porque las
+tres acaban siendo la visible. Se apunta aquí como lo que es: una consecuencia conocida de
+apilar cuatro fotos en un hueco, no un descuido.
+
+**Límite medido: por debajo de 360 px el titular llena el marco.** A 390, 375 y 360 px quedan
+175, 64 y 44 px libres entre la última línea del titular y la etiqueta técnica. A 320 px el
+titular ocupa los 374 px del marco entero y la etiqueta **se le monta encima**. 320 está por
+debajo del ancho normativo de `02-pantallas.md` (390) y esa pantalla ya tenía scroll horizontal
+por otro motivo, así que no se ha tapado con un número inventado: si algún día hay que sostener
+320, la pieza que falta es reservar la banda de la etiqueta, no encoger el titular —la escala
+está cerrada y entre 34 y 46 no hay nada.
+
 ## 4. Elementos transversales
 
 ### 4.1 Cabecera de escritorio
