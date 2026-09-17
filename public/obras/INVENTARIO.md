@@ -118,8 +118,12 @@ lo que no pueden es bajar del suelo de 800 ni ir a sangre por debajo de 1600, y 
 ## 2026-09-17 — se buscó muestra para los seis acabados sin foto: ninguna
 
 Encargo del dueño: si una foto del repositorio hace match con la descripción de un acabado, se
-aplica; si no hay match, el acabado se oculta del muestrario. Se revisaron las **96 usables** de
-`_sin-atribuir/` —descontando las 15 del apartado anterior— más las 14 de la raíz.
+aplica; si no hay match, el acabado se oculta del muestrario. Los seis acabados sin muestra son
+todos de **impreso**, así que se abrieron en hojas de contacto las **~50 de impreso** —las 14 de
+la raíz y las de `_sin-atribuir/` cuyo `title` declara impreso o no declara técnica—, y encima
+de eso los recortes a tamaño completo de las candidatas grises. Las de pulido, microcemento,
+lavado, fratasado, desactivado y caucho se descartaron **por la técnica que declara su `title`**,
+sin abrirlas: ninguna puede enseñar un molde de impreso. Las 15 del apartado anterior, fuera.
 
 **El criterio, y por qué es este.** Una muestra se pinta con el código de color impreso al lado
 (`Adoquín irregular · GRIS`), así que afirma **modelo y color**. El modelo se puede reconocer a
@@ -142,6 +146,11 @@ Lo que hay para cada uno de los seis, con el `title` de la mediateca citado lite
 Las de Carlet, Catadau y Alfafar sí sostienen el **modelo**, y por eso ya son el hero de
 `/acabados/piedra-silleria/`, `/piedra-rodena/` y `/piedra-inglesa/` en `content/modelos.ts`.
 Esa pantalla afirma solo el modelo; la muestra afirma también el color, y ahí se paran.
+
+⚠️ **Lo que deja abierto ocultarlos.** `/acabados/piedra-silleria/` y `/acabados/piedra-rodena/`
+cuelgan cada una de un solo acabado, y es de los ocultos: su rejilla «Colores disponibles en este
+modelo» sigue siendo un único bloque de posición. Las dos rutas siguen generándose y siguen
+enlazadas desde `/hormigon-impreso/`, pero ya no desde el muestrario.
 
 **Material que cerraría cuatro de los seis, y es una pregunta al dueño, no una foto que falte:**
 confirmar el color de las obras de Carlet, Catadau, Alfafar y Turís convertiría tres de estas
