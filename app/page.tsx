@@ -100,15 +100,6 @@ const servicios = [
   { id: 'desactivado' as const, texto: 'Piedra vista con la resistencia de una solera.' },
 ]
 
-const filasPrecios = [
-  { trabajo: 'Hormigón impreso, uso peatonal (patios, porches, jardines)', rango: '28-38' },
-  { trabajo: 'Hormigón impreso, paso de vehículos (entradas, rampas)', rango: '35-48' },
-  { trabajo: 'Hormigón pulido, interior', rango: '30-45' },
-  { trabajo: 'Hormigón pulido, nave o parking', rango: '22-35' },
-  { trabajo: 'Microcemento sobre suelo existente', rango: '55-85' },
-  { trabajo: 'Hormigón lavado', rango: '30-42' },
-]
-
 const proyectoHero = proyectos.find((p) => p.slug === 'moncada-impreso-espiga-117')!
 const muestraHome = acabados.filter((a) => a.proyectos.length > 0).slice(0, 4)
 const proyectosHome = [...proyectos].sort((a, b) => Number(b.destacado) - Number(a.destacado)).slice(0, 6)
@@ -325,59 +316,11 @@ export default function Home() {
         </div>
       </Aparece>
 
-      {/* 06 · Precios */}
-      <Aparece as="section" className="bg-fondo-alt px-[18px] md:px-lat-desktop py-9 md:py-22">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16">
-          <div className="flex flex-col gap-4">
-            <AntetituloSeccion numero="06">Precios</AntetituloSeccion>
-            <h2 className="font-display font-bold fs-h2 text-34 md:text-46 m-0">
-              Te decimos lo que cuesta antes de que preguntes
-            </h2>
-            <p className="text-16 md:text-20 text-tinta-media m-0">
-              El precio de un pavimento depende de la superficie, del uso que le vayas a dar y del
-              estado en que esté el terreno. Estos son nuestros rangos habituales en la Comunidad
-              Valenciana, con material y mano de obra incluidos, sin IVA.
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-              <div>
-                <p className="font-mono text-d-11 text-acero uppercase m-0 mb-2">Incluido siempre</p>
-                <p className="text-14 text-tinta-media m-0">
-                  Preparación del soporte, mallazo, fibra de polipropileno, hormigón de 10 cm,
-                  molde, pigmento, desmoldeante y sellado final.
-                </p>
-              </div>
-              <div>
-                <p className="font-mono text-d-11 text-acero uppercase m-0 mb-2">Se presupuesta aparte</p>
-                <p className="text-14 text-tinta-media m-0">
-                  Demolición del pavimento anterior, movimiento de tierras, drenajes y rebajes de
-                  acceso difícil.
-                </p>
-              </div>
-            </div>
-            <EnlaceEtiqueta href="/precios/">Calcular mi presupuesto →</EnlaceEtiqueta>
-          </div>
-
-          <div className="flex flex-col">
-            {filasPrecios.map((fila) => (
-              <div
-                key={fila.trabajo}
-                className="flex justify-between items-center gap-4 py-4 border-b border-tinta-media last:border-b-0"
-              >
-                <span className="text-14 md:text-16 text-tinta">{fila.trabajo}</span>
-                <span className="font-mono text-d-14 md:text-20 shrink-0">
-                  <DatoPendiente>{fila.rango}</DatoPendiente> €/m²
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </Aparece>
-
-      {/* 07 · Cómo trabajamos */}
+      {/* 06 · Cómo trabajamos */}
       <Aparece as="section" className="px-[18px] md:px-lat-desktop py-9 md:py-22">
         <div className="flex flex-col gap-8">
           <div className="flex flex-col gap-2">
-            <AntetituloSeccion numero="07">Cómo trabajamos</AntetituloSeccion>
+            <AntetituloSeccion numero="06">Cómo trabajamos</AntetituloSeccion>
             <h2 className="font-display font-bold fs-h2 text-34 md:text-46 m-0">
               Cuatro pasos, sin sorpresas
             </h2>
@@ -398,11 +341,11 @@ export default function Home() {
         </div>
       </Aparece>
 
-      {/* 08 · Proyectos */}
+      {/* 07 · Proyectos */}
       <Aparece as="section" className="bg-fondo-alt px-[18px] md:px-lat-desktop py-9 md:py-22">
         <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] items-end gap-6 md:gap-x-16">
           <div className="flex flex-col gap-2">
-            <AntetituloSeccion numero="08">Proyectos</AntetituloSeccion>
+            <AntetituloSeccion numero="07">Proyectos</AntetituloSeccion>
             <h2 className="font-display font-bold fs-h2 text-34 md:text-46 m-0">
               Obra hecha, no catálogo de proveedor
             </h2>
@@ -430,35 +373,7 @@ export default function Home() {
         </div>
       </Aparece>
 
-      {/* 09 · Reseñas */}
-      <Aparece as="section" className="px-[18px] md:px-lat-desktop py-9 md:py-22">
-        <div className="grid grid-cols-1 md:grid-cols-[380px_1fr] gap-8 md:gap-16">
-          <div className="flex flex-col gap-4">
-            <AntetituloSeccion numero="09">Reseñas</AntetituloSeccion>
-            <h2 className="font-display font-bold fs-h2 text-34 md:text-46 m-0">
-              Lo que dicen quienes ya nos han contratado
-            </h2>
-            <p className="text-16 text-tinta-media m-0">
-              Más de 3 de cada 10 trabajos que hacemos son para clientes que ya nos habían
-              contratado. Es el dato que mejor habla de nosotros mientras reunimos reseñas
-              verificables.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {[0, 1, 2].map((i) => (
-              <div key={i} className="border border-dashed border-tinta-media p-5 flex flex-col gap-3">
-                <p className="pendiente text-16 m-0">[texto de la reseña]</p>
-                <p className="font-mono text-d-11 text-tinta-media m-0">
-                  <DatoPendiente>NOMBRE</DatoPendiente> · <DatoPendiente>MUNICIPIO</DatoPendiente> ·{' '}
-                  <DatoPendiente>AÑO</DatoPendiente>
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </Aparece>
-
-      {/* 10 · Garantía */}
+      {/* 08 · Garantía */}
       <Aparece as="section" className="sobre-oscuro bg-tinta text-fondo px-[18px] md:px-lat-desktop py-9 md:py-22">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-16">
           <h2 className="font-display font-bold fs-h2 text-34 md:text-46 m-0">
@@ -478,11 +393,11 @@ export default function Home() {
         </div>
       </Aparece>
 
-      {/* 11 · Zonas */}
+      {/* 09 · Zonas */}
       <Aparece as="section" className="px-[18px] md:px-lat-desktop py-9 md:py-22">
         <div className="grid grid-cols-1 md:grid-cols-[380px_1fr] gap-8 md:gap-16">
           <div className="flex flex-col gap-4">
-            <AntetituloSeccion numero="11">Zonas</AntetituloSeccion>
+            <AntetituloSeccion numero="09">Zonas</AntetituloSeccion>
             <h2 className="font-display font-bold fs-h2 text-34 md:text-46 m-0">Dónde trabajamos</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -504,18 +419,18 @@ export default function Home() {
         </div>
       </Aparece>
 
-      {/* 12 · FAQ */}
+      {/* 10 · FAQ */}
       <Aparece as="section" className="bg-fondo-alt px-[18px] md:px-lat-desktop py-9 md:py-22">
         <JsonLd data={schemaFAQ(faqHome)} />
         <div className="grid grid-cols-1 md:grid-cols-[380px_1fr] gap-8 md:gap-16">
           <div className="flex flex-col gap-4">
-            <AntetituloSeccion numero="12">Preguntas frecuentes</AntetituloSeccion>
+            <AntetituloSeccion numero="10">Preguntas frecuentes</AntetituloSeccion>
           </div>
           <Acordeon preguntas={faqHome} />
         </div>
       </Aparece>
 
-      {/* 13 · Cierre */}
+      {/* 11 · Cierre */}
       <Aparece as="section" className="px-[18px] md:px-lat-desktop py-9 md:py-22">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16">
           <div className="flex flex-col gap-6">
