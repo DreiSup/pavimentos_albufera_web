@@ -100,69 +100,50 @@ const documentados = contarDocumentados()
 export default function Home() {
   return (
     <>
-      {/* 01 · Hero */}
-      <section className="grid grid-cols-1 md:grid-cols-2 md:gap-16 px-[18px] md:px-lat-desktop pt-8 md:pt-14">
-        <div className="hidden md:flex flex-col justify-center gap-6 md:min-h-[660px]">
-          <h1 className="font-display font-extrabold fs-hero text-64 md:text-88 leading-[1.02] m-0">
-            Hormigón que se ve bien 20 años después
-          </h1>
-          <p className="text-20 text-tinta-media max-w-[46ch] m-0">
+      {/* 01 · Hero.
+          Las dos maquetas de `02-pantallas.md §A1` siguen siendo distintas —en móvil
+          el titular va superpuesto al bloque de posición `3/4`; en escritorio ocupa su
+          columna junto al `4/3`— pero el nodo es uno solo. La diferencia la resuelve la
+          rejilla: en móvil el titular y el bloque comparten celda (fila 1, columna 1);
+          en escritorio el titular baja a su columna y el bloque salta a la segunda.
+          Un solo <h1> por página (README §9). */}
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-x-16 md:gap-y-6 md:grid-rows-[1fr_auto_auto_1fr] px-[18px] md:px-lat-desktop pt-8 md:pt-14">
+        <h1 className="col-start-1 row-start-1 md:row-start-2 z-10 self-start md:self-auto pt-6 px-4 md:p-0 font-display font-extrabold fs-hero text-46 md:text-88 leading-[1.05] md:leading-[1.02] text-tinta m-0">
+          Hormigón que se ve bien 20 años después
+        </h1>
+
+        <BloquePosicion
+          proporcion="3/4"
+          className="col-start-1 row-start-1 md:col-start-2 md:row-start-1 md:row-end-5 md:aspect-[4/3] md:min-h-[660px] md:h-full"
+          etiqueta={
+            <EtiquetaTecnica
+              lineas={['MONCADA · VALENCIA', 'IMPRESO · MODELO ESPIGA · COLOR 117', <>
+                <DatoPendiente>180</DatoPendiente> m² · 2025
+              </>]}
+            />
+          }
+        />
+
+        <div className="col-start-1 row-start-2 md:row-start-3 flex flex-col gap-4 md:gap-6">
+          <p className="text-16 md:text-20 text-tinta-media md:max-w-[46ch] m-0">
             Pavimentos de hormigón impreso, pulido, lavado y microcemento en Valencia, Castellón y
             Alicante. 17 años ejecutando obra propia, con 10 años de garantía y mantenimiento
             incluido.
           </p>
-          <div className="flex gap-4">
-            <Boton variante="primario" href="/acabados/">
+          <div className="flex flex-col md:flex-row gap-3 md:gap-4">
+            {/* Regla del ocre: en escritorio este es el CTA primario; en móvil baja a
+                contorno para no competir con la barra fija, que es la acción persistente.
+                Mismo nodo, la variante la da el punto de ruptura. `btn-primario` solo
+                cambia el color del foco (tinta), que es el que hace contraste sobre ocre. */}
+            <Boton
+              variante="contorno"
+              href="/acabados/"
+              anchoCompleto
+              className="btn-primario md:w-auto md:bg-pigmento md:border-pigmento md:hover:bg-pigmento-hover md:hover:text-tinta"
+            >
               Ver acabados
             </Boton>
-            <Boton variante="contorno" href="/presupuesto/">
-              Pedir presupuesto
-            </Boton>
-          </div>
-        </div>
-
-        <div className="relative">
-          <BloquePosicion
-            proporcion="3/4"
-            className="md:hidden"
-            etiqueta={
-              <EtiquetaTecnica
-                lineas={['MONCADA · VALENCIA', 'IMPRESO · MODELO ESPIGA · COLOR 117', <>
-                  <DatoPendiente>180</DatoPendiente> m² · 2025
-                </>]}
-              />
-            }
-          >
-            <div className="absolute top-6 left-4 right-4">
-              <h1 className="font-display font-extrabold fs-hero text-46 leading-[1.05] text-tinta m-0">
-                Hormigón que se ve bien 20 años después
-              </h1>
-            </div>
-          </BloquePosicion>
-          <BloquePosicion
-            proporcion="4/3"
-            className="hidden md:block md:min-h-[660px] md:h-full"
-            etiqueta={
-              <EtiquetaTecnica
-                lineas={['MONCADA · VALENCIA', 'IMPRESO · MODELO ESPIGA · COLOR 117', <>
-                  <DatoPendiente>180</DatoPendiente> m² · 2025
-                </>]}
-              />
-            }
-          />
-        </div>
-
-        <div className="md:hidden flex flex-col gap-4 mt-6">
-          <p className="text-16 text-tinta-media m-0">
-            Pavimentos de hormigón impreso, pulido, lavado y microcemento en Valencia, Castellón y
-            Alicante. 17 años ejecutando obra propia, con 10 años de garantía y mantenimiento
-            incluido.
-          </p>
-          <div className="flex flex-col gap-3">
-            <Boton variante="contorno" href="/acabados/" anchoCompleto>
-              Ver acabados
-            </Boton>
-            <Boton variante="contorno" href="/presupuesto/" anchoCompleto>
+            <Boton variante="contorno" href="/presupuesto/" anchoCompleto className="md:w-auto">
               Pedir presupuesto
             </Boton>
           </div>
@@ -204,35 +185,38 @@ export default function Home() {
 
       {/* 04 · Muestrario */}
       <Aparece as="section" className="bg-fondo-alt px-[18px] md:px-lat-desktop py-9 md:py-22">
-        <div className="flex flex-col gap-6">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div className="flex flex-col gap-2">
-              <AntetituloSeccion numero="04">Muestrario</AntetituloSeccion>
-              <h2 className="font-display font-bold fs-h2 text-34 md:text-46 m-0">
-                Elige el acabado antes de que empecemos
-              </h2>
-              <p className="text-16 md:text-20 text-tinta-media max-w-[60ch] m-0">
-                Estos no son renders. Cada muestra es una obra que hemos ejecutado, con su modelo y
-                su color. Míralos, guárdate el código y dínoslo cuando hablemos.
-              </p>
-            </div>
-            <EnlaceEtiqueta href="/acabados/" className="hidden md:inline-flex">
-              Abrir el muestrario completo →
-            </EnlaceEtiqueta>
+        {/* El enlace-etiqueta también era un nodo duplicado (arriba en escritorio,
+            al final en móvil). Ahora es uno solo y lo coloca la rejilla. */}
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] items-end gap-6 md:gap-x-16">
+          <div className="flex flex-col gap-2">
+            <AntetituloSeccion numero="04">Muestrario</AntetituloSeccion>
+            <h2 className="font-display font-bold fs-h2 text-34 md:text-46 m-0">
+              Elige el acabado antes de que empecemos
+            </h2>
+            <p className="text-16 md:text-20 text-tinta-media max-w-[60ch] m-0">
+              Estos no son renders. Cada muestra es una obra que hemos ejecutado, con su modelo y
+              su color. Míralos, guárdate el código y dínoslo cuando hablemos.
+            </p>
           </div>
 
-          <div className="flex gap-2 overflow-x-auto">
-            <Chip activo>Todas ({totalAcabados})</Chip>
-            <Chip>{documentados} con obra documentada</Chip>
+          {/* Contador del inventario, no filtros: aquí no hay nada que seleccionar.
+              Se renderizan como etiqueta (`<span>`), que es lo que de verdad son.
+              El ocre marca la cifra total, el segundo rol de la pantalla según
+              `02-pantallas.md §A1` («CTA del hero + chip activo del muestrario»). */}
+          <div className="flex gap-2 overflow-x-auto md:col-span-2">
+            <Chip etiqueta activo>
+              Todas ({totalAcabados})
+            </Chip>
+            <Chip etiqueta>{documentados} con obra documentada</Chip>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-[14px_10px] md:gap-[32px_24px]">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-[14px_10px] md:gap-[32px_24px] md:col-span-2">
             {muestraHome.map((a) => (
               <MuestraAcabado key={a.slug} acabado={a} />
             ))}
           </div>
 
-          <EnlaceEtiqueta href="/acabados/" className="md:hidden">
+          <EnlaceEtiqueta href="/acabados/" className="md:col-start-2 md:row-start-1 md:justify-self-end">
             Abrir el muestrario completo →
           </EnlaceEtiqueta>
         </div>
@@ -336,24 +320,19 @@ export default function Home() {
 
       {/* 08 · Proyectos */}
       <Aparece as="section" className="bg-fondo-alt px-[18px] md:px-lat-desktop py-9 md:py-22">
-        <div className="flex flex-col gap-6">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div className="flex flex-col gap-2">
-              <AntetituloSeccion numero="08">Proyectos</AntetituloSeccion>
-              <h2 className="font-display font-bold fs-h2 text-34 md:text-46 m-0">
-                Obra hecha, no catálogo de proveedor
-              </h2>
-              <p className="text-16 md:text-20 text-tinta-media max-w-[60ch] m-0">
-                Todas las fotos de esta web son trabajos nuestros. Puedes filtrarlos por acabado, por
-                tipo de espacio o por municipio.
-              </p>
-            </div>
-            <EnlaceEtiqueta href="/proyectos/" className="hidden md:inline-flex">
-              Ver todos los proyectos →
-            </EnlaceEtiqueta>
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] items-end gap-6 md:gap-x-16">
+          <div className="flex flex-col gap-2">
+            <AntetituloSeccion numero="08">Proyectos</AntetituloSeccion>
+            <h2 className="font-display font-bold fs-h2 text-34 md:text-46 m-0">
+              Obra hecha, no catálogo de proveedor
+            </h2>
+            <p className="text-16 md:text-20 text-tinta-media max-w-[60ch] m-0">
+              Todas las fotos de esta web son trabajos nuestros. Puedes filtrarlos por acabado, por
+              tipo de espacio o por municipio.
+            </p>
           </div>
 
-          <div className="flex md:grid md:grid-cols-3 gap-6 overflow-x-auto -mx-[18px] px-[18px] md:mx-0 md:px-0">
+          <div className="flex md:grid md:grid-cols-3 gap-6 overflow-x-auto -mx-[18px] px-[18px] md:mx-0 md:px-0 md:col-span-2">
             {proyectosHome.map((p) => (
               <div key={p.slug} className="min-w-[220px] shrink-0 md:min-w-0 md:shrink">
                 <TarjetaProyecto proyecto={p} fondo="base" />
@@ -361,7 +340,7 @@ export default function Home() {
             ))}
           </div>
 
-          <EnlaceEtiqueta href="/proyectos/" className="md:hidden">
+          <EnlaceEtiqueta href="/proyectos/" className="md:col-start-2 md:row-start-1 md:justify-self-end">
             Ver todos los proyectos →
           </EnlaceEtiqueta>
         </div>

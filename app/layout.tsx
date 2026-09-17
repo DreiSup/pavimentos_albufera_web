@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { sitio } from '@/lib/config'
+import { nap, sitio } from '@/lib/config'
 import { JsonLd, schemaNegocioLocal } from '@/lib/schema'
 import Cabecera from '@/components/layout/Cabecera'
 import Pie from '@/components/layout/Pie'
@@ -18,6 +18,19 @@ export const metadata: Metadata = {
   description:
     'Hormigón impreso, pulido, lavado y microcemento en Valencia, Castellón y Alicante. 17 años de obra propia y 10 de garantía. Presupuesto sin compromiso.',
   alternates: { canonical: '/' },
+  // El negocio capta por WhatsApp: cada enlace compartido tiene que salir con
+  // tarjeta. A propósito no se fijan aquí `title`, `description` ni `images`:
+  // Next hereda el título y la descripción de cada página (con su plantilla) y
+  // la imagen la pone `app/opengraph-image.png`, que cascadea a todas las rutas.
+  // Así las páginas individuales no necesitan tocar su `metadata`.
+  openGraph: {
+    type: 'website',
+    locale: 'es_ES',
+    siteName: nap.nombre,
+  },
+  twitter: {
+    card: 'summary_large_image',
+  },
 }
 
 export const viewport = {

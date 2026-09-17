@@ -105,22 +105,35 @@ a {
   }
 }
 
-/* Aparición suave de secciones al entrar en pantalla, una sola vez (§8.6) */
-.aparece {
-  opacity: 0;
-  transform: translateY(12px);
-  transition:
-    opacity 500ms ease-out,
-    transform 500ms ease-out;
-}
-.aparece.aparece--visible {
-  opacity: 1;
-  transform: none;
-}
-@media (prefers-reduced-motion: reduce) {
-  .aparece {
+/* Aparición suave de secciones al entrar en pantalla (§8.6).
+   Sin JavaScript. `.aparece` no oculta nada por sí sola: el contenido es
+   visible siempre, y la animación solo se declara donde el navegador sabe
+   ligarla al scroll. Donde no la soporta, o con prefers-reduced-motion, no
+   hay animación y la página se ve igual de completa. */
+@keyframes aparece {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
     opacity: 1;
     transform: none;
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .aparece {
+      animation-name: aparece;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      /* El orden importa: la forma abreviada `animation` reinicia
+         animation-timeline y animation-range. Aquí no se usa. */
+      animation-timeline: view();
+      /* Recorrido fijo de 300 px de scroll desde que la sección asoma,
+         igual para una sección corta que para una larga. */
+      animation-range: entry 80px entry 380px;
+    }
   }
 }
 

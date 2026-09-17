@@ -1,9 +1,18 @@
-'use client'
-
-import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 
-/** Aparición suave de secciones al entrar en pantalla, una sola vez (§8.6). */
+/**
+ * Aparición suave de secciones al entrar en pantalla, una sola vez (§8.6).
+ *
+ * Componente de servidor: no manda ni un byte de JavaScript al cliente. Toda la
+ * animación vive en la clase `.aparece` de `app/globals.css`, resuelta con
+ * `animation-timeline: view()` dentro de un `@supports`. La consecuencia que
+ * importa: **el contenido es visible siempre**, también con el JS desactivado,
+ * caído o todavía sin descargar. La animación es un extra, nunca el interruptor
+ * de la visibilidad.
+ *
+ * La API (`as`, `id`, `className`) es la misma de antes: las páginas que ya lo
+ * usan no cambian.
+ */
 export default function Aparece({
   children,
   className = '',
@@ -15,29 +24,10 @@ export default function Aparece({
   as?: 'div' | 'section'
   id?: string
 }) {
-  const ref = useRef<HTMLDivElement>(null)
-  const [visible, setVisible] = useState(false)
-
-  useEffect(() => {
-    const nodo = ref.current
-    if (!nodo) return
-    const observador = new IntersectionObserver(
-      ([entrada]) => {
-        if (entrada.isIntersecting) {
-          setVisible(true)
-          observador.disconnect()
-        }
-      },
-      { threshold: 0.1 },
-    )
-    observador.observe(nodo)
-    return () => observador.disconnect()
-  }, [])
-
   const Tag = Componente as 'div'
 
   return (
-    <Tag ref={ref} id={id} className={`aparece ${visible ? 'aparece--visible' : ''} ${className}`}>
+    <Tag id={id} className={`aparece ${className}`}>
       {children}
     </Tag>
   )
