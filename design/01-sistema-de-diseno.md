@@ -90,6 +90,16 @@ En Tailwind: `font-display`, `font-sans`, `font-mono` (ver `tailwind.config.ts`)
 Escala cerrada del §8.3: **12 / 14 / 16 / 20 / 26 / 34 / 46 / 64 / 88**. No hay valores
 intermedios; si un titular no cabe, se acorta el titular.
 
+**Salvo cuando el titular no se puede acortar: entonces se parte por sílabas.** Enmienda del
+2026-09-17. El H1 de `/microcemento/` es el nombre del servicio y el copy viene del documento
+maestro: «Microcemento» a 46 px mide **404 px de palabra indivisible** y en un teléfono de
+390 px el H1 dispone de 354, o sea **47 px de scroll horizontal de la página entera**, medidos.
+No se sale ninguna caja: se sale la tinta de una línea. Y no hay a qué bajar, porque entre 34 y
+46 la escala no tiene nada. Así que los H1 llevan `hyphens: auto` —con el `lang="es"` del
+`<html>` da «Microce-mento», partición correcta en español— y `overflow-wrap: break-word` como
+red por si el navegador no trae patrones. **Solo el H1**: es el único tamaño de la escala que
+llega a no caber, y hay uno por página.
+
 | px | Interlineado | Fuente | Uso |
 |---|---|---|---|
 | 88 | 1.02–1.05 | Archivo 800 / 125 % | Hero de la home, escritorio. `letter-spacing: -0.03em` |

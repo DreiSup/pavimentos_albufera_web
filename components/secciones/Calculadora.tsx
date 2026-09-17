@@ -50,7 +50,12 @@ export default function Calculadora({ usos, reducida = false }: { usos: OpcionUs
   }, [rango, superficie, uso, terreno])
 
   return (
-    <div className="sobre-oscuro bg-tinta text-fondo px-[18px] py-8 md:px-lat-desktop md:py-12 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-[72px]">
+    // Dos columnas desde `xl` y no desde `md`: los chips de uso son etiquetas y
+    // no parten («Peatonal (patios, porches, jardines)» mide 362 px), pero a
+    // 768 px cada columna deja 292 y el chip se salía de la página. Con una
+    // sola columna la caja pasa a 657 px y entran enteros, que es lo que un
+    // chip necesita para poder leerse.
+    <div className="sobre-oscuro bg-tinta text-fondo px-[18px] py-8 md:px-lat-desktop md:py-12 grid grid-cols-1 xl:grid-cols-2 gap-8 xl:gap-[72px]">
       <div className="flex flex-col gap-4">
         <h3 className="font-display font-bold fs-h2 text-26 md:text-34 m-0">
           Calcula tu presupuesto orientativo

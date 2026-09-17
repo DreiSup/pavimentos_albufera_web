@@ -157,6 +157,25 @@ input[type='range'] {
   accent-color: var(--pigmento);
 }
 
+/* §2.4 dice «si un titular no cabe, se acorta el titular», y hay un caso en que
+   no se puede: el titular es el nombre del servicio y el copy viene del
+   documento maestro. «Microcemento» a 46 px mide 404 px de palabra indivisible y
+   el H1 de `/microcemento/` dispone de 354 px en un teléfono de 390: 47 px de
+   scroll horizontal del documento, medidos, sin que ninguna caja se salga —lo
+   que se sale es la tinta de una línea—. La escala está cerrada y no hay un
+   valor entre 34 y 46 al que bajar.
+
+   Se resuelve partiendo la palabra por sílabas, no achicando el tipo.
+   `hyphens: auto` con el `lang="es"` del `<html>` da «Microce-mento», que es
+   una partición correcta en español; `overflow-wrap` es la red por si el
+   navegador no trae patrones y evita que el titular vuelva a pintar fuera.
+   Solo en el H1: es el único tamaño de la escala que llega a no caber, y es
+   uno por página. → `design/01` §2.4, enmendado el 2026-09-17. */
+h1 {
+  hyphens: auto;
+  overflow-wrap: break-word;
+}
+
 /* Eje de anchura de Archivo (§2.3). Solo estos tres valores, nunca otros.
    El cuarto, `.fs-logo` a 118 %, se retira: era exclusivo del logotipo
    tipográfico y desde que el logotipo es una imagen no lo usaba nadie. */

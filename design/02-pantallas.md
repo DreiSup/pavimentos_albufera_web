@@ -70,6 +70,28 @@ cliente cuándo no contratar este servicio. Va en negro a página completa por e
 
 En móvil no hay submenú: solo la barra de contacto. La ficha técnica se apila en pares.
 
+**Las pistas fijas de esta plantilla empiezan en 1280 px. Enmienda del 2026-09-17, medida.**
+`1fr 560px` con el H1 a 64 px necesita **1278 px de ancho de contenido**: la columna izquierda
+no puede bajar de la palabra más larga del H1 —558 px en `/microcemento/`, 472 en
+`/hormigon-desactivado/`, 374 en las otras cuatro— y hay que sumarle 64 de hueco, 560 de foto y
+96 de gutter. Encendido en 768 px el `1fr` no podía encoger por debajo de esa palabra y empujaba
+la página: **100 px de scroll horizontal del documento a 960 px en cuatro de las seis páginas,
+198 en desactivado y 285 en microcemento**. Lo mismo, por lo mismo, en las otras tres pistas
+fijas de la plantilla:
+
+| Pista | Dónde | Ancho de contenido que pide |
+|---|---|---|
+| `1fr 560px`, H1 64 px | Hero | 1278 px |
+| `1fr 340px` | Ficha técnica dentro del `380px 1fr` de su sección | 986 px |
+| `300px 1fr` | Filas de Aplicaciones, dentro del mismo `380px 1fr` | 980 px |
+| `1fr 1fr` con chips de uso | Calculadora (§05, y `/precios/`) | ~960 px |
+
+Por debajo de 1280 px cada una usa **su propio tratamiento apilado, el de móvil**, que ya estaba
+descrito: el hero se reparte en dos mitades con el H1 a 46 px, la ficha técnica se apila «en
+pares» como dice el párrafo de arriba, las aplicaciones apilan nombre y matiz, y la calculadora
+va a una columna. Es el mismo punto donde siguen la cabecera de móvil (`01 §4.1`) y la barra de
+contacto (`01 §4.3`).
+
 ## A3 · Muestrario — `/acabados/`
 
 El elemento firma. 16 acabados, 8 con obra documentada.
