@@ -8,8 +8,8 @@ import FiltrosAcabados, {
   type AcabadoFiltrable,
   type GrupoAcabados,
 } from '@/components/secciones/FiltrosAcabados'
-import { acabados, coloresEnUso, contarDocumentados, tecnicasEnUso } from '@/lib/datos'
-import { CODIGO_COLOR, NOMBRE_SERVICIO } from '@/lib/tipos'
+import { acabados, contarDocumentados, tecnicasEnUso } from '@/lib/datos'
+import { NOMBRE_SERVICIO } from '@/lib/tipos'
 
 export const metadata: Metadata = {
   title: 'Muestrario de acabados de hormigón impreso',
@@ -21,20 +21,18 @@ export const metadata: Metadata = {
 const total = acabados.length
 const documentados = contarDocumentados()
 
-const grupos: GrupoAcabados[] = [
-  {
-    clave: 'tecnica',
-    etiqueta: 'Técnica',
-    todos: 'Todas',
-    opciones: tecnicasEnUso().map((t) => ({ valor: t, nombre: NOMBRE_SERVICIO[t] })),
-  },
-  {
-    clave: 'color',
-    etiqueta: 'Color',
-    todos: 'Todos',
-    opciones: coloresEnUso().map((c) => ({ valor: c, nombre: CODIGO_COLOR[c] })),
-  },
-]
+/**
+ * Una sola fila de chips, la de técnica. La de color se retiró el 2026-09-17
+ * (`design/02` §A3): filtrar por pigmento pedía al visitante el dato que viene a
+ * buscar, y con un solo eje el estado vacío deja de ser alcanzable porque cada
+ * opción sale del propio catálogo que se pinta.
+ */
+const grupoTecnica: GrupoAcabados = {
+  clave: 'tecnica',
+  etiqueta: 'Técnica',
+  todos: 'Todas',
+  opciones: tecnicasEnUso().map((t) => ({ valor: t, nombre: NOMBRE_SERVICIO[t] })),
+}
 
 export default function Acabados() {
   /**
@@ -44,7 +42,7 @@ export default function Acabados() {
    */
   const muestras: AcabadoFiltrable[] = acabados.map((a) => ({
     clave: a.slug,
-    valores: { tecnica: a.servicio, color: a.color },
+    valores: { tecnica: a.servicio },
     muestra: <MuestraAcabado key={a.slug} acabado={a} />,
   }))
 
@@ -63,14 +61,14 @@ export default function Acabados() {
             </h1>
             <p className="text-16 md:text-20 text-tinta-media max-w-[52ch] m-0">
               Cada muestra es una obra ejecutada, con su modelo y su color reales. Filtra por
-              técnica y color, guárdate el código y dínoslo cuando hablemos.
+              técnica, guárdate el código y dínoslo cuando hablemos.
             </p>
           </div>
         </div>
       </section>
 
       <div className="px-[18px] md:px-lat-desktop">
-        <FiltrosAcabados muestras={muestras} grupos={grupos} />
+        <FiltrosAcabados muestras={muestras} grupo={grupoTecnica} />
       </div>
 
       <Aparece

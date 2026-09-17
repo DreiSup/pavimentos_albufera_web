@@ -2,7 +2,7 @@ import acabadosJson from '@/content/acabados.json'
 import articulosJson from '@/content/articulos.json'
 import proyectosJson from '@/content/proyectos.json'
 import zonasJson from '@/content/zonas.json'
-import type { Acabado, Articulo, ColorId, ModeloId, Proyecto, ServicioId, Zona } from './tipos'
+import type { Acabado, Articulo, ModeloId, Proyecto, ServicioId, Zona } from './tipos'
 
 export const proyectos = proyectosJson as unknown as Proyecto[]
 export const acabados = acabadosJson as unknown as Acabado[]
@@ -60,11 +60,6 @@ export function proyectosPorModelo(modelo: ModeloId, excluir?: string): Proyecto
 
 export function tecnicasEnUso(): ServicioId[] {
   const set = new Set(acabados.map((a) => a.servicio))
-  return Array.from(set)
-}
-
-export function coloresEnUso(): ColorId[] {
-  const set = new Set(acabados.map((a) => a.color))
   return Array.from(set)
 }
 
