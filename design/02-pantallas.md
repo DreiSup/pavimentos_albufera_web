@@ -85,12 +85,22 @@ fijas de la plantilla:
 | `1fr 340px` | Ficha técnica dentro del `380px 1fr` de su sección | 986 px |
 | `300px 1fr` | Filas de Aplicaciones, dentro del mismo `380px 1fr` | 980 px |
 | `1fr 1fr` con chips de uso | Calculadora (§05, y `/precios/`) | ~960 px |
+| 7 anclas que no parten | Submenú (`01 §4.6`) | 1259 px |
 
 Por debajo de 1280 px cada una usa **su propio tratamiento apilado, el de móvil**, que ya estaba
 descrito: el hero se reparte en dos mitades con el H1 a 46 px, la ficha técnica se apila «en
-pares» como dice el párrafo de arriba, las aplicaciones apilan nombre y matiz, y la calculadora
-va a una columna. Es el mismo punto donde siguen la cabecera de móvil (`01 §4.1`) y la barra de
-contacto (`01 §4.3`).
+pares» como dice el párrafo de arriba, las aplicaciones apilan nombre y matiz, la calculadora
+va a una columna y **el submenú no se pinta**, que es lo que ya dice «Solo escritorio» dos
+párrafos más arriba. Es el mismo punto donde siguen la cabecera de móvil (`01 §4.1`) y la barra
+de contacto (`01 §4.3`).
+
+⚠️ **Y una regla que esto rompe, sin arreglar en esta pasada.** Con la barra de contacto visible
+hasta 1279, entre 768 y 1279 hay **dos ocres de acción** en las seis páginas de servicio: el
+`Llamar` de la barra y el `Pedir presupuesto` del hero. Es la regla del ocre de `01 §2.2`, y el
+remedio ya está escrito en §A1 —«los CTA del hero y del cierre bajan a contorno» en móvil—, pero
+`Boton` no sabe cambiar de variante por punto de ruptura: hay que duplicar el par por
+breakpoint, como hace `app/presupuesto/page.tsx`. **Ya pasaba por debajo de 768**; lo que cambia
+es que ahora pasa en 512 px más de ancho.
 
 ## A3 · Muestrario — `/acabados/`
 

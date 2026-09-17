@@ -8,6 +8,16 @@ export type AnclaSubmenu = { id: string; texto: string }
  * 01-sistema-de-diseno.md §4.6. Sigue el scroll con IntersectionObserver
  * (decisión 12 de 05-pendientes-y-decisiones.md): en el prototipo solo
  * respondía al clic por una limitación del entorno de previsualización.
+ *
+ * **Desde `xl`, como el resto de la plantilla de servicio.** Sus siete anclas
+ * miden 1259 px y no parten —son etiquetas—, así que de 768 a 1270 el carril
+ * pintaba una barra de scroll clásica de 15 px dentro de una caja que §4.6 fija
+ * en 56 de alto, y seis de las siete anclas quedaban fuera de pantalla. A 1280
+ * el ancho de contenido es 1265 y entran enteras. `design/02` §A2 ya decía
+ * «Solo escritorio» y «en móvil no hay submenú»; lo que cambia es dónde empieza
+ * el escritorio de esta plantilla, igual que en el hero, la ficha técnica, las
+ * aplicaciones y la calculadora. `overflow-x-auto` se queda como red: si un día
+ * una sección alarga su nombre, el carril reaparece en vez de romper la página.
  */
 export default function SubmenuServicio({ anclas }: { anclas: AnclaSubmenu[] }) {
   const [activa, setActiva] = useState(anclas[0]?.id)
@@ -32,7 +42,7 @@ export default function SubmenuServicio({ anclas }: { anclas: AnclaSubmenu[] }) 
   }, [anclas])
 
   return (
-    <div className="hidden md:flex sticky [top:var(--cabecera-actual)] z-10 bg-tinta h-[56px] px-lat-desktop items-center gap-1 overflow-x-auto">
+    <div className="hidden xl:flex sticky [top:var(--cabecera-actual)] z-10 bg-tinta h-[56px] px-lat-desktop items-center gap-1 overflow-x-auto">
       {anclas.map((ancla) => (
         <a
           key={ancla.id}
