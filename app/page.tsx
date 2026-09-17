@@ -166,7 +166,13 @@ export default function Home() {
           proporcion="3/4"
           prioridad
           tamanos={TAMANOS_HERO_HOME}
-          className="col-start-1 row-start-2 md:col-start-2 md:row-start-1 md:row-end-5 md:aspect-[4/3] md:min-h-[660px] md:h-full"
+          /* `md:aspect-auto` no es adorno: en escritorio esta caja abarca las cuatro
+             filas de la rejilla, así que su altura es definida y su anchura no. Con una
+             `aspect-ratio` viva, el navegador deduce la anchura de la altura —4/3 × 697 =
+             929 px— en vez de estirarla a su columna de 648, y la foto se salía 241 px
+             por la derecha con barra de scroll horizontal en toda la home. Fijando las
+             dos dimensiones la proporción deja de opinar y recorta `object-cover`. */
+          className="col-start-1 row-start-2 md:col-start-2 md:row-start-1 md:row-end-5 md:aspect-auto md:h-full md:w-full md:min-h-[660px]"
           etiqueta={
             <EtiquetaTecnica
               lineas={['MONCADA · VALENCIA', 'IMPRESO · MODELO ESPIGA · COLOR 117', <>
