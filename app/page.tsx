@@ -5,6 +5,7 @@ import AntetituloSeccion from '@/components/ui/AntetituloSeccion'
 import Boton from '@/components/ui/Boton'
 import { EnlaceEtiqueta } from '@/components/ui/EnlaceEtiqueta'
 import Foto from '@/components/contenido/Foto'
+import CarruselFotos from '@/components/contenido/CarruselFotos'
 import EtiquetaTecnica from '@/components/datos/EtiquetaTecnica'
 import DatoPendiente from '@/components/datos/DatoPendiente'
 import MuestraAcabado from '@/components/contenido/MuestraAcabado'
@@ -17,7 +18,8 @@ import { JsonLd, schemaFAQ } from '@/lib/schema'
 import { acabados, contarDocumentados, proyectos } from '@/lib/datos'
 import { faqHome } from '@/content/faq'
 import { PASOS, SERVICIOS } from '@/content/servicios'
-import { NOMBRE_SERVICIO, RUTA_SERVICIO } from '@/lib/tipos'
+import { CODIGO_COLOR, NOMBRE_MODELO, NOMBRE_SERVICIO, RUTA_SERVICIO } from '@/lib/tipos'
+import type { Proyecto } from '@/lib/tipos'
 import { nap } from '@/lib/config'
 
 /**
@@ -100,7 +102,27 @@ const servicios = [
   { id: 'desactivado' as const, texto: 'Piedra vista con la resistencia de una solera.' },
 ]
 
-const proyectoHero = proyectos.find((p) => p.slug === 'moncada-impreso-espiga-117')!
+/**
+ * Las cuatro obras del carrusel del hero, en orden de pase.
+ *
+ * Todas tienen municipio confirmado y foto apaisada: en el hueco `3/4` de móvil
+ * una foto de 900×500 se recortaría al 42 % de su ancho y dejaría de contar lo
+ * que cuenta. Por eso no están ni Godella ni Ribarroja, y por eso tres de las
+ * cuatro son de impreso: es lo que hay fotografiado en horizontal. La cuarta,
+ * Corbera, entra para que el pase no enseñe una sola técnica.
+ *
+ * `superficiePendiente` recoge el único m² que la portada afirmaba: los 180 de
+ * Moncada, que `content/proyectos.json` guarda como «sin confirmar» y que ya se
+ * pintaban entre corchetes. No se inventa ninguno para las otras tres; donde no
+ * hay dato, se ve que no lo hay.
+ */
+const DIAPOSITIVAS_HERO: { slug: string; superficiePendiente?: string }[] = [
+  { slug: 'moncada-impreso-espiga-117', superficiePendiente: '180' },
+  { slug: 'denia-impreso-piedra-inglesa' },
+  { slug: 'alzira-impreso-adoquin-irregular-107' },
+  { slug: 'corbera-fratasado-arena' },
+]
+
 const muestraHome = acabados.filter((a) => a.proyectos.length > 0).slice(0, 4)
 /**
  * Las NUEVE obras documentadas, no una selección. Solo se ordenan: las
@@ -127,17 +149,54 @@ const proyectosHome = [...proyectos].sort((a, b) => Number(b.destacado) - Number
 const TAMANOS_HERO_HOME = '(min-width: 768px) 50vw, 100vw'
 const TAMANOS_TARJETA_SERVICIO = '(min-width: 768px) 30vw, 100vw'
 const TAMANOS_ESPACIO = '(min-width: 768px) 30vw, 50vw'
-const fotoHero = proyectoHero.imagenes[0]?.src
+/**
+ * Las cuatro obras del hero vuelven a salir como tarjeta en la sección 07, así
+ * que ahora son cuatro las fotos con dos huecos, no una. Igualarlas al `sizes`
+ * del hueco ancho sigue siendo lo barato: cuatro peticiones en vez de ocho.
+ */
+const fotosHero = new Set(
+  DIAPOSITIVAS_HERO.map(({ slug }) => proyectos.find((p) => p.slug === slug)?.imagenes[0]?.src).filter(
+    Boolean,
+  ),
+)
 const fotosDeObra = new Set(proyectosHome.map((p) => p.imagenes[0]?.src).filter(Boolean))
 const fotosDeServicio = new Set(servicios.map((s) => SERVICIOS[s.id].imagenTarjeta?.src).filter(Boolean))
 
 function tamanosCompartidos(src?: string) {
   if (!src) return undefined
-  if (src === fotoHero) return TAMANOS_HERO_HOME
+  if (fotosHero.has(src)) return TAMANOS_HERO_HOME
   if (fotosDeObra.has(src)) return TAMANOS_TARJETA_PROYECTO
   if (fotosDeServicio.has(src)) return TAMANOS_TARJETA_SERVICIO
   return undefined
 }
+
+/**
+ * La etiqueta técnica de una diapositiva, con la MISMA regla que
+ * `TarjetaProyecto`: municipio y provincia, luego técnica, modelo y color, y
+ * por último superficie y año. Nada se escribe a mano, todo sale del modelo de
+ * contenido, y lo que falta se ve faltar.
+ */
+function etiquetaDeObra(proyecto: Proyecto, superficiePendiente?: string) {
+  const modelo = proyecto.modelo ? ` · ${NOMBRE_MODELO[proyecto.modelo].toUpperCase()}` : ''
+  const color = proyecto.color ? ` · ${CODIGO_COLOR[proyecto.color]}` : ''
+  return [
+    `${proyecto.municipio ?? ''} · ${proyecto.provincia ?? ''}`.toUpperCase(),
+    `${NOMBRE_SERVICIO[proyecto.servicio].toUpperCase()}${modelo}${color}`,
+    <>
+      {proyecto.superficie ?? <DatoPendiente>{superficiePendiente ?? 'm²'}</DatoPendiente>}
+      {proyecto.superficie || superficiePendiente ? ' m²' : ''} ·{' '}
+      {proyecto.anio ?? <DatoPendiente>año</DatoPendiente>}
+    </>,
+  ]
+}
+
+const diapositivasHero = DIAPOSITIVAS_HERO.map(({ slug, superficiePendiente }) => {
+  const proyecto = proyectos.find((p) => p.slug === slug)!
+  return {
+    imagen: proyecto.imagenes[0],
+    etiqueta: <EtiquetaTecnica lineas={etiquetaDeObra(proyecto, superficiePendiente)} />,
+  }
+})
 const totalAcabados = acabados.length
 const documentados = contarDocumentados()
 
@@ -150,25 +209,43 @@ export default function Home() {
           columna junto al `4/3`— pero el nodo es uno solo: la diferencia la resuelve la
           rejilla. En móvil la columna única apila titular, foto y texto; en escritorio
           la foto salta a la segunda columna y ocupa las cuatro filas.
-          Dos decisiones que no se pueden deshacer sin romper algo:
+          Tres decisiones que no se pueden deshacer sin romper algo:
           - **Un solo <h1>** (README §9). Duplicarlo con `md:hidden` no lo quita del
-            DOM: el rastreador y el lector de pantalla siguen viendo dos.
-          - **El titular nunca SOBRE la foto.** Antes se superponía porque debajo había
-            un bloque de posición plano; sobre fotografía real el contraste deja de ser
-            comprobable y el sistema no tiene velo. Va delante, en su fila. */}
+            DOM: el rastreador y el lector de pantalla siguen viendo dos. Por eso el
+            titular no se copia para superponerlo: es la rejilla la que lo mete en la
+            misma celda que la foto por debajo de 768 px y lo saca a su columna por
+            encima. Un nodo, dos sitios.
+          - **El titular SÍ va sobre la foto en móvil**, que es lo que siempre dijo
+            `§A1`, y el sistema ya tiene con qué: el velo de `design/01 §2.8`, medido
+            para que `--fondo` aguante 4,79 : 1 sobre un píxel blanco puro. Decisión
+            del dueño del 2026-09-17. En escritorio el titular sigue en su columna y
+            no hay velo, porque no pisa ninguna foto.
+          - **La foto es un carrusel de cuatro obras** (`design/01 §3.15`), y pasa
+            solo. Cero JavaScript: el pase es un `@keyframes` de opacidad. Con
+            movimiento reducido no pasa nada y se ve la primera foto fija. */}
       <section className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-x-16 md:gap-y-6 md:grid-rows-[1fr_auto_auto_1fr] px-[18px] md:px-lat-desktop pt-8 md:pt-14">
-        <h1 className="col-start-1 row-start-1 md:row-start-2 font-display font-extrabold fs-hero text-46 md:text-88 leading-[1.05] md:leading-[1.02] text-tinta m-0">
+        {/* `relative z-10` porque en móvil comparte celda con el carrusel y va
+            detrás en el DOM; `self-start` para que se apoye en el borde superior de
+            la foto en vez de estirarse. El `p-[18px]` es el respiro DENTRO del marco
+            de la foto, no separación entre cajas: en escritorio desaparece. */}
+        <h1 className="col-start-1 row-start-1 md:row-start-2 relative z-10 self-start p-[18px] md:p-0 font-display font-extrabold fs-hero text-46 md:text-88 leading-[1.05] md:leading-[1.02] text-fondo md:text-tinta m-0">
           Hormigón que se ve bien 20 años después
         </h1>
 
-        {/* Una sola imagen para los dos anchos: `display:none` no evita la descarga,
-            así que dos <Image> serían dos descargas. La 4/3 de escritorio es el hueco
-            grande y la foto apaisada (1200×900) encaja sin recorte; en móvil se
-            recorta a 3/4. */}
-        <Foto
-          imagen={proyectoHero.imagenes[0]}
+        {/* Un solo marco para los dos anchos: `display:none` no evita la descarga,
+            así que duplicarlo por punto de ruptura serían ocho descargas. La 4/3 de
+            escritorio es el hueco grande y las fotos apaisadas encajan sin recorte;
+            en móvil se recortan a 3/4.
+            `w-full h-full` es lo que deja que la celda mande: si el titular midiera
+            más que la foto —pasa a 320 px, donde el H1 ocupa 374 px y el `3/4` solo
+            359—, la fila crece y la foto crece con ella en vez de dejar el titular
+            fuera. Y las DOS dimensiones, no solo la altura: con `h-full` a secas la
+            `aspect-ratio` deducía la anchura de la altura —374 × 3/4 = 281 px en una
+            columna de 269— y devolvía a la portada los 19 px de scroll horizontal
+            que el mismo problema ya había causado en escritorio. */}
+        <CarruselFotos
+          diapositivas={diapositivasHero}
           proporcion="3/4"
-          prioridad
           tamanos={TAMANOS_HERO_HOME}
           /* `md:aspect-auto` no es adorno: en escritorio esta caja abarca las cuatro
              filas de la rejilla, así que su altura es definida y su anchura no. Con una
@@ -176,33 +253,30 @@ export default function Home() {
              929 px— en vez de estirarla a su columna de 648, y la foto se salía 241 px
              por la derecha con barra de scroll horizontal en toda la home. Fijando las
              dos dimensiones la proporción deja de opinar y recorta `object-cover`. */
-          className="col-start-1 row-start-2 md:col-start-2 md:row-start-1 md:row-end-5 md:aspect-auto md:h-full md:w-full md:min-h-[660px]"
-          etiqueta={
-            <EtiquetaTecnica
-              lineas={['MONCADA · VALENCIA', 'IMPRESO · MODELO ESPIGA · COLOR 117', <>
-                <DatoPendiente>180</DatoPendiente> m² · 2025
-              </>]}
-            />
-          }
-        />
+          className="col-start-1 row-start-1 w-full h-full md:col-start-2 md:row-start-1 md:row-end-5 md:aspect-auto md:min-h-[660px]"
+        >
+          {/* El velo solo existe donde el titular pisa la foto. En escritorio el
+              titular tiene su columna, así que sobra y se retira: las fotos se ven
+              como son. */}
+          <div className="velo absolute inset-0 md:hidden" aria-hidden="true" />
+        </CarruselFotos>
 
-        <div className="col-start-1 row-start-3 md:row-start-3 flex flex-col gap-4 md:gap-6">
+        <div className="col-start-1 row-start-2 md:row-start-3 flex flex-col gap-4 md:gap-6">
           <p className="text-16 md:text-20 text-tinta-media md:max-w-[46ch] m-0">
             Pavimentos de hormigón impreso, pulido, lavado y microcemento en Valencia, Castellón y
             Alicante. 17 años ejecutando obra propia, con 10 años de garantía y mantenimiento
             incluido.
           </p>
           <div className="flex flex-col md:flex-row gap-3 md:gap-4">
-            {/* Regla del ocre: en escritorio este es el CTA primario; en móvil baja a
-                contorno para no competir con la barra fija, que es la acción persistente.
-                Mismo nodo, la variante la da el punto de ruptura. `btn-primario` solo
-                cambia el color del foco (tinta), que es el que hace contraste sobre ocre. */}
-            <Boton
-              variante="contorno"
-              href="/acabados/"
-              anchoCompleto
-              className="btn-primario md:w-auto md:bg-pigmento md:border-pigmento md:hover:bg-pigmento-hover md:hover:text-tinta"
-            >
+            {/* Ocre TAMBIÉN en móvil. Excepción consciente a la regla del ocre de
+                `design/01 §2.2`, decidida por el dueño el 2026-09-17 y anotada allí:
+                en móvil hay dos ocres en pantalla, este y el «Llamar» de la barra
+                fija. La regla decía que el CTA del hero bajara a contorno justo para
+                evitarlo; el dueño prefiere que los dos botones del hero no se
+                confundan entre sí a que no compitan con la barra.
+                `btn-primario` viene ya dentro de la variante y es lo que cambia el
+                color del foco a tinta, el único que contrasta sobre ocre. */}
+            <Boton variante="primario" href="/acabados/" anchoCompleto className="md:w-auto">
               Ver acabados
             </Boton>
             <Boton variante="contorno" href="/presupuesto/" anchoCompleto className="md:w-auto">
@@ -379,7 +453,7 @@ export default function Home() {
                     de la página, no un color fijo. */}
                 <TarjetaProyecto
                   proyecto={p}
-                  tamanos={p.imagenes[0]?.src === fotoHero ? TAMANOS_HERO_HOME : undefined}
+                  tamanos={tamanosCompartidos(p.imagenes[0]?.src) ?? TAMANOS_TARJETA_PROYECTO}
                 />
               </div>
             ))}
