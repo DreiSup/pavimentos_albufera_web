@@ -117,12 +117,27 @@ export default function FiltrosAcabados({
   return (
     <div className="flex flex-col gap-6">
       <div className="sticky [top:var(--cabecera-actual)] z-10 bg-fondo border-t border-b border-tinta py-3 flex flex-col gap-2">
+        {/* Móvil, carril deslizante; escritorio, la fila envuelve. Las dos mitades
+            son literalmente lo que pide `design/02` §A3: «Fila 1: TÉCNICA …» en
+            escritorio y «dos carriles de chips deslizantes» en móvil. Lo que
+            había era el carril en los dos, y de 768 px para arriba eso pintaba
+            una barra de scroll clásica de 15 px bajo cada fila (medido a 960:
+            contenido 1093 px en una caja de 849).
+
+            Envolver y no ensanchar el carril: los chips ya se apilan así en la
+            hoja de filtros de `FiltrosProyectos`, que es el tratamiento aprobado
+            para estos mismos grupos. Sale con `flex-wrap` y `gap`, sin un solo
+            margen por elemento, y el `row-gap` viene del mismo `gap-2`.
+
+            `items-start` en la fila y `min-h-tactil` en la etiqueta: al envolver
+            en dos o tres líneas, `items-center` centraba la etiqueta contra el
+            bloque entero en vez de contra la primera línea de chips. */}
         {grupos.map((grupo) => (
-          <div key={grupo.clave} className="flex gap-3 overflow-x-auto">
-            <span className="font-mono text-d-11 text-acero w-[84px] shrink-0 flex items-center">
+          <div key={grupo.clave} className="flex gap-3 items-start overflow-x-auto md:overflow-x-visible">
+            <span className="font-mono text-d-11 text-acero w-[84px] shrink-0 min-h-tactil flex items-center">
               {grupo.etiqueta.toUpperCase()}
             </span>
-            <div className="flex gap-2">
+            <div className="flex gap-2 md:flex-wrap">
               <Chip activo={!filtros[grupo.clave]} onClick={() => actualizar(grupo.clave, null)}>
                 {grupo.todos}
               </Chip>

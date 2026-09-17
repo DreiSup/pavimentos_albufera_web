@@ -83,7 +83,15 @@ El elemento firma. 16 acabados, 8 con obra documentada.
   - Fila 2: `COLOR` — TODOS · 117 · 113 · 109 · 107 · GRIS · ARENA · CREMA
   - Fila 3: resumen del filtro en mono 12 (`6 ACABADOS · IMPRESO · GRIS`) y, si hay filtro
     aplicado, `QUITAR FILTROS ×`.
-  - La etiqueta de cada fila ocupa una columna fija de 84 px.
+  - La etiqueta de cada fila ocupa una columna fija de 84 px, alta 44 px, alineada con la
+    **primera** línea de chips.
+  - **Los chips de escritorio envuelven; no hay carril.** Enmienda del 2026-09-17: el carril
+    estaba puesto también en escritorio y de 768 px para arriba pintaba una barra de scroll
+    clásica de 15 px bajo cada fila (medido a 960 px: 1093 px de chips en una caja de 849). A
+    partir de 768 px la fila envuelve con `flex-wrap` y el mismo `gap`, así que en el lienzo de
+    1344 px sigue siendo la fila única que pide este párrafo y por debajo se apila en vez de
+    esconderse. El carril deslizante se queda **solo en móvil**, que es donde lo pide la línea
+    de abajo y donde la barra de scroll es superpuesta y no ocupa alto.
 - **Rejilla de 4** con las muestras (`01 §3.10`). Los dos ejes se combinan con AND.
 - **Estado vacío** (`01 §3.13`) cuando la combinación no existe. Probar `PULIDO` + `117`.
 - **Bloque «Cómo se lee un código»** en `--tinta`, `1fr 1fr`: a la izquierda el argumento, a la
@@ -241,6 +249,16 @@ Misma mecánica que el muestrario, con **cuatro ejes** en vez de dos.
 - Rejilla de 3 con tarjetas de proyecto. Resumen del filtro + `QUITAR FILTROS ×`.
 - Estado vacío del `01 §3.13`.
 - Estado de los filtros en query params.
+
+- **Los chips envuelven, y la barra de chips empieza en 1280 px.** Enmienda del 2026-09-17,
+  medida: los cuatro grupos llevaban carril, y el de `MODELO` desbordaba incluso a 1366 px
+  —1699 px de chips en una caja de 1255—, con su barra de scroll clásica bajo cada fila.
+  Envolviendo, la barra anclada mide **310 px de 1280 px para arriba** (solo envuelve `MODELO`)
+  y **466 px entre 768 y 1279**. Medio viewport de barra fija sobre la rejilla que el visitante
+  quiere comparar es justo lo que rechaza la decisión de abajo, y su motivo —«hasta 16
+  municipios no caben»— sigue siendo cierto a 960 px. Así que **por debajo de 1280 px manda la
+  hoja inferior**, que es además donde siguen la cabecera de móvil (`01 §4.1`) y la barra de
+  contacto (`01 §4.3`).
 
 **Decisión de filtros en móvil: hoja inferior, no acordeón ni chips.**
 Cuatro grupos con hasta 16 municipios no caben en carriles deslizantes —el usuario tendría que

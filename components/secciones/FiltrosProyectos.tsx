@@ -97,14 +97,32 @@ export default function FiltrosProyectos({
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Escritorio */}
-      <div className="hidden md:flex sticky [top:var(--cabecera-actual)] z-10 bg-fondo border-t border-b border-tinta py-3 flex-col gap-2">
+      {/* Escritorio. Desde `xl` y no desde `md`, medido: con las filas envueltas
+          la barra anclada mide 466 px entre 768 y 1279 —MODELO son 16 chips— y
+          310 px a partir de 1280, donde solo envuelve MODELO. Medio viewport de
+          barra fija encima de la rejilla que se quiere comparar es exactamente
+          lo que `design/02` §B3 rechaza al elegir la hoja inferior, y el motivo
+          que da —«cuatro grupos con hasta 16 municipios no caben»— sigue siendo
+          cierto a 960 px. Por debajo de 1280 manda la hoja, que además es el
+          mismo punto donde la cabecera y la barra de contacto siguen en móvil. */}
+      <div className="hidden xl:flex sticky [top:var(--cabecera-actual)] z-10 bg-fondo border-t border-b border-tinta py-3 flex-col gap-2">
+        {/* Esta barra es solo de escritorio —en móvil manda la hoja de abajo—,
+            así que aquí no hay carril que conservar: la fila envuelve y ya. El
+            `overflow-x-auto` que había pintaba una barra de scroll clásica bajo
+            cada una de las cuatro filas; la de MODELO desbordaba incluso a
+            1366 px (contenido 1699 px en una caja de 1255). Los chips se apilan
+            con `flex-wrap` y `gap`, igual que en `HojaFiltros` de este mismo
+            archivo, que es el tratamiento aprobado para estos grupos.
+
+            `items-start` y no `items-center`: al envolver, centrar dejaba la
+            etiqueta a media altura del bloque en vez de junto a la primera
+            línea de chips. Los 44 px de la etiqueta la alinean con ellos. */}
         {grupos.map((grupo) => (
-          <div key={grupo.clave} className="flex gap-3 overflow-x-auto items-center">
-            <span className="font-mono text-d-11 text-acero w-[84px] shrink-0">
+          <div key={grupo.clave} className="flex gap-3 items-start">
+            <span className="font-mono text-d-11 text-acero w-[84px] shrink-0 min-h-tactil flex items-center">
               {grupo.etiqueta.toUpperCase()}
             </span>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Chip activo={!filtros[grupo.clave]} onClick={() => actualizar(grupo.clave, null)}>
                 Todos
               </Chip>
@@ -131,7 +149,7 @@ export default function FiltrosProyectos({
       </div>
 
       {/* Móvil: fila única con hoja inferior (01 §3.15) */}
-      <div className="md:hidden sticky [top:var(--cabecera-actual)] z-10 bg-fondo border-t border-b border-tinta py-3 flex items-center justify-between gap-3">
+      <div className="xl:hidden sticky [top:var(--cabecera-actual)] z-10 bg-fondo border-t border-b border-tinta py-3 flex items-center justify-between gap-3">
         <Boton variante="contorno" type="button" onClick={() => setHojaAbierta(true)} className="!min-h-tactil">
           {numFiltros > 0 ? `Filtrar (${numFiltros})` : 'Filtrar'}
         </Boton>
@@ -202,7 +220,7 @@ function HojaFiltros({
       role="dialog"
       aria-modal="true"
       aria-label="Filtrar proyectos"
-      className="fixed inset-0 z-40 bg-fondo border-t border-tinta flex flex-col md:hidden"
+      className="fixed inset-0 z-40 bg-fondo border-t border-tinta flex flex-col xl:hidden"
     >
       <div className="flex items-center justify-between px-[18px] py-4 border-b border-tinta">
         <span className="font-mono text-d-12 uppercase tracking-[0.05em]">Filtrar</span>
