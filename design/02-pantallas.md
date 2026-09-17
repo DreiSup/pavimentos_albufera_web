@@ -273,6 +273,27 @@ Genera una página indexable por modelo. Ejemplo: `/acabados/espiga/`.
 
 ## B3 · Índice de proyectos — `/proyectos/`
 
+> 🔴 **Sin filtros desde el 2026-09-17, por decisión del dueño.** Esta pantalla ya no lleva barra
+> anclada, ni los cuatro grupos de chips, ni hoja inferior, ni resumen `9 OBRAS`, ni estado en
+> query params: se sirve la rejilla entera con las 9 obras. Todo lo que sigue —incluida la
+> enmienda de los chips que envuelven, de esta misma fecha— queda **descrito para el registro,
+> no vigente**. Lo que sí sigue siendo normativo de esta pantalla: el hero con H1 de 64 px y su
+> **contador real de obras** —el antetítulo `9 OBRAS DOCUMENTADAS`, que es el que queda— y la
+> rejilla de 3 con tarjetas de proyecto.
+>
+> Consecuencias, para que no haya que descubrirlas leyendo el código:
+>
+> - La entradilla decía «Filtra por servicio, modelo, municipio o año» y la `description` del
+>   `<head>` «Filtra por acabado, espacio o municipio». **Se han borrado las dos frases**, no
+>   sustituido: copy nuevo no se inventa. Las dos entradillas se quedan cortas a la espera de
+>   texto del dueño.
+> - Un enlace antiguo con `?servicio=…` no rompe: llega a la misma URL y ve todas las obras.
+> - `components/secciones/FiltrosProyectos.tsx` se borra. Con él desaparece la **única
+>   implementación en el repo del componente `01 §3.15`, la hoja inferior de filtros**:
+>   `FiltrosAcabados` nunca tuvo hoja, solo chips que envuelven. Si `/acabados/` también pierde
+>   sus filtros, `3.15` se queda sin uso y hay que retirarlo de la lámina.
+> - Esta pantalla ya no tiene ni un componente de cliente propio.
+
 Misma mecánica que el muestrario, con **cuatro ejes** en vez de dos.
 
 - Hero con H1 64 px y contador real de obras.
