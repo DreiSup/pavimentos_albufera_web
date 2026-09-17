@@ -408,6 +408,20 @@ apila la senda de losas encima y el claim debajo: en una barra de 70-84 px eso d
 a 6-8 px de altura de mayúscula y el claim en 3-4 px. El bloque completo se pinta en el pie
 (§4.4), que es el único sitio del sitio con alto para él.
 
+**Esta cabecera empieza en 1280 px, no en 768. Enmienda del 2026-09-17, medida sobre el DOM.**
+Los tres bloques de la fila suman **1011,8 px** de ancho natural —logotipo 276 + nav 416,6 +
+teléfono 99 + hueco 20 + botón 200— y los 48 px de gutter ponen 96 más: hacen falta **1108 px de
+ancho de contenido** para que quepan pegados y ~1164 para que respiren. Encendida en 768 px el
+resultado medido era el logotipo aplastado de 276 a 36 px —una imagen de caja fija que al
+encogerse se deforma—, el teléfono en tres líneas y el botón en dos. **1024 px tampoco llega**:
+928 px de contenido para 1011,8 de hijos, 84 px de déficit. A 1280 el contenido es 1265 px y
+sobran 157 para los dos huecos.
+
+Entre 768 y 1279 vale **la cabecera de móvil**: logotipo + hamburguesa, con `MenuMovil` y la
+barra fija de §4.3, que se esconde en el mismo punto. No es una banda sin navegación: es el
+estado de móvil, completo y ya diseñado, en una ventana más ancha. **Punto de ruptura del nav
+(1280) y altura de la caja (768) son dos cosas distintas** y no se mueven juntas.
+
 En móvil la caja mide 70 px, y `--cabecera-actual` de `tokens.css` lo espeja con una media
 query: es el `top` del que cuelgan la barra de confianza, el submenú de servicio y las dos
 barras de filtro. **La altura no se anima nunca** (`02-pantallas.md §B9`): el estado compacto
@@ -443,6 +457,10 @@ box-shadow: 0 -6px 18px rgba(27,30,28,0.18)
 
 Siempre visible en móvil, en todas las páginas. **Es el CTA primario de móvil**, y por eso
 consume el único ocre de acción de la pantalla.
+
+**Se esconde en 1280 px, no en 768** (enmienda del 2026-09-17): sigue a la cabecera de §4.1,
+que empieza donde de verdad cabe. Moverla sola dejaría la banda 768–1279 sin nav visible y sin
+barra de contacto a la vez.
 
 ### 4.4 Pie de página
 

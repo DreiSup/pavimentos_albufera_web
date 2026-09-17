@@ -38,6 +38,28 @@ const enlaces = [
  * Consecuencia: `--cabecera-actual` es constante y se queda en el valor de
  * `app/globals.css`. Ya no hay efecto que lo reescriba, y por eso los cinco
  * `sticky` que se cuelgan de él dejan de saltar al hidratar.
+ *
+ * **La cabecera de escritorio empieza en `xl` (1280 px), no en `md`.** Medido
+ * sobre el DOM: los tres bloques de la fila suman **1011,8 px** de ancho natural
+ * —logotipo 276 + nav 416,6 + teléfono/botón 319,1— y los `px-lat-desktop`
+ * ponen 96 más. Hacen falta **1108 px de ancho de contenido** para que quepan
+ * pegados y ~1164 para que respiren. Encendiéndola en `md` (768) el resultado
+ * medido era: el logotipo aplastado de 276 a 36 px —imagen de caja fija sin
+ * `shrink-0`, o sea deformada—, el teléfono en tres líneas y el botón en dos,
+ * y el nav arrancando a 0 px del logotipo. `lg` (1024) tampoco llega: deja
+ * 928 px de contenido para 1011,8 de hijos, 84 px de déficit. A 1280 el
+ * contenido es 1265 px y sobran 157 para los dos huecos.
+ *
+ * Entre 768 y 1279 vale la cabecera de móvil —logotipo + hamburguesa— con su
+ * `MenuMovil` y su `BarraMovil`, que es un estado completo y ya diseñado
+ * (`design/01` §4.3, `design/02` §B9), no un hueco sin navegación. Por eso
+ * `BarraMovil` cambia su `md:hidden` por `xl:hidden` en el mismo commit: si se
+ * moviera solo el nav, esa banda se quedaría sin nav Y sin barra de CTA.
+ * → `design/01` §4.1, enmendado.
+ *
+ * ⚠️ La ALTURA no se mueve de `md`: `design/02` §B9 la fija en «70 px en móvil
+ * y 84 px desde 768 px» y de ella cuelgan por `--cabecera-actual` los cinco
+ * `sticky`. Altura y punto de ruptura del nav son dos cosas distintas.
  */
 export default function Cabecera() {
   const pathname = usePathname()
@@ -85,11 +107,14 @@ export default function Cabecera() {
             /* Sobre el pliegue en las 49 rutas, así que no es perezosa. */
             loading="eager"
             decoding="async"
-            className="h-[20px] w-[230px] md:h-[24px] md:w-[276px]"
+            /* `shrink-0` no es decorativo: es una imagen de caja fija con `width`
+               y `height` declarados, y como ítem de flex se encogía hasta 36 px
+               a 768. Con las dos medidas puestas, encoger no recorta: deforma. */
+            className="h-[20px] w-[230px] shrink-0 md:h-[24px] md:w-[276px]"
           />
         </Link>
 
-        <nav className="hidden md:flex items-center gap-7">
+        <nav className="hidden xl:flex items-center gap-7">
           {enlaces.map((enlace) => {
             const activo = pathname?.startsWith(enlace.href)
             return (
@@ -106,7 +131,7 @@ export default function Cabecera() {
           })}
         </nav>
 
-        <div className="hidden md:flex items-center gap-5">
+        <div className="hidden xl:flex items-center gap-5">
           {/* `visibility` y no `display`: el hueco se conserva y el botón no se
               mueve. La transición declara las dos propiedades para que el número
               se desvanezca en vez de irse de golpe, y durante esos 150 ms sigue
@@ -117,7 +142,9 @@ export default function Cabecera() {
             data-ubicacion="header"
             aria-hidden={conScroll}
             tabIndex={conScroll ? -1 : undefined}
-            className={`font-mono text-d-12 text-tinta-media no-underline transition-[opacity,visibility] duration-cabecera ease-out ${
+            /* Un teléfono es un dato, no un párrafo: no parte nunca. Sin esto
+               se rompía en tres líneas en cuanto la fila iba justa. */
+            className={`font-mono text-d-12 text-tinta-media whitespace-nowrap no-underline transition-[opacity,visibility] duration-cabecera ease-out ${
               conScroll ? 'invisible opacity-0' : 'opacity-100'
             }`}
           >
@@ -127,7 +154,11 @@ export default function Cabecera() {
               barra de 60 px, y la barra ya no se comprime. `min-h-boton` (56 px)
               está por encima del objetivo táctil, y así desaparece el último
               cambio de caja que el scroll provocaba en la cabecera. */}
-          <Boton variante="contorno" href="/presupuesto/">
+          {/* `whitespace-nowrap` aquí y no en el `cva` de `Boton`: en la base lo
+              heredarían los `anchoCompleto` del menú y del formulario, que a
+              390 px sí necesitan partir. El `className` es el escape ya
+              sancionado del componente (`!min-h-tactil`, `flex-1`, `border-b-0`). */}
+          <Boton variante="contorno" href="/presupuesto/" className="whitespace-nowrap">
             Pedir presupuesto
           </Boton>
         </div>
@@ -137,7 +168,7 @@ export default function Cabecera() {
           aria-label="Abrir menú"
           aria-expanded={menuAbierto}
           onClick={() => setMenuAbierto(true)}
-          className="md:hidden inline-flex items-center justify-center min-w-tactil min-h-tactil"
+          className="xl:hidden inline-flex items-center justify-center min-w-tactil min-h-tactil"
         >
           <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M3 6h18M3 12h18M3 18h18" stroke="#1B1E1C" strokeWidth="2" />
