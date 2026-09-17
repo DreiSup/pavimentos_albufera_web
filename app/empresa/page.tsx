@@ -7,7 +7,7 @@ import DatoPendiente from '@/components/datos/DatoPendiente'
 import Migas from '@/components/layout/Migas'
 
 export const metadata: Metadata = {
-  title: 'Quiénes somos | Pavimentos Albufera',
+  title: 'Quiénes somos',
   description:
     '17 años pavimentando en la Comunidad Valenciana. Equipo propio, garantía de 10 años y más de un 30 % de clientes que repiten.',
   alternates: { canonical: '/empresa/' },

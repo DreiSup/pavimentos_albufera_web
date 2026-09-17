@@ -20,8 +20,15 @@ import { PASOS, SERVICIOS } from '@/content/servicios'
 import { NOMBRE_SERVICIO, RUTA_SERVICIO } from '@/lib/tipos'
 import { nap } from '@/lib/config'
 
+/**
+ * Sin `title` a propósito. `title.template` de `app/layout.tsx` **no se aplica
+ * al segmento que lo declara**, y esta página vive en ese mismo segmento raíz:
+ * poniendo el título aquí salía `<title>Pavimentos de hormigón en Valencia</title>`
+ * a secas, la única ruta del sitio sin marca. Sin él manda `title.default`, que
+ * ya es literalmente «Pavimentos de hormigón en Valencia | Pavimentos Albufera».
+ * Ni una palabra nueva: el copy es el que ya estaba en el layout.
+ */
 export const metadata: Metadata = {
-  title: 'Pavimentos de hormigón en Valencia',
   description:
     'Hormigón impreso, pulido, lavado y microcemento en Valencia, Castellón y Alicante. 17 años de obra propia y 10 de garantía. Presupuesto sin compromiso.',
   alternates: { canonical: '/' },

@@ -10,7 +10,7 @@ import { aniosEnUso, modelosEnUso, municipiosEnUso, proyectos, tecnicasEnUso } f
 import { NOMBRE_MODELO, NOMBRE_SERVICIO } from '@/lib/tipos'
 
 export const metadata: Metadata = {
-  title: 'Proyectos ejecutados | Pavimentos Albufera',
+  title: 'Proyectos ejecutados',
   description:
     'Obras de hormigón impreso, pulido y microcemento en Valencia, Alicante y Castellón. Filtra por acabado, espacio o municipio.',
   alternates: { canonical: '/proyectos/' },
