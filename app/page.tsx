@@ -102,7 +102,14 @@ const servicios = [
 
 const proyectoHero = proyectos.find((p) => p.slug === 'moncada-impreso-espiga-117')!
 const muestraHome = acabados.filter((a) => a.proyectos.length > 0).slice(0, 4)
-const proyectosHome = [...proyectos].sort((a, b) => Number(b.destacado) - Number(a.destacado)).slice(0, 6)
+/**
+ * Las NUEVE obras documentadas, no una selección. Solo se ordenan: las
+ * destacadas delante, porque en móvil la sección es un carril horizontal
+ * (`02-pantallas.md §A1`, sección de proyectos) y lo que se ve sin arrastrar
+ * son las dos primeras tarjetas. En escritorio la rejilla de tres pasa de 3×2
+ * a 3×3 sin tocar nada.
+ */
+const proyectosHome = [...proyectos].sort((a, b) => Number(b.destacado) - Number(a.destacado))
 
 // Cuatro secciones de la home pueden enseñar la MISMA foto de origen: el hero y
 // la tarjeta de obra de Moncada; una muestra de acabado y la tarjeta de la obra
@@ -413,9 +420,20 @@ export default function Home() {
                 Murcia, Albacete, Almería, Tarragona y Teruel, a partir de <DatoPendiente>100</DatoPendiente> m².
               </p>
             </div>
-            <div className="flex flex-col gap-2 border-t border-tinta pt-4">
+            {/* «Consúltanos» era la última palabra de la frase y no llevaba a ningún
+                sitio. Se saca de la prosa a un enlace-etiqueta —44 px de alto, el
+                mismo componente que cierra el Muestrario y Proyectos— sin escribir
+                una palabra nueva: la frase se parte por su coma.
+                `data-ubicacion` sigue el contrato de `lib/eventos.ts` para que el
+                enlace sea distinguible en el informe. Es INERTE hoy: EventosGlobales
+                solo dispara sobre `tel:`, `wa.me` y `mailto:`, y este es un enlace
+                interno. Va por coherencia de contrato, no porque mida algo. */}
+            <div className="flex flex-col gap-2 border-t border-tinta pt-4 items-start">
               <p className="font-mono text-d-11 text-acero uppercase m-0">Resto de España</p>
-              <p className="text-16 text-tinta-media m-0">Proyectos de volumen, consúltanos.</p>
+              <p className="text-16 text-tinta-media m-0">Proyectos de volumen.</p>
+              <EnlaceEtiqueta href="/presupuesto/" data-ubicacion="section_mid">
+                Consúltanos →
+              </EnlaceEtiqueta>
             </div>
           </div>
         </div>
