@@ -42,8 +42,14 @@ la estructura de la tarjeta con `[texto de la reseña]` y `[NOMBRE] · [MUNICIPI
 atenuados, más la nota de que sin reseñas verificables no se marca `AggregateRating`. La
 sección se sostiene con el dato del 30 % que repite. **Prohibido inventar testimonios.**
 
-Formulario corto del cierre: nombre, teléfono y desplegable de espacio. El formulario completo
-vive en `/presupuesto/`.
+Formulario corto del cierre: nombre, teléfono, email y desplegable de espacio. El formulario
+completo vive en `/presupuesto/`.
+
+El **email es opcional en las dos variantes**, igual que en la tabla de §B1. Entra en la corta
+porque el dueño pide nombre, teléfono y correo en todo formulario de contacto, y opcional
+porque un campo obligatorio de más en el cierre de la home cuesta conversión. **Que pase a
+obligatorio sigue siendo decisión del dueño** —`design/06`, decisión 7—, y hasta que la conteste
+Enhanced Conversions solo puede contar con los leads que lo dejen por su cuenta.
 
 ## A2 · Servicio — `/hormigon-impreso/`
 
