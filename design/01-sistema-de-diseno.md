@@ -133,6 +133,43 @@ de tarjetas usan `overflow-x: auto` con margen negativo lateral para sangrar a l
   fija de móvil. Ningún otro elemento lleva sombra.
 - Sin gradientes de fondo. La única trama admitida es la del bloque de posición de foto.
 
+### 2.7 Los azules de la marca
+
+Excepción consciente y acotada a «no añadir colores» del §2.1: el logotipo de la empresa
+es azul, y el logotipo no es interfaz. Los azules **solo los usa el logotipo**. Ningún
+botón, enlace, borde, fondo ni estado de la web es azul: el único color de acción sigue
+siendo el ocre, y la regla del §2.2 no cambia.
+
+Escala cerrada de ocho pasos, del frente al fondo del camino de baldosas. No hay valores
+intermedios, igual que en la escala tipográfica.
+
+```
+marca-900  #0C2450     marca-500  #1C7CC6
+marca-800  #123B6F     marca-400  #2C92DD
+marca-700  #15508C     marca-300  #5CAAE8
+marca-600  #1866A8     marca-200  #8FC6F0
+```
+
+**Cada baldosa lleva un solo azul plano.** El degradado ocurre entre baldosas, nunca
+dentro de una: no hay un solo gradiente en la marca, como no lo hay en el resto del sitio.
+
+**Sobre fondo oscuro la rampa sube dos pasos.** Los azules del frente (`marca-900`,
+`marca-800`) son casi negros y se perderían contra `--tinta`. La variante `sobreOscuro`
+de la marca desplaza el índice de cada baldosa, sin cambiar el dibujo.
+
+El nombre va en texto vivo, no en trazado: «PAVIMENTOS» en `--tinta` (o `--sobre-tinta`
+sobre oscuro) y «ALBUFERA» en `marca-600` (o `marca-300` sobre oscuro).
+
+Fuente única de la escala: `lib/marca.ts`. La importan `tailwind.config.ts`, que la expone
+como `text-marca-*`, y `components/layout/MarcaSvg.tsx`, que rellena las baldosas.
+
+**Estado: recreación.** El dibujo actual es una reconstrucción geométrica del logotipo a
+partir de una imagen de referencia, no el original vectorial de la empresa, y la
+tipografía del nombre es la display del sitio, no la del logotipo. El bloque no incluye la
+línea «HORMIGÓN IMPRESO | PULIDO | LAVADO» del original, que nombra tres de los seis
+servicios que hoy tiene la web. Cuando llegue el original, se sustituye `MarcaSvg.tsx` y
+nada más.
+
 ## 3. Componentes base
 
 Los 14 componentes con los que se compone todo el sitio. Cualquier pantalla nueva se construye

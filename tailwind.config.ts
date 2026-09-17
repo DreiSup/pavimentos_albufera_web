@@ -1,4 +1,5 @@
 import type { Config } from 'tailwindcss'
+import { AZULES_MARCA } from './lib/marca'
 
 /** Pavimentos Albufera — Tailwind con los tokens del §8.
  *  Escala cerrada a propósito: no hay valores intermedios. */
@@ -19,6 +20,18 @@ const config: Config = {
       'sobre-tinta': '#DADCD6',
       'pendiente-oscuro': '#9AA09B',
       error: '#8C3A2B',
+      // Azules del logotipo, y solo del logotipo (lib/marca.ts, §2.6).
+      // La interfaz no los usa: el único color de acción sigue siendo el ocre.
+      marca: {
+        900: AZULES_MARCA[0],
+        800: AZULES_MARCA[1],
+        700: AZULES_MARCA[2],
+        600: AZULES_MARCA[3],
+        500: AZULES_MARCA[4],
+        400: AZULES_MARCA[5],
+        300: AZULES_MARCA[6],
+        200: AZULES_MARCA[7],
+      },
     },
     borderRadius: { none: '0', DEFAULT: '0' },
     boxShadow: {
