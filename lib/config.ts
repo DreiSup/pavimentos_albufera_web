@@ -29,8 +29,20 @@ export const nap = {
   pais: 'ES',
 }
 
+/**
+ * Identificadores de etiqueta. Se exponen tal cual vienen del entorno: una
+ * variable declarada pero en blanco tiene que llegar en blanco a quien la
+ * consume, o el modo no-op se rompe con una cadena vacía.
+ *
+ * El de Google Ads va partido en dos a propósito, y conviene no juntarlos al
+ * rellenarlos: `adsId` es el `AW-…` a secas, que es lo que carga gtag.js y lo
+ * que se configura por sí solo; `adsEtiquetaLlamada` es solo la etiqueta de
+ * conversión, sin el `AW-` delante, porque quien la usa arma `AW-ID/ETIQUETA`.
+ */
 export const sitio = {
   url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://pavimentos-albufera.com',
   gaId: process.env.NEXT_PUBLIC_GA_ID,
+  adsId: process.env.NEXT_PUBLIC_ADS_ID,
+  adsEtiquetaLlamada: process.env.NEXT_PUBLIC_ADS_ETIQUETA_LLAMADA,
   metaPixelId: process.env.NEXT_PUBLIC_META_PIXEL_ID,
 }

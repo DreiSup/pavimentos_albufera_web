@@ -811,7 +811,7 @@ Con estos dos tipos se generan automáticamente `/proyectos/[slug]`, `/acabados/
 
 ### 9.4 Rendimiento — objetivos
 
-LCP < 2,0 s en 4G · CLS < 0,05 · INP < 200 ms · JS inicial < 100 KB comprimido.
+LCP < 2,0 s en 4G · CLS < 0,05 · INP < 200 ms · JS inicial ≤ 112 kB brotli q11 por ruta (techo duro; objetivo 105 kB — la unidad y el ámbito, en `CLAUDE.md`).
 La web actual, con Elementor y tema Bizberg, está muy lejos de esto. Es la ganancia más automática de la migración.
 
 ### 9.5 Migración de imágenes — bloqueante

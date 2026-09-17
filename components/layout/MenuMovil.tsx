@@ -1,38 +1,24 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useRef, type RefObject } from 'react'
+import { useEffect, useRef } from 'react'
 import { nap } from '@/lib/config'
 import Boton from '../ui/Boton'
-import Logo from './Logo'
 
 export default function MenuMovil({
   onCerrar,
   enlaces,
-  disparadorRef,
 }: {
   onCerrar: () => void
   enlaces: { href: string; texto: string }[]
-  /** Botón que abrió el panel: el foco vuelve a él al cerrarse (02-pantallas.md §B9). */
-  disparadorRef?: RefObject<HTMLButtonElement | null>
 }) {
   const panelRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const disparador = disparadorRef?.current
     document.body.style.overflow = 'hidden'
     const primerFoco = panelRef.current?.querySelector<HTMLElement>('a, button')
     primerFoco?.focus()
 
-    return () => {
-      document.body.style.overflow = ''
-      // Se cierre como se cierre —Esc, la ×, un enlace o un cambio de ruta— quien
-      // navega con teclado vuelve al botón de hamburguesa, no al principio del documento.
-      disparador?.focus()
-    }
-  }, [disparadorRef])
-
-  useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') {
         onCerrar()
@@ -53,7 +39,10 @@ export default function MenuMovil({
     }
 
     document.addEventListener('keydown', onKeyDown)
-    return () => document.removeEventListener('keydown', onKeyDown)
+    return () => {
+      document.body.style.overflow = ''
+      document.removeEventListener('keydown', onKeyDown)
+    }
   }, [onCerrar])
 
   return (
@@ -65,7 +54,19 @@ export default function MenuMovil({
       className="fixed inset-0 z-40 bg-tinta text-fondo p-[18px] flex flex-col overflow-y-auto"
     >
       <div className="flex items-center justify-between">
-        <Logo variante="linea" sobreOscuro />
+        {/* Wordmark en variante clara: mismo criterio que la cabecera, y aquí
+            además el panel es `--tinta` a pantalla completa. El panel solo se
+            monta al abrirlo, así que este archivo no entra en la carga inicial
+            de ninguna ruta. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/marca/logo-texto-claro.png"
+          alt="Pavimentos Albufera"
+          width={230}
+          height={20}
+          decoding="async"
+          className="h-[20px] w-[230px]"
+        />
         <button
           type="button"
           aria-label="Cerrar menú"
@@ -93,7 +94,8 @@ export default function MenuMovil({
 
       <div className="mt-8 font-mono text-d-11 text-sobre-tinta leading-[2.2] flex flex-col gap-1">
         <span>{nap.direccionMostrada}</span>
-        <span>{nap.telefono ?? nap.telefonoMostrado}</span>
+        {/* Entre corchetes mientras sea reserva, igual que `Pie` y `Cabecera`. */}
+        <span>{nap.telefono ?? `[${nap.telefonoMostrado}]`}</span>
         <span>{nap.email}</span>
         <div className="flex gap-4 mt-2">
           <Link href="/aviso-legal/" onClick={onCerrar} className="text-sobre-tinta no-underline">
@@ -109,10 +111,10 @@ export default function MenuMovil({
       </div>
 
       <div className="mt-auto pt-8 flex flex-col gap-[1px]">
-        <Boton variante="primario" href={nap.telefonoHref ?? '/presupuesto/'} anchoCompleto>
+        <Boton variante="primario" href={nap.telefonoHref ?? '/presupuesto/'} data-ubicacion="mobile_menu" anchoCompleto>
           Llamar
         </Boton>
-        <Boton variante="contorno" sobreOscuro href={nap.whatsappHref ?? '/presupuesto/'} anchoCompleto>
+        <Boton variante="contorno" sobreOscuro href={nap.whatsappHref ?? '/presupuesto/'} data-ubicacion="mobile_menu" anchoCompleto>
           WhatsApp
         </Boton>
       </div>

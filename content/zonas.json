@@ -34,7 +34,7 @@
     "proyectos": ["corbera-fratasado-arena"], "servicios": ["fratasado"]
   },
   {
-    "_comentario": "Municipios con obra citada por el cliente pero SIN proyecto documentado todavía. No generar ruta hasta que tengan al menos un proyecto con foto: Google penaliza las doorway pages.",
+    "_comentario": "Municipios con obra citada por el cliente pero SIN proyecto documentado todavía. No generar ruta hasta que tengan al menos un proyecto con foto: Google lo llama «doorway abuse» y es política de spam, no una penalización discrecional. https://developers.google.com/search/docs/essentials/spam-policies#doorway-abuse",
     "_sinDocumentar": ["Torrent (Vedat)", "Ollería", "Carlet", "Catadau", "Turís", "Alfafar", "Benissa", "Sollana"],
     "_sedeEmpresa": "Sollana"
   }

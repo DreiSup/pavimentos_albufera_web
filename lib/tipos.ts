@@ -63,7 +63,7 @@ export type Acabado = {
   color: ColorId
   codigo: string
   servicio: ServicioId
-  muestra?: string
+  muestra?: Imagen
   proyectos: string[]
 }
 

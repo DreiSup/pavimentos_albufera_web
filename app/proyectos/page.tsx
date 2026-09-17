@@ -1,9 +1,13 @@
 import type { Metadata } from 'next'
 import AntetituloSeccion from '@/components/ui/AntetituloSeccion'
 import Migas from '@/components/layout/Migas'
-import FiltrosProyectos from '@/components/secciones/FiltrosProyectos'
 import TarjetaProyecto from '@/components/contenido/TarjetaProyecto'
+import FiltrosProyectos, {
+  type GrupoFiltro,
+  type ObraFiltrable,
+} from '@/components/secciones/FiltrosProyectos'
 import { aniosEnUso, modelosEnUso, municipiosEnUso, proyectos, tecnicasEnUso } from '@/lib/datos'
+import { NOMBRE_MODELO, NOMBRE_SERVICIO } from '@/lib/tipos'
 
 export const metadata: Metadata = {
   title: 'Proyectos ejecutados | Pavimentos Albufera',
@@ -13,6 +17,46 @@ export const metadata: Metadata = {
 }
 
 export default function Proyectos() {
+  /**
+   * Las tarjetas se arman aquí, en servidor, y cruzan la frontera ya hechas.
+   * `FiltrosProyectos` solo elige cuáles se enseñan, así que la rejilla entera
+   * —las 9 tarjetas con sus fotos y sus enlaces— sale en el HTML estático y no
+   * espera a que hidrate nada.
+   */
+  const grupos: GrupoFiltro[] = [
+    {
+      clave: 'servicio',
+      etiqueta: 'Servicio',
+      opciones: tecnicasEnUso().map((s) => ({ valor: s, nombre: NOMBRE_SERVICIO[s] })),
+    },
+    {
+      clave: 'modelo',
+      etiqueta: 'Modelo',
+      opciones: modelosEnUso().map((m) => ({ valor: m, nombre: NOMBRE_MODELO[m] })),
+    },
+    {
+      clave: 'municipio',
+      etiqueta: 'Municipio',
+      opciones: municipiosEnUso().map((m) => ({ valor: m, nombre: m })),
+    },
+    {
+      clave: 'anio',
+      etiqueta: 'Año',
+      opciones: aniosEnUso().map((a) => ({ valor: String(a), nombre: String(a) })),
+    },
+  ]
+
+  const obras: ObraFiltrable[] = proyectos.map((p) => ({
+    clave: p.slug,
+    valores: {
+      servicio: p.servicio,
+      modelo: p.modelo ?? null,
+      municipio: p.municipio,
+      anio: p.anio != null ? String(p.anio) : null,
+    },
+    tarjeta: <TarjetaProyecto key={p.slug} proyecto={p} />,
+  }))
+
   return (
     <>
       <Migas items={[{ nombre: 'Proyectos' }]} />
@@ -31,34 +75,7 @@ export default function Proyectos() {
       </section>
 
       <div className="px-[18px] md:px-lat-desktop pb-9 md:pb-22">
-        {/*
-          Las 9 obras se pintan en servidor y viajan como `children`: el HTML estático de
-          /proyectos/ lleva la rejilla entera y sus enlaces a /proyectos/[slug]/.
-          El componente de filtros solo las oculta; nunca las monta.
-          Cada envoltorio lleva sus valores de filtro en `data-*`, y `[&[hidden]]:hidden`
-          para que el atributo `hidden` gane al `display: grid` que estira la tarjeta.
-        */}
-        <FiltrosProyectos
-          servicios={tecnicasEnUso()}
-          modelos={modelosEnUso()}
-          municipios={municipiosEnUso()}
-          anios={aniosEnUso()}
-          total={proyectos.length}
-        >
-          {proyectos.map((proyecto) => (
-            <div
-              key={proyecto.slug}
-              data-filtrable=""
-              data-servicio={proyecto.servicio}
-              data-modelo={proyecto.modelo}
-              data-municipio={proyecto.municipio ?? undefined}
-              data-anio={proyecto.anio ?? undefined}
-              className="grid [&[hidden]]:hidden"
-            >
-              <TarjetaProyecto proyecto={proyecto} />
-            </div>
-          ))}
-        </FiltrosProyectos>
+        <FiltrosProyectos obras={obras} grupos={grupos} />
       </div>
     </>
   )

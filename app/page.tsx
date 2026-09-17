@@ -4,17 +4,19 @@ import Aparece from '@/components/ui/Aparece'
 import AntetituloSeccion from '@/components/ui/AntetituloSeccion'
 import Boton from '@/components/ui/Boton'
 import { EnlaceEtiqueta } from '@/components/ui/EnlaceEtiqueta'
-import BloquePosicion from '@/components/contenido/BloquePosicion'
+import Foto from '@/components/contenido/Foto'
 import EtiquetaTecnica from '@/components/datos/EtiquetaTecnica'
 import DatoPendiente from '@/components/datos/DatoPendiente'
 import MuestraAcabado from '@/components/contenido/MuestraAcabado'
-import TarjetaProyecto from '@/components/contenido/TarjetaProyecto'
+import TarjetaProyecto, { TAMANOS_TARJETA_PROYECTO } from '@/components/contenido/TarjetaProyecto'
 import Chip from '@/components/ui/Chip'
 import BarraConfianza from '@/components/layout/BarraConfianza'
 import Acordeon from '@/components/secciones/Acordeon'
 import FormularioPresupuesto from '@/components/secciones/FormularioPresupuesto'
 import { JsonLd, schemaFAQ } from '@/lib/schema'
 import { acabados, contarDocumentados, proyectos } from '@/lib/datos'
+import { faqHome } from '@/content/faq'
+import { PASOS, SERVICIOS } from '@/content/servicios'
 import { NOMBRE_SERVICIO, RUTA_SERVICIO } from '@/lib/tipos'
 import { nap } from '@/lib/config'
 
@@ -26,12 +28,60 @@ export const metadata: Metadata = {
 }
 
 const espacios = [
-  { titulo: 'Entrada de garaje', texto: 'Aguanta el paso de coches sin agrietarse.' },
-  { titulo: 'Porche y terraza', texto: 'El acabado que más piden nuestros clientes.' },
-  { titulo: 'Contorno de piscina', texto: 'Antideslizante y frío al sol.' },
-  { titulo: 'Interior de vivienda', texto: 'Continuo, sin juntas, fácil de limpiar.' },
-  { titulo: 'Patio y jardín', texto: 'Integrado con el entorno, sin mantenimiento.' },
-  { titulo: 'Nave, parking o local', texto: 'Resistente al tránsito pesado y a los ácidos.' },
+  {
+    titulo: 'Entrada de garaje',
+    texto: 'Aguanta el paso de coches sin agrietarse.',
+    imagen: {
+      src: '/obras/_sin-atribuir/b8c06394-3d87-41a8-92bb-7486e9b912de.jpeg',
+      alt: 'Explanada de hormigón impreso gris ante la puerta basculante de un garaje.',
+      tipo: 'final' as const,
+    },
+  },
+  {
+    titulo: 'Porche y terraza',
+    texto: 'El acabado que más piden nuestros clientes.',
+    imagen: {
+      src: '/obras/_sin-atribuir/5da4504f-2c7e-4fee-897b-fe0ed0a4a3a1.jpeg',
+      alt: 'Porche cubierto con solera de hormigón fratasado claro, con sofás y el jardín al fondo.',
+      tipo: 'final' as const,
+    },
+  },
+  {
+    titulo: 'Contorno de piscina',
+    texto: 'Antideslizante y frío al sol.',
+    imagen: {
+      src: '/obras/_sin-atribuir/4d88392b-d7b1-4d77-900b-82db9f0ecd29.jpeg',
+      alt: 'Contorno de piscina de hormigón continuo en tono tostado ante una vivienda encalada.',
+      tipo: 'final' as const,
+    },
+  },
+  {
+    titulo: 'Interior de vivienda',
+    texto: 'Continuo, sin juntas, fácil de limpiar.',
+    imagen: {
+      src: '/obras/_sin-atribuir/WhatsApp-Image-2023-08-22-at-09.08.18.jpeg',
+      alt: 'Estancia con arcos y suelo de hormigón pulido continuo que se prolonga hasta el porche.',
+      tipo: 'final' as const,
+    },
+  },
+  {
+    titulo: 'Patio y jardín',
+    texto: 'Integrado con el entorno, sin mantenimiento.',
+    imagen: {
+      src: '/obras/_sin-atribuir/hormigon-impreso-2.jpg',
+      alt: 'Jardín con olivos, césped y un pavimento de hormigón de tono ocre que rodea los alcorques.',
+      tipo: 'final' as const,
+    },
+  },
+  {
+    titulo: 'Nave, parking o local',
+    texto: 'Resistente al tránsito pesado y a los ácidos.',
+    imagen: {
+      src: '/obras/ribarroja-pulido-gris.jpg',
+      alt: 'Planta de aparcamiento cubierta con solera de hormigón pulido gris entre pilares.',
+      tipo: 'final' as const,
+    },
+  },
 ]
 
 const servicios = [
@@ -52,48 +102,38 @@ const filasPrecios = [
   { trabajo: 'Hormigón lavado', rango: '30-42' },
 ]
 
-const pasos = [
-  { numero: '01', titulo: 'Visita y medición', texto: 'Vamos a verlo. Sin coste y sin compromiso. Medimos, comprobamos el estado del terreno y el acceso para el camión.' },
-  { numero: '02', titulo: 'Presupuesto cerrado', texto: <>Te lo enviamos en <DatoPendiente>48 horas</DatoPendiente>, desglosado. Lo que pone es lo que se paga.</> },
-  { numero: '03', titulo: 'Ejecución', texto: <><DatoPendiente>Equipo propio</DatoPendiente>. Una superficie de 80-100 m² se ejecuta en 2 o 3 días. Después necesita entre 24 y 48 horas sin pisar y 28 días para curar del todo.</> },
-  { numero: '04', titulo: 'Garantía y mantenimiento', texto: '10 años. Y volvemos a resellar cuando toque.' },
-]
-
-const faqHome = [
-  {
-    pregunta: '¿Cuánto tarda en poder pisarse?',
-    respuesta:
-      'Entre 24 y 48 horas para pisar y una semana para muebles o coches. El curado completo del hormigón son 28 días, pero puedes hacer vida normal mucho antes.',
-  },
-  {
-    pregunta: '¿Se agrieta el hormigón impreso?',
-    respuesta:
-      'Bien ejecutado, no. Las grietas aparecen cuando falta mallazo, cuando la solera tiene menos de 10 cm o cuando no se han hecho las juntas de dilatación. Nosotros hacemos las tres cosas siempre.',
-  },
-  {
-    pregunta: '¿Se puede poner encima del suelo que ya tengo?',
-    respuesta:
-      'En hormigón impreso, no lo recomendamos: la adherencia y el espesor no quedan garantizados. En microcemento sí, y ahí está su gran ventaja: se aplica sobre azulejo, terrazo o gres sin picar nada.',
-  },
-  {
-    pregunta: '¿Cada cuánto hay que resellar?',
-    respuesta:
-      'Cada 2 o 3 años en entradas de coche y zonas de piscina. Cada 5 o 6 en terrazas y jardines de uso peatonal. Nosotros te avisamos.',
-  },
-  {
-    pregunta: '¿Qué pasa si el presupuesto que tengo es de 18 €/m²?',
-    respuesta:
-      'Que revises qué incluye. A ese precio no salen los materiales de una solera de 10 cm con mallazo y fibra. Normalmente falta el hormigón, el armado o el sellado, y aparece en la factura final.',
-  },
-  {
-    pregunta: '¿Trabajáis para empresas y constructoras?',
-    respuesta: 'Sí. Naves industriales, parkings, urbanizaciones y obra civil. Pídenos referencias del sector.',
-  },
-]
-
 const proyectoHero = proyectos.find((p) => p.slug === 'moncada-impreso-espiga-117')!
 const muestraHome = acabados.filter((a) => a.proyectos.length > 0).slice(0, 4)
 const proyectosHome = [...proyectos].sort((a, b) => Number(b.destacado) - Number(a.destacado)).slice(0, 6)
+
+// Cuatro secciones de la home pueden enseñar la MISMA foto de origen: el hero y
+// la tarjeta de obra de Moncada; una muestra de acabado y la tarjeta de la obra
+// que la ejecutó; y la miniatura de un espacio y la tarjeta de su servicio. Dos
+// `sizes` distintos sobre un mismo JPEG son dos peticiones a `/_next/image?` en
+// la misma pantalla, y no una petición grande y otra barata: son dos ficheros
+// enteros. Con la MISMA URL el navegador reutiliza incluso el mapa de bits ya
+// descodificado, así que la miniatura de 76 px no paga nada por recibir el
+// archivo grande que la página se estaba descargando de todas formas.
+//
+// El orden de precedencia es el del hueco más ancho, nunca al revés: degradar
+// el `sizes` de un hero para hacerlo coincidir con una tarjeta serviría una
+// imagen corta sobre el LCP. Y la regla se aplica **solo a la foto que se
+// repite**: las otras cinco miniaturas de espacio siguen pidiendo 76 px, que es
+// lo que miden.
+const TAMANOS_HERO_HOME = '(min-width: 768px) 50vw, 100vw'
+const TAMANOS_TARJETA_SERVICIO = '(min-width: 768px) 30vw, 100vw'
+const TAMANOS_MINIATURA_ESPACIO = '(min-width: 768px) 30vw, 76px'
+const fotoHero = proyectoHero.imagenes[0]?.src
+const fotosDeObra = new Set(proyectosHome.map((p) => p.imagenes[0]?.src).filter(Boolean))
+const fotosDeServicio = new Set(servicios.map((s) => SERVICIOS[s.id].imagenTarjeta?.src).filter(Boolean))
+
+function tamanosCompartidos(src?: string) {
+  if (!src) return undefined
+  if (src === fotoHero) return TAMANOS_HERO_HOME
+  if (fotosDeObra.has(src)) return TAMANOS_TARJETA_PROYECTO
+  if (fotosDeServicio.has(src)) return TAMANOS_TARJETA_SERVICIO
+  return undefined
+}
 const totalAcabados = acabados.length
 const documentados = contarDocumentados()
 
@@ -101,20 +141,32 @@ export default function Home() {
   return (
     <>
       {/* 01 · Hero.
-          Las dos maquetas de `02-pantallas.md §A1` siguen siendo distintas —en móvil
-          el titular va superpuesto al bloque de posición `3/4`; en escritorio ocupa su
-          columna junto al `4/3`— pero el nodo es uno solo. La diferencia la resuelve la
-          rejilla: en móvil el titular y el bloque comparten celda (fila 1, columna 1);
-          en escritorio el titular baja a su columna y el bloque salta a la segunda.
-          Un solo <h1> por página (README §9). */}
+          Las dos maquetas de `02-pantallas.md §A1` son distintas —en móvil el titular
+          va encima de la foto y el texto debajo; en escritorio el titular ocupa su
+          columna junto al `4/3`— pero el nodo es uno solo: la diferencia la resuelve la
+          rejilla. En móvil la columna única apila titular, foto y texto; en escritorio
+          la foto salta a la segunda columna y ocupa las cuatro filas.
+          Dos decisiones que no se pueden deshacer sin romper algo:
+          - **Un solo <h1>** (README §9). Duplicarlo con `md:hidden` no lo quita del
+            DOM: el rastreador y el lector de pantalla siguen viendo dos.
+          - **El titular nunca SOBRE la foto.** Antes se superponía porque debajo había
+            un bloque de posición plano; sobre fotografía real el contraste deja de ser
+            comprobable y el sistema no tiene velo. Va delante, en su fila. */}
       <section className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-x-16 md:gap-y-6 md:grid-rows-[1fr_auto_auto_1fr] px-[18px] md:px-lat-desktop pt-8 md:pt-14">
-        <h1 className="col-start-1 row-start-1 md:row-start-2 z-10 self-start md:self-auto pt-6 px-4 md:p-0 font-display font-extrabold fs-hero text-46 md:text-88 leading-[1.05] md:leading-[1.02] text-tinta m-0">
+        <h1 className="col-start-1 row-start-1 md:row-start-2 font-display font-extrabold fs-hero text-46 md:text-88 leading-[1.05] md:leading-[1.02] text-tinta m-0">
           Hormigón que se ve bien 20 años después
         </h1>
 
-        <BloquePosicion
+        {/* Una sola imagen para los dos anchos: `display:none` no evita la descarga,
+            así que dos <Image> serían dos descargas. La 4/3 de escritorio es el hueco
+            grande y la foto apaisada (1200×900) encaja sin recorte; en móvil se
+            recorta a 3/4. */}
+        <Foto
+          imagen={proyectoHero.imagenes[0]}
           proporcion="3/4"
-          className="col-start-1 row-start-1 md:col-start-2 md:row-start-1 md:row-end-5 md:aspect-[4/3] md:min-h-[660px] md:h-full"
+          prioridad
+          tamanos={TAMANOS_HERO_HOME}
+          className="col-start-1 row-start-2 md:col-start-2 md:row-start-1 md:row-end-5 md:aspect-[4/3] md:min-h-[660px] md:h-full"
           etiqueta={
             <EtiquetaTecnica
               lineas={['MONCADA · VALENCIA', 'IMPRESO · MODELO ESPIGA · COLOR 117', <>
@@ -124,7 +176,7 @@ export default function Home() {
           }
         />
 
-        <div className="col-start-1 row-start-2 md:row-start-3 flex flex-col gap-4 md:gap-6">
+        <div className="col-start-1 row-start-3 md:row-start-3 flex flex-col gap-4 md:gap-6">
           <p className="text-16 md:text-20 text-tinta-media md:max-w-[46ch] m-0">
             Pavimentos de hormigón impreso, pulido, lavado y microcemento en Valencia, Castellón y
             Alicante. 17 años ejecutando obra propia, con 10 años de garantía y mantenimiento
@@ -172,7 +224,12 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 md:grid-rows-2 gap-[2px] bg-tinta p-[2px]">
             {espacios.map((e) => (
               <div key={e.titulo} className="bg-fondo flex md:flex-col gap-4 md:gap-3">
-                <BloquePosicion proporcion="4/3" className="w-[76px] h-[76px] md:w-full md:h-auto shrink-0" />
+                <Foto
+                  imagen={e.imagen}
+                  proporcion="4/3"
+                  tamanos={tamanosCompartidos(e.imagen?.src) ?? TAMANOS_MINIATURA_ESPACIO}
+                  className="w-[76px] h-[76px] md:w-full md:h-auto shrink-0"
+                />
                 <div className="flex flex-col gap-1 py-2 md:py-0 md:px-4 md:pb-4">
                   <h3 className="font-display font-bold fs-h3 text-16 md:text-20 m-0">{e.titulo}</h3>
                   <p className="text-14 md:text-16 text-tinta-media m-0">{e.texto}</p>
@@ -204,15 +261,19 @@ export default function Home() {
               El ocre marca la cifra total, el segundo rol de la pantalla según
               `02-pantallas.md §A1` («CTA del hero + chip activo del muestrario»). */}
           <div className="flex gap-2 overflow-x-auto md:col-span-2">
-            <Chip etiqueta activo>
+            <Chip activo>
               Todas ({totalAcabados})
             </Chip>
-            <Chip etiqueta>{documentados} con obra documentada</Chip>
+            <Chip>{documentados} con obra documentada</Chip>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-[14px_10px] md:gap-[32px_24px] md:col-span-2">
             {muestraHome.map((a) => (
-              <MuestraAcabado key={a.slug} acabado={a} />
+              <MuestraAcabado
+                key={a.slug}
+                acabado={a}
+                tamanos={tamanosCompartidos(a.muestra?.src)}
+              />
             ))}
           </div>
 
@@ -234,7 +295,13 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {servicios.map((s) => (
               <Link key={s.id} href={RUTA_SERVICIO[s.id]} className="flex flex-col gap-3 no-underline">
-                <BloquePosicion proporcion="16/10" />
+                <Foto
+                  imagen={SERVICIOS[s.id].imagenTarjeta}
+                  proporcion="16/10"
+                  tamanos={
+                    tamanosCompartidos(SERVICIOS[s.id].imagenTarjeta?.src) ?? TAMANOS_TARJETA_SERVICIO
+                  }
+                />
                 <h3 className="font-display font-bold fs-h3 text-20 md:text-26 text-tinta m-0">
                   {NOMBRE_SERVICIO[s.id]}
                 </h3>
@@ -303,7 +370,7 @@ export default function Home() {
             </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-8">
-            {pasos.map((p) => (
+            {PASOS.map((p) => (
               <div key={p.numero} className="flex md:flex-col gap-4">
                 <span className="font-display font-bold fs-h2 text-26 md:text-34 text-acero w-[42px] md:w-auto shrink-0 md:border-t md:border-tinta md:pt-4">
                   {p.numero}
@@ -335,7 +402,11 @@ export default function Home() {
           <div className="flex md:grid md:grid-cols-3 gap-6 overflow-x-auto -mx-[18px] px-[18px] md:mx-0 md:px-0 md:col-span-2">
             {proyectosHome.map((p) => (
               <div key={p.slug} className="min-w-[220px] shrink-0 md:min-w-0 md:shrink">
-                <TarjetaProyecto proyecto={p} fondo="base" />
+                <TarjetaProyecto
+                  proyecto={p}
+                  fondo="base"
+                  tamanos={p.imagenes[0]?.src === fotoHero ? TAMANOS_HERO_HOME : undefined}
+                />
               </div>
             ))}
           </div>
@@ -442,16 +513,21 @@ export default function Home() {
               Te llamamos, vamos a verlo y te damos un precio cerrado. Sin coste y sin compromiso.
             </p>
             <div className="flex flex-col md:flex-row gap-3">
-              <Boton variante="tinta" href={nap.telefonoHref ?? '/presupuesto/'}>
-                Llamar al {nap.telefono ?? nap.telefonoMostrado}
+              <Boton
+                variante="tinta"
+                href={nap.telefonoHref ?? '/presupuesto/'}
+                data-ubicacion="home_close"
+                className="sobre-oscuro"
+              >
+                Llamar al {nap.telefono ?? <DatoPendiente>{nap.telefonoMostrado}</DatoPendiente>}
               </Boton>
-              <Boton variante="contorno" href={nap.whatsappHref ?? '/presupuesto/'}>
+              <Boton variante="contorno" href={nap.whatsappHref ?? '/presupuesto/'} data-ubicacion="home_close">
                 Escribir por WhatsApp
               </Boton>
             </div>
             <p className="text-14 text-tinta-media m-0">O déjanos tus datos y te llamamos nosotros.</p>
           </div>
-          <FormularioPresupuesto variante="corto" />
+          <FormularioPresupuesto variante="corto" origen="home_close" />
         </div>
       </Aparece>
     </>

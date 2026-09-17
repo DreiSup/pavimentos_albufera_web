@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 
-const proporciones = {
+export const PROPORCIONES = {
   '21/9': 'aspect-[21/9]',
   '4/3': 'aspect-[4/3]',
   '16/10': 'aspect-[16/10]',
@@ -20,7 +20,7 @@ export default function BloquePosicion({
   className = '',
   children,
 }: {
-  proporcion: keyof typeof proporciones
+  proporcion: keyof typeof PROPORCIONES
   fina?: boolean
   etiqueta?: ReactNode
   className?: string
@@ -28,10 +28,10 @@ export default function BloquePosicion({
 }) {
   return (
     <div
-      className={`relative trama ${fina ? 'trama-fina' : ''} ${proporciones[proporcion]} ${className}`}
+      className={`relative trama ${fina ? 'trama-fina' : ''} ${PROPORCIONES[proporcion]} ${className}`}
     >
       <span className="absolute top-3 left-3 font-mono text-d-11 tracking-[0.05em] text-tinta-media">
-        PENDIENTE · ORIGINAL A 2400 PX
+        PENDIENTE · ORIGINAL A 1600 PX
       </span>
       {etiqueta ? <div className="absolute bottom-0 right-0">{etiqueta}</div> : null}
       {children}

@@ -5,14 +5,15 @@ import Aparece from '@/components/ui/Aparece'
 import Boton from '@/components/ui/Boton'
 import { EnlaceEtiqueta } from '@/components/ui/EnlaceEtiqueta'
 import EstadoVacio from '@/components/ui/EstadoVacio'
-import BloquePosicion from '@/components/contenido/BloquePosicion'
+import Foto from '@/components/contenido/Foto'
 import EtiquetaTecnica from '@/components/datos/EtiquetaTecnica'
+import { IMAGEN_MODELO } from '@/content/modelos'
 import DatoPendiente from '@/components/datos/DatoPendiente'
 import FichaObra from '@/components/datos/FichaObra'
 import MuestraAcabado from '@/components/contenido/MuestraAcabado'
 import TarjetaProyecto from '@/components/contenido/TarjetaProyecto'
 import Migas from '@/components/layout/Migas'
-import { DESCRIPCION_SERVICIO } from '@/components/secciones/ServicioPlantilla'
+import { SERVICIOS } from '@/content/servicios'
 import {
   acabadoPorSlug,
   acabados,
@@ -22,6 +23,7 @@ import {
   proyectosDe,
   proyectosPorModelo,
 } from '@/lib/datos'
+import type { Imagen } from '@/lib/tipos'
 import {
   NOMBRE_MODELO,
   NOMBRE_SERVICIO,
@@ -63,6 +65,9 @@ type Ficha = {
   lineasEtiqueta: string[]
   tituloFicha: string
   codigo?: string
+  /** Hero a sangre. Del molde si la ficha es de modelo; de la propia muestra si
+   *  es un acabado suelto, que es el único original que existe de él. */
+  imagen?: Imagen
   variantes: Acabado[]
   proyectos: Proyecto[]
 }
@@ -81,12 +86,13 @@ function resolver(param: string): Ficha | null {
       descripcion:
         servicio === 'impreso'
           ? 'Molde grabado sobre hormigón impreso. Funciona en los mismos espacios que el resto de acabados de impreso: entradas, porches, terrazas y contornos de piscina.'
-          : DESCRIPCION_SERVICIO[servicio],
+          : SERVICIOS[servicio].entradilla,
       lineasEtiqueta: [
         NOMBRE_SERVICIO[servicio].toUpperCase(),
         `MODELO ${nombreModelo.toUpperCase()}`,
       ],
       tituloFicha: 'Ficha técnica del modelo',
+      imagen: IMAGEN_MODELO[param as ModeloId],
       variantes,
       proyectos: proyectosPorModelo(param as ModeloId).slice(0, 3),
     }
@@ -100,10 +106,11 @@ function resolver(param: string): Ficha | null {
     esModelo: false,
     servicio: acabado.servicio,
     titulo: `${acabado.nombre} en ${acabado.codigo.toLowerCase()}`,
-    descripcion: DESCRIPCION_SERVICIO[acabado.servicio],
+    descripcion: SERVICIOS[acabado.servicio].entradilla,
     lineasEtiqueta: [NOMBRE_SERVICIO[acabado.servicio].toUpperCase(), acabado.codigo],
     tituloFicha: 'Ficha técnica del acabado',
     codigo: acabado.codigo,
+    imagen: acabado.muestra,
     variantes: [],
     proyectos: proyectosDe(acabado.proyectos).slice(0, 3),
   }
@@ -161,18 +168,31 @@ export default async function FichaAcabado({ params }: { params: Promise<{ model
 
   const articulo = articuloQueExplica(ficha.servicio)
 
+  // `IMAGEN_MODELO` es el hero a sangre de esta pantalla, y la misma foto vuelve
+  // a salir abajo como muestra de color y como tarjeta de obra. Los dos huecos
+  // de abajo adoptan el `sizes` del hero para que sea UNA descarga y no tres.
+  const TAMANOS_HERO = '100vw'
+  const fotoHero = ficha.imagen?.src
+
   return (
     <>
       <Migas items={[{ nombre: 'Acabados', href: '/acabados/' }, { nombre: ficha.titulo }]} />
 
       <section className="px-[18px] md:px-lat-desktop pb-8 md:pb-14">
-        <BloquePosicion
+        <Foto
+          imagen={ficha.imagen}
           proporcion="4/3"
+          prioridad
+          tamanos={TAMANOS_HERO}
           etiqueta={<EtiquetaTecnica lineas={ficha.lineasEtiqueta} />}
         />
       </section>
 
-      <Aparece as="section" className="px-[18px] md:px-lat-desktop py-9 md:py-22">
+      {/* Envoltorio sin Aparece: la clase .aparece arranca en opacity:0, así que
+          el contenido de esta sección —el h1 incluido— no se pintaba hasta que
+          hidrataba. Queda descartado también animation-timeline: view() como
+          sustituto. Las demás secciones de la página sí siguen apareciendo. */}
+      <section className="px-[18px] md:px-lat-desktop py-9 md:py-22">
         <div className="grid grid-cols-1 md:grid-cols-[1fr_420px] gap-8 md:gap-16">
           <div className="flex flex-col gap-4 items-start">
             <h1 className="font-display font-extrabold fs-hero text-46 md:text-64 leading-[1.05] m-0">
@@ -187,7 +207,7 @@ export default async function FichaAcabado({ params }: { params: Promise<{ model
           </div>
           <FichaObra titulo={ficha.tituloFicha} sticky filas={filasTecnicas(ficha)} />
         </div>
-      </Aparece>
+      </section>
 
       {ficha.esModelo ? (
         <Aparece as="section" className="bg-fondo-alt px-[18px] md:px-lat-desktop py-9 md:py-22">
@@ -197,7 +217,11 @@ export default async function FichaAcabado({ params }: { params: Promise<{ model
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-[14px_10px] md:gap-[32px_24px]">
               {ficha.variantes.map((v) => (
-                <MuestraAcabado key={v.slug} acabado={v} />
+                <MuestraAcabado
+                  key={v.slug}
+                  acabado={v}
+                  tamanos={v.muestra?.src === fotoHero ? TAMANOS_HERO : undefined}
+                />
               ))}
             </div>
           </div>
@@ -212,7 +236,11 @@ export default async function FichaAcabado({ params }: { params: Promise<{ model
           {ficha.proyectos.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {ficha.proyectos.map((p) => (
-                <TarjetaProyecto key={p.slug} proyecto={p} />
+                <TarjetaProyecto
+                  key={p.slug}
+                  proyecto={p}
+                  tamanos={p.imagenes[0]?.src === fotoHero ? TAMANOS_HERO : undefined}
+                />
               ))}
             </div>
           ) : (

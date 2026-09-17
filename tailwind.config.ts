@@ -1,10 +1,15 @@
 import type { Config } from 'tailwindcss'
-import { AZULES_MARCA } from './lib/marca'
 
 /** Pavimentos Albufera — Tailwind con los tokens del §8.
  *  Escala cerrada a propósito: no hay valores intermedios. */
 const config: Config = {
-  content: ['./app/**/*.{ts,tsx,mdx}', './components/**/*.{ts,tsx}', './content/**/*.mdx'],
+  content: [
+    './app/**/*.{ts,tsx,mdx}',
+    './components/**/*.{ts,tsx}',
+    // El catálogo vive en .tsx, no en .mdx: con el glob viejo no se escaneaba.
+    './content/**/*.{ts,tsx,mdx}',
+    './lib/**/*.{ts,tsx}',
+  ],
   theme: {
     // Se reemplaza la paleta por defecto: solo existen estos colores.
     colors: {
@@ -20,18 +25,6 @@ const config: Config = {
       'sobre-tinta': '#DADCD6',
       'pendiente-oscuro': '#9AA09B',
       error: '#8C3A2B',
-      // Azules del logotipo, y solo del logotipo (lib/marca.ts, §2.6).
-      // La interfaz no los usa: el único color de acción sigue siendo el ocre.
-      marca: {
-        900: AZULES_MARCA[0],
-        800: AZULES_MARCA[1],
-        700: AZULES_MARCA[2],
-        600: AZULES_MARCA[3],
-        500: AZULES_MARCA[4],
-        400: AZULES_MARCA[5],
-        300: AZULES_MARCA[6],
-        200: AZULES_MARCA[7],
-      },
     },
     borderRadius: { none: '0', DEFAULT: '0' },
     boxShadow: {
@@ -63,11 +56,15 @@ const config: Config = {
     },
     extend: {
       minHeight: { tactil: '44px', campo: '48px', boton: '56px' },
+      // El objetivo táctil también necesita ancho: `min-w-tactil` se usaba sin existir.
+      minWidth: { tactil: '44px' },
       spacing: {
+        // Alto de sección en escritorio (design/01 §2.5, «72–88 px arriba y abajo»).
+        // No es un valor intermedio: es el par de `py-9` (36 px) en móvil.
+        22: '5.5rem',
         'lat-movil': '18px',
         'lat-desktop': '48px',
         cabecera: '84px',
-        'cabecera-scroll': '60px',
       },
       maxWidth: { lectura: '68ch', contenido: '1344px' },
       transitionDuration: { cabecera: '150ms' },

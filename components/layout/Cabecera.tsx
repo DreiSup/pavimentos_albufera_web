@@ -2,10 +2,9 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { nap } from '@/lib/config'
 import Boton from '../ui/Boton'
-import Logo from './Logo'
 import MenuMovil from './MenuMovil'
 
 const enlaces = [
@@ -17,30 +16,33 @@ const enlaces = [
 ]
 
 /**
- * Altura de la cabecera, en un único sitio y en CSS (01-sistema-de-diseno.md §4.1 y
- * 02-pantallas.md §B9). De `--cabecera-actual` cuelgan la propia cabecera y todas las
- * barras pegajosas que se anclan bajo ella —barra de confianza, filtros del muestrario,
- * índice de proyectos y submenú de servicio—, así que no pueden desajustarse.
+ * 01-sistema-de-diseno.md §4.1 y 02-pantallas.md §B9.
  *
- *   móvil       44 px de objetivo táctil + 14 px de padding arriba y abajo (§2.5) = 72
- *   escritorio  84 px (§4.1)
- *   compacta    60 px tras hacer scroll (§B9), con el ancla de sección a 130 px
+ * **La altura es fija y no se anima.** El estado compacto se pintaba antes
+ * animando `height` sobre un elemento sticky que está en el flujo: la única
+ * animación no compuesta del sitio, con dos costes medidos. Uno, CLS en cada
+ * scroll, porque los 84 → 60 px empujan todo lo que hay debajo. Y dos, un salto
+ * en hidratación al aterrizar con `#ancla` —el caso de un anuncio—: el HTML
+ * llega expandido, el efecto ve el scroll ya hecho y la sección anclada se
+ * mueve bajo el cursor del visitante.
  *
- * Va en CSS y no en JS para que valga ya en el primer pintado y en cada punto de ruptura
- * sin medir nada. `html:root` gana por especificidad al valor de arranque de globals.css
- * sea cual sea el orden en que se sirvan las hojas de estilo.
+ * Ahora la caja mide siempre lo mismo y el único cambio de estado que queda
+ * viaja por `visibility`: el teléfono se oculta conservando su hueco
+ * —`display:none` movería el botón— y sale del orden de tabulación. El
+ * logotipo ya no cruza dos variantes por `opacity`: desde que es una imagen de
+ * caja fija (`design/02` §B9, enmendado) no hay nada que comprimir, así que se
+ * queda igual con scroll y sin él. Los 150 ms y el `ease-out` de §B9 se
+ * conservan; `prefers-reduced-motion` ya los anula en `app/globals.css`, sin
+ * nada que añadir aquí.
+ *
+ * Consecuencia: `--cabecera-actual` es constante y se queda en el valor de
+ * `app/globals.css`. Ya no hay efecto que lo reescriba, y por eso los cinco
+ * `sticky` que se cuelgan de él dejan de saltar al hidratar.
  */
-const ALTURAS = `
-html:root{--cabecera-actual:72px}
-@media (min-width:768px){html:root{--cabecera-actual:84px}}
-html:root[data-cabecera='compacta']{--cabecera-actual:60px;--ancla-offset:130px}
-`
-
 export default function Cabecera() {
   const pathname = usePathname()
   const [conScroll, setConScroll] = useState(false)
   const [menuAbierto, setMenuAbierto] = useState(false)
-  const disparadorRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     const onScroll = () => setConScroll(window.scrollY > 40)
@@ -49,28 +51,42 @@ export default function Cabecera() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // El estado compacto se publica como atributo: la aritmética de alturas es de CSS.
-  useEffect(() => {
-    const raiz = document.documentElement
-    if (conScroll) raiz.dataset.cabecera = 'compacta'
-    else delete raiz.dataset.cabecera
-  }, [conScroll])
-
   useEffect(() => {
     setMenuAbierto(false)
   }, [pathname])
 
-  const cerrarMenu = useCallback(() => setMenuAbierto(false), [])
-
   return (
-    <header className="sticky top-0 z-30 h-[var(--cabecera-actual)] bg-fondo border-b border-tinta transition-[height] duration-cabecera ease-out flex items-center px-[18px] md:px-lat-desktop">
-      <style href="pa-cabecera-alturas" precedence="default">
-        {ALTURAS}
-      </style>
-
+    <header className="sticky top-0 z-30 bg-fondo border-b border-tinta h-[70px] md:h-cabecera flex items-center px-[18px] md:px-lat-desktop">
       <div className="flex items-center justify-between w-full max-w-contenido mx-auto">
-        <Link href="/" className="no-underline text-tinta">
-          <Logo variante={conScroll ? 'compacto' : 'apilado'} />
+        {/* El logotipo es una sola imagen y no cambia con el scroll. Las dos
+            variantes tipográficas —dos líneas y una línea— existían para que el
+            ancho no se moviera al comprimirse la cabecera; con una imagen de
+            caja fija ese problema no llega a plantearse. Va el wordmark solo:
+            el bloque completo mete la senda de losas encima y el claim debajo,
+            y en una barra de 70-84 px eso deja las palabras a 6-8 px de altura
+            de mayúscula. El bloque completo vive en el pie, que sí tiene sitio.
+            `design/01` §4.1 y `design/02` §B9. */}
+        <Link href="/" className="no-underline text-tinta flex items-center">
+          {/* `<img>` y no `next/image`, medido: la cabecera y el pie viven en el
+              layout, así que meter el componente de imagen aquí lo mete en las
+              49 rutas. Cuesta **+5,1 kB brotli** en las que hoy no lo cargan
+              —las tres legales pasan de 97,7 a 102,8— y sube el máximo del sitio
+              de 108,2 a 109,3 kB, o sea la mitad del margen que queda hasta el
+              techo de 112. A cambio no da nada: el logotipo es de caja fija, no
+              tiene `srcset` que resolver, y el archivo ya está servido al ancho
+              que se pinta. El original de 1881 px vive en `logo.png`, que es el
+              del JSON-LD; este pesa 8,9 kB. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/marca/logo-texto.png"
+            alt="Pavimentos Albufera"
+            width={276}
+            height={24}
+            /* Sobre el pliegue en las 49 rutas, así que no es perezosa. */
+            loading="eager"
+            decoding="async"
+            className="h-[20px] w-[230px] md:h-[24px] md:w-[276px]"
+          />
         </Link>
 
         <nav className="hidden md:flex items-center gap-7">
@@ -80,7 +96,6 @@ export default function Cabecera() {
               <Link
                 key={enlace.href}
                 href={enlace.href}
-                aria-current={activo ? 'page' : undefined}
                 className={`min-h-tactil inline-flex items-center font-sans text-16 no-underline ${
                   activo ? 'font-semibold border-b-2 border-tinta' : 'font-medium'
                 }`}
@@ -92,24 +107,34 @@ export default function Cabecera() {
         </nav>
 
         <div className="hidden md:flex items-center gap-5">
-          {!conScroll && (
-            <a href={nap.telefonoHref ?? '#'} className="font-mono text-d-12 text-tinta-media no-underline">
-              {nap.telefono ?? `[${nap.telefonoMostrado}]`}
-            </a>
-          )}
-          <Boton variante="contorno" href="/presupuesto/" className={conScroll ? '!min-h-tactil' : ''}>
+          {/* `visibility` y no `display`: el hueco se conserva y el botón no se
+              mueve. La transición declara las dos propiedades para que el número
+              se desvanezca en vez de irse de golpe, y durante esos 150 ms sigue
+              siendo visible: de ahí el `aria-hidden` y el `tabIndex`, que lo
+              retiran del lector y del tabulador desde el primer fotograma. */}
+          <a
+            href={nap.telefonoHref ?? '#'}
+            data-ubicacion="header"
+            aria-hidden={conScroll}
+            tabIndex={conScroll ? -1 : undefined}
+            className={`font-mono text-d-12 text-tinta-media no-underline transition-[opacity,visibility] duration-cabecera ease-out ${
+              conScroll ? 'invisible opacity-0' : 'opacity-100'
+            }`}
+          >
+            {nap.telefono ?? `[${nap.telefonoMostrado}]`}
+          </a>
+          {/* El botón ya no encoge: los 44 px de §B9 existían para caber en una
+              barra de 60 px, y la barra ya no se comprime. `min-h-boton` (56 px)
+              está por encima del objetivo táctil, y así desaparece el último
+              cambio de caja que el scroll provocaba en la cabecera. */}
+          <Boton variante="contorno" href="/presupuesto/">
             Pedir presupuesto
           </Boton>
         </div>
 
-        {/* Solo abre: mientras el panel está delante, este botón queda debajo y es el
-            panel quien tiene su propio «Cerrar menú». Por eso la etiqueta no cambia;
-            el estado lo lleva aria-expanded. */}
         <button
-          ref={disparadorRef}
           type="button"
           aria-label="Abrir menú"
-          aria-haspopup="dialog"
           aria-expanded={menuAbierto}
           onClick={() => setMenuAbierto(true)}
           className="md:hidden inline-flex items-center justify-center min-w-tactil min-h-tactil"
@@ -120,9 +145,7 @@ export default function Cabecera() {
         </button>
       </div>
 
-      {menuAbierto ? (
-        <MenuMovil onCerrar={cerrarMenu} enlaces={enlaces} disparadorRef={disparadorRef} />
-      ) : null}
+      {menuAbierto ? <MenuMovil onCerrar={() => setMenuAbierto(false)} enlaces={enlaces} /> : null}
     </header>
   )
 }

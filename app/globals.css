@@ -17,9 +17,22 @@
   --error: #8c3a2b;
 
   --cabecera: 84px;
-  --cabecera-scroll: 60px;
   --ancla-offset: 150px;
-  --cabecera-actual: 84px;
+  /* Espeja el `h-[70px] md:h-cabecera` de `components/layout/Cabecera.tsx`. La
+     cabecera ya no se comprime al hacer scroll (02-pantallas.md §B9), así que
+     esta variable es constante por ancho y no la reescribe ningún efecto: es la
+     media query la que la cambia, no el JavaScript. Si se toca la altura del
+     `<header>`, se toca aquí. Los cinco `sticky` que se cuelgan de ella —
+     `BarraConfianza`, `SubmenuServicio` y las dos barras de filtro— se pegan a
+     ras del borde inferior de la cabecera; 14 px de desajuste dejan una franja
+     por la que corre el contenido. */
+  --cabecera-actual: 70px;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --cabecera-actual: 84px;
+  }
 }
 
 * {
@@ -88,7 +101,10 @@ a {
   border-bottom-color: var(--pendiente-oscuro);
 }
 
-/* Secciones destino del submenú/sumario anclado */
+/* Secciones destino del submenú/sumario anclado.
+   Los 150 px siguen siendo suficientes con la cabecera fija: el peor caso es
+   escritorio, 84 px de cabecera + 56 px de submenú = 140. En móvil no hay
+   submenú y sobran 80 px, que es holgura, nunca solape. */
 [id^='seccion-'] {
   scroll-margin-top: var(--ancla-offset);
 }
@@ -141,7 +157,9 @@ input[type='range'] {
   accent-color: var(--pigmento);
 }
 
-/* Eje de anchura de Archivo (§2.3). Solo estos cuatro valores, nunca otros. */
+/* Eje de anchura de Archivo (§2.3). Solo estos tres valores, nunca otros.
+   El cuarto, `.fs-logo` a 118 %, se retira: era exclusivo del logotipo
+   tipográfico y desde que el logotipo es una imagen no lo usaba nadie. */
 .fs-hero {
   font-stretch: 125%;
 }
@@ -150,7 +168,4 @@ input[type='range'] {
 }
 .fs-h3 {
   font-stretch: 115%;
-}
-.fs-logo {
-  font-stretch: 118%;
 }

@@ -1,83 +1,99 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
-import type { MouseEvent, ReactNode } from 'react'
-import type { ModeloId, ServicioId } from '@/lib/tipos'
-import { NOMBRE_MODELO, NOMBRE_SERVICIO } from '@/lib/tipos'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import Chip from '../ui/Chip'
 import Boton from '../ui/Boton'
 import { BotonEtiqueta } from '../ui/EnlaceEtiqueta'
 import EstadoVacio from '../ui/EstadoVacio'
-import { useFiltrosDeRejilla } from './filtros-en-url'
-import type { Filtros } from './filtros-en-url'
 
-/** Los cuatro ejes del índice de obras (README §8). Constante de módulo: identidad estable. */
-const CLAVES = ['servicio', 'modelo', 'municipio', 'anio'] as const
+export type ClaveFiltro = 'servicio' | 'modelo' | 'municipio' | 'anio'
 
-type Clave = (typeof CLAVES)[number]
-type Grupo = { clave: Clave; etiqueta: string; opciones: string[] }
+/** Un grupo de la barra, con la etiqueta visible de cada opción ya resuelta en servidor. */
+export type GrupoFiltro = {
+  clave: ClaveFiltro
+  etiqueta: string
+  opciones: { valor: string; nombre: string }[]
+}
+
+/**
+ * Una obra ya renderizada en servidor (`tarjeta`) más los cuatro valores por los
+ * que se filtra. La tarjeta viaja como nodo, no como dato: así `TarjetaProyecto`
+ * —y con él `next/image` y `content/proyectos.json`— se quedan fuera del bundle
+ * de cliente, que solo decide cuáles de las tarjetas ya hechas se enseñan.
+ *
+ * La `key` se pone al crear el nodo en la página, no aquí: si se envolviera cada
+ * tarjeta en un `<div key>` ese div pasaría a ser el hijo de la rejilla y las
+ * tarjetas dejarían de igualarse en altura.
+ */
+export type ObraFiltrable = {
+  clave: string
+  valores: Record<ClaveFiltro, string | null>
+  tarjeta: ReactNode
+}
+
+type Seleccion = Record<ClaveFiltro, string | null>
+
+const SIN_FILTROS: Seleccion = { servicio: null, modelo: null, municipio: null, anio: null }
+const CLAVES = Object.keys(SIN_FILTROS) as ClaveFiltro[]
 
 export default function FiltrosProyectos({
-  servicios,
-  modelos,
-  municipios,
-  anios,
-  total,
-  children,
+  obras,
+  grupos,
 }: {
-  servicios: ServicioId[]
-  modelos: ModeloId[]
-  municipios: string[]
-  anios: number[]
-  total: number
-  /**
-   * Las obras, renderizadas en servidor por `app/proyectos/page.tsx`: una tarjeta por
-   * hijo, envuelta en `[data-filtrable]` con sus valores de filtro. Llegan como
-   * `children` para que `TarjetaProyecto` siga siendo de servidor.
-   */
-  children: ReactNode
+  obras: ObraFiltrable[]
+  grupos: GrupoFiltro[]
 }) {
-  const { filtros, actualizar, quitar, rejilla, visibles, numFiltros } = useFiltrosDeRejilla(
-    CLAVES,
-    total,
-  )
+  const [filtros, setFiltros] = useState<Seleccion>(SIN_FILTROS)
   const [hojaAbierta, setHojaAbierta] = useState(false)
-  // El elemento que abrió la hoja, para devolverle el foco al cerrarla.
-  const abridor = useRef<HTMLElement | null>(null)
 
-  const grupos: Grupo[] = [
-    { clave: 'servicio', etiqueta: 'Servicio', opciones: servicios.map((s) => NOMBRE_SERVICIO[s]) },
-    { clave: 'modelo', etiqueta: 'Modelo', opciones: modelos.map((m) => NOMBRE_MODELO[m]) },
-    { clave: 'municipio', etiqueta: 'Municipio', opciones: municipios },
-    { clave: 'anio', etiqueta: 'Año', opciones: anios.map(String) },
-  ]
-
-  const valorDe: Record<Clave, (o: string) => string> = {
-    servicio: (etiqueta) => servicios.find((s) => NOMBRE_SERVICIO[s] === etiqueta) ?? etiqueta,
-    modelo: (etiqueta) => modelos.find((m) => NOMBRE_MODELO[m] === etiqueta) ?? etiqueta,
-    municipio: (etiqueta) => etiqueta,
-    anio: (etiqueta) => etiqueta,
-  }
-
-  function abrirHoja(evento: MouseEvent<HTMLButtonElement>) {
-    abridor.current = evento.currentTarget
-    setHojaAbierta(true)
-  }
-
-  // Identidad estable: la hoja la usa como dependencia de su efecto, y si cambiara en
-  // cada render el foco volvería al principio cada vez que se pulsa un chip.
-  const cerrarHoja = useCallback(() => {
-    setHojaAbierta(false)
-    abridor.current?.focus()
+  /**
+   * El estado manda y la URL lo sigue, nunca al revés. Leer la URL en el render
+   * con `useSearchParams` es lo que sacaba la rejilla entera del HTML estático:
+   * las 9 tarjetas y sus enlaces no existían hasta que hidrataba el cliente.
+   * Aquí se lee una sola vez, al montar, para que un enlace compartido con
+   * `?municipio=…` siga aplicando su filtro.
+   */
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const inicial = { ...SIN_FILTROS }
+    for (const clave of CLAVES) inicial[clave] = params.get(clave)
+    if (CLAVES.some((clave) => inicial[clave])) setFiltros(inicial)
   }, [])
 
-  function quitarFiltros() {
-    quitar()
-    if (hojaAbierta) cerrarHoja()
+  function aplicar(siguiente: Seleccion) {
+    setFiltros(siguiente)
+
+    const params = new URLSearchParams()
+    for (const clave of CLAVES) {
+      const valor = siguiente[clave]
+      if (valor) params.set(clave, valor)
+    }
+    const cadena = params.toString()
+    // `replaceState` y no `router.push`: aquí no se cambia de página, y cada
+    // navegación del App Router contaba como un `page_view` más en GA4.
+    window.history.replaceState(
+      null,
+      '',
+      `${window.location.pathname}${cadena ? `?${cadena}` : ''}`,
+    )
   }
 
-  const vacio = visibles === 0
-  const resumen = `${visibles} OBRA${visibles === 1 ? '' : 'S'}`
+  function actualizar(clave: ClaveFiltro, valor: string | null) {
+    aplicar({ ...filtros, [clave]: valor })
+  }
+
+  function quitarFiltros() {
+    aplicar(SIN_FILTROS)
+    setHojaAbierta(false)
+  }
+
+  const filtradas = useMemo(
+    () => obras.filter((o) => CLAVES.every((c) => !filtros[c] || o.valores[c] === filtros[c])),
+    [obras, filtros],
+  )
+
+  const numFiltros = CLAVES.filter((clave) => filtros[clave]).length
+  const resumen = `${filtradas.length} OBRA${filtradas.length === 1 ? '' : 'S'}`
 
   return (
     <div className="flex flex-col gap-6">
@@ -92,25 +108,20 @@ export default function FiltrosProyectos({
               <Chip activo={!filtros[grupo.clave]} onClick={() => actualizar(grupo.clave, null)}>
                 Todos
               </Chip>
-              {grupo.opciones.map((o) => {
-                const valor = valorDe[grupo.clave](o)
-                return (
-                  <Chip
-                    key={o}
-                    activo={filtros[grupo.clave] === valor}
-                    onClick={() => actualizar(grupo.clave, valor)}
-                  >
-                    {o}
-                  </Chip>
-                )
-              })}
+              {grupo.opciones.map((o) => (
+                <Chip
+                  key={o.valor}
+                  activo={filtros[grupo.clave] === o.valor}
+                  onClick={() => actualizar(grupo.clave, o.valor)}
+                >
+                  {o.nombre}
+                </Chip>
+              ))}
             </div>
           </div>
         ))}
         <div className="flex items-center gap-4 pt-1">
-          <span className="font-mono text-d-12 text-tinta" aria-live="polite">
-            {resumen}
-          </span>
+          <span className="font-mono text-d-12 text-tinta">{resumen}</span>
           {numFiltros > 0 ? (
             <BotonEtiqueta onClick={quitarFiltros} className="border-b-0">
               Quitar filtros ×
@@ -121,38 +132,34 @@ export default function FiltrosProyectos({
 
       {/* Móvil: fila única con hoja inferior (01 §3.15) */}
       <div className="md:hidden sticky [top:var(--cabecera-actual)] z-10 bg-fondo border-t border-b border-tinta py-3 flex items-center justify-between gap-3">
-        <Boton variante="contorno" type="button" onClick={abrirHoja} className="!min-h-tactil">
+        <Boton variante="contorno" type="button" onClick={() => setHojaAbierta(true)} className="!min-h-tactil">
           {numFiltros > 0 ? `Filtrar (${numFiltros})` : 'Filtrar'}
         </Boton>
-        <span className="font-mono text-d-12 text-tinta" aria-live="polite">
-          {resumen}
-        </span>
+        <span className="font-mono text-d-12 text-tinta">{resumen}</span>
       </div>
 
       {hojaAbierta ? (
         <HojaFiltros
           grupos={grupos}
           filtros={filtros}
-          valorDe={valorDe}
           resumen={resumen}
           onActualizar={actualizar}
           onQuitar={quitarFiltros}
-          onCerrar={cerrarHoja}
+          onCerrar={() => setHojaAbierta(false)}
         />
       ) : null}
 
-      {/* La rejilla no se desmonta al filtrar: se ocultan las tarjetas ya pintadas. */}
-      <div ref={rejilla} className={vacio ? 'hidden' : 'grid grid-cols-1 md:grid-cols-3 gap-6'}>
-        {children}
-      </div>
-
-      {vacio ? (
+      {filtradas.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {filtradas.map((o) => o.tarjeta)}
+        </div>
+      ) : (
         <EstadoVacio
           titulo="No hay obras con esta combinación"
           texto="Solo enseñamos obra ejecutada de verdad. Quita un filtro o pregúntanos directamente."
           onQuitarFiltros={quitarFiltros}
         />
-      ) : null}
+      )}
     </div>
   )
 }
@@ -160,17 +167,15 @@ export default function FiltrosProyectos({
 function HojaFiltros({
   grupos,
   filtros,
-  valorDe,
   resumen,
   onActualizar,
   onQuitar,
   onCerrar,
 }: {
-  grupos: Grupo[]
-  filtros: Filtros<Clave>
-  valorDe: Record<Clave, (o: string) => string>
+  grupos: GrupoFiltro[]
+  filtros: Seleccion
   resumen: string
-  onActualizar: (clave: Clave, valor: string | null) => void
+  onActualizar: (clave: ClaveFiltro, valor: string | null) => void
   onQuitar: () => void
   onCerrar: () => void
 }) {
@@ -178,29 +183,12 @@ function HojaFiltros({
 
   useEffect(() => {
     document.body.style.overflow = 'hidden'
-    const primerFoco = panelRef.current?.querySelector<HTMLElement>('a, button')
+    const primerFoco = panelRef.current?.querySelector<HTMLElement>('button')
     primerFoco?.focus()
 
-    // Mismo patrón de trampa de foco que `components/layout/MenuMovil.tsx`.
     function onKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape') {
-        onCerrar()
-        return
-      }
-      if (e.key !== 'Tab' || !panelRef.current) return
-      const focables = panelRef.current.querySelectorAll<HTMLElement>('a, button')
-      if (focables.length === 0) return
-      const primero = focables[0]
-      const ultimo = focables[focables.length - 1]
-      if (e.shiftKey && document.activeElement === primero) {
-        e.preventDefault()
-        ultimo.focus()
-      } else if (!e.shiftKey && document.activeElement === ultimo) {
-        e.preventDefault()
-        primero.focus()
-      }
+      if (e.key === 'Escape') onCerrar()
     }
-
     document.addEventListener('keydown', onKeyDown)
     return () => {
       document.body.style.overflow = ''
@@ -238,18 +226,15 @@ function HojaFiltros({
               <Chip activo={!filtros[grupo.clave]} onClick={() => onActualizar(grupo.clave, null)}>
                 Todos
               </Chip>
-              {grupo.opciones.map((o) => {
-                const valor = valorDe[grupo.clave](o)
-                return (
-                  <Chip
-                    key={o}
-                    activo={filtros[grupo.clave] === valor}
-                    onClick={() => onActualizar(grupo.clave, valor)}
-                  >
-                    {o}
-                  </Chip>
-                )
-              })}
+              {grupo.opciones.map((o) => (
+                <Chip
+                  key={o.valor}
+                  activo={filtros[grupo.clave] === o.valor}
+                  onClick={() => onActualizar(grupo.clave, o.valor)}
+                >
+                  {o.nombre}
+                </Chip>
+              ))}
             </div>
           </div>
         ))}

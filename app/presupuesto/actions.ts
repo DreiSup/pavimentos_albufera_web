@@ -2,14 +2,25 @@
 
 import { z } from 'zod'
 import { cookies, headers } from 'next/headers'
+import { after } from 'next/server'
 import { enviarEventoCAPI } from '@/lib/meta-capi'
 import { sitio } from '@/lib/config'
+import { COOKIE_ATRIBUCION, COOKIE_CONSENTIMIENTO, COOKIE_REFERENCIA } from '@/lib/cookies'
 
 export type EstadoEnvio = {
   estado: 'inicial' | 'error' | 'enviando' | 'enviado'
   errores: Record<string, string>
   resumen?: { espacio: string; superficie: string; municipio: string }
 }
+
+// 4 MB, no los 10 que pedía `design/04` §6. El tope real no lo pone el
+// formulario: Vercel corta el cuerpo de una función en 4,5 MB, y los Server
+// Actions se ejecutan como función. Prometer 10 MB significaría un envío que
+// funciona en local y muere con un 413 opaco en producción.
+const MAX_FOTO = 4 * 1024 * 1024
+
+// Ningún proveedor externo puede tener al usuario esperando más que esto.
+const TIMEOUT_MS = 8000
 
 const esquema = z.object({
   nombre: z.string().min(1, 'Escribe tu nombre.'),
@@ -22,11 +33,18 @@ const esquema = z.object({
   superficie: z.string().optional().default(''),
   municipio: z.string().optional().default(''),
   mensaje: z.string().optional().default(''),
-  privacidad: z.string().optional(),
+  // El `required` del navegador no es validación: un envío sin JS o manipulado
+  // se la salta. Aquí es obligatorio de verdad.
+  privacidad: z.string().min(1, 'Tienes que aceptar la política de privacidad.'),
   evento_id: z.string().optional().default(''),
+  origen: z.string().optional().default('unmarked'),
 })
 
 // Límite de envíos por IP: 3 / hora. En memoria — se reinicia con cada despliegue.
+//
+// Se queda aquí, sin exportar, a propósito: en un módulo `'use server'` todo
+// export tiene que ser una función asíncrona, y esta devuelve un boolean
+// síncrono. Sacarla a `lib/limite.ts` es tarea de 1.5, no de aquí.
 const envios = new Map<string, number[]>()
 const LIMITE = 3
 const VENTANA_MS = 60 * 60 * 1000
@@ -40,15 +58,68 @@ function limitePorIp(ip: string) {
   return true
 }
 
+/** Convierte la cookie de atribución en líneas legibles para el email y el aviso. */
+function lineasAtribucion(bruto: string | undefined): string[] {
+  if (!bruto) return ['Origen: directo o sin marcar']
+  try {
+    const datos = JSON.parse(bruto) as Record<string, string>
+    return Object.entries(datos).map(([clave, valor]) => `${clave}: ${valor}`)
+  } catch {
+    return ['Origen: cookie ilegible']
+  }
+}
+
+/**
+ * Página real desde la que se envió el formulario.
+ *
+ * El formulario se monta en ocho sitios —la home, `/presupuesto/` y las seis
+ * páginas de servicio, todas vía `PaginaServicio.tsx`— y hasta ahora los ocho
+ * declaraban `/presupuesto/` a Meta: siete de cada ocho mentían.
+ *
+ * Va por la cabecera `Referer` y **no** por un `<input type="hidden">`: zod
+ * descarta en silencio toda clave que no esté en el esquema, así que el campo
+ * llegaría al servidor y se perdería sin dar ningún error.
+ *
+ * Del `Referer` se conserva **solo la ruta**, montada sobre el dominio propio:
+ * el origen no lo pone nunca el cliente, y la query —que puede traer `gclid` o
+ * cualquier otra cosa— no tiene por qué viajar a Meta.
+ */
+function urlDeOrigen(referer: string | null): string {
+  const base = sitio.url.replace(/\/$/, '')
+  if (!referer) return `${base}/presupuesto/`
+  try {
+    return `${base}${new URL(referer).pathname}`
+  } catch {
+    return `${base}/presupuesto/`
+  }
+}
+
 export async function enviarPresupuesto(
   _prev: EstadoEnvio,
   formData: FormData,
 ): Promise<EstadoEnvio> {
-  // Honeypot: campo oculto con nombre plausible. Si viene relleno, éxito falso sin enviar.
+  // Honeypot: campo oculto con nombre plausible. Si viene relleno, se devuelve
+  // el estado inicial y no se entrega nada.
+  //
+  // ⚠️ Antes devolvía `'enviado'`, y `FormularioPresupuesto.tsx:66` dispara
+  // `form_submit` + `Lead` justo desde ese estado: la defensa antispam
+  // fabricaba exactamente las conversiones falsas que existía para evitar. Es
+  // el único caso en el que no se entrega nada a nadie, así que el estado que
+  // se devuelva no puede ser uno que el cliente cuente como conversión.
   const honeypot = formData.get('empresa_web')
   if (typeof honeypot === 'string' && honeypot.length > 0) {
-    return { estado: 'enviado', errores: {} }
+    // Queda registrado. Devolver `'inicial'` deja al que envía sin ninguna
+    // señal —el formulario reaparece igual, sin mensaje—, y eso está bien para
+    // un bot; para una persona a la que un gestor de contraseñas le haya
+    // rellenado el campo oculto es un bucle mudo en la página de más intención
+    // del sitio. Sin esta línea no habría forma de enterarse: no sale email, ni
+    // aviso, ni evento.
+    console.warn(`Honeypot relleno desde ${String(formData.get('origen') ?? 'unmarked')}`)
+    return { estado: 'inicial', errores: {} }
   }
+
+  const foto = formData.get('foto')
+  formData.delete('foto')
 
   const datos = Object.fromEntries(formData.entries())
   const analizado = esquema.safeParse(datos)
@@ -61,6 +132,10 @@ export async function enviarPresupuesto(
     return { estado: 'error', errores }
   }
 
+  // El límite va ANTES de convertir la foto a base64, no después: si no, se
+  // paga la conversión de 4 MB de un envío que se va a rechazar igualmente.
+  // Después del esquema, eso sí: tres erratas en el teléfono no pueden dejar a
+  // alguien una hora sin poder pedir presupuesto.
   const listaCabeceras = await headers()
   const ip = listaCabeceras.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'anonimo'
   if (!limitePorIp(ip)) {
@@ -70,14 +145,151 @@ export async function enviarPresupuesto(
     }
   }
 
-  const { nombre, telefono, email, espacio, superficie, municipio, mensaje, evento_id: eventoId } = analizado.data
+  // Adjunto opcional. Antes se renderizaba el campo y se descartaba el archivo
+  // en silencio, prometiendo algo que no se cumplía (04-desarrollo-y-deploy.md §6.4).
+  let adjunto: { filename: string; content: string } | undefined
+  if (foto instanceof File && foto.size > 0) {
+    if (!foto.type.startsWith('image/')) {
+      return { estado: 'error', errores: { foto: 'La foto tiene que ser una imagen.' } }
+    }
+    if (foto.size > MAX_FOTO) {
+      return { estado: 'error', errores: { foto: 'La foto no puede pasar de 4 MB.' } }
+    }
+    adjunto = {
+      filename: foto.name || 'foto.jpg',
+      content: Buffer.from(await foto.arrayBuffer()).toString('base64'),
+    }
+  }
+
+  const {
+    nombre,
+    telefono,
+    email,
+    espacio,
+    superficie,
+    municipio,
+    mensaje,
+    origen,
+    evento_id: eventoIdEnviado,
+  } = analizado.data
+
+  // Si el formulario se envió antes de hidratar, el campo llega vacío. Sin un
+  // id, el Pixel y la CAPI no se pueden deduplicar.
+  const eventoId = eventoIdEnviado || crypto.randomUUID()
+
+  const listaCookies = await cookies()
+  // La misma referencia que se inyecta en los mensajes de WhatsApp. Que el lead
+  // de formulario y el de WhatsApp compartan código es lo que permite ver en el
+  // CRM que son la misma persona.
+  const referencia = listaCookies.get(COOKIE_REFERENCIA)?.value
+  const consentimiento = listaCookies.get(COOKIE_CONSENTIMIENTO)?.value
+  const atribucion = [
+    `Referencia: ${referencia ?? '—'}`,
+    // Queda escrito en el buzón y en el aviso qué había contestado esta persona
+    // en el momento de enviar: es el único registro de por qué su lead llegó, o
+    // no llegó, a la CAPI.
+    `Consentimiento: ${consentimiento ?? 'sin responder'}`,
+    ...lineasAtribucion(listaCookies.get(COOKIE_ATRIBUCION)?.value),
+  ]
+
+  // Valores planos capturados antes de registrar el trabajo diferido: dentro de
+  // `after()` la petición ya se ha respondido, y así no depende de nada de ella.
+  const userAgent = listaCabeceras.get('user-agent') ?? ''
+  const urlOrigen = urlDeOrigen(listaCabeceras.get('referer'))
+  const fbp = listaCookies.get('_fbp')?.value
+  const fbc = listaCookies.get('_fbc')?.value
+
+  // Telegram y la CAPI se registran ANTES de intentar el email y salen después
+  // de responder. Dos motivos, y los dos eran defectos reales:
+  //
+  // - El `catch` de Resend hacía `return`. Un fallo de email cancelaba también
+  //   el aviso y el evento, que son los dos caminos por los que el lead podía
+  //   salvarse. Registrados aquí arriba, ninguna salida posterior debería
+  //   cancelarlos: `after()` cuelga del fin de la petición, no del valor que se
+  //   devuelva. ⚠️ Comprobado por lectura de la semántica, no en ejecución: que
+  //   se vacíen también en el `return` de error necesita un build.
+  // - Esperarlos en línea son hasta 16 s de cola de timeouts que el usuario
+  //   mira en el spinner, por dos entregas cuyo resultado no cambia nada de lo
+  //   que va a ver.
+  const telegramToken = process.env.TELEGRAM_BOT_TOKEN
+  const telegramChat = process.env.TELEGRAM_CHAT_ID
+  if (telegramToken && telegramChat) {
+    after(async () => {
+      try {
+        const respuesta = await fetch(`https://api.telegram.org/bot${telegramToken}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: telegramChat,
+            text: [
+              '🔔 Nuevo presupuesto',
+              `${nombre} · ${telefono}`,
+              espacio,
+              municipio || '—',
+              '',
+              `Desde: ${origen}`,
+              ...atribucion,
+            ].join('\n'),
+          }),
+          signal: AbortSignal.timeout(TIMEOUT_MS),
+        })
+
+        // El único riesgo que traía diferir esto es que el fallo deje de verse:
+        // ya no queda rastro en la respuesta, así que el registro es lo único
+        // que hay. Un chat_id equivocado o un bot expulsado devuelven 400 y
+        // `fetch` no lanza.
+        if (!respuesta.ok) {
+          const cuerpo = await respuesta.text()
+          console.error(`Telegram ${respuesta.status}: ${cuerpo.slice(0, 500)}`)
+        }
+      } catch (error) {
+        // No bloquea el envío del presupuesto por un fallo de Telegram.
+        console.error('Telegram sin respuesta:', error)
+      }
+    })
+  }
+
+  // El email y el aviso de arriba salen siempre: son la ejecución del servicio
+  // que el usuario ha pedido. El evento a Meta es publicidad, y sin
+  // consentimiento no sale — ni siquiera con el teléfono hasheado.
+  if (consentimiento === 'aceptado') {
+    after(() =>
+      enviarEventoCAPI({
+        eventoId,
+        telefono,
+        email: email || undefined,
+        // La misma referencia que viaja en el mensaje de WhatsApp. Es la clave
+        // que une los dos leads, y ya estaba calculada aquí sin usarse.
+        referencia,
+        // El municipio ya se capturaba y solo llegaba al buzón. Meta lo hashea
+        // como `ct` y sube la tasa de emparejamiento sin pedir un dato nuevo.
+        // `provincia` no la recoge ningún formulario, así que `normalizar.st`
+        // de `lib/meta-capi.ts` sigue sin llamada viva: es deuda, no descuido.
+        municipio: municipio || undefined,
+        ip,
+        userAgent,
+        url: urlOrigen,
+        fbp,
+        fbc,
+      }),
+    )
+  }
 
   const apiKey = process.env.RESEND_API_KEY
   const destino = process.env.EMAIL_DESTINO ?? 'comercial@pavimentos-albufera.com'
 
   if (apiKey) {
+    // El email sí se espera: es lo único cuyo resultado decide qué ve el
+    // usuario. Si no se ha entregado, no puede ver la pantalla de «recibido».
+    //
+    // ⚠️ Consecuencia asumida: en ese camino la CAPI manda su `Lead` —el lead
+    // es real y Telegram puede haberlo entregado— y el Pixel del navegador no,
+    // porque `FormularioPresupuesto.tsx:66` solo dispara con `'enviado'`. Meta
+    // deduplica por `event_id` + `event_name`, así que el evento se cuenta una
+    // vez y bien; lo que falta es la pata de navegador, no el evento.
+    let entregado = false
     try {
-      await fetch('https://api.resend.com/emails', {
+      const respuesta = await fetch('https://api.resend.com/emails', {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${apiKey}`,
@@ -96,51 +308,35 @@ export async function enviarPresupuesto(
             `Superficie: ${superficie || '—'}`,
             `Municipio: ${municipio || '—'}`,
             `Mensaje: ${mensaje || '—'}`,
+            `Foto adjunta: ${adjunto ? 'sí' : 'no'}`,
+            '',
+            `Formulario de: ${origen}`,
+            ...atribucion,
           ].join('\n'),
+          ...(adjunto ? { attachments: [adjunto] } : {}),
         }),
+        signal: AbortSignal.timeout(TIMEOUT_MS),
       })
-    } catch {
+
+      // `fetch` no lanza con un 400. Sin esto, una clave caducada o un dominio
+      // sin verificar devuelven 401/422 y el usuario ve igualmente la pantalla
+      // de éxito mientras el lead se pierde.
+      entregado = respuesta.ok
+      if (!respuesta.ok) {
+        const cuerpo = await respuesta.text()
+        console.error(`Resend ${respuesta.status}: ${cuerpo.slice(0, 500)}`)
+      }
+    } catch (error) {
+      console.error('Resend sin respuesta:', error)
+    }
+
+    if (!entregado) {
       return {
         estado: 'error',
         errores: { form: 'No hemos podido enviarlo. Llámanos o escríbenos por WhatsApp y lo resolvemos ahora.' },
       }
     }
   }
-
-  const telegramToken = process.env.TELEGRAM_BOT_TOKEN
-  const telegramChat = process.env.TELEGRAM_CHAT_ID
-  if (telegramToken && telegramChat) {
-    try {
-      await fetch(`https://api.telegram.org/bot${telegramToken}/sendMessage`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          chat_id: telegramChat,
-          text: [
-            '🔔 Nuevo presupuesto',
-            `${nombre} · ${telefono}`,
-            espacio,
-            municipio || '—',
-          ].join('\n'),
-        }),
-        signal: AbortSignal.timeout(8000),
-      })
-    } catch {
-      // No bloquea el envío del presupuesto por un fallo de Telegram.
-    }
-  }
-
-  const listaCookies = await cookies()
-  await enviarEventoCAPI({
-    eventoId,
-    telefono,
-    email: email || undefined,
-    ip,
-    userAgent: listaCabeceras.get('user-agent') ?? '',
-    url: `${sitio.url}/presupuesto/`,
-    fbp: listaCookies.get('_fbp')?.value,
-    fbc: listaCookies.get('_fbc')?.value,
-  })
 
   return {
     estado: 'enviado',

@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Aparece from '@/components/ui/Aparece'
 import Boton from '@/components/ui/Boton'
 import { EnlaceEtiqueta } from '@/components/ui/EnlaceEtiqueta'
-import BloquePosicion from '@/components/contenido/BloquePosicion'
+import Foto from '@/components/contenido/Foto'
 import DatoPendiente from '@/components/datos/DatoPendiente'
 import Migas from '@/components/layout/Migas'
 
@@ -47,7 +47,15 @@ export default function Empresa() {
               nivelación, drenaje y armado antes de que llegue el primer camión de hormigón.
             </p>
           </div>
-          <BloquePosicion proporcion="4/3" />
+          <Foto
+            proporcion="4/3"
+            tamanos="(min-width: 768px) 50vw, 100vw"
+            imagen={{
+              src: '/obras/_sin-atribuir/pavimentos-hormigon-valencia-precios.jpg',
+              alt: 'Tres operarios reglando a mano una solera de hormigón fresco en una acera, con el encofrado todavía puesto.',
+              tipo: 'proceso',
+            }}
+          />
         </div>
       </Aparece>
 

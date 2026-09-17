@@ -19,7 +19,7 @@ quita el subrayado punteado.
 | **Dirección** `[CALLE Y NÚMERO]` | Pie, schema `LocalBusiness` | La web actual tiene **2 direcciones** |
 | **Reseñas reales** | Home §09 | **Cero.** Es el vacío más grave de toda la web |
 | **Rangos de precio** `[28-38]`, `[35-48]`, `[30-45]`, `[22-35]`, `[55-85]`, `[30-42]` | Home §06, servicio §05, precios | Coherentes con el mercado 2026, pero tienen que ser suyos |
-| **Originales fotográficos** a 2400 px | Todas las pantallas | En producción están a 500×400 px |
+| ~~**Originales fotográficos** a 2400 px~~ **a 1600 px** | Toda imagen a sangre | **Ya no es bloqueante de publicación.** Superado por la decisión 13 de §C. De las 35 fotos publicadas, 16 llegan a 1600 y 19 no; el mínimo duro es 800 y lo verifica el build |
 
 Sobre las reseñas: con 15-20 reales el sitio cambia de categoría. Hace falta Google Business
 Profile activo y pedirlas a los clientes de los últimos 12 meses. Hasta entonces, la sección
@@ -87,13 +87,42 @@ implementar; la última afecta al copy de todo el sitio.
 | 9 | ¿«Tú» o «usted»? | Todo el copy. **Asumido «tú»** en el diseño |
 | 10 | ¿Equipo propio o subcontrata? | Uno de los cinco mensajes núcleo |
 
+### 13 · El mínimo fotográfico baja de 2400 px a tres umbrales — 2026-08-29
+
+**Decidida, no abierta. Supersede al §11 del documento maestro** (`rediseno-pavimentos-albufera.md`
+línea 735, *«resolución mínima de 2400 px de ancho»*), que no se edita: es la fuente, y las
+decisiones se supersedan, no se reescriben encima.
+
+**El motivo es material, no de criterio.** De las 164 fotos de la mediateca de la web viva, **una
+sola supera los 2400 px y es un fondo de plantilla**. De las 35 que la web publica hoy, **ninguna**.
+Un requisito que ningún original existente puede cumplir no es un listón: es una publicación
+indefinidamente aplazada, y la web ya está publicando con ese material.
+
+**Un solo número tampoco vale**, porque una foto no se ve igual a lo ancho de la ventana que en una
+muestra de 1 : 1 dentro de una rejilla de cuatro columnas. Así que son tres, y los verifica
+`scripts/verificar-imagenes.mjs` en cada build:
+
+| Umbral | Valor | A qué se aplica | Si no se cumple |
+|---|---|---|---|
+| **Suelo** | 800 px | Toda foto publicada | 🔴 **Falla el build** |
+| **A sangre** | 1600 px | La imagen servida a `sizes="100vw"` — hoy los `imagenHero` de `content/servicios.tsx` | 🔴 **Falla el build** |
+| **Objetivo** | 1600 px | Lo que se pide a toda foto nueva | Se informa en una línea, no falla |
+
+⚠️ **El objetivo no falla el build a propósito, y hay que entender por qué:** 19 de las 35 no llegan,
+y **son las de obra documentada**. Convertirlo en error hoy dejaría la web sin galería de obra, que
+es exactamente el maquillaje que este proyecto no hace — solo que al revés: en lugar de fingir una
+foto que no hay, escondería una que sí hay. El aviso mantiene la deuda a la vista en cada build.
+
+✅ **La puerta de a sangre sí muerde hoy y no bloquea:** los seis `imagenHero` miden 2048, 1600,
+2048, 2048, 1600 y 1600. Está verificada contra un hero estrecho: falla con código 1.
+
 ---
 
 ## D. Riesgos
 
 | Riesgo | Gravedad | Mitigación |
 |---|---|---|
-| **No llegan los originales fotográficos** | Crítica | Sin fotos a 2400 px el muestrario —el elemento firma— no funciona. Alternativa: sesión nueva en 2-3 obras recientes. El reescalado con IA no es admisible para el muestrario |
+| **La obra documentada es la peor fotografiada** | Alta | 🔴 **Las 8 fotos de proyecto se sirven a sangre (`sizes="100vw"`, 21/9) y miden 898-1200 px, salvo Deniá a 2048.** Las de 1600+ son todas de `_sin-atribuir/`, que no se pueden fechar ni situar. O sea: la foto que mejor se ve es la que menos se puede afirmar. Mitigación real: sesión nueva en 2-3 obras recientes, a 1600 px o más. El reescalado con IA sigue sin ser admisible |
 | **No llegan las reseñas** | Alta | El sitio se publica con el estado vacío. Recuperable después, pero es la pieza que más falta |
 | **Precios sin validar** | Alta | Se publican entre corchetes o se retira la página de precios. Publicar cifras inventadas sin marcar sería peor que no publicarlas |
 | **Se pierde posicionamiento en la migración** | Media | Comprobar las 30 redirecciones una a una antes de mover DNS, y vigilar 404 durante 8 semanas |

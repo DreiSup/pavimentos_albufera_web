@@ -5,7 +5,12 @@
     "entradilla": null,
     "fecha": null,
     "servicio": "desactivado",
-    "cuerpo": null
+    "cuerpo": null,
+    "imagenApertura": {
+      "src": "/obras/_sin-atribuir/791ae455-ca8a-4ae9-a9fb-5d01ca9b554b.jpeg",
+      "alt": "Rampa de hormigón desactivado con la piedra vista, entre muros de mampostería, ante la entrada de una vivienda.",
+      "tipo": "final"
+    }
   },
   {
     "slug": "hormigon-fratasado-fino-en-viviendas",
@@ -13,7 +18,12 @@
     "entradilla": null,
     "fecha": null,
     "servicio": "fratasado",
-    "cuerpo": null
+    "cuerpo": null,
+    "imagenApertura": {
+      "src": "/obras/_sin-atribuir/0e00e2de-b204-4771-8217-9c8964a42066.jpeg",
+      "alt": "Porche de vivienda con solera de hormigón fratasado fino en tono tostado, junto a la puerta de un garaje.",
+      "tipo": "final"
+    }
   },
   {
     "slug": "guia-hormigon-pulido",
@@ -21,6 +31,11 @@
     "entradilla": null,
     "fecha": null,
     "servicio": "pulido",
-    "cuerpo": null
+    "cuerpo": null,
+    "imagenApertura": {
+      "src": "/obras/_sin-atribuir/hormigon-pulido-10.jpg",
+      "alt": "Patio de hormigón pulido gris recién ejecutado ante una vivienda blanca, con el terreno aún sin ajardinar.",
+      "tipo": "final"
+    }
   }
 ]

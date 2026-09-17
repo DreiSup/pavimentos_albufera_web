@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import Logo from './Logo'
 import { nap } from '@/lib/config'
 import { RUTA_SERVICIO, NOMBRE_SERVICIO } from '@/lib/tipos'
 
@@ -12,15 +11,34 @@ export default function Pie() {
     <footer className="bg-tinta text-fondo px-[18px] py-10 md:px-lat-desktop md:py-14 md:pb-10">
       <div className="max-w-contenido mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-10">
         <div>
-          <Logo sobreOscuro />
+          {/* El único sitio del sitio con alto para el bloque completo: senda de
+              losas y wordmark. En variante clara, porque el navy del original
+              mide 1,1:1 contra `--tinta` y desaparece. El claim del logotipo no
+              entra: a este ancho caería a 9 px y `design/01` §2.4 fija el suelo
+              de la monoespaciada en 10.
+
+              Es el activo más pesado de los tres —27,0 kB: el degradado de las
+              elipses no cuantiza bien— y por eso va `lazy`. Está bajo el pliegue
+              en las 49 rutas, así que en un rebote no se descarga. Sobre por qué
+              `<img>` y no `next/image`, la medición está en `Cabecera.tsx`. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/marca/logo-marca-claro.png"
+            alt="Pavimentos Albufera"
+            width={222}
+            height={84}
+            loading="lazy"
+            decoding="async"
+            className="h-[72px] w-[190px] md:h-[84px] md:w-[222px]"
+          />
         </div>
 
         <div className="font-mono text-d-11 leading-[2.2] text-sobre-tinta flex flex-col">
           <span>{nap.direccionMostrada}</span>
-          <a href={nap.telefonoHref ?? '#'} className="text-sobre-tinta no-underline">
+          <a href={nap.telefonoHref ?? '#'} data-ubicacion="footer" className="text-sobre-tinta no-underline">
             {nap.telefono ?? `[${nap.telefonoMostrado}]`}
           </a>
-          <a href={`mailto:${nap.email}`} className="text-sobre-tinta no-underline">
+          <a href={`mailto:${nap.email}`} data-ubicacion="footer" className="text-sobre-tinta no-underline">
             {nap.email}
           </a>
         </div>

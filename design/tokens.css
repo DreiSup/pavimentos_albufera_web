@@ -26,10 +26,16 @@
   --t-26: 26px; --t-20: 20px; --t-16: 16px; --t-14: 14px;
   --t-12: 12px; --t-11: 11px; --t-10: 10px;
 
-  /* Anclaje: alto de cabecera y desplazamiento de anclas */
+  /* Anclaje: alto de cabecera y desplazamiento de anclas.
+     La cabecera no se comprime (02-pantallas.md §B9), así que no hay estado de
+     scroll: `--cabecera-actual` es 70 px en móvil y 84 px desde 768 px. */
   --cabecera: 84px;
-  --cabecera-scroll: 60px;
   --ancla-offset: 150px;
+  --cabecera-actual: 70px;
+}
+
+@media (min-width: 768px) {
+  :root { --cabecera-actual: 84px; }
 }
 
 * { box-sizing: border-box; }

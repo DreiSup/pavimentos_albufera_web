@@ -6,12 +6,14 @@ export default function BarraMovil() {
     <div className="md:hidden sticky bottom-0 z-20 grid grid-cols-2 gap-[1px] bg-tinta shadow-barra">
       <a
         href={nap.telefonoHref ?? '/presupuesto/'}
+        data-ubicacion="sticky_mobile"
         className="min-h-boton flex items-center justify-center bg-pigmento text-tinta font-sans font-semibold text-16 no-underline"
       >
         Llamar
       </a>
       <a
         href={nap.whatsappHref ?? '/presupuesto/'}
+        data-ubicacion="sticky_mobile"
         className="min-h-boton flex items-center justify-center bg-tinta text-fondo font-sans font-semibold text-16 no-underline"
       >
         WhatsApp

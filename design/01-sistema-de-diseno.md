@@ -35,6 +35,18 @@ Valores auxiliares, derivados y no sustituibles por otros:
 | Corchete pendiente sobre `--tinta` | `#9AA09B` |
 | Error de formulario | `#8C3A2B` |
 
+**El logotipo, y solo el logotipo, queda fuera de esta paleta.** Desde el 2026-09-01 la
+identidad es un archivo entregado por el dueño y trae **dos azules que el sistema no tiene**:
+`#000D2A` en «Pavimentos» y la senda cercana, y `#014BA2` en «Albufera» y la senda lejana. No se
+corrigen al gris del sistema: es la marca, y una marca no se repinta para que encaje en la web
+que la enseña. La excepción **empieza y acaba en `public/marca/`**: ningún texto, borde, fondo ni
+estado del sitio puede usar esos valores.
+
+De ahí sale un tercer valor derivado, también exclusivo del logotipo: **`#8FB4D6`**, el azul de
+la variante clara. Existe porque `#000D2A` mide **1,1 : 1** contra `--tinta` —sobre el pie el
+logotipo original desaparece— y hace falta un par claro que conserve el contraste entre las dos
+palabras. El detalle de cómo se derivan las variantes está en `public/README.md`.
+
 ### 2.2 La regla del ocre
 
 **Dos roles por pantalla, no dos apariciones:**
@@ -63,8 +75,13 @@ fondo oscuro. **Nunca en ocre**: no son acciones.
 ```
 
 Archivo es una fuente variable con eje de anchura. Los `font-stretch` usados son
-**125 %** (hero y H1), **120 %** (H2), **118 %** (logo, H2 de móvil) y **115 %** (H3 y títulos
-de tarjeta). No inventar otros valores.
+**125 %** (hero y H1), **120 %** (H2) y **115 %** (H3 y títulos de tarjeta). No inventar otros
+valores.
+
+~~**118 %** (logo, H2 de móvil)~~ — **retirado el 2026-09-01.** Su único consumidor era
+`.fs-logo`, el logotipo tipográfico, y el logotipo es una imagen desde esa fecha (§4.1). La otra
+mitad de la cláusula nunca fue cierta: los H2 de móvil usan `fs-h2` a 120 %, como los de
+escritorio. La clase se borra de `app/globals.css` y el eje queda en tres valores.
 
 En Tailwind: `font-display`, `font-sans`, `font-mono` (ver `tailwind.config.ts`).
 
@@ -135,40 +152,23 @@ de tarjetas usan `overflow-x: auto` con margen negativo lateral para sangrar a l
 
 ### 2.7 Los azules de la marca
 
-Excepción consciente y acotada a «no añadir colores» del §2.1: el logotipo de la empresa
-es azul, y el logotipo no es interfaz. Los azules **solo los usa el logotipo**. Ningún
-botón, enlace, borde, fondo ni estado de la web es azul: el único color de acción sigue
-siendo el ocre, y la regla del §2.2 no cambia.
+El logotipo de la empresa es azul, y esos azules **no entran en la paleta**. No hay tokens
+`marca-*` en `tailwind.config.ts` ni ningún color azul declarado en el tema: el §2.1 se
+cumple entero. Los azules existen únicamente dentro de los archivos de
+`public/marca/*.png`, que son mapas de bits y no tokens, así que no hay forma de que se
+escapen a un botón, un enlace, un borde o un estado. El único color de acción sigue siendo
+el ocre, y la regla del §2.2 no cambia.
 
-Escala cerrada de ocho pasos, del frente al fondo del camino de baldosas. No hay valores
-intermedios, igual que en la escala tipográfica.
+Consecuencia práctica: **el logotipo no se recolorea desde CSS.** Cada fondo tiene su
+archivo —`logo-texto.png` sobre fondo claro, `logo-texto-claro.png` y `logo-marca-claro.png`
+sobre tinta— y variar el color de la marca es sustituir el archivo, no tocar una clase.
 
-```
-marca-900  #0C2450     marca-500  #1C7CC6
-marca-800  #123B6F     marca-400  #2C92DD
-marca-700  #15508C     marca-300  #5CAAE8
-marca-600  #1866A8     marca-200  #8FC6F0
-```
-
-**Cada baldosa lleva un solo azul plano.** El degradado ocurre entre baldosas, nunca
-dentro de una: no hay un solo gradiente en la marca, como no lo hay en el resto del sitio.
-
-**Sobre fondo oscuro la rampa sube dos pasos.** Los azules del frente (`marca-900`,
-`marca-800`) son casi negros y se perderían contra `--tinta`. La variante `sobreOscuro`
-de la marca desplaza el índice de cada baldosa, sin cambiar el dibujo.
-
-El nombre va en texto vivo, no en trazado: «PAVIMENTOS» en `--tinta` (o `--sobre-tinta`
-sobre oscuro) y «ALBUFERA» en `marca-600` (o `marca-300` sobre oscuro).
-
-Fuente única de la escala: `lib/marca.ts`. La importan `tailwind.config.ts`, que la expone
-como `text-marca-*`, y `components/layout/MarcaSvg.tsx`, que rellena las baldosas.
-
-**Estado: recreación.** El dibujo actual es una reconstrucción geométrica del logotipo a
-partir de una imagen de referencia, no el original vectorial de la empresa, y la
-tipografía del nombre es la display del sitio, no la del logotipo. El bloque no incluye la
-línea «HORMIGÓN IMPRESO | PULIDO | LAVADO» del original, que nombra tres de los seis
-servicios que hoy tiene la web. Cuando llegue el original, se sustituye `MarcaSvg.tsx` y
-nada más.
+Hubo hasta el 2026-09-17 una recreación vectorial del dibujo (`MarcaSvg.tsx`, `lib/marca.ts`
+y una escala de ocho azules expuesta como `text-marca-*`), hecha cuando en el repositorio no
+había ningún archivo del logotipo. Retirada al entrar los originales: una reconstrucción
+geométrica con la tipografía display del sitio no es la marca de la empresa, y mantenerla
+obligaba a abrir una excepción en la paleta que ya no hace falta. Queda en el historial por
+si algún día se quiere un logotipo que sí escale y se recoloree.
 
 ## 3. Componentes base
 
@@ -226,7 +226,12 @@ border-bottom: 2px solid #1B1E1C
 texto en mayúsculas terminado en →     p. ej.  VER TODOS LOS PROYECTOS →
 ```
 
-### 3.6 Chip de filtro
+### 3.6 Chip de filtro y de dato
+
+Con acción es un `<button aria-pressed>`; **sin acción es un `<span>`** con el mismo aspecto y
+el mismo estado activo. La variante sin acción existe para los recuentos que no filtran nada
+—«Todas (16)» en la home—: un botón que no hace nada es una promesa falsa para el teclado y el
+lector de pantalla, y además arrastraba el componente entero al paquete de cliente de la home.
 
 ```
 min-height: 44px · padding: 0 18px (escritorio) / 0 14px (móvil)
@@ -314,16 +319,33 @@ gap entre imagen y etiqueta: 14px (escritorio) / 10px (móvil)
 seleccionada  outline: 2px solid #D9A441; outline-offset: -2px
 ```
 
-### 3.11 Bloque de posición de foto
+### 3.11 Fotografía de obra, y su bloque de posición
 
-Sustituye a cualquier imagen provisional mientras no haya originales.
+Son un solo componente con dos estados. La pantalla nunca decide entre uno y otro: pide la
+foto y, si no la hay, sale el bloque. Así la ausencia de original sigue siendo visible y no se
+tapa con nada.
+
+**Estado con foto.** Sin tratamiento: ni filtro, ni velo, ni sombra, ni radio, ni marco.
+
+```
+recorte: object-fit: cover, centrado, dentro de la proporción del hueco
+fondo mientras carga: #DADCD6
+alt obligatorio y descriptivo — describe lo que se ve, no el proyecto que la origina
++ etiqueta técnica (3.8) sobrepuesta cuando la foto representa una obra concreta
+```
+
+**Nada de texto sobre la foto.** El sistema no tiene velo ni degradado, así que sobre una
+imagen el contraste deja de poder comprobarse. Los titulares van delante o detrás de la foto,
+nunca encima. La etiqueta técnica (3.8) es la única excepción: lleva su propio fondo opaco.
+
+**Estado sin foto.** Sustituye a cualquier imagen provisional mientras no haya originales.
 
 ```
 background: #DADCD6
 background-image: repeating-linear-gradient(45deg,
   rgba(27,30,28,0.05) 0 8px, transparent 8px 18px)     ← 0 6px / 6px 14px en bloques pequeños
 etiqueta  Martian Mono 11px · color: #5C625E · letter-spacing: 0.05em
-          texto:  PENDIENTE · ORIGINAL A 2400 PX
+          texto:  PENDIENTE · ORIGINAL A 1600 PX
 + etiqueta técnica (3.8) sobrepuesta cuando el bloque representa una obra concreta
 ```
 
@@ -336,7 +358,7 @@ Proporciones: `21/9` galería principal de proyecto · `4/3` tarjetas y hero de 
 
 ```
 fondo: #DADCD6 sobre --fondo, o #E9EAE6 sobre --fondo-alt
-imagen 4/3 (bloque de posición)
+imagen 4/3 (fotografía de obra, 3.11)
 padding del cuerpo: 18px 20px 22px (escritorio) / 12px 14px 16px (móvil)
 título  Archivo 700 / 115 % · 20px (escritorio) / 16px (móvil) · line-height 1.2
 ficha   Martian Mono 11px / 10px · line-height 1.9 · color: #41535C
@@ -354,7 +376,7 @@ de proyectos.
 ```
 border: 1px dashed #5C625E · padding: 56px 40px (escritorio) / 28px 20px (móvil)
 antetítulo  Martian Mono 11px · letter-spacing: 0.06em · color: #41535C   SIN RESULTADOS
-título      Archivo 700 / 118 % · 34px (escritorio) / 26px (móvil)
+título      Archivo 700 / 120 % · 34px (escritorio) / 26px (móvil)
 texto       20px / 16px · color: #5C625E
 2 botones de contorno: «Quitar filtros» y «Preguntar por un acabado»
 ```
@@ -375,14 +397,25 @@ La numeración es continua dentro de la página y sirve al lector como índice i
 
 ```
 height: 84px · padding: 0 48px · border-bottom: 1px solid #1B1E1C · background: #E9EAE6
-logo     Archivo 800 / 118 % · 16px · letter-spacing: 0.02em · dos líneas: PAVIMENTOS / ALBUFERA
+logo     imagen /marca/logo-texto.png · 24px de alto (20 en móvil) · sin cambio con el scroll
 nav      Instrument Sans 500 16px · gap: 28px · cada enlace min-height: 44px
 activo   font-weight: 600 + border-bottom: 2px solid #1B1E1C
 derecha  teléfono en Martian Mono 12px color #5C625E  +  botón de contorno «Pedir presupuesto»
 ```
 
-**Pendiente de maquetar** (`02-pantallas.md §B9`): estado compacto tras hacer scroll y menú
-desplegado en móvil. El estado inicial y la barra fija de móvil ya están resueltos.
+**El logotipo es una imagen desde el 2026-09-01, y va el wordmark solo.** El bloque completo
+apila la senda de losas encima y el claim debajo: en una barra de 70-84 px eso deja las palabras
+a 6-8 px de altura de mayúscula y el claim en 3-4 px. El bloque completo se pinta en el pie
+(§4.4), que es el único sitio del sitio con alto para él.
+
+En móvil la caja mide 70 px, y `--cabecera-actual` de `tokens.css` lo espeja con una media
+query: es el `top` del que cuelgan la barra de confianza, el submenú de servicio y las dos
+barras de filtro. **La altura no se anima nunca** (`02-pantallas.md §B9`): el estado compacto
+tras hacer scroll oculta el teléfono por `visibility`, y el botón de contorno se queda en 56 px.
+~~El logotipo cruza dos variantes por `opacity`~~: **derogado el 2026-09-01**. Las dos variantes
+tipográficas existían para que el ancho no se moviera al comprimirse la barra; una imagen de caja
+fija no se comprime, así que el logotipo se queda igual con scroll y sin él. El menú desplegado en móvil está en
+`02-pantallas.md §B9`.
 
 ### 4.2 Barra de confianza
 
@@ -416,7 +449,8 @@ consume el único ocre de acción de la pantalla.
 ```
 background: #1B1E1C · color: #E9EAE6 · padding: 56px 48px 40px
 grid-template-columns: repeat(4, 1fr) · gap: 40px
-col 1  logo
+col 1  logo: /marca/logo-marca-claro.png · 222px de ancho (190 en móvil) · senda + wordmark,
+       sin el claim, en variante clara. Es el único sitio donde se pinta la senda de losas
 col 2  NAP en Martian Mono 11px · line-height: 2.2
 col 3  servicios · Instrument Sans 16px · color: #DADCD6 · cada enlace min-height: 44px
 col 4  legales · igual

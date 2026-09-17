@@ -82,6 +82,8 @@ caucho) y las 5 páginas de servicio restantes, que se derivan de la plantilla d
 | `03-modelo-de-contenido.md` | Tipos TypeScript, catálogo real y datos de las obras |
 | `04-desarrollo-y-deploy.md` | Estructura Next.js, redirecciones 301, schema, GitHub y Vercel |
 | `05-pendientes-y-decisiones.md` | Datos sin confirmar y decisiones de diseño tomadas |
+| `06-plan-rendimiento-y-medicion.md` | 🆕 Plan ejecutable de velocidad, GA4/Meta/Ads y landings de campaña, por olas |
+| `07-auditoria-decisiones-y-veredictos.md` | 🆕 El porqué del 06: las 8 decisiones arbitradas y los veredictos de landings |
 | `tokens.css` | Variables CSS listas para pegar |
 | `tailwind.config.ts` | Configuración de Tailwind con los tokens |
 | `data/acabados.json` | 16 acabados del muestrario, con obra asociada |
@@ -104,8 +106,9 @@ caucho) y las 5 páginas de servicio restantes, que se derivan de la plantilla d
 | Analítica | GA4 + Search Console con consentimiento RGPD |
 
 Objetivos de rendimiento, no negociables: **LCP < 2,0 s en 4G · CLS < 0,05 · INP < 200 ms ·
-JS inicial < 100 KB comprimido.** La web actual está muy lejos; es la ganancia más automática
-de la migración. Cualquier dependencia que ponga en riesgo el presupuesto de JS se descarta.
+JS inicial ≤ 112 kB brotli q11 por ruta** —techo duro; objetivo 105 kB. La unidad y el ámbito,
+en `CLAUDE.md`. La web actual está muy lejos; es la ganancia más automática de la migración.
+Cualquier dependencia que ponga en riesgo el presupuesto de JS se descarta.
 
 ## 7. Interacciones y comportamiento
 
@@ -160,7 +163,8 @@ Sin gestor de estado global. Sin cliente de datos: todo llega por props desde el
 
 ## 10. Fotografía — regla innegociable (§8.5)
 
-**Cero fotos de stock de personas.** Solo entra: obra terminada a 2400 px mínimo de ancho,
+**Cero fotos de stock de personas.** Solo entra: obra terminada a 1600 px mínimo de ancho
+(suelo duro 800 px — `design/05` §C #13, que supersede los 2400 px del documento maestro),
 obra en ejecución, detalle macro de textura para el muestrario, y equipo real si están dispuestos.
 
 Mientras no lleguen los originales, **no se usan imágenes provisionales**: se usa el

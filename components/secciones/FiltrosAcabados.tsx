@@ -1,52 +1,115 @@
 'use client'
 
-import type { ReactNode } from 'react'
-import type { ColorId, ServicioId } from '@/lib/tipos'
-import { CODIGO_COLOR, NOMBRE_SERVICIO } from '@/lib/tipos'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import Chip from '../ui/Chip'
 import { BotonEtiqueta } from '../ui/EnlaceEtiqueta'
 import EstadoVacio from '../ui/EstadoVacio'
-import { registrarEvento } from '@/lib/eventos'
-import { useFiltrosDeRejilla } from './filtros-en-url'
+import { EVENTOS, registrarEvento } from '@/lib/eventos'
 
-/** Los dos ejes del muestrario (README §8). Constante de módulo: identidad estable. */
-const CLAVES = ['tecnica', 'color'] as const
+export type ClaveAcabado = 'tecnica' | 'color'
+
+/**
+ * Una fila de la barra. `todos` es el texto del chip que quita el filtro, y va
+ * en el dato porque la fila de técnica dice «Todas» y la de color «Todos».
+ */
+export type GrupoAcabados = {
+  clave: ClaveAcabado
+  etiqueta: string
+  todos: string
+  opciones: { valor: string; nombre: string }[]
+}
+
+/**
+ * Una muestra ya renderizada en servidor más los dos valores por los que se
+ * filtra. La muestra viaja como nodo, no como dato: así `MuestraAcabado` —y con
+ * él `next/image` y los JSON de `lib/datos`, que importa para resolver el
+ * municipio— se quedan fuera del bundle de cliente.
+ *
+ * La `key` se pone al crear el nodo en la página, no aquí: envolver cada muestra
+ * en un `<div key>` haría de ese div el hijo de la rejilla.
+ */
+export type AcabadoFiltrable = {
+  clave: string
+  valores: Record<ClaveAcabado, string>
+  muestra: ReactNode
+}
+
+type Seleccion = Record<ClaveAcabado, string | null>
+
+const SIN_FILTROS: Seleccion = { tecnica: null, color: null }
+const CLAVES = Object.keys(SIN_FILTROS) as ClaveAcabado[]
 
 export default function FiltrosAcabados({
-  tecnicas,
-  colores,
-  total,
-  children,
+  muestras,
+  grupos,
 }: {
-  tecnicas: ServicioId[]
-  colores: ColorId[]
-  total: number
-  /**
-   * La rejilla completa, renderizada en servidor por `app/acabados/page.tsx`:
-   * una muestra por hijo, envuelta en `[data-filtrable]` con sus valores de filtro.
-   * Llega como `children` para que `MuestraAcabado` siga siendo de servidor y no
-   * entre en el bundle de cliente.
-   */
-  children: ReactNode
+  muestras: AcabadoFiltrable[]
+  grupos: GrupoAcabados[]
 }) {
-  const { filtros, actualizar, quitar, rejilla, visibles } = useFiltrosDeRejilla(CLAVES, total)
+  const [filtros, setFiltros] = useState<Seleccion>(SIN_FILTROS)
 
-  function cambiar(clave: (typeof CLAVES)[number], valor: string | null) {
-    actualizar(clave, valor)
-    registrarEvento('filtro_muestrario', { params: { [clave]: valor ?? 'todos' } })
+  /**
+   * El estado manda y la URL lo sigue, nunca al revés. Leer la URL en el render
+   * con `useSearchParams` es lo que sacaba las 16 muestras del HTML estático.
+   * Aquí se lee una sola vez, al montar, para que `?tecnica=impreso&color=gris`
+   * —el enlace compartible que pide 02-pantallas §A3— siga funcionando.
+   */
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const inicial = { ...SIN_FILTROS }
+    for (const clave of CLAVES) inicial[clave] = params.get(clave)
+    if (CLAVES.some((clave) => inicial[clave])) setFiltros(inicial)
+  }, [])
+
+  function aplicar(siguiente: Seleccion) {
+    setFiltros(siguiente)
+
+    const params = new URLSearchParams()
+    for (const clave of CLAVES) {
+      const valor = siguiente[clave]
+      if (valor) params.set(clave, valor)
+    }
+    const cadena = params.toString()
+    // `replaceState` y no `router.push`: aquí no se cambia de página, y cada
+    // navegación del App Router contaba como un `page_view` más en GA4.
+    window.history.replaceState(
+      null,
+      '',
+      `${window.location.pathname}${cadena ? `?${cadena}` : ''}`,
+    )
   }
 
-  // Para el resumen solo vale un valor que exista en el inventario; los chips, en
-  // cambio, miran el valor crudo, así una URL con un valor inventado no marca ninguno.
-  const tecnica = tecnicas.find((t) => t === filtros.tecnica)
-  const color = colores.find((c) => c === filtros.color)
+  function actualizar(clave: ClaveAcabado, valor: string | null) {
+    aplicar({ ...filtros, [clave]: valor })
+    registrarEvento(EVENTOS.samplesFilter, {
+      params: { filter_type: clave, filter_value: valor ?? 'todos' },
+    })
+  }
 
-  const hayFiltro = Boolean(filtros.tecnica || filtros.color)
-  const vacio = visibles === 0
+  function quitarFiltros() {
+    aplicar(SIN_FILTROS)
+    // Poner un filtro se medía y quitarlos todos de golpe no, así que el embudo
+    // de filtrado quedaba cojo por un lado. Mismo vocabulario del contrato: no
+    // hay nombre ni parámetro nuevo que registrar en GA4.
+    registrarEvento(EVENTOS.samplesFilter, {
+      params: { filter_type: 'todos', filter_value: 'todos' },
+    })
+  }
+
+  const filtrados = useMemo(
+    () => muestras.filter((m) => CLAVES.every((c) => !filtros[c] || m.valores[c] === filtros[c])),
+    [muestras, filtros],
+  )
+
+  const hayFiltro = CLAVES.some((clave) => filtros[clave])
   const resumen = [
-    `${visibles} ACABADO${visibles === 1 ? '' : 'S'}`,
-    tecnica ? NOMBRE_SERVICIO[tecnica].toUpperCase() : null,
-    color ? CODIGO_COLOR[color] : null,
+    `${filtrados.length} ACABADO${filtrados.length === 1 ? '' : 'S'}`,
+    ...grupos.map((grupo) => {
+      const valor = filtros[grupo.clave]
+      if (!valor) return null
+      const opcion = grupo.opciones.find((o) => o.valor === valor)
+      return (opcion?.nombre ?? valor).toUpperCase()
+    }),
   ]
     .filter(Boolean)
     .join(' · ')
@@ -54,61 +117,48 @@ export default function FiltrosAcabados({
   return (
     <div className="flex flex-col gap-6">
       <div className="sticky [top:var(--cabecera-actual)] z-10 bg-fondo border-t border-b border-tinta py-3 flex flex-col gap-2">
-        <div className="flex gap-3 overflow-x-auto">
-          <span className="font-mono text-d-11 text-acero w-[84px] shrink-0 flex items-center">TÉCNICA</span>
-          <div className="flex gap-2">
-            <Chip activo={!filtros.tecnica} onClick={() => cambiar('tecnica', null)}>
-              Todas
-            </Chip>
-            {tecnicas.map((t) => (
-              <Chip key={t} activo={filtros.tecnica === t} onClick={() => cambiar('tecnica', t)}>
-                {NOMBRE_SERVICIO[t]}
+        {grupos.map((grupo) => (
+          <div key={grupo.clave} className="flex gap-3 overflow-x-auto">
+            <span className="font-mono text-d-11 text-acero w-[84px] shrink-0 flex items-center">
+              {grupo.etiqueta.toUpperCase()}
+            </span>
+            <div className="flex gap-2">
+              <Chip activo={!filtros[grupo.clave]} onClick={() => actualizar(grupo.clave, null)}>
+                {grupo.todos}
               </Chip>
-            ))}
+              {grupo.opciones.map((o) => (
+                <Chip
+                  key={o.valor}
+                  activo={filtros[grupo.clave] === o.valor}
+                  onClick={() => actualizar(grupo.clave, o.valor)}
+                >
+                  {o.nombre}
+                </Chip>
+              ))}
+            </div>
           </div>
-        </div>
-        <div className="flex gap-3 overflow-x-auto">
-          <span className="font-mono text-d-11 text-acero w-[84px] shrink-0 flex items-center">COLOR</span>
-          <div className="flex gap-2">
-            <Chip activo={!filtros.color} onClick={() => cambiar('color', null)}>
-              Todos
-            </Chip>
-            {colores.map((c) => (
-              <Chip key={c} activo={filtros.color === c} onClick={() => cambiar('color', c)}>
-                {CODIGO_COLOR[c]}
-              </Chip>
-            ))}
-          </div>
-        </div>
+        ))}
         <div className="flex items-center gap-4 pt-1">
-          <span className="font-mono text-d-12 text-tinta" aria-live="polite">
-            {resumen}
-          </span>
+          <span className="font-mono text-d-12 text-tinta">{resumen}</span>
           {hayFiltro ? (
-            <BotonEtiqueta onClick={quitar} className="border-b-0">
+            <BotonEtiqueta onClick={quitarFiltros} className="border-b-0">
               Quitar filtros ×
             </BotonEtiqueta>
           ) : null}
         </div>
       </div>
 
-      {/* La rejilla no se desmonta al filtrar: se ocultan los envoltorios ya pintados. */}
-      <div
-        ref={rejilla}
-        className={
-          vacio ? 'hidden' : 'grid grid-cols-2 md:grid-cols-4 gap-[14px_10px] md:gap-[32px_24px]'
-        }
-      >
-        {children}
-      </div>
-
-      {vacio ? (
+      {filtrados.length > 0 ? (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-[14px_10px] md:gap-[32px_24px]">
+          {filtrados.map((m) => m.muestra)}
+        </div>
+      ) : (
         <EstadoVacio
           titulo="No hay acabados con esta combinación"
           texto="Solo enseñamos acabados con obra ejecutada de verdad. Quita un filtro o pregúntanos por este acabado directamente."
-          onQuitarFiltros={quitar}
+          onQuitarFiltros={quitarFiltros}
         />
-      ) : null}
+      )}
     </div>
   )
 }
