@@ -115,6 +115,48 @@ entra como muestra de un acabado, que sí lleva el código de color impreso al l
 (`design/05` §C #13). Siguen por debajo del **objetivo** de 1600 px, que el build informa sin fallar;
 lo que no pueden es bajar del suelo de 800 ni ir a sangre por debajo de 1600, y eso sí falla.
 
+## 2026-09-17 — se buscó muestra para los seis acabados sin foto: ninguna
+
+Encargo del dueño: si una foto del repositorio hace match con la descripción de un acabado, se
+aplica; si no hay match, el acabado se oculta del muestrario. Los seis acabados sin muestra son
+todos de **impreso**, así que se abrieron en hojas de contacto las **~50 de impreso** —las 14 de
+la raíz y las de `_sin-atribuir/` cuyo `title` declara impreso o no declara técnica—, y encima
+de eso los recortes a tamaño completo de las candidatas grises. Las de pulido, microcemento,
+lavado, fratasado, desactivado y caucho se descartaron **por la técnica que declara su `title`**,
+sin abrirlas: ninguna puede enseñar un molde de impreso. Las 15 del apartado anterior, fuera.
+
+**El criterio, y por qué es este.** Una muestra se pinta con el código de color impreso al lado
+(`Adoquín irregular · GRIS`), así que afirma **modelo y color**. El modelo se puede reconocer a
+ojo comparando con una foto de referencia; **el color no**: `109` es un pigmento de catálogo, y
+en la mediateca `109` (Turís) sale gris claro, `113` (Moraira) dorado y `117` (Alfafar) beige
+grisáceo. Un código de pigmento solo lo sostiene el dato de origen, nunca el parecido. Lo mismo
+que ya decía el apartado anterior sobre las cuatro fotos que se usan como hero de modelo.
+
+Lo que hay para cada uno de los seis, con el `title` de la mediateca citado literal:
+
+| Acabado | Lo más cercano que hay | Por qué no es match |
+|---|---|---|
+| `espiga-113` | «hormigón impreso en modelo espiga moncada valencia 2025» | Es el modelo, pero esa obra es la 117, que ya tiene muestra. Ninguna foto dice espiga + 113 |
+| `adoquin-irregular-gris` | «hormigón impreso adoquín irregular alzira 2025» (color 107) y varias de impreso gris sin modelo declarado | Las grises no declaran modelo, y abiertas a tamaño completo su despiece **no se distingue del adoquín pequeño**: el mismo archivo valdría para `adoquin-pequeno-109`. Si dudas, no es match |
+| `adoquin-pequeno-109` | «hormigón impreso en adoquín pequenio y color arena Moraira 2025» | Es arena, y arena ya tiene su muestra |
+| `piedra-silleria-109` | «Trabajo realizado en Carlet en color gris y modelo piedra sillería» | Mismo modelo, **otro color**: gris, no 109 |
+| `piedra-rodena-117` | «Trabajo realizado en catadau en color 107 y modelo piedra rodena» | Mismo modelo, **otro color**: 107, no 117 |
+| `piedra-inglesa-crema` | «Trabajo realizado en Alfafar en color 117 y modelo piedra engleza» | Mismo modelo, **otro color**: 117, no crema |
+
+Las de Carlet, Catadau y Alfafar sí sostienen el **modelo**, y por eso ya son el hero de
+`/acabados/piedra-silleria/`, `/piedra-rodena/` y `/piedra-inglesa/` en `content/modelos.ts`.
+Esa pantalla afirma solo el modelo; la muestra afirma también el color, y ahí se paran.
+
+⚠️ **Lo que deja abierto ocultarlos.** `/acabados/piedra-silleria/` y `/acabados/piedra-rodena/`
+cuelgan cada una de un solo acabado, y es de los ocultos: su rejilla «Colores disponibles en este
+modelo» sigue siendo un único bloque de posición. Las dos rutas siguen generándose y siguen
+enlazadas desde `/hormigon-impreso/`, pero ya no desde el muestrario.
+
+**Material que cerraría cuatro de los seis, y es una pregunta al dueño, no una foto que falte:**
+confirmar el color de las obras de Carlet, Catadau, Alfafar y Turís convertiría tres de estas
+fotos en muestra —de `piedra-silleria-gris`, `piedra-rodena-107` y `piedra-inglesa-117`, que hoy
+no existen como acabado— en vez de las variantes de color que el catálogo enumera.
+
 ## Material que abre trabajo
 
 **Siete obras identificables que no son ninguno de los 9 proyectos**, con municipio, modelo y color

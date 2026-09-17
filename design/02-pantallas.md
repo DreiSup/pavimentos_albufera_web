@@ -109,16 +109,31 @@ es que ahora pasa en 512 px más de ancho.
 
 ## A3 · Muestrario — `/acabados/`
 
-El elemento firma. 16 acabados, 8 con obra documentada.
+El elemento firma. 16 acabados en el catálogo; **desde el 2026-09-17 se publican los 10 que
+tienen muestra fotográfica**, 7 de ellos con obra documentada.
 
-- **Hero:** `1fr 420px`, H1 64 px, contador `16 ACABADOS · 8 CON OBRA DOCUMENTADA` en el
-  antetítulo. **El contador es real, no decorativo**: se calcula del inventario con la regla de
+- **Solo se pinta el acabado que tiene foto.** Enmienda del 2026-09-17, por encargo del dueño.
+  Los seis sin muestra salían con el bloque de posición (`01 §3.12`), y seis huecos rayados
+  entre diez fotos son, en la rejilla de dos de móvil, media pantalla de nada. Se buscó original
+  para los seis en la mediateca y **ninguno hizo match**: la muestra lleva el código de color
+  impreso al lado, así que exige una foto que enseñe ese modelo **en ese color**, y eso solo lo
+  sostiene el dato, no el parecido. Queda anotado en `public/obras/INVENTARIO.md`.
+  Es un filtro de presentación, **no un borrado**: las seis entradas siguen en
+  `content/acabados.json` y `/acabados/[modelo]/` sigue generando sus rutas —`piedra-silleria` y
+  `piedra-rodena` cuelgan solo de ellas—. El día que llegue la foto, vuelven solas.
+- **Hero:** `1fr 420px`, H1 64 px, contador `10 ACABADOS · 7 CON OBRA DOCUMENTADA` en el
+  antetítulo. **El contador es real, no decorativo**: cuenta lo que se pinta, con la regla de
   `03-modelo-de-contenido.md §1.1` —documentada = proyecto con municipio confirmado—. No vale
   `proyectos.length > 0`: eso daría 9 y contradiría al diseño.
 - **Barra de filtros anclada** a `top: 80px`, con `border-top` y `border-bottom` en `--tinta`:
   - Fila 1: `TÉCNICA` — TODAS · IMPRESO · PULIDO · MICROCEMENTO · LAVADO · FRATASADO · DESACTIVADO
-  - Fila 2: `COLOR` — TODOS · 117 · 113 · 109 · 107 · GRIS · ARENA · CREMA
-  - Fila 3: resumen del filtro en mono 12 (`6 ACABADOS · IMPRESO · GRIS`) y, si hay filtro
+  - ~~Fila 2: `COLOR` — TODOS · 117 · 113 · 109 · 107 · GRIS · ARENA · CREMA~~
+    **Retirada el 2026-09-17, por encargo del dueño.** El muestrario es la pantalla a la que se
+    entra para ver qué colores hay, y filtrar por pigmento pedía de entrada el dato que el
+    visitante viene a buscar. El color no desaparece del catálogo: sigue impreso en cada muestra
+    (`C-117`, `GRIS`…) y en la ficha de `/acabados/[modelo]/`. Con él se van su estado, su
+    parámetro de URL y su mitad del resumen.
+  - Fila 2 (antes fila 3): resumen del filtro en mono 12 (`6 ACABADOS · IMPRESO`) y, si hay filtro
     aplicado, `QUITAR FILTROS ×`.
   - La etiqueta de cada fila ocupa una columna fija de 84 px, alta 44 px, alineada con la
     **primera** línea de chips.
@@ -129,19 +144,24 @@ El elemento firma. 16 acabados, 8 con obra documentada.
     1344 px sigue siendo la fila única que pide este párrafo y por debajo se apila en vez de
     esconderse. El carril deslizante se queda **solo en móvil**, que es donde lo pide la línea
     de abajo y donde la barra de scroll es superpuesta y no ocupa alto.
-- **Rejilla de 4** con las muestras (`01 §3.10`). Los dos ejes se combinan con AND.
-- **Estado vacío** (`01 §3.13`) cuando la combinación no existe. Probar `PULIDO` + `117`.
+- **Rejilla de 4** con las muestras (`01 §3.10`). Desde el 2026-09-17 solo queda un eje, así que
+  ya no hay combinación que cruzar.
+- **Estado vacío** (`01 §3.13`). ⚠️ **Con un solo eje deja de ser alcanzable**: las opciones de
+  técnica salen del mismo catálogo que se pinta, así que ninguna puede dar cero. El componente
+  se queda —quien manda es el contenido, y un catálogo que cambie no debe dejar la rejilla en
+  blanco sin decirlo—, pero no hay forma de probarlo desde la interfaz.
 - **Bloque «Cómo se lee un código»** en `--tinta`, `1fr 1fr`: a la izquierda el argumento, a la
   derecha `IMPRESO / ESPIGA / C-117` en mono 20 px con las barras en `--acero`, y las tres
   definiciones (técnica, modelo, color) en 3 columnas. Cierra con la advertencia honesta:
   *el color final varía con la luz, el árido y el sellado; la muestra orienta, la obra manda*.
 - **Cierre** a una línea: titular + 2 botones.
 
-En móvil: dos carriles de chips deslizantes anclados arriba, rejilla de 2, resumen y
-`QUITAR ×` en la misma fila.
+En móvil: un carril de chips deslizante anclado arriba —eran dos hasta el 2026-09-17—, rejilla de
+2, resumen y `QUITAR ×` en la misma fila.
 
-El estado de los filtros se refleja en la URL (`?tecnica=impreso&color=gris`) para que sea
-compartible y para que Google pueda indexar combinaciones con obra real.
+El estado del filtro se refleja en la URL (`?tecnica=impreso`) para que sea compartible y para que
+Google pueda indexar la técnica con obra real. Es además el enlace con el que cada página de
+servicio manda aquí (`PaginaServicio`, «Ver todos los acabados de…»). `?color=` ya no se lee.
 
 ## A4 · Ficha de proyecto — `/proyectos/[slug]/`
 
