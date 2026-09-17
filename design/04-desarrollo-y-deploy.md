@@ -169,7 +169,7 @@ Del §7.5. `title` ≤ 60 caracteres, `description` ≤ 155.
 | `/microcemento/` | Microcemento en Valencia \| Sin obra ni escombros |
 | `/hormigon-lavado/` | Hormigón lavado y árido visto en Valencia |
 | `/acabados/` | Muestrario de acabados de hormigón impreso |
-| `/precios/` | Precio del hormigón impreso por m² en 2026 |
+| ~~`/precios/`~~ | ⛔ Ruta retirada el 2026-09-17 por decisión del dueño (`02-pantallas.md §A5`) |
 | `/proyectos/` | Proyectos ejecutados \| Pavimentos Albufera |
 | `/empresa/` | Quiénes somos \| Pavimentos Albufera |
 | `/presupuesto/` | Pide presupuesto sin compromiso |
@@ -311,7 +311,8 @@ Cada paso es desplegable y revisable por separado:
 5. Servicio de impreso, y de ahí los otros cinco.
 6. Índice y ficha de proyecto.
 7. Presupuesto, con la Server Action y sus cuatro estados.
-8. Precios y calculadora.
+8. ~~Precios y calculadora.~~ La página se retira el 2026-09-17; la calculadora vive dentro
+   de las páginas de servicio.
 9. Empresa, zonas, blog, legales, 404.
 10. SEO técnico: redirecciones, sitemap, robots, canónicas, JSON-LD.
 11. Analítica, consentimiento y la lista de comprobación del README §12.

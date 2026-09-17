@@ -53,7 +53,7 @@ Dos avisos:
 | Servicio (impreso) | `/hormigon-impreso/` | ✅ Maquetada. **Plantilla** de los otros 5 servicios |
 | Muestrario | `/acabados/` | ✅ Maquetada, con filtros y estado vacío |
 | Ficha de proyecto | `/proyectos/[slug]/` | ✅ Maquetada (Moncada). **Plantilla** de las 11 obras |
-| Precios | `/precios/` | ✅ Maquetada, con calculadora |
+| ~~Precios~~ | ~~`/precios/`~~ | ⛔ **Retirada del sitio el 2026-09-17**, decisión del dueño: no quiere precios en la web. Ver `02-pantallas.md §A5` |
 | Lámina de sistema | — | ✅ Tokens y componentes base |
 | Presupuesto | `/presupuesto/` | 📐 Especificada en `02-pantallas.md §B1`, sin maquetar |
 | Ficha de acabado | `/acabados/[modelo]/` | 📐 Especificada en `§B2` |
@@ -143,7 +143,7 @@ Casi todo es estático. El estado de cliente es local a cada pantalla:
 | Muestrario | `tecnica`, `color` | Query params en la URL |
 | Índice de proyectos | `servicio`, `modelo`, `municipio`, `anio` | Query params |
 | Servicio | `seccionActiva` (submenú), `faqAbierta` | Ninguna |
-| Precios | `m2`, `uso`, `terreno` | Ninguna |
+| Calculadora | `m2`, `uso`, `terreno` | Ninguna |
 | Presupuesto | `campos`, `errores`, `estadoEnvio` | Ninguna |
 | Global | `menuMovilAbierto` | Ninguna |
 
@@ -205,7 +205,8 @@ Orden de implementación recomendado, cada paso desplegable y revisable:
 5. **Servicio de impreso**, y de ahí los 5 servicios restantes con la misma plantilla.
 6. **Índice de proyectos + ficha de proyecto**, con las 11 obras.
 7. **Presupuesto** — Server Action, Resend, honeypot, los cuatro estados.
-8. **Precios**, con la calculadora.
+8. ~~**Precios**, con la calculadora.~~ Paso retirado el 2026-09-17: la página ya no existe.
+   La calculadora se queda donde sigue teniendo sentido, dentro de cada página de servicio.
 9. **Empresa, zonas, blog, legales, 404.**
 10. **SEO técnico** — las redirecciones 301, sitemap generado, robots, canónicas, schema.
 11. **Analítica y consentimiento**, y la lista de comprobación del §12.

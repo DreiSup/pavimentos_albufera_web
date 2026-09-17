@@ -84,7 +84,7 @@ fijas de la plantilla:
 | `1fr 560px`, H1 64 px | Hero | 1278 px |
 | `1fr 340px` | Ficha técnica dentro del `380px 1fr` de su sección | 986 px |
 | `300px 1fr` | Filas de Aplicaciones, dentro del mismo `380px 1fr` | 980 px |
-| `1fr 1fr` con chips de uso | Calculadora (§05, y `/precios/`) | ~960 px |
+| `1fr 1fr` con chips de uso | Calculadora (§05) | ~960 px |
 | 7 anclas que no parten | Submenú (`01 §4.6`) | 1259 px |
 
 Por debajo de 1280 px cada una usa **su propio tratamiento apilado, el de móvil**, que ya estaba
@@ -162,7 +162,18 @@ reales dentro de un `border: 1px dashed #5C625E`, indicando qué debe contar cad
 `EL ENCARGO` = qué había antes, qué problema tenía y con qué condición llegó el cliente;
 `LA EJECUCIÓN` = qué se hizo y qué dificultad concreta tuvo esta obra.
 
-## A5 · Precios — `/precios/`
+## A5 · Precios — `/precios/` · ⛔ RETIRADA EL 2026-09-17
+
+**Esta pantalla ya no existe en el sitio.** Decisión del dueño, en sus palabras: retirarla por
+completo; no quiere precios en la web. Se ha borrado `app/precios/`, su enlace del nav de
+`01 §4.1` y su entrada de `app/sitemap.ts`. Ninguna de las 33 redirecciones 301 de la migración
+apuntaba aquí —era una ruta nueva del rediseño, no una de la web vieja—, así que no hubo nada
+que repuntar.
+
+**Lo que sobrevive, y dónde:** la calculadora sigue siendo un componente del sistema y se pinta
+dentro de las páginas de servicio que declaran `usosCalculadora` (`content/servicios.tsx`). La
+especificación de abajo se conserva porque es la única descripción completa de ese componente;
+léase referida a él, no a una página.
 
 - **Hero** `1fr 520px`, H1 64 px, antetítulo `PRECIOS ORIENTATIVOS · SIN IVA`.
 - **Tabla completa**, rejilla `1fr 300px 300px` con cabecera en mono 11

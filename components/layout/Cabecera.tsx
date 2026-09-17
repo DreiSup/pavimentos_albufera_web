@@ -7,10 +7,15 @@ import { nap } from '@/lib/config'
 import Boton from '../ui/Boton'
 import MenuMovil from './MenuMovil'
 
+/**
+ * Cuatro enlaces desde el 2026-09-17: `/precios/` se retira del sitio entero
+ * por decisión del dueño («no quiero precios en la web»), así que sale también
+ * de aquí. Esta lista es la única del proyecto: `MenuMovil` la recibe como
+ * prop, no la duplica.
+ */
 const enlaces = [
   { href: '/acabados/', texto: 'Acabados' },
   { href: '/proyectos/', texto: 'Proyectos' },
-  { href: '/precios/', texto: 'Precios' },
   { href: '/empresa/', texto: 'Empresa' },
   { href: '/blog/', texto: 'Blog' },
 ]

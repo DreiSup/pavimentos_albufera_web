@@ -18,7 +18,6 @@ const rutasEstaticas = [
   ...rutasServicio,
   '/acabados/',
   '/proyectos/',
-  '/precios/',
   '/empresa/',
   '/presupuesto/',
   '/blog/',
