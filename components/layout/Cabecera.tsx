@@ -88,7 +88,11 @@ export default function Cabecera() {
             y en una barra de 70-84 px eso deja las palabras a 6-8 px de altura
             de mayúscula. El bloque completo vive en el pie, que sí tiene sitio.
             `design/01` §4.1 y `design/02` §B9. */}
-        <Link href="/" className="no-underline text-tinta flex items-center">
+        {/* `min-h-tactil` y no la altura de la imagen: el enlace medía 24 px de
+            alto, que es lo que mide el wordmark, y es el enlace a la home desde
+            las 53 rutas. La imagen no cambia de tamaño; lo que crece es el área
+            de toque, centrada en una barra que ya mide 70-84 px. */}
+        <Link href="/" className="no-underline text-tinta flex items-center min-h-tactil">
           {/* `<img>` y no `next/image`, medido: la cabecera y el pie viven en el
               layout, así que meter el componente de imagen aquí lo mete en las
               49 rutas. Cuesta **+5,1 kB brotli** en las que hoy no lo cargan
@@ -144,7 +148,11 @@ export default function Cabecera() {
             tabIndex={conScroll ? -1 : undefined}
             /* Un teléfono es un dato, no un párrafo: no parte nunca. Sin esto
                se rompía en tres líneas en cuanto la fila iba justa. */
-            className={`font-mono text-d-12 text-tinta-media whitespace-nowrap no-underline transition-[opacity,visibility] duration-cabecera ease-out ${
+            /* `min-h-tactil` por lo mismo que el logotipo: es un `tel:`, o sea
+               el enlace que más se toca del sitio, y medía 20 px de alto. Como
+               ítem de flex la altura mínima sí le aplica, y el `items-center`
+               del contenedor lo deja donde estaba. */
+            className={`font-mono text-d-12 text-tinta-media whitespace-nowrap no-underline min-h-tactil inline-flex items-center transition-[opacity,visibility] duration-cabecera ease-out ${
               conScroll ? 'invisible opacity-0' : 'opacity-100'
             }`}
           >
