@@ -94,7 +94,13 @@ const esquema = z.object({
   mensaje: z.string().optional().default(''),
   // El `required` del navegador no es validación: un envío sin JS o manipulado
   // se la salta. Aquí es obligatorio de verdad.
-  privacidad: z.string().min(1, 'Tienes que aceptar la política de privacidad.'),
+  //
+  // El mensaje decía «Tienes que aceptar…», a juego con la etiqueta vieja de la
+  // casilla. La casilla ya no dice «acepto» —no es la base jurídica, ver
+  // `FormularioPresupuesto.tsx`—, y este texto va con ella: si no, la
+  // contradicción sobrevivía a un error de validación de distancia. La regla no
+  // se toca, solo la cadena.
+  privacidad: z.string().min(1, 'Tienes que confirmar que has leído la política de privacidad.'),
   evento_id: z.string().optional().default(''),
   origen: z.string().optional().default('unmarked'),
 })
