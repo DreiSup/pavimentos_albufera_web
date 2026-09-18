@@ -67,23 +67,32 @@ Enhanced Conversions solo puede contar con los leads que lo dejen por su cuenta.
 
 ## A2 · Servicio — `/hormigon-impreso/`
 
-**Plantilla de los 6 servicios.** 9 secciones. Copy de las 4 primeras del §7.2; las 5 restantes
+**Plantilla de los 6 servicios.** 8 secciones. Copy de las 4 primeras del §7.2; las restantes
 reutilizan literal el §7.1 filtrado a este servicio. Cero texto nuevo.
 
 | # | Sección | Notas |
 |---|---|---|
 | — | Migas | `INICIO / SERVICIOS / HORMIGÓN IMPRESO` |
 | — | Hero | `1fr 560px`. H1 a 64 px, entradilla, CTA ocre + contorno. Bloque de foto `4/3` con ficha |
-| — | Submenú | Anclado a 80 px, 7 anclas. Solo escritorio |
+| — | Submenú | Anclado a 80 px, **6 anclas como máximo**. Solo escritorio |
 | 01 | Aplicaciones | `380px 1fr`. Filas `300px 1fr`: nombre de aplicación en Archivo 26 px y matiz a la derecha |
 | 02 | Muestrario del servicio | Rejilla de 4 con los acabados de esta técnica, filtrados del inventario |
 | 03 | Ficha técnica | `380px 1fr` + tabla de 8 filas (`01 §3.8`, tercera variante) |
 | 04 | Cuándo NO elegir impreso | **Fondo `--tinta` a página completa.** `1fr 1fr`. 2 botones de contorno claro a los otros servicios |
-| 05 | Precio | `1fr 1fr`. Solo las 2 filas de este servicio, con el rango en mono 20 px. Calculadora reducida |
-| 06 | Cómo trabajamos | 4 columnas, idéntico a la home |
-| 07 | Obra ejecutada | 3 tarjetas de proyecto de esta técnica |
-| 08 | FAQ | Acordeón de 5, específicas del servicio |
-| 09 | Cierre | `1fr 1fr` con formulario de 3 campos |
+| 05 | Cómo trabajamos | 4 columnas, idéntico a la home |
+| 06 | Obra ejecutada | 3 tarjetas de proyecto de esta técnica |
+| 07 | FAQ | Acordeón de 5, específicas del servicio |
+| 08 | Cierre | `1fr 1fr` con formulario de 3 campos |
+
+⛔ **La sección de Precio, que era la 05, se retira el 2026-09-18.** Misma decisión del dueño
+que retiró `/precios/` el día antes —no quiere precios en la web—, extendida ahora a la
+calculadora, que era todo lo que esa sección contenía. Detalle en §A5. Las secciones ya eran
+condicionales y se renumeran solas, así que **no quedó hueco que recomponer**: medido a 390,
+768, 1024 y 1366 px en `/hormigon-impreso/`, la costura entre `04 · Cuándo NO` (fondo `--tinta`)
+y `05 · Cómo trabajamos` (fondo `--fondo-alt`) es de 0 px y ninguna de las cuatro tiene scroll
+horizontal. La numeración de esta tabla **no es fija**: un servicio sin `aplicaciones` o sin
+`cuandoNo` empieza y sigue con otros números, y `/hormigon-fratasado/` y
+`/hormigon-desactivado/` llevan cuatro secciones desde que existen.
 
 La sección 04 es la que más vende de toda la web y **ninguna competencia la tiene**: decirle al
 cliente cuándo no contratar este servicio. Va en negro a página completa por eso.
@@ -96,7 +105,7 @@ no puede bajar de la palabra más larga del H1 —558 px en `/microcemento/`, 47
 `/hormigon-desactivado/`, 374 en las otras cuatro— y hay que sumarle 64 de hueco, 560 de foto y
 96 de gutter. Encendido en 768 px el `1fr` no podía encoger por debajo de esa palabra y empujaba
 la página: **100 px de scroll horizontal del documento a 960 px en cuatro de las seis páginas,
-198 en desactivado y 285 en microcemento**. Lo mismo, por lo mismo, en las otras tres pistas
+198 en desactivado y 285 en microcemento**. Lo mismo, por lo mismo, en las otras pistas
 fijas de la plantilla:
 
 | Pista | Dónde | Ancho de contenido que pide |
@@ -104,14 +113,21 @@ fijas de la plantilla:
 | `1fr 560px`, H1 64 px | Hero | 1278 px |
 | `1fr 340px` | Ficha técnica dentro del `380px 1fr` de su sección | 986 px |
 | `300px 1fr` | Filas de Aplicaciones, dentro del mismo `380px 1fr` | 980 px |
-| `1fr 1fr` con chips de uso | Calculadora (§05) | ~960 px |
-| 7 anclas que no parten | Submenú (`01 §4.6`) | 1259 px |
+| 6 anclas que no parten | Submenú (`01 §4.6`) | 1135 px |
 
 Por debajo de 1280 px cada una usa **su propio tratamiento apilado, el de móvil**, que ya estaba
 descrito: el hero se reparte en dos mitades con el H1 a 46 px, la ficha técnica se apila «en
-pares» como dice el párrafo de arriba, las aplicaciones apilan nombre y matiz, la calculadora
-va a una columna y **el submenú no se pinta**, que es lo que ya dice «Solo escritorio» dos
-párrafos más arriba.
+pares» como dice el párrafo de arriba, las aplicaciones apilan nombre y matiz y **el submenú no
+se pinta**, que es lo que ya dice «Solo escritorio» dos párrafos más arriba.
+
+⚠️ **Dos filas de esa tabla cambian el 2026-09-18 y el punto de ruptura NO se mueve.** La de la
+calculadora (`1fr 1fr` con chips de uso, ~960 px) desaparece con el componente. Y el submenú
+pasa de 7 anclas a 6 —se va `Precio`—, así que su carril de anclas mide **1039 px medidos a
+1366 px en `/hormigon-impreso/`, `/hormigon-pulido/` y `/microcemento/`**, que con los 96 px de
+gutter piden 1135 px de ventana en vez de 1259. **Los 1280 px se quedan donde están**: quien
+fija ese umbral es el hero, que sigue pidiendo 1278 px de contenido y no ha cambiado. Bajar el
+`xl` de la plantilla porque ahora quepa el submenú devolvería los 100–285 px de scroll
+horizontal que esta enmienda quitó.
 
 ⚠️ Estos 1280 px **ya no coinciden** con la cabecera: desde el 2026-09-17 la de escritorio y la
 barra de contacto de móvil se mueven en `cabecera-ancha` = 1180 px (`01 §4.1` y §4.3), porque
@@ -231,10 +247,28 @@ completo; no quiere precios en la web. Se ha borrado `app/precios/`, su enlace d
 apuntaba aquí —era una ruta nueva del rediseño, no una de la web vieja—, así que no hubo nada
 que repuntar.
 
-**Lo que sobrevive, y dónde:** la calculadora sigue siendo un componente del sistema y se pinta
-dentro de las páginas de servicio que declaran `usosCalculadora` (`content/servicios.tsx`). La
-especificación de abajo se conserva porque es la única descripción completa de ese componente;
-léase referida a él, no a una página.
+⛔ **Y la calculadora también, el 2026-09-18.** Al retirar la página, la calculadora se quedó
+viviendo dentro de las cuatro páginas de servicio que declaraban `usosCalculadora` y, por
+herencia de la plantilla, dentro de las cuatro landings de `/lp/`. Preguntado expresamente, el
+dueño contestó que fuera también: **el sitio no da un precio en ningún sitio.** Medido antes de
+retirarla, en `/hormigon-impreso/` a 390 px, escribir `80` en el campo de metros llevaba el
+bloque de resultado de «—» a «2240–3040 €».
+
+**Lo que ya no existe en código:** `components/secciones/Calculadora.tsx`, el campo
+`usosCalculadora` de `content/servicios.tsx` con sus cuatro rangos de €/m², y el miembro
+`seccion-precio` de la unión `SeccionServicio`. Ninguna pantalla monta nada de eso.
+
+**Dónde queda el dato, entonces.** La especificación de abajo **se conserva como histórico y no
+describe nada que se pinte hoy**: es el único sitio, junto con la tabla de multiplicadores de
+`03 §5`, donde quedan escritos los rangos y la fórmula. Se guarda para que reponerlos sea leer y
+no reinventar, y se lee en pasado. Volver a pintarlos exige que lo pida el dueño.
+
+⚠️ **Lo que esta retirada NO ha tocado, y sigue prometiendo precio:** las `description` de
+`/hormigon-impreso/`, `/hormigon-pulido/`, `/microcemento/` y `/hormigon-lavado/` en
+`content/servicios.tsx` siguen diciendo «consulta el precio por m²», «Precio por m²», «Precio y
+proyectos» y «precio orientativo». No se ven en la página, pero son lo que Google enseña en el
+resultado de búsqueda, y ahora prometen algo que la página ya no tiene. Reescribirlas es copy
+nuevo —`05 §B7`—, así que es decisión del dueño y está pendiente.
 
 - **Hero** `1fr 520px`, H1 64 px, antetítulo `PRECIOS ORIENTATIVOS · SIN IVA`.
 - **Tabla completa**, rejilla `1fr 300px 300px` con cabecera en mono 11
