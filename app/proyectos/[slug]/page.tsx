@@ -24,9 +24,22 @@ export async function generateMetadata({
   if (!proyecto) return {}
   const modelo = proyecto.modelo ? NOMBRE_MODELO[proyecto.modelo] : null
   const color = proyecto.color ? CODIGO_COLOR[proyecto.color] : null
-  const detalle = [modelo, color].filter(Boolean).join(' · ')
+  // El título se compone filtrando, igual que la ficha y la tarjeta. Sin
+  // municipio decía «Hormigón impreso en obra sin municipio confirmado»: el
+  // mismo corchete que el dueño ha retirado de la página, anunciado en la
+  // pestaña del navegador y en el resultado de búsqueda, que es donde peor se
+  // lee. Sin municipio no hay cláusula de lugar, y ya está.
+  const titulo = [
+    proyecto.municipio
+      ? `${NOMBRE_SERVICIO[proyecto.servicio]} en ${proyecto.municipio}`
+      : NOMBRE_SERVICIO[proyecto.servicio],
+    modelo,
+    color,
+  ]
+    .filter(Boolean)
+    .join(' · ')
   return {
-    title: `${NOMBRE_SERVICIO[proyecto.servicio]} en ${proyecto.municipio ?? 'obra sin municipio confirmado'}${detalle ? ` · ${detalle}` : ''}`,
+    title: titulo,
     description: `${proyecto.titulo}. ${NOMBRE_SERVICIO[proyecto.servicio]} ejecutado por Pavimentos Albufera.`,
     alternates: { canonical: `/proyectos/${proyecto.slug}/` },
   }
