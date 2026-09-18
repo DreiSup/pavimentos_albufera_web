@@ -112,9 +112,36 @@ export default function Consentimiento() {
 
       {estado === 'pendiente' ? (
         <div className="fixed bottom-0 md:bottom-0 left-0 right-0 z-50 bg-tinta text-fondo px-[18px] py-4 md:px-lat-desktop md:py-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 md:mb-0 mb-[56px]">
+          {/* 🔴 **Esta frase es la primera capa del art. 22.2 de la LSSI**, y hasta
+              el 2026-09-18 decía «hasta que aceptes no se guarda ninguna cookie de
+              analítica ni de publicidad». El código la desmentía por dos sitios,
+              los dos comprobados en ejecución llegando con `?gclid=&fbclid=` y sin
+              tocar ningún botón:
+
+              1. `app/api/atribucion/route.ts` escribe `pa_ref` —90 días, código de
+                 seguimiento que además viaja a Google como `reference_code`— sin
+                 mirar el consentimiento, en la primera visita.
+              2. `app/layout.tsx` carga `gtag.js` con la única condición de que
+                 haya identificador. Con los cuatro permisos del Consent Mode en
+                 `denied` Google no puede usar almacenamiento, pero sí recibe la
+                 página, la IP y el navegador.
+
+              Lo que sí es cierto, y por eso se conserva: el Pixel de Meta tiene
+              bloqueo duro y las cookies publicitarias propias (`pa_attr`, `_fbc`)
+              solo se escriben con «Aceptar». Eso es «lo demás espera a tu
+              respuesta».
+
+              ⚠️ **Es texto, no mecanismo.** Arreglar el mecanismo —que `pa_ref` no
+              se escriba antes de decidir— es `09-instrucciones-legales.md` §6.3 y
+              es otro encargo. Mientras la cookie se escriba, la frase tiene que
+              decirlo: la política de cookies que hay detrás ya lo dice, y una
+              primera capa que la contradice es peor que no tenerla. Cuando el §6.3
+              se ejecute, esta frase se vuelve a escribir. */}
           <p className="text-14 md:text-16 text-sobre-tinta m-0 max-w-[68ch]">
             Usamos analítica y publicidad para entender cómo se usa esta web y mostrarte anuncios
-            relevantes. Hasta que aceptes no se guarda ninguna cookie de analítica ni de publicidad.
+            relevantes. Antes de que decidas ya se guarda una cookie propia con un código de visita y
+            Google recibe qué página ves, sin poder guardar nada en tu dispositivo; lo demás espera a
+            tu respuesta.
           </p>
           <div className="flex gap-3 shrink-0">
             <Boton variante="contorno" sobreOscuro type="button" onClick={() => decidir('rechazado')}>
