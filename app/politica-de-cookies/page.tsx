@@ -3,7 +3,7 @@ import Link from 'next/link'
 import PlantillaLegal from '@/components/secciones/PlantillaLegal'
 import TablaFichaTecnica from '@/components/datos/TablaFichaTecnica'
 import DatoPendiente from '@/components/datos/DatoPendiente'
-import { cookiesPropias, cookiesTerceros, type FichaCookie } from '@/content/legal'
+import { cookiesPropias, cookiesTerceros, type FichaCookie, ultimaRevisionLegal } from '@/content/legal'
 
 export const metadata: Metadata = {
   title: 'Política de cookies',
@@ -63,7 +63,7 @@ export default function PoliticaCookies() {
   return (
     <PlantillaLegal
       titulo="Política de cookies"
-      ultimaActualizacion={<DatoPendiente>fecha</DatoPendiente>}
+      ultimaActualizacion={ultimaRevisionLegal}
       entradilla={
         <>
           <p>

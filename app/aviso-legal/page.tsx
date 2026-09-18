@@ -3,7 +3,7 @@ import Link from 'next/link'
 import PlantillaLegal from '@/components/secciones/PlantillaLegal'
 import TablaFichaTecnica from '@/components/datos/TablaFichaTecnica'
 import DatoPendiente from '@/components/datos/DatoPendiente'
-import { identificacion } from '@/content/legal'
+import { identificacion, ultimaRevisionLegal } from '@/content/legal'
 
 export const metadata: Metadata = {
   title: 'Aviso legal',
@@ -31,7 +31,7 @@ export default function AvisoLegal() {
   return (
     <PlantillaLegal
       titulo="Aviso legal"
-      ultimaActualizacion={<DatoPendiente>fecha</DatoPendiente>}
+      ultimaActualizacion={ultimaRevisionLegal}
       secciones={[
         {
           titulo: 'Datos identificativos',

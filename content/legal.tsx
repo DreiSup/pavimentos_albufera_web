@@ -24,6 +24,22 @@ import { nap } from '@/lib/config'
  * de lo que hace esa página, y `scripts/verificar-landings.mjs` rompe el build
  * en cuanto el teléfono de reserva asoma en el HTML de cualquier ruta.
  */
+/**
+ * Fecha que encabeza los tres documentos. Vive aquí y no en cada página por lo
+ * mismo que el teléfono vive en `lib/config.ts`: es un dato único del sitio, y
+ * tres copias son tres oportunidades de que digan cosas distintas.
+ *
+ * ⚠️ **Lo que esta línea afirma no es cuándo se publicó la página, sino cuándo
+ * se revisó el texto que hay debajo.** El dueño la fija el 2026-09-18 a
+ * sabiendas: los tres documentos son una plantilla que él heredó de la web
+ * anterior, se apoyan en la LOPD de 1999 —derogada en 2018— y la política de
+ * privacidad afirma que los datos no se ceden a terceros cuando cada formulario
+ * viaja a Resend, a Telegram y, con consentimiento, a la CAPI de Meta. Está
+ * encargada una revisión a fondo; **cuando llegue, esta fecha se mueve con
+ * ella**, y no antes ni después.
+ */
+export const ultimaRevisionLegal = '18 de septiembre de 2026'
+
 export const identificacion: FilaTablaTecnica[] = [
   { etiqueta: 'TITULAR DEL SITIO WEB', valor: nap.nombre },
   { etiqueta: 'RAZÓN SOCIAL', valor: 'Pavimentos Albufera Sociedad Limitada' },
