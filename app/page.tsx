@@ -177,10 +177,45 @@ const proyectosHome = [...proyectos].sort((a, b) => Number(b.destacado) - Number
 // ocupa la sección entera y pedir media pantalla serviría un candidato corto
 // justo sobre el LCP. Por debajo de 768 no cambia nada: ya era 100vw, y
 // `fill` elige el candidato por la anchura, así que un hueco más ALTO no pide un
-// archivo más grande. Lo que sí sube es el escritorio, y se sabe: a 1366 px el
-// srcset pasa del peldaño 750 al 1536, y con él —vía `tamanosCompartidos`— las
-// cuatro miniaturas de obra de la sección 08, que comparten URL a propósito.
-const TAMANOS_HERO_HOME = '100vw'
+// archivo más grande.
+//
+// 🔴 **Con TOPE EN 1200 px desde el 2026-09-18, y hay que leer para qué SÍ sirve
+// y para qué NO.** Las cuatro fotos del pase miden 1200, 2048, 1200 y 898 px de
+// origen, así que por encima de cierto ancho pedir más candidato no trae más
+// nitidez. Medido con `curl` contra `next start`, `Accept: image/avif`, la
+// respuesta real de `/_next/image`:
+//
+//     w=      moncada q75   denia q60   alzira q60   corbera q60      total
+//     1536      222.109     138.694      153.659       33.408      547.870 B
+//     1200      222.109      96.917      153.659       33.408      506.093 B
+//
+// ⚠️ **En la foto del LCP el tope no ahorra ni un byte, y creerlo era el error.**
+// `sharp` NO amplía: para un original de 1200 px, `w=1200`, `w=1536` y `w=2048`
+// devuelven el MISMO archivo de 222.109 B. Los 216,9 kB de la portada a 1366 px
+// no son un candidato inflado, son el original de Moncada entero: el hueco pasó
+// de media pantalla a pantalla completa y antes —`50vw`, peldaño 750, 101,6 kB—
+// se estaba ampliando 1,82× un archivo corto. `sizes` no puede recuperar eso.
+//
+// Lo que el tope sí ahorra son **40,8 kB (−7,6 % del pase) en la diapositiva de
+// Denia**, la única con 2048 px de origen, que se descarga en el mismo viewport
+// aunque no sea la primera. Y deja de pedir peldaños que ningún original puede
+// llenar.
+//
+// **Y la calidad de la primera NO se toca**, aunque bajarla a 60 la dejaría en
+// 147.159 B (−73,2 kB): el peldaño de 1200 solo lo pide una ventana de 1200 px
+// o más, es decir, un escritorio. En el móvil —la mitad del tráfico de este
+// negocio— no cambia absolutamente nada: sigue siendo `w=640`, 73.585 B, q75.
+// Degradar la foto del LCP justo en las pantallas donde se ve, para ahorrar
+// tiempo en las conexiones más rápidas, es cobrar la factura al revés.
+//
+// ⚠️ `sizes` acota el ANCHO DEL HUECO, no el DPR. En una pantalla retina de 1366
+// el navegador pide 1200 × 2 y se lleva el peldaño 2048; ahí el tope no ahorra
+// nada, y tampoco encarece nada, porque sin él pediría 2732 y el `deviceSizes`
+// más alto también es 2048.
+//
+// El valor viaja además —vía `tamanosCompartidos`— a las cuatro miniaturas de
+// obra de la sección 07, que comparten URL con el hero a propósito.
+const TAMANOS_HERO_HOME = '(min-width: 1200px) 1200px, 100vw'
 const TAMANOS_TARJETA_SERVICIO = '(min-width: 768px) 30vw, 100vw'
 const TAMANOS_ESPACIO = '(min-width: 768px) 30vw, 50vw'
 /**
