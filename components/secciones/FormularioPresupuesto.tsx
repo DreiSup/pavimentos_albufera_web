@@ -78,7 +78,13 @@ export default function FormularioPresupuesto({
         params: {
           form_location: origen,
           space_type: estado.resumen?.espacio,
-          municipality: estado.resumen?.municipio,
+          // `|| undefined` para que el parámetro no viaje cuando no se ha
+          // recogido. La variante corta no pide municipio y el resumen traía
+          // un guion de relleno: GA4 y Meta estaban recibiendo `—` como
+          // municipio en todos los leads de la portada y de las seis páginas de
+          // servicio. Una dimensión personalizada no se rellena hacia atrás, así
+          // que ese valor basura no se limpia después.
+          municipality: estado.resumen?.municipio || undefined,
           // Las dos claves de unión con el lead que llega al buzón. `event_id`
           // es el mismo que el Server Action manda a Meta CAPI; `reference_code`
           // el que viaja dentro del mensaje de WhatsApp y del aviso de Telegram.
@@ -99,10 +105,15 @@ export default function FormularioPresupuesto({
         <p className="font-display font-bold fs-h2 text-26 m-0">
           Te llamamos hoy mismo si nos escribes antes de las 18:00, y mañana a primera hora si no.
         </p>
+        {/* `design/02` §B1, estado 4: «el resumen de lo enviado». Lo enviado,
+            no la plantilla del formulario largo. La variante corta no pide ni
+            superficie ni municipio, y el panel pintaba sus dos líneas con un
+            guion: un estado vacío que no dice nada y que además hace dudar de
+            si el dato se perdió por el camino. */}
         <div className="font-mono text-d-11 leading-[1.9] text-sobre-tinta">
           <p className="m-0">{estado.resumen?.espacio}</p>
-          <p className="m-0">{estado.resumen?.superficie} m²</p>
-          <p className="m-0">{estado.resumen?.municipio}</p>
+          {estado.resumen?.superficie ? <p className="m-0">{estado.resumen.superficie} m²</p> : null}
+          {estado.resumen?.municipio ? <p className="m-0">{estado.resumen.municipio}</p> : null}
         </div>
         <div className="flex flex-wrap gap-3">
           <Boton variante="contorno" sobreOscuro href="/acabados/">

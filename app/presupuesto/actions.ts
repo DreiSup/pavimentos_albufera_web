@@ -361,9 +361,14 @@ export async function enviarPresupuesto(
     }
   }
 
+  // El resumen viaja tal cual, con la cadena vacía cuando el campo no se pide.
+  // El guion de relleno que había antes no era solo un hueco feo en el panel de
+  // «Recibido»: `FormularioPresupuesto` lo reenvía como `municipality` a GA4 y
+  // al Pixel, así que cada lead de la variante corta declaraba `—` de
+  // municipio. Quién decide si un campo se enseña es quien lo pinta.
   return {
     estado: 'enviado',
     errores: {},
-    resumen: { espacio, superficie: superficie || '—', municipio: municipio || '—' },
+    resumen: { espacio, superficie, municipio },
   }
 }
