@@ -11,6 +11,31 @@ export type Diapositiva = {
 }
 
 /**
+ * Calidad de las diapositivas que NO son la primera.
+ *
+ * 🔴 **Las cuatro fotos del hero se descargan siempre, y eso no lo arregla
+ * `loading="lazy"`.** Las tres que esperan comparten hueco con la primera, así
+ * que están dentro del viewport inicial y el navegador las pide igual: medido
+ * en un móvil de 390 px a DPR 1, **238,1 kB de fotos antes del primer scroll**,
+ * de los que 166,2 kB son de las tres no prioritarias. Nada de esto es JS, pero
+ * la portada pesa lo que pesa.
+ *
+ * No hay forma en CSS de aplazar una imagen que sí está en el viewport, así que
+ * lo que se baja no es el número de peticiones, es el tamaño de cada una: mismo
+ * ancho servido, más compresión. Next resta 15 al valor antes de pasarlo a AVIF,
+ * de modo que 75 es AVIF 60 y 60 es AVIF 45.
+ *
+ * **La primera se queda en el 75 por defecto y no se toca**: es la candidata a
+ * LCP, la única precargada y la que el visitante mira de verdad. Degradarla para
+ * ahorrar bytes sería cobrarle la factura justo a la foto que decide la métrica.
+ *
+ * ⚠️ Todo valor nuevo hay que declararlo en `images.qualities` de
+ * `next.config.ts`: fuera de esa lista `/_next/image` responde 400 en
+ * producción y el build no avisa.
+ */
+const CALIDAD_EN_ESPERA = 60
+
+/**
  * Carrusel de fotografía de obra (01-sistema-de-diseno.md §3.15).
  *
  * **El pase es CSS puro, cero bytes de JavaScript**, y sigue siéndolo: vive
@@ -34,8 +59,9 @@ export type Diapositiva = {
  *    pantalla recorría los cuatro textos alternativos y las cuatro etiquetas
  *    técnicas seguidos, con o sin movimiento reducido.
  *  - **Solo la primera foto es prioritaria.** Es la candidata a LCP y la única
- *    que se precarga; las demás salen perezosas para no disputarle la cola de
- *    descarga.
+ *    que se precarga; las demás salen perezosas y con más compresión
+ *    (`CALIDAD_EN_ESPERA`) para no disputarle ni la cola de descarga ni el ancho
+ *    de banda.
  *
  * **Dos capas de pasadas, y el velo en medio.** El orden de pintado es fotos →
  * `children` → etiquetas → botón, y no es cosmético: el velo del titular llega
@@ -89,6 +115,7 @@ export default function CarruselFotos({
             sizes={tamanos}
             priority={i === 0}
             fetchPriority={i === 0 ? 'high' : undefined}
+            quality={i === 0 ? undefined : CALIDAD_EN_ESPERA}
             className="object-cover"
           />
         </div>

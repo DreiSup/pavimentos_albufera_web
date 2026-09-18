@@ -519,10 +519,14 @@ Siete cosas que definen el componente, y ninguna es decorativa:
   etiquetas técnicas seguidos, con o sin movimiento reducido. Con `visibility` en el estado base
   y en el `@keyframes`, el árbol del hero pasa de **101 nodos y 4 imágenes a 30 nodos y 1**.
   Durante los 0,72 s del cruce hay dos, que es exactamente lo que hay en pantalla.
-- **Solo la primera foto es prioritaria.** Es la candidata a LCP y la única precargada. Las
-  demás salen perezosas para no disputarle la cola de descarga. ⚠️ **Están dentro del viewport
-  inicial, así que el navegador las pide igual**: medidos a 390 px y DPR 1, **238,1 kB de foto
-  antes del primer scroll**, de los que 166,2 kB son de las tres que esperan. Pendiente.
+- **Solo la primera foto es prioritaria, y las otras tres pesan menos.** La primera es la
+  candidata a LCP, la única precargada y la única a calidad 75. Las tres que esperan salen
+  perezosas —para no disputarle la cola— y a `quality={60}`: están dentro del viewport inicial,
+  así que el navegador las pide igual, y no hay forma en CSS de aplazar una imagen que sí está
+  en el viewport. Medido en un móvil de 390 px a DPR 1, las cuatro fotos del hero pasan de
+  **238,1 kB a 156,8 kB (−81,3 kB, −34,2 %)** y la portada entera de 429,8 a 349,2 kB, con el
+  mismo ancho servido en las cuatro. ⚠️ Toda calidad nueva hay que declararla en
+  `images.qualities` de `next.config.ts`.
 - **El `@keyframes` está escrito para cuatro diapositivas.** CSS no sabe repartir «1/n» sin
   JavaScript. Con otro número se escribe el `@keyframes` de ese número; fingir que el
   componente es genérico sería mentir sobre lo que hace.

@@ -22,12 +22,17 @@ const nextConfig: NextConfig = {
     // `image-optimizer.js` solo valida el parámetro `q` si esta lista existe; el
     // ancho lo valida siempre. Sin declararla, `/_next/image?…&q=1..100` abre
     // 16 anchos × 2 formatos × 100 calidades = 3.200 transformaciones
-    // facturables por foto de origen; con la lista, 32. Hoy no cambia ni un
-    // byte servido —nada del repo pasa `quality`, y `Foto.tsx` ni lo acepta ni
-    // lo reenvía—, pero deja fijado el 75 que Next 16 exigirá declarar.
+    // facturables por foto de origen; con la lista, 64. El 75 es el defecto de
+    // Next, que además exigirá declararlo en la 16.
+    // El 60 lo piden las tres diapositivas en espera del carrusel del hero
+    // (`components/contenido/CarruselFotos.tsx`, `CALIDAD_EN_ESPERA`): están
+    // dentro del viewport inicial, así que el navegador las descarga aunque
+    // sean perezosas, y no son el LCP. Next resta 15 antes de pasar el valor a
+    // AVIF, así que 75 es AVIF 60 y 60 es AVIF 45. `Foto.tsx` sigue sin aceptar
+    // `quality` ni reenviarlo: ninguna otra foto del sitio cambia de bytes.
     // ⚠️ Todo `quality` nuevo hay que añadirlo aquí: fuera de la lista la
     // petición devuelve un 400 en producción, y el build no avisa.
-    qualities: [75],
+    qualities: [60, 75],
     // El defecto son 60 s: cada foto optimizada revalida cada minuto. El coste
     // recurrente es una revalidación, no una recodificación, pero son 31 días
     // de caché de navegador que no se estaban cobrando. 2678400 s = 31 días.
