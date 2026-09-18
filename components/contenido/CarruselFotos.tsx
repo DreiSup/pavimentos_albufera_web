@@ -41,9 +41,13 @@ const CALIDAD_EN_ESPERA = 60
  * hermanos adyacentes**: el input tiene que ir el PRIMERO de todos los hijos del
  * marco, porque el selector que para la animación es
  * `.carrusel__interruptor:checked ~ .carrusel__paso`, y el combinador `~` solo
- * alcanza hacia delante. El control visible, en cambio, va el ÚLTIMO, para
- * pintarse por encima de las dos capas de pasadas sin inventar un `z-index`.
+ * alcanza hacia delante. El control visible, en cambio, va el ÚLTIMO, que es lo
+ * que lo pinta por encima de las dos capas de pasadas dentro del marco.
  * Separados así, la asociación solo puede ser por `for`/`id`, no envolviendo.
+ *
+ * ⚠️ Ser el último basta DENTRO del marco y dejó de bastar fuera: desde que el
+ * hero es a pantalla completa, quien lo usa apila su propio texto encima del
+ * carrusel. Por eso el `<label>` sí lleva hoy un `z-index` —ver su comentario—.
  *
  * Y un `id` es único por documento, de modo que **este componente es de uno por
  * página**. Hoy lo es: solo lo usa el hero de la home. Se deja como constante
@@ -116,7 +120,17 @@ export default function CarruselFotos({
   children,
 }: {
   diapositivas: Diapositiva[]
-  proporcion: keyof typeof PROPORCIONES
+  /**
+   * La proporción del hueco, cuando el hueco se define por su proporción.
+   *
+   * **Opcional desde el 2026-09-18, y el hero de la home es quien la omite.** A
+   * pantalla completa la sección se define por su ALTO —`.hero-pantalla` de
+   * `globals.css`— y el marco solo tiene que llenarla. Dejar una `aspect-ratio`
+   * viva ahí no es inocuo: con la anchura en `auto` el navegador la DEDUCE de la
+   * altura, que es exactamente el cálculo que ya devolvió 241 px de scroll
+   * horizontal a toda la portada. Sin proporción no hay nada que deducir.
+   */
+  proporcion?: keyof typeof PROPORCIONES
   /** `sizes` de next/image. El mismo para todas: comparten hueco. */
   tamanos: string
   className?: string
@@ -134,7 +148,9 @@ export default function CarruselFotos({
 
   return (
     <div
-      className={`carrusel relative overflow-hidden bg-fondo-alt ${PROPORCIONES[proporcion]} ${className}`}
+      className={`carrusel relative overflow-hidden bg-fondo-alt ${
+        proporcion ? PROPORCIONES[proporcion] : ''
+      } ${className}`}
     >
       {/* EL PRIMER HIJO, Y NO ES UN DETALLE DE ORDEN: `~` solo mira hacia
           delante, así que el interruptor tiene que preceder a todo lo que para.
@@ -195,8 +211,8 @@ export default function CarruselFotos({
         ) : null,
       )}
 
-      {/* EL ÚLTIMO HIJO: así se pinta por encima de las dos capas de pasadas sin
-          `z-index`. Es la caja visible del interruptor, no un control aparte —el
+      {/* EL ÚLTIMO HIJO: así se pinta por encima de las dos capas de pasadas de
+          este marco. Es la caja visible del interruptor, no un control aparte —el
           clic y el toque los recoge el `for`—, y por eso no repite el nombre: el
           glifo va `aria-hidden` y quien lo anuncia es el `<input>`.
           `sobre-oscuro bg-tinta text-fondo` es el mismo recuadro opaco de la
@@ -207,7 +223,16 @@ export default function CarruselFotos({
           recorta y en esta esquina se comían dos de sus cuatro lados. */}
       <label
         htmlFor={ID_INTERRUPTOR}
-        className="carrusel__pausa absolute bottom-0 left-0 inline-flex items-center justify-center min-w-tactil min-h-tactil sobre-oscuro bg-tinta text-fondo cursor-pointer"
+        /* 🔴 `z-20`, y es lo que mantiene vivo el control desde que el hero es a
+           pantalla completa. El marco es `relative` con `z-index: auto`, así que
+           no abre contexto de apilamiento y esta caja compite directamente con
+           las capas que el hero pone encima del carrusel. La columna de texto
+           del hero es `z-10` y su caja llega hasta abajo cuando el contenido
+           crece —un teléfono pequeño basta—: sin este `z-20` quedaba por encima
+           de estos 44×44 y el control dejaba de recibir el toque. Un pase
+           automático que no se puede parar es justo lo que prohíbe la WCAG
+           2.2.2, y §3.15 se reescribió entero para poder pararlo. */
+        className="carrusel__pausa absolute bottom-0 left-0 z-20 inline-flex items-center justify-center min-w-tactil min-h-tactil sobre-oscuro bg-tinta text-fondo cursor-pointer"
       >
         {/* El estado se entiende sin color: lo dice la forma —dos barras contra
             un triángulo—, no el pigmento. Los dos glifos viajan en el HTML y es

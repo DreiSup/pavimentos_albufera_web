@@ -105,11 +105,12 @@ const servicios = [
 /**
  * Las cuatro obras del carrusel del hero, en orden de pase.
  *
- * Todas tienen municipio confirmado y foto apaisada: en el hueco `3/4` de móvil
- * una foto de 900×500 se recortaría al 42 % de su ancho y dejaría de contar lo
- * que cuenta. Por eso no están ni Godella ni Ribarroja, y por eso tres de las
- * cuatro son de impreso: es lo que hay fotografiado en horizontal. La cuarta,
- * Corbera, entra para que el pase no enseñe una sola técnica.
+ * Todas tienen municipio confirmado y foto apaisada: el hueco de móvil recorta
+ * en vertical —hoy ~0,62 de proporción a 390 px, antes `3/4`— y una foto de
+ * 900×500 deja de contar lo que cuenta si se le quitan dos tercios del ancho.
+ * Por eso no están ni Godella ni Ribarroja, y por eso tres de las cuatro son de
+ * impreso: es lo que hay fotografiado en horizontal. La cuarta, Corbera, entra
+ * para que el pase no enseñe una sola técnica.
  *
  * 🔴 **Aquí ya no hay superficie.** Los 180 m² de Moncada vivían en un
  * `superficiePendiente` de esta lista —el único m² que la portada afirmaba, y
@@ -172,7 +173,15 @@ const proyectosHome = [...proyectos].sort((a, b) => Number(b.destacado) - Number
 // el `sizes` de un hero para hacerlo coincidir con una tarjeta serviría una
 // imagen corta sobre el LCP. Y la regla se aplica **solo a la foto que se
 // repite**: las otras cinco fotos de espacio siguen pidiendo su media columna.
-const TAMANOS_HERO_HOME = '(min-width: 768px) 50vw, 100vw'
+// 🔴 `100vw` a todos los anchos desde que el hero es a pantalla completa. Antes
+// eran 50vw por encima de 768, porque la foto ocupaba una de dos columnas; hoy
+// ocupa la sección entera y pedir media pantalla serviría un candidato corto
+// justo sobre el LCP. Por debajo de 768 no cambia nada: ya era 100vw, y
+// `fill` elige el candidato por la anchura, así que un hueco más ALTO no pide un
+// archivo más grande. Lo que sí sube es el escritorio, y se sabe: a 1366 px el
+// srcset pasa del peldaño 750 al 1536, y con él —vía `tamanosCompartidos`— las
+// cuatro miniaturas de obra de la sección 08, que comparten URL a propósito.
+const TAMANOS_HERO_HOME = '100vw'
 const TAMANOS_TARJETA_SERVICIO = '(min-width: 768px) 30vw, 100vw'
 const TAMANOS_ESPACIO = '(min-width: 768px) 30vw, 50vw'
 /**
@@ -249,77 +258,63 @@ const { publicados: totalAcabados, documentados } = recuentoAcabadosPublicados()
 export default function Home() {
   return (
     <>
-      {/* 01 · Hero.
-          Las dos maquetas de `02-pantallas.md §A1` son distintas —en móvil el titular
-          va encima de la foto y el texto debajo; en escritorio el titular ocupa su
-          columna junto al `4/3`— pero el nodo es uno solo: la diferencia la resuelve la
-          rejilla. En móvil la columna única apila titular, foto y texto; en escritorio
-          la foto salta a la segunda columna y ocupa las cuatro filas.
-          Tres decisiones que no se pueden deshacer sin romper algo:
-          - **Un solo <h1>** (README §9). Duplicarlo con `md:hidden` no lo quita del
-            DOM: el rastreador y el lector de pantalla siguen viendo dos. Por eso el
-            titular no se copia para superponerlo: es la rejilla la que lo mete en la
-            misma celda que la foto por debajo de 768 px y lo saca a su columna por
-            encima. Un nodo, dos sitios.
-          - **El titular SÍ va sobre la foto en móvil**, que es lo que siempre dijo
-            `§A1`, y el sistema ya tiene con qué: el velo de `design/01 §2.8`, medido
-            para que `--fondo` aguante 4,79 : 1 sobre un píxel blanco puro. Decisión
-            del dueño del 2026-09-17. En escritorio el titular sigue en su columna y
-            no hay velo, porque no pisa ninguna foto.
-          - **La foto es un carrusel de cuatro obras** (`design/01 §3.15`), y pasa
-            solo. El pase es un `@keyframes` de opacidad y su control de pausa —el que
-            exige la WCAG 2.2.2— un `<input type="checkbox">` que lee el propio CSS:
-            el hero entero es de servidor y no hidrata nada, así que no hay ventana en
-            la que se mueva algo que no se pueda parar. Con movimiento reducido no pasa
-            nada, se ve la primera foto fija y el control se retira. */}
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-x-16 md:gap-y-6 md:grid-rows-[1fr_auto_auto_1fr] px-[18px] md:px-lat-desktop pt-8 md:pt-14">
-        {/* `relative z-10` porque en móvil comparte celda con el carrusel y va
-            detrás en el DOM; `self-start` para que se apoye en el borde superior de
-            la foto en vez de estirarse. El `p-[18px]` es el respiro DENTRO del marco
-            de la foto, no separación entre cajas: en escritorio desaparece. */}
-        <h1 className="col-start-1 row-start-1 md:row-start-2 relative z-10 self-start p-[18px] md:p-0 font-display font-extrabold fs-hero text-46 md:text-88 leading-[1.05] md:leading-[1.02] text-fondo md:text-tinta m-0">
-          Hormigón que se ve bien 20 años después
-        </h1>
-
-        {/* Un solo marco para los dos anchos: `display:none` no evita la descarga,
-            así que duplicarlo por punto de ruptura serían ocho descargas. La 4/3 de
-            escritorio es el hueco grande y las fotos apaisadas encajan sin recorte;
-            en móvil se recortan a 3/4.
-            `w-full h-full` es lo que deja que la celda mande: si el titular midiera
-            más que la foto —pasa a 320 px, donde el H1 ocupa 374 px y el `3/4` solo
-            359—, la fila crece y la foto crece con ella en vez de dejar el titular
-            fuera. Y las DOS dimensiones, no solo la altura: con `h-full` a secas la
-            `aspect-ratio` deducía la anchura de la altura —374 × 3/4 = 281 px en una
-            columna de 269— y devolvía a la portada los 19 px de scroll horizontal
-            que el mismo problema ya había causado en escritorio. */}
+      {/* 01 · Hero, A PANTALLA COMPLETA desde el 2026-09-18.
+          Decisión del dueño: la foto ocupa la sección entera y el texto va por encima,
+          en móvil y en escritorio. Sustituye a las dos maquetas de `02-pantallas.md §A1`
+          —titular sobre la foto en móvil, titular en su columna junto a un `4/3` en
+          escritorio—, que ya no existen: ahora hay una sola composición para los dos
+          anchos y la diferencia es de tamaño, no de estructura.
+          Cinco decisiones que no se pueden deshacer sin romper algo:
+          - **La sección se define por su ALTO, no por una proporción.** `.hero-pantalla`
+            (`globals.css`) da `min-height` en `svh` menos las dos barras fijas, por el
+            factor `--hero-asomo`. Es `min-height` para que un teléfono pequeño estire la
+            sección en vez de cortar el segundo botón, y es `svh` para que la caja no se
+            mueva al retraerse las barras del navegador. Por eso el carrusel ya no recibe
+            `proporcion`: con una `aspect-ratio` viva el navegador deduciría la anchura de
+            la altura y devolvería el scroll horizontal que esto ya causó dos veces.
+          - **Un solo <h1>** (README §9), y ahora sin rejilla que lo mueva: el titular, el
+            párrafo y los dos botones son una sola columna apilada sobre la foto.
+          - **El velo deja de ser solo de móvil.** Ahora hay texto sobre fotografía a
+            todos los anchos, así que el velo va a todos los anchos. Su 0,68 está medido
+            contra el peor píxel posible —blanco puro— y no contra una foto concreta, así
+            que el recorte nuevo no lo invalida. → `design/01` §2.8
+          - **Sobre el velo no queda ni un texto en `--tinta-media`.** Ese gris da 1,4 : 1
+            contra el velo. El párrafo pasa a `--fondo` (4,79 : 1) y el botón de contorno
+            a `sobreOscuro`, que es la variante que §3.2 ya tenía para fondo oscuro.
+          - **La columna de texto es `self-start`.** Estirarla dejaría su caja cubriendo
+            los 44×44 del control de pausa del carrusel, que está abajo a la izquierda:
+            el `pb` reserva su banda y el `z-20` del propio control cierra el caso cuando
+            el contenido crece hasta el fondo. Un pase automático que no se puede parar
+            es lo que prohíbe la WCAG 2.2.2. */}
+      <section className="hero-pantalla relative grid grid-cols-1">
         <CarruselFotos
           diapositivas={diapositivasHero}
-          proporcion="3/4"
           tamanos={TAMANOS_HERO_HOME}
-          /* `md:aspect-auto` no es adorno: en escritorio esta caja abarca las cuatro
-             filas de la rejilla, así que su altura es definida y su anchura no. Con una
-             `aspect-ratio` viva, el navegador deduce la anchura de la altura —4/3 × 697 =
-             929 px— en vez de estirarla a su columna de 648, y la foto se salía 241 px
-             por la derecha con barra de scroll horizontal en toda la home. Fijando las
-             dos dimensiones la proporción deja de opinar y recorta `object-cover`. */
-          className="col-start-1 row-start-1 w-full h-full md:col-start-2 md:row-start-1 md:row-end-5 md:aspect-auto md:min-h-[660px]"
+          /* Misma celda que la columna de texto, y las DOS dimensiones al 100 %: la
+             celda manda, el marco la llena y `object-cover` recorta. */
+          className="col-start-1 row-start-1 w-full h-full"
         >
-          {/* El velo solo existe donde el titular pisa la foto. En escritorio el
-              titular tiene su columna, así que sobra y se retira: las fotos se ven
-              como son.
-              Va como `children` del carrusel, que lo pinta entre las fotos y las
-              etiquetas técnicas: oscurece la FOTO, no el texto que va encima de
-              ella. Cuando caía también sobre la etiqueta la dejaba en 2,64 : 1.
+          {/* El velo va como `children`, que el carrusel pinta entre las fotos y las
+              etiquetas técnicas: oscurece la FOTO, no el texto que va encima de ella.
+              Cuando caía también sobre la etiqueta la dejaba en 2,64 : 1.
               → `design/01` §3.15 */}
-          <div className="velo absolute inset-0 md:hidden" aria-hidden="true" />
+          <div className="velo absolute inset-0" aria-hidden="true" />
         </CarruselFotos>
 
-        <div className="col-start-1 row-start-2 md:row-start-3 flex flex-col gap-4 md:gap-6">
-          <p className="text-16 md:text-20 text-tinta-media md:max-w-[46ch] m-0">
+        {/* `self-start` para que la caja acabe donde acaba el texto; `pb-20` reserva
+            la banda inferior del carrusel —control de pausa a la izquierda, etiqueta
+            técnica a la derecha— para cuando el contenido llegue hasta abajo. */}
+        <div className="col-start-1 row-start-1 relative z-10 self-start flex flex-col gap-6 md:gap-8 px-[18px] md:px-lat-desktop pt-8 md:pt-14 pb-20">
+          <h1 className="font-display font-extrabold fs-hero text-46 md:text-88 leading-[1.05] md:leading-[1.02] text-fondo m-0 md:max-w-[12ch]">
+            Hormigón que se ve bien 20 años después
+          </h1>
+
+          <p className="text-16 md:text-20 text-fondo max-w-[46ch] m-0">
             Pavimentos de hormigón impreso, pulido, lavado y microcemento en Valencia, Castellón y
             Alicante. 17 años ejecutando obra propia, con 10 años de garantía y mantenimiento
             incluido.
           </p>
+
           <div className="flex flex-col md:flex-row gap-3 md:gap-4">
             {/* Ocre TAMBIÉN en móvil. Excepción consciente a la regla del ocre de
                 `design/01 §2.2`, decidida por el dueño el 2026-09-17 y anotada allí:
@@ -332,7 +327,15 @@ export default function Home() {
             <Boton variante="primario" href="/acabados/" anchoCompleto className="md:w-auto">
               Ver acabados
             </Boton>
-            <Boton variante="contorno" href="/presupuesto/" anchoCompleto className="md:w-auto">
+            {/* `sobreOscuro` ya no es opcional aquí: el contorno claro sobre fondo
+                claro de la variante por defecto sería tinta sobre el velo. */}
+            <Boton
+              variante="contorno"
+              sobreOscuro
+              href="/presupuesto/"
+              anchoCompleto
+              className="md:w-auto"
+            >
               Pedir presupuesto
             </Boton>
           </div>

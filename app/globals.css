@@ -37,11 +37,32 @@
      ras del borde inferior de la cabecera; 14 px de desajuste dejan una franja
      por la que corre el contenido. */
   --cabecera-actual: 70px;
+
+  /* Alto de la barra fija de contacto (§4.3). Espeja el `min-h-boton` de
+     `components/layout/BarraMovil.tsx`: 56 px. Es `sticky bottom-0`, así que se
+     apoya sobre el contenido y le roba al visitante esos 56 px de alto visible
+     sin que ninguna caja lo sepa. El hero a pantalla completa (§3.15) sí tiene
+     que saberlo: es lo único del sitio que se mide contra el alto de la ventana.
+     ⚠️ Se apaga en `cabecera-ancha` (1180 px), NO en `md`, porque ese es el
+     punto en el que la barra deja de existir. Si se mueve allí, se mueve aquí. */
+  --barra-movil: 56px;
+
+  /* Cuánto del alto útil ocupa el hero a pantalla completa.
+     No es 1: un hero que llena la pantalla exacta esconde que existe el resto de
+     la página. Decisión del dueño del 2026-09-18, «casi todo el alto, dejando
+     ver el corte»; con 0,88 asoma el borde de la sección siguiente. */
+  --hero-asomo: 0.88;
 }
 
 @media (min-width: 768px) {
   :root {
     --cabecera-actual: 84px;
+  }
+}
+
+@media (min-width: 1180px) {
+  :root {
+    --barra-movil: 0px;
   }
 }
 
@@ -180,6 +201,52 @@ a {
          igual para una sección corta que para una larga. */
       animation-range: entry 80px entry 380px;
     }
+  }
+}
+
+/* Hero a pantalla completa (§3.15, enmendado el 2026-09-18). La foto ocupa la
+   sección entera y el texto va encima; lo que define la sección es su ALTO, no
+   una proporción, así que el carrusel del hero es el único del sitio que no
+   lleva `proporcion`.
+
+   🔴 `min-height` y no `height`, y no es una preferencia. El titular a 46 px, el
+   párrafo y los dos botones de ancho completo miden más que el alto útil de un
+   teléfono pequeño: medido a 360×640, el contenido pide 636 px y el alto útil
+   son 514. Con `height` el corte se lo llevaría el segundo botón. Con
+   `min-height` la sección crece, se pierde el asomo —que es un adorno— y no se
+   pierde un CTA, que no lo es.
+
+   🔴 Y `svh`, no `vh` ni `dvh`. `100vh` en un móvil es el viewport CON las
+   barras del navegador retraídas, así que se pasa de largo justo al cargar, que
+   es cuando se mira el hero. `dvh` acierta pero cambia de valor al hacer scroll:
+   el elemento que decide el LCP se redimensionaría en cuanto el visitante mueve
+   el dedo. `svh` es el viewport con las barras a la vista —el estado inicial—,
+   de modo que el asomo es real desde el primer pintado y la caja no se mueve
+   nunca.
+
+   ⚠️ El respaldo va en `@supports`, y NO en dos declaraciones seguidas. El
+   truco de repetir la propiedad solo funciona cuando la unidad desconocida se
+   escribe literal: aquí la declaración lleva `var()`, así que el analizador la
+   da por válida, gana la cascada y falla DESPUÉS, al calcular el valor, con lo
+   que el navegador cae en el valor inicial —`min-height: auto`— y no en la
+   línea anterior. Preguntando por la unidad, el respaldo es de verdad un
+   respaldo.
+
+   Al alto de la ventana hay que restarle las dos barras que se le montan encima:
+   la cabecera `sticky top-0` y la barra de contacto `sticky bottom-0`. Ninguna
+   de las dos está en el flujo por debajo del hero, así que sin restarlas el
+   «alto útil» sería 126 px mayor que el que el visitante ve de verdad. */
+.hero-pantalla {
+  min-height: calc(
+    (100vh - var(--cabecera-actual) - var(--barra-movil)) * var(--hero-asomo)
+  );
+}
+
+@supports (height: 100svh) {
+  .hero-pantalla {
+    min-height: calc(
+      (100svh - var(--cabecera-actual) - var(--barra-movil)) * var(--hero-asomo)
+    );
   }
 }
 
