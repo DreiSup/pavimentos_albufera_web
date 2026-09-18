@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { enviarPresupuesto, type EstadoEnvio } from '@/app/presupuesto/actions'
 import Campo, { claseInput } from '../ui/Campo'
 import Boton from '../ui/Boton'
+import DatoPendiente from '../datos/DatoPendiente'
 import { nap } from '@/lib/config'
 import { EVENTOS, MONEDA, registrarEvento, type Ubicacion } from '@/lib/eventos'
 import { COOKIE_REFERENCIA, leerCookie } from '@/lib/cookies'
@@ -28,6 +29,32 @@ const ESPACIOS = [
  */
 const FOTO_NO_CONSERVADA = 'Vuelve a adjuntar la foto: por seguridad, el navegador no conserva el archivo.'
 
+/**
+ * Pinta el mensaje de error de envío poniendo el teléfono en el hueco que el
+ * Server Action deja marcado.
+ *
+ * Antes era un `.replace('[teléfono]', nap.telefono ?? nap.telefonoMostrado)`, y
+ * `telefonoMostrado` **nunca** es indefinido: con `NEXT_PUBLIC_TELEFONO` sin
+ * rellenar, el visitante leía «Llámanos al 96X XXX XXX» en un mensaje de error
+ * de verdad. Un número inventado presentado como real, que es peor que el hueco.
+ *
+ * Ahora el hueco se trata como en el resto del sitio —`app/page.tsx:603`,
+ * `app/presupuesto/page.tsx:48`—: con el número si lo hay, y con
+ * `<DatoPendiente>` si no. El microcopy no cambia ni una letra; lo que cambia es
+ * que el marcador se ve como lo que es. Los mensajes sin marcador —el del límite
+ * de envíos— pasan tal cual.
+ */
+function conTelefono(mensaje: string) {
+  const [antes, despues] = mensaje.split('[teléfono]')
+  if (despues === undefined) return mensaje
+  return (
+    <>
+      {antes}
+      {nap.telefono ?? <DatoPendiente>{nap.telefonoMostrado}</DatoPendiente>}
+      {despues}
+    </>
+  )
+}
 
 export default function FormularioPresupuesto({
   variante = 'completo',
@@ -154,7 +181,7 @@ export default function FormularioPresupuesto({
     <form action={accion} className="flex flex-col gap-4" aria-busy={enviando}>
       {estado.errores.form ? (
         <p className="font-sans text-14 font-semibold text-error" aria-live="polite">
-          {estado.errores.form.replace('[teléfono]', nap.telefono ?? nap.telefonoMostrado)}
+          {conTelefono(estado.errores.form)}
         </p>
       ) : null}
 

@@ -371,9 +371,27 @@ real desde que el campo es opcional en las dos variantes —se rechaza el format
 el campo vacío—.
 
 ⚠️ **`[teléfono]` del error de envío es microcopy, no un dato pendiente.** Sale literal del
-Server Action y lo sustituye `FormularioPresupuesto` por el número de configuración al pintarlo;
-no lleva tratamiento de corchete. Se había perdido del mensaje en código y el `.replace()` del
-componente era código muerto sobre un camino vivo.
+Server Action y lo sustituye `FormularioPresupuesto` por el número de configuración al pintarlo.
+Se había perdido del mensaje en código y el `.replace()` del componente era código muerto sobre
+un camino vivo.
+
+✅ **Corrección del mismo día: el marcador sí lleva tratamiento de corchete cuando no hay número
+que poner, y esa era la mitad que faltaba.** El sustituto era
+`nap.telefono ?? nap.telefonoMostrado`, y `telefonoMostrado` **nunca** es indefinido —vale
+`96X XXX XXX` mientras `NEXT_PUBLIC_TELEFONO` esté sin rellenar—, así que la sustitución siempre
+encontraba algo y en ese entorno el visitante leía «Llámanos al 96X XXX XXX» **en un mensaje de
+error de verdad**: un número inventado presentado como real, que es peor que el hueco. Ahora es
+`nap.telefono ?? <DatoPendiente>{nap.telefonoMostrado}</DatoPendiente>`, exactamente como
+`app/page.tsx:603` y `app/presupuesto/page.tsx:48`. **El microcopy no cambia ni una letra**: con
+teléfono se lee «Llámanos al 961 000 000» y sin él «Llámanos al `[96X XXX XXX]`» con el punteado
+de `01 §3.9`. Los mensajes sin marcador —el del límite de envíos— pasan tal cual. Medido en
+`/presupuesto/` a 390 px con la variable puesta y vacía, forzando el fallo de envío con una clave
+de Resend inválida.
+
+⚠️ **Y el mismo defecto, una palabra más allá, sin arreglar:** la frase sigue diciendo «o
+escríbenos por WhatsApp» cuando `NEXT_PUBLIC_WHATSAPP` vacío no pinta un solo `wa.me` en toda la
+web. Arreglarlo es reescribir la frase, y eso es copy nuevo: **es del dueño**, que en producción
+tiene las dos variables.
 
 **Los cuatro estados:**
 

@@ -418,7 +418,10 @@ export async function enviarPresupuesto(
           // `FormularioPresupuesto` lo sustituye al pintarlo, porque el número
           // vive en configuración y el Server Action no es quien lo compone.
           // Sin él, esa sustitución era código muerto sobre un camino vivo y el
-          // mensaje perdía la única vía de contacto que ofrece.
+          // mensaje perdía la única vía de contacto que ofrece. Con el número
+          // configurado se lee el número; sin él, el hueco sale en
+          // `<DatoPendiente>` como en el resto del sitio, y no como el
+          // `96X XXX XXX` de relleno que antes pasaba por teléfono real.
           form: 'No hemos podido enviarlo. Llámanos al [teléfono] o escríbenos por WhatsApp y lo resolvemos ahora.',
         },
         valores,
