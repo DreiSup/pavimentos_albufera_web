@@ -12,9 +12,17 @@ import type { ServicioId } from '@/lib/tipos'
  *
  * Lo que cambia respecto de la página de servicio, y por qué:
  *
- * - **Fuera la ficha técnica.** Los seis servicios la llenan de `<DatoPendiente>`
- *   —impreso 2 corchetes, pulido 4, microcemento 5, lavado 3—, y una landing de
- *   pago con un corchete es dinero quemado. No se rellena: se quita la sección.
+ * - **Fuera la ficha técnica.** ⚠️ **El motivo original caducó el 2026-09-18 y
+ *   el comportamiento se queda igual, a propósito.** Decía que los seis
+ *   servicios llenaban la ficha de `<DatoPendiente>` —impreso 2 corchetes,
+ *   pulido 4, microcemento 5, lavado 3— y que una landing de pago con un
+ *   corchete es dinero quemado. Ya no queda ni un corchete en ninguna de las
+ *   seis: el dueño mandó retirar las filas sin dato. Lo que queda es una ficha
+ *   más corta —de 7 filas en impreso a 2 en microcemento—, y si vuelve o no a
+ *   la landing es decisión suya, no una consecuencia de este cambio. Hasta que
+ *   la tome, la landing sigue sin ficha: es la única sección que estas cuatro
+ *   páginas han tenido oculta desde que existen, y quitarle a `/lp/` una
+ *   sección que nadie ha pedido devolver no es trabajo de un `slice`.
  * - **CTA de llamada y WhatsApp** en el hero y en el cierre, en `tinta` y
  *   `contorno`. Nunca en ocre.
  * - **El cierre sin `<Aparece>`**: es el bloque de conversión y no debe depender

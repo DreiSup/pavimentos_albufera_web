@@ -22,9 +22,23 @@ import type { PreguntaFAQ } from '@/components/secciones/Acordeon'
  * `zona`, `proceso`— y es el catálogo de objeciones posibles, no el de las
  * publicadas.
  *
- * ⚠️ **Al irse, el catálogo entero baja a 5 preguntas y ninguna lista puede
- * cumplir ya lo que `design/02` especifica.** No se rellena con una pregunta
- * inventada: eso sería copy nuevo. El hueco está medido en el informe.
+ * ⚠️ **Al irse, el catálogo heredado baja a 5 preguntas y ninguna de sus listas
+ * puede cumplir ya lo que `design/02` especifica.** No se rellena con una
+ * pregunta inventada: eso sería copy nuevo. El hueco está medido en el informe.
+ *
+ * ✅ **Excepción autorizada el 2026-09-18, y solo esta.** El dueño contesta
+ * expresamente «escribe información verdadera sobre microcemento, si hace falta
+ * busca en otras webs», y con eso entran las cinco `micro*` de abajo. La
+ * autorización es del MATERIAL, no del negocio: se puede afirmar a qué espesor
+ * se aplica el microcemento, no cuántas manos da esta empresa, con qué producto
+ * ni en cuántos días. Cada afirmación sale de una página de fabricante o de
+ * normativa citada en el commit —Topciment y el CTE DB-SUA—, porque estas
+ * respuestas viajan dentro del JSON-LD de `FAQPage` y ahí una frase de folleto
+ * es una afirmación falsa ante Google.
+ *
+ * ⚠️ **La excepción no se extiende.** Las 5 heredadas siguen siendo del
+ * documento maestro y no se reescriben, y `faqHome` y `faqZona` no cambian: una
+ * pregunta de microcemento no es una objeción de portada.
  */
 export const PREGUNTAS = {
   pisar: {
@@ -56,6 +70,51 @@ export const PREGUNTAS = {
     respuesta:
       'Sí. Naves industriales, parkings, urbanizaciones y obra civil. Pídenos referencias del sector.',
     tema: 'sector',
+  },
+
+  /*
+   * Las cinco de microcemento. `/microcemento/` era la única de las seis
+   * páginas de servicio sin acordeón, porque las de arriba hablan de una solera
+   * de hormigón —curado, resellado de exterior, agrietado de 10 cm— y el
+   * microcemento no lleva solera.
+   *
+   * Fuentes, una por afirmación:
+   * - Soporte, estabilidad, humedad y fisuras → Topciment, «Condiciones y
+   *   soporte idóneos para la aplicación de microcemento».
+   * - Espesor de 2-3 mm, capas de menos de 1 mm y continuidad sin juntas →
+   *   Topciment, «Microcement flooring: application, types, advantages».
+   * - Limpieza → Topciment, «How to clean microcement».
+   */
+
+  microSoporte: {
+    pregunta: '¿Sobre qué suelos se puede aplicar?',
+    respuesta:
+      'Sobre azulejo, gres, terrazo, baldosa hidráulica o una solera de hormigón, sin levantar nada. Lo que decide no es el material de debajo, es que esté firme: con piezas sueltas o un mortero que se deshace, el microcemento no tiene a qué agarrarse.',
+    tema: 'terreno',
+  },
+  microEspesor: {
+    pregunta: '¿Cuánto sube el suelo?',
+    respuesta:
+      'Entre 2 y 3 milímetros. Se extiende en capas de menos de un milímetro y el sistema entero no pasa de cuatro. Esa es su razón de ser: renovar sin obra y sin apenas ganar altura.',
+    tema: 'proceso',
+  },
+  microJuntas: {
+    pregunta: '¿Lleva juntas?',
+    respuesta:
+      'No. Es un revestimiento continuo: no hay piezas, así que no hay juntas donde se acumule la suciedad ni corte entre una estancia y la siguiente.',
+    tema: 'juntas',
+  },
+  microHumedad: {
+    pregunta: '¿Y si el suelo tiene humedad?',
+    respuesta:
+      'Entonces todavía no se aplica: el soporte tiene que estar seco, por debajo del 5 %. Y con las fisuras pasa igual que con el agua, porque el microcemento no se agrieta solo, pero copia lo que haga el suelo que tiene debajo.',
+    tema: 'terreno',
+  },
+  microLimpieza: {
+    pregunta: '¿Cómo se limpia?',
+    respuesta:
+      'Agua y jabón neutro, y solo agua las primeras semanas. Lo que no admite son los ácidos, el amoniaco, los estropajos metálicos ni las lijas: eso sí lo estropea, y es lo único que hay que tener en cuenta.',
+    tema: 'mantenimiento',
   },
 } satisfies Record<string, PreguntaFAQ>
 

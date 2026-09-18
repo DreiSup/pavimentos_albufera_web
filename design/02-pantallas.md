@@ -77,11 +77,11 @@ reutilizan literal el §7.1 filtrado a este servicio. Cero texto nuevo.
 | — | Submenú | Anclado a 80 px, **6 anclas como máximo**. Solo escritorio |
 | 01 | Aplicaciones | `380px 1fr`. Filas `300px 1fr`: nombre de aplicación en Archivo 26 px y matiz a la derecha |
 | 02 | Muestrario del servicio | Rejilla de 4 con los acabados de esta técnica, filtrados del inventario |
-| 03 | Ficha técnica | `380px 1fr` + tabla de 8 filas (`01 §3.8`, tercera variante) |
+| 03 | Ficha técnica | `380px 1fr` + tabla (`01 §3.8`, tercera variante). **Las 8 filas eran el máximo, no la cifra: hoy van de 7 a 2, ver abajo** |
 | 04 | Cuándo NO elegir impreso | **Fondo `--tinta` a página completa.** `1fr 1fr`. 2 botones de contorno claro a los otros servicios |
 | 05 | Cómo trabajamos | 4 columnas, idéntico a la home |
 | 06 | Obra ejecutada | 3 tarjetas de proyecto de esta técnica |
-| 07 | FAQ | Acordeón de 4 en `/hormigon-impreso/`, de 3 en el resto. Específicas del servicio |
+| 07 | FAQ | Acordeón de 4 en `/hormigon-impreso/`, de 5 en `/microcemento/` y de 3 en el resto. Específicas del servicio |
 | 08 | Cierre | `1fr 1fr` con formulario de 3 campos |
 
 ⛔ **La FAQ de esta plantilla pierde una pregunta el 2026-09-18, y la cifra de la fila 07
@@ -92,7 +92,22 @@ esta tabla y la de la fila 10 de §A1 **no se pueden volver a cumplir sin copy n
 `design/05` §B7 lo escribe el cliente. Se bajan a lo que hay en vez de rellenar el acordeón con
 una pregunta inventada. Cuentas exactas: home 6 → 5, `/hormigon-impreso/` 5 → 4, y las cuatro
 que comparten `FAQ_SOLERA` 4 → 3 —**esas ya iban con 4 contra un 5 especificado antes de este
-cambio**—. `/microcemento/` sigue sin FAQ y `/zonas/[municipio]/` sigue con 3, que es lo suyo.
+cambio**—. `/zonas/[municipio]/` sigue con 3, que es lo suyo.
+
+✅ **Enmienda del mismo 2026-09-18, más tarde: `/microcemento/` ya tiene FAQ, y son 5.** El
+párrafo de arriba decía que seguía sin ella. El dueño autoriza expresamente copy nuevo para ese
+material —«escribe información verdadera sobre microcemento, si hace falta busca en otras
+webs»—, y con eso se escriben cinco preguntas suyas: soporte, espesor, juntas, humedad y
+limpieza. **La autorización es del material, no del negocio**: se puede afirmar a qué espesor va
+el microcemento, con fuente de fabricante citada en el commit, y no cuántas manos da esta
+empresa, en cuántos días ni con qué garantía. Cuentas de hoy: portada 5, `/hormigon-impreso/` 4,
+`/microcemento/` 5, las cuatro de `FAQ_SOLERA` 3 y `/zonas/[municipio]/` 3.
+
+🔴 **Y el hueco de la portada no se cierra con esto, a propósito.** Las cinco nuevas son de
+microcemento y no pueden entrar ni en `faqHome` ni en `FAQ_SOLERA` sin afirmar de otro material
+algo que no es cierto. La portada se queda en 5 contra las 6 de §A1 fila 10. Escribir una sexta
+pregunta genérica para cuadrar la tabla sería copy inventado, que es lo único que el dueño **no**
+ha autorizado.
 
 ⛔ **La sección de Precio, que era la 05, se retira el 2026-09-18.** Misma decisión del dueño
 que retiró `/precios/` el día antes —no quiere precios en la web—, extendida ahora a la
@@ -100,8 +115,20 @@ calculadora, que era todo lo que esa sección contenía. Detalle en §A5. Las se
 condicionales y se renumeran solas: el numerado, el submenú y el cuerpo siguen contando lo
 mismo, medido a 390, 768, 1024 y 1366 px en las seis páginas y en las cuatro landings, sin un
 número saltado, sin un ancla huérfana y sin scroll horizontal. La numeración de esta tabla **no
-es fija**: un servicio sin `aplicaciones` o sin `cuandoNo` empieza y sigue con otros números, y
-`/hormigon-fratasado/` y `/hormigon-desactivado/` llevan cuatro secciones desde que existen.
+es fija**: un servicio sin `aplicaciones` o sin `cuandoNo` empieza y sigue con otros números.
+
+✅ **Enmienda del mismo 2026-09-18: ya no hay ninguna página de servicio corta.** Esa última
+frase decía que `/hormigon-fratasado/` y `/hormigon-desactivado/` llevaban cuatro secciones desde
+que existen. Con la misma autorización de copy que le dio FAQ a `/microcemento/`, las dos reciben
+`aplicaciones` y `Cuándo NO`, y `/hormigon-lavado/` —que ya tenía `aplicaciones`— recibe su
+`Cuándo NO`. **Las seis páginas de servicio montan hoy las seis secciones**, que es también el
+tope de anclas del submenú, con el numerado corrido de 01 a 06 y sin ancla huérfana, medido a
+390, 768 y 1366 px.
+
+**Filas de la ficha técnica, servicio a servicio, después de retirar las que no tenían dato**
+(fila 03 de la tabla de arriba): impreso 7 · pulido 5 · lavado 5 · fratasado 4 · desactivado 4 ·
+**microcemento 2**. La de microcemento es el suelo del que no se puede bajar: con una sola fila
+la sección no es una ficha, y con cero `PaginaServicio` pintaría el título sobre una tabla vacía.
 
 ⚠️ **Lo que sí quedó: el fondo alterno. Enmienda del 2026-09-18, medida.** Este párrafo decía
 «no quedó hueco que recomponer», y lo decía midiendo solo `/hormigon-impreso/`, donde la ficha
@@ -110,6 +137,12 @@ base **justo entre ellas**, y hay una página donde no queda nada en medio: `/lp
 es la única que esconde la ficha técnica por `ocultarSecciones` y además no tiene `Cuándo NO`.
 Muestrario y `Cómo trabajamos` quedaban pegadas: **1029 px seguidos de `#DADCD6` sin costura a
 390 px** (410 + 619), y 482 + 573 a 768.
+
+⚠️ **Ese caso concreto deja de existir ese mismo día: `/hormigon-lavado/` ya tiene `Cuándo NO`,
+así que su landing también.** La banda `--tinta` vuelve a separar las dos alternas y no queda
+ninguna página con dos alternas seguidas. **La regla de abajo no se toca por eso**: es la que
+reparte el alterno por posición, y sigue siendo la que evita que la próxima sección que se caiga
+o se oculte repita el problema. Lo que caduca es el ejemplo, no el remedio.
 
 El remedio es el de §A1, del día anterior y por la misma causa: **el fondo alterno lo da la
 posición, no la sección**, y cuando se cae una banda el alterno se reparte otra vez. La regla es
