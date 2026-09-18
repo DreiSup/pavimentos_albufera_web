@@ -18,7 +18,7 @@ import { JsonLd, schemaFAQ } from '@/lib/schema'
 import { acabadosPublicados, proyectos, recuentoAcabadosPublicados } from '@/lib/datos'
 import { faqHome } from '@/content/faq'
 import { PASOS, SERVICIOS } from '@/content/servicios'
-import { CODIGO_COLOR, NOMBRE_MODELO, NOMBRE_SERVICIO, RUTA_SERVICIO } from '@/lib/tipos'
+import { NOMBRE_SERVICIO, RUTA_SERVICIO } from '@/lib/tipos'
 import type { Proyecto } from '@/lib/tipos'
 import { nap } from '@/lib/config'
 
@@ -112,13 +112,12 @@ const servicios = [
  * impreso: es lo que hay fotografiado en horizontal. La cuarta, Corbera, entra
  * para que el pase no enseñe una sola técnica.
  *
- * 🔴 **Aquí ya no hay superficie.** Los 180 m² de Moncada vivían en un
- * `superficiePendiente` de esta lista —el único m² que la portada afirmaba, y
- * lo afirmaba entre corchetes—. El 2026-09-18 el dueño decidió que lo que no se
- * sabe NO SE PUBLIQUE, ni siquiera atenuado: ninguna de las cuatro obras tiene
- * `superficie` en `content/proyectos.json`, así que el dato sale de la etiqueta
- * del hero en las cuatro. El criterio se aplica igual al año — lo tiene Moncada
- * y no lo tienen las otras tres—, y por eso la tercera línea es opcional.
+ * 🔴 **Aquí ya no hay superficie, ni año, ni modelo, ni color.** Los 180 m² de
+ * Moncada vivían en un `superficiePendiente` de esta lista —el único m² que la
+ * portada afirmaba, y lo afirmaba entre corchetes—. El 2026-09-18 el dueño
+ * decidió primero que lo que no se sabe NO SE PUBLIQUE, ni siquiera atenuado, y
+ * después que la etiqueta se recorte a municipio y acabado. Lo que queda de
+ * aquella decisión está en `etiquetaDeObra`, que es quien arma las dos líneas.
  */
 const DIAPOSITIVAS_HERO: { slug: string }[] = [
   { slug: 'moncada-impreso-espiga-117' },
@@ -206,36 +205,36 @@ function tamanosCompartidos(src?: string) {
 }
 
 /**
- * La etiqueta técnica de una diapositiva: municipio y provincia, luego técnica,
- * modelo y color, y por último el año si consta. Nada se escribe a mano, todo
- * sale del modelo de contenido.
+ * La etiqueta técnica de una diapositiva: **municipio y acabado, y nada más**.
  *
- * ⚠️ **Se aparta a propósito de `TarjetaProyecto` en la tercera línea**, y hay
- * que saberlo antes de «unificarlas». La tarjeta enseña superficie y año, y
- * pinta entre corchetes lo que falte, porque vive dentro de una ficha de obra
- * que el visitante ha ido a buscar. Esta etiqueta va encima de la primera foto
- * de la portada, en un carrusel que pasa solo: el 2026-09-18 el dueño decidió
- * que ahí lo que no se sabe no se publica. Ninguna de las cuatro obras tiene
- * superficie y solo Moncada tiene año, así que la línea se OMITE cuando queda
- * vacía en vez de dejar un « · » suelto o un corchete colgando. Dos líneas, no
- * tres, y sigue leyéndose.
+ * 🔴 **Recortada el 2026-09-18 por decisión del dueño.** Decía «MONCADA ·
+ * VALENCIA / HORMIGÓN IMPRESO · ESPIGA · C-117 / 2025» y dice «MONCADA ·
+ * VALENCIA / HORMIGÓN IMPRESO». Fuera el modelo, fuera el color y fuera el año,
+ * en las cuatro diapositivas. El muestrario existe para enseñar modelo y color
+ * con su código —`/acabados/`, §3.9— y la ficha de obra para fecharla; esta
+ * etiqueta va sobre una foto que pasa sola cada seis segundos, y ahí el dato
+ * que se retiene es dónde se hizo y de qué es.
  *
- * El municipio y la provincia sí conservan el corchete: son el dato que
- * sostiene la etiqueta —sin ellos no se sabe de qué obra habla la foto— y hoy
- * las cuatro diapositivas los tienen, así que no se pinta ninguno.
+ * ⚠️ **Se aparta a propósito de `TarjetaProyecto`**, y hay que saberlo antes de
+ * «unificarlas». La tarjeta enseña tres líneas —municipio, técnica con modelo y
+ * color, superficie y año— porque vive dentro de una ficha de obra que el
+ * visitante ha ido a buscar. Aquí son dos, fijas.
+ *
+ * Lo que sí se copia de la tarjeta es **cómo se arma cada línea**: lista,
+ * `filter(Boolean)` y `join(' · ')`, y fuera la línea que quede vacía. Hoy las
+ * cuatro obras tienen municipio y provincia, así que no cambia nada en pantalla;
+ * lo que cambia es que una obra sin municipio ya no puede dejar un « · » suelto
+ * ni una línea en blanco. El corchete de `<DatoPendiente>` tampoco vuelve: el
+ * 2026-09-18 el dueño decidió que en el hero lo que no se sabe no se publica, ni
+ * siquiera atenuado.
  */
 function etiquetaDeObra(proyecto: Proyecto) {
-  const modelo = proyecto.modelo ? ` · ${NOMBRE_MODELO[proyecto.modelo].toUpperCase()}` : ''
-  const color = proyecto.color ? ` · ${CODIGO_COLOR[proyecto.color]}` : ''
   return [
-    <>
-      {proyecto.municipio?.toUpperCase() ?? <DatoPendiente>MUNICIPIO</DatoPendiente>}
-      {' · '}
-      {proyecto.provincia?.toUpperCase() ?? <DatoPendiente>PROVINCIA</DatoPendiente>}
-    </>,
-    `${NOMBRE_SERVICIO[proyecto.servicio].toUpperCase()}${modelo}${color}`,
-    ...(proyecto.anio ? [String(proyecto.anio)] : []),
+    [proyecto.municipio, proyecto.provincia],
+    [NOMBRE_SERVICIO[proyecto.servicio]],
   ]
+    .map((linea) => linea.filter(Boolean).join(' · ').toUpperCase())
+    .filter(Boolean)
 }
 
 const diapositivasHero = DIAPOSITIVAS_HERO.map(({ slug }) => {
