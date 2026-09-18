@@ -260,25 +260,39 @@ servicio manda aquí (`PaginaServicio`, «Ver todos los acabados de…»). `?col
 
 Maquetada con la obra de Moncada. **Plantilla de las 11 obras.**
 
-- **Galería:** imagen principal `21/9` a ancho de contenido, y debajo 4 miniaturas `4/3` en
-  rejilla de 4 con `gap: 8px`. La seleccionada lleva `outline: 2px solid #1B1E1C` con
+- **Galería:** imagen principal `21/9` a ancho de contenido, y debajo 3 miniaturas `4/3` en
+  rejilla de 3 con `gap: 8px`. La seleccionada lleva `outline: 2px solid #1B1E1C` con
   `outline-offset: -2px` (contorno en tinta, **no ocre**: no sumamos un tercer ocre).
-  La última miniatura es el `ANTES [pendiente]`.
+  **Eran 4, y la cuarta era el `ANTES [pendiente]`: retirada el 2026-09-18.** Ninguna de las
+  125 fotos de la mediateca es un ANTES y no hay candidata, así que no era una foto pendiente
+  de llegar sino una promesa de la maqueta. Los huecos de las miniaturas 2 y 3 sí siguen: esas
+  fotos existen, faltan a 1600 px, y su bloque de posición tiene destinatario.
 - **Cuerpo:** `1fr 420px`.
   - Izquierda: H1 64 px y los dos bloques de narrativa, `EL ENCARGO` y `LA EJECUCIÓN`.
-  - Derecha: **ficha de obra anclada** (`position: sticky; top: 100px`) con 8 filas —
+  - Derecha: **ficha de obra anclada** (`position: sticky; top: 100px`) con hasta 8 filas —
     municipio, provincia, servicio, modelo, color, superficie, año, plazo — y debajo la tarjeta
     del acabado empleado, que enlaza a `/acabados/[modelo]/`.
+  - **Hasta 8, y no 8 fijas, desde el 2026-09-18.** El dueño no tiene los datos de obra y no
+    quiere que se vean, ni el valor ni el corchete: `FichaObra` omite la fila sin valor y, si se
+    le caen todas, no pinta ni el título ni la caja. Igual los dos bloques de narrativa: sin
+    copy no se pintan, H2 incluido. Hoy las nueve obras van sin narrativa y con entre 3 y 6
+    filas. Es presentación, no borrado: los campos siguen en `content/proyectos.json` y el día
+    que llegue el dato la fila vuelve sola.
 - **Proyectos similares:** 3 tarjetas de la misma técnica, fondo `--fondo-alt`.
 - **Cierre:** titular + 2 botones, con el CTA ocre.
 
 **En móvil la ficha sube por delante de la narrativa**: quien entra a una obra busca el dato
-—modelo, color, m²— antes que el relato. El orden es H1 → ficha → encargo → ejecución.
+—modelo, color, m²— antes que el relato. El orden es H1 → ficha → encargo → ejecución. La
+rejilla coloca cada celda por `col-start`/`row-start` y no con dos columnas y `order`: el H1
+vivía dentro de la columna izquierda y en móvil caía **debajo** de la ficha, al revés de lo que
+pide este párrafo. Con los corchetes de maqueta delante no se notaba; sin ellos, sí.
 
-Los dos bloques de narrativa no existen como copy. Se maquetan con su estructura y longitud
-reales dentro de un `border: 1px dashed #5C625E`, indicando qué debe contar cada uno:
-`EL ENCARGO` = qué había antes, qué problema tenía y con qué condición llegó el cliente;
-`LA EJECUCIÓN` = qué se hizo y qué dificultad concreta tuvo esta obra.
+Los dos bloques de narrativa no existen como copy. **Hasta el 2026-09-18 se maquetaban con su
+estructura y longitud reales dentro de un `border: 1px dashed #5C625E`, indicando qué debe
+contar cada uno** —`EL ENCARGO` = qué había antes, qué problema tenía y con qué condición llegó
+el cliente; `LA EJECUCIÓN` = qué se hizo y qué dificultad concreta tuvo esta obra—. Ese recuadro
+ya no se pinta: es el mismo dato que el dueño ha dicho que no quiere ver. El texto de arriba
+sigue siendo el encargo de copy, y en cuanto exista vuelve con su H2.
 
 ## A5 · Precios — `/precios/` · ⛔ RETIRADA EL 2026-09-17
 
