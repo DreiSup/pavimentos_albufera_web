@@ -180,10 +180,11 @@ a {
    seguidos. `visibility: hidden` sí las retira, y se hereda hasta la <img>.
 
    ⚠️ Y el estado activo NO puede ser `:first-child`. El marco tiene dos capas
-   de pasadas —las fotos y, por encima del velo, sus etiquetas— más el propio
-   velo entre medias: la primera etiqueta es el sexto hijo, no el primero. El
-   componente marca la activa con su clase, igual que ya pasaba el índice por
-   propiedad personalizada en vez de por `:nth-child`. */
+   de pasadas —las fotos y, por encima del velo, sus etiquetas—, el velo entre
+   medias y, desde que el control de pausa es CSS, un `<input>` ABRIENDO la
+   lista: la primera etiqueta es el séptimo hijo y ni la primera foto es la
+   primera. El componente marca la activa con su clase, igual que ya pasaba el
+   índice por propiedad personalizada en vez de por `:nth-child`. */
 .carrusel__paso {
   opacity: 0;
   visibility: hidden;
