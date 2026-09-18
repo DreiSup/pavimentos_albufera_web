@@ -57,11 +57,11 @@ export default function AvisoLegal() {
           </p>
           <p>
             Cómo tratamos tus datos personales no se explica aquí, sino en la{' '}
-            <Link href="/politica-de-privacidad/" className="text-tinta">
+            <Link href="/politica-de-privacidad/">
               política de privacidad
             </Link>
             , y qué cookies usamos, en la{' '}
-            <Link href="/politica-de-cookies/" className="text-tinta">
+            <Link href="/politica-de-cookies/">
               política de cookies
             </Link>
             .
@@ -82,7 +82,7 @@ export default function AvisoLegal() {
               <p>
                 Puedes ponerte en contacto con nosotros de forma directa y efectiva por correo
                 electrónico, en{' '}
-                <a href={`mailto:${nap.email}`} className="text-tinta">
+                <a href={`mailto:${nap.email}`}>
                   {nap.email}
                 </a>
                 , o por teléfono en el número de arriba.
@@ -128,7 +128,7 @@ export default function AvisoLegal() {
               <p>
                 Si detectas en este sitio un contenido que consideres ilícito o lesivo para derechos
                 de terceros, comunícanoslo por correo electrónico a{' '}
-                <a href={`mailto:${nap.email}`} className="text-tinta">
+                <a href={`mailto:${nap.email}`}>
                   {nap.email}
                 </a>{' '}
                 y lo revisaremos. La empresa colabora con las autoridades y con las fuerzas y cuerpos
@@ -162,7 +162,7 @@ export default function AvisoLegal() {
               </p>
               <p>
                 Para cualquier observación sobre propiedad intelectual o industrial, escríbenos a{' '}
-                <a href={`mailto:${nap.email}`} className="text-tinta">
+                <a href={`mailto:${nap.email}`}>
                   {nap.email}
                 </a>
                 .
@@ -206,12 +206,12 @@ export default function AvisoLegal() {
             <p>
               Cómo se recogen, para qué se usan, a quién se envían y cuánto se conservan tus datos
               personales se explica en la{' '}
-              <Link href="/politica-de-privacidad/" className="text-tinta">
+              <Link href="/politica-de-privacidad/">
                 política de privacidad
               </Link>
               . Qué cookies utiliza este sitio, cuánto duran y cómo aceptarlas, rechazarlas o
               borrarlas se explica en la{' '}
-              <Link href="/politica-de-cookies/" className="text-tinta">
+              <Link href="/politica-de-cookies/">
                 política de cookies
               </Link>
               . Este aviso legal no repite ninguna de las dos cosas a propósito: dos textos que

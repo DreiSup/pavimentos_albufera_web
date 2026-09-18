@@ -78,7 +78,7 @@ export default function PoliticaCookies() {
             Aquí tienes las que usa pavimentos-albufera.com, una a una, con quién las pone, para qué
             sirven, cuánto duran y si hace falta tu permiso. Para lo demás —qué datos personales
             tratamos, a quién se los enviamos y qué derechos tienes— está la{' '}
-            <Link href="/politica-de-privacidad/" className="text-tinta">
+            <Link href="/politica-de-privacidad/">
               política de privacidad
             </Link>
             .
@@ -197,7 +197,7 @@ export default function PoliticaCookies() {
                 certificadas; lo que no cubra necesita una garantía del artículo 46 del RGPD. El
                 detalle, con los enlaces oficiales y lo que queda por comprobar de cada proveedor,
                 está en la{' '}
-                <Link href="/politica-de-privacidad/" className="text-tinta">
+                <Link href="/politica-de-privacidad/">
                   política de privacidad
                 </Link>
                 .
@@ -213,7 +213,7 @@ export default function PoliticaCookies() {
               anuncios y para decidir qué anuncios ver. Esta web no toma ninguna decisión automática
               sobre ti: los presupuestos los hace y los contesta una persona. Cómo se describe
               exactamente esa segmentación está detallado en la{' '}
-              <Link href="/politica-de-privacidad/" className="text-tinta">
+              <Link href="/politica-de-privacidad/">
                 política de privacidad
               </Link>
               .
@@ -282,7 +282,7 @@ export default function PoliticaCookies() {
             <p>
               Quién es el responsable, qué datos personales se tratan, a quién se envían, cuánto se
               conservan y cómo ejercer tus derechos está en la{' '}
-              <Link href="/politica-de-privacidad/" className="text-tinta">
+              <Link href="/politica-de-privacidad/">
                 política de privacidad
               </Link>
               . Esta política de cookies puede cambiar cuando cambien las cookies del sitio; la fecha

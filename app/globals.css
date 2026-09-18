@@ -428,3 +428,64 @@ h1 {
 .fs-h3 {
   font-stretch: 115%;
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Enlace en prosa — design/01 §3.16, nuevo el 2026-09-18.
+
+   El sistema tenía enlace-etiqueta (§3.5) para navegación y botones para los
+   CTA, pero **ningún estilo para un enlace dentro de un párrafo**, porque hasta
+   las tres páginas legales no había párrafos con enlaces dentro. Los 22 de esos
+   tres documentos se escribieron con `className="text-tinta"`, que sobre el
+   `a { color: inherit }` de este mismo archivo pinta el enlace del color exacto
+   del texto que lo rodea: medido a 390 px, `rgb(27, 30, 28)` y
+   `text-decoration: none` en los 22. Invisibles.
+
+   No es una minucia tipográfica. Lo que no se ve son el `mailto:` para ejercer
+   los derechos del art. 15 al 22 del RGPD, la reclamación ante la AEPD, las dos
+   páginas legales entre sí, la decisión de adecuación en EUR-Lex y la lista del
+   Data Privacy Framework: las vías que la ley obliga a ofrecer. Y falla el
+   criterio 1.4.1 de las WCAG, que prohíbe que el color sea el único indicador
+   de un enlace — aquí ni siquiera había color distinto.
+
+   **El arreglo es el subrayado, no el color.** Un token nuevo no existe (la
+   paleta está cerrada) y el ocre está prohibido como texto pequeño sobre fondo
+   claro. `--tinta` sobre `--fondo` da 14,5 : 1, muy por encima del AA, así que
+   el color se queda donde está y lo que entra es la línea: cumple 1.4.1 sin
+   depender de la vista de colores de nadie.
+
+   Se distingue del `<DatoPendiente>` vecino, que también lleva línea inferior,
+   porque la suya es `1px dotted` en `--tinta-media` y esta es continua en
+   `--acero`: punteada y atenuada = dato que falta; continua = sitio al que ir.
+
+   El foco no se declara aquí a propósito: el `:focus-visible` del principio de
+   este archivo ya pinta el contorno ocre de 2 px en todo `<a>`, y repetirlo
+   sería una segunda fuente de verdad. Este bloque nunca pone `outline: none`.
+
+   Alcance: `.texto-legal a` coge los tres documentos de golpe —la clase la pone
+   `PlantillaLegal` sobre la entradilla y sobre el cuerpo de cada sección, y las
+   fichas de cookies se montan dentro—, y deja fuera el índice de la propia
+   plantilla, que es `EnlaceEtiqueta` y tiene su especificación en §3.5.
+
+   `.enlace-prosa` es la misma regla para el enlace suelto que vive fuera de esa
+   clase. Hoy tiene **un** consumidor y no es decorativo: el enlace a la política
+   de privacidad de la casilla del formulario, que tenía el mismo defecto que los
+   22 y es el peor sitio donde tenerlo. Ahí la casilla dice «He leído la política
+   de privacidad» y esa frase solo es verdad si la política se puede alcanzar
+   desde donde se afirma haberla leído.
+   ────────────────────────────────────────────────────────────────────────── */
+.texto-legal a,
+.enlace-prosa {
+  text-decoration: underline;
+  text-decoration-color: var(--acero);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+/* Al pasar por encima engorda la línea y se tiñe del color del texto. Es el
+   único cambio: ni color de texto, ni fondo, ni desplazamiento. En táctil no
+   existe `:hover` y el enlace ya se veía sin él. */
+.texto-legal a:hover,
+.enlace-prosa:hover {
+  text-decoration-color: currentColor;
+  text-decoration-thickness: 2px;
+}

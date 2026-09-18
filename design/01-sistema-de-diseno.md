@@ -692,6 +692,50 @@ por otro motivo, así que no se ha tapado con un número inventado: si algún d�
 320, la pieza que falta es reservar la banda de la etiqueta, no encoger el titular —la escala
 está cerrada y entre 34 y 46 no hay nada.
 
+### 3.16 Enlace en prosa
+
+Nuevo el **2026-09-18**. Es la pieza número dieciséis: un enlace **dentro de un párrafo**.
+
+El sistema tenía §3.5 para navegar y los botones para los CTA, y no le hacía falta nada más
+mientras ninguna pantalla tuvo prosa larga. Las tres páginas legales la tienen, y sus 22 enlaces
+se escribieron con la utilidad `text-tinta` sobre el `a { color: inherit }` de `globals.css`:
+**medido a 390 px, `rgb(27, 30, 28)` y `text-decoration: none` en los 22.** Del color exacto del
+texto que los rodea, sin subrayado. Invisibles.
+
+No es una minucia. Lo invisible eran el `mailto:` para ejercer los derechos, la reclamación ante
+la AEPD, los saltos entre las tres páginas, la decisión de adecuación en EUR-Lex y la lista del
+Data Privacy Framework: **las vías que la ley obliga a ofrecer.** Y fallaba el criterio 1.4.1 de
+las WCAG, que prohíbe que el color sea el único indicador de un enlace — aquí no había ni eso.
+
+```
+color: hereda el del texto (#1B1E1C sobre #E9EAE6 → 14,5 : 1)
+text-decoration: underline
+text-decoration-color: #41535C · text-decoration-thickness: 1px
+text-underline-offset: 3px
+:hover   text-decoration-color: currentColor · text-decoration-thickness: 2px
+:focus   el de §8 global, outline: 2px solid #D9A441; offset 2px. No se redeclara
+```
+
+**El arreglo es el subrayado, no el color.** La paleta está cerrada y el ocre no puede ser texto
+pequeño sobre fondo claro (§2.2), así que el color se queda donde está y lo que entra es la
+línea: cumple 1.4.1 sin depender de la vista de colores de nadie, y conserva el contraste máximo.
+
+Se distingue del dato pendiente de §3.9, que también lleva línea inferior, por la línea misma:
+**punteada y atenuada = dato que falta; continua = sitio al que ir.**
+
+**Se aplica por dos vías, y las dos comparten el mismo declarado:**
+
+- `.texto-legal a` — los tres documentos de golpe. Esa clase la pone `PlantillaLegal` sobre la
+  entradilla y sobre el cuerpo de cada sección, así que alcanza también las fichas de cookies que
+  se montan dentro, y **deja fuera el índice de la propia plantilla**, que es §3.5.
+- `.enlace-prosa` — el enlace suelto que vive fuera de esa clase. **Un solo consumidor hoy**, y no
+  es decorativo: el enlace a la política de privacidad de la casilla del formulario, que tenía el
+  mismo defecto que los 22 y es el peor sitio donde tenerlo. La casilla dice «He leído la política
+  de privacidad», y esa frase solo es verdad si la política se alcanza desde donde se afirma
+  haberla leído.
+
+⚠️ La regla se generaliza **añadiendo la clase, nunca copiando el declarado.**
+
 ## 4. Elementos transversales
 
 ### 4.1 Cabecera de escritorio
