@@ -58,7 +58,7 @@ export default function PoliticaPrivacidad() {
           </p>
           <p>
             Las cookies tienen su propia página, con la lista completa y sus duraciones:{' '}
-            <Link href="/politica-de-cookies/" className="text-tinta">
+            <Link href="/politica-de-cookies/">
               política de cookies
             </Link>
             .
@@ -89,7 +89,7 @@ export default function PoliticaPrivacidad() {
                   portada, pide nombre y apellidos, teléfono, correo electrónico —opcional—, qué
                   quieres pavimentar y la casilla de haber leído esta política. La{' '}
                   <strong>larga</strong>, que está en{' '}
-                  <Link href="/presupuesto/" className="text-tinta">
+                  <Link href="/presupuesto/">
                     la página de presupuesto
                   </Link>{' '}
                   y al final de cada página de servicio, pide además la superficie en metros
@@ -140,7 +140,7 @@ export default function PoliticaPrivacidad() {
                 <p>
                   Además de lo anterior, el sitio usa cookies de analítica y de publicidad si las
                   aceptas. Están todas descritas, una a una, en la{' '}
-                  <Link href="/politica-de-cookies/" className="text-tinta">
+                  <Link href="/politica-de-cookies/">
                     política de cookies
                   </Link>
                   .
@@ -229,6 +229,28 @@ export default function PoliticaPrivacidad() {
                 cesiones. Meta y Google son distinto: ahí los datos se usan también para publicidad,
                 y por eso su amparo legal es tu consentimiento y no el contrato.
               </p>
+              {/* 🔴 Este marcador cierra el encargo expreso de
+                  `09-instrucciones-legales.md` §3.4: «nadie ha comprobado si
+                  existen contratos del art. 28.3 con ninguno de los cinco […]
+                  Marca esto al dueño como decisión, no lo resuelvas escribiendo».
+                  Las tablas de abajo ya dicen «Encargado del tratamiento (art. 28
+                  RGPD)», que es el ENCUADRE correcto y no depende de ningún
+                  papel; lo que no se puede afirmar en firme es que el papel que
+                  ese encuadre exige esté firmado. Telegram va nombrado aparte
+                  porque no es un trámite pendiente sino un problema sin
+                  solución conocida: no ofrece contrato de encargado para su Bot
+                  API, así que ahí la decisión no es firmar, es si Telegram sigue
+                  o sale del circuito. Uno solo, en prosa y no cinco en las
+                  fichas: es una decisión del dueño sobre los cinco, no cinco. */}
+              <p>
+                <DatoPendiente>
+                  PENDIENTE: comprobar si existe contrato de encargado del tratamiento (art. 28.3
+                  RGPD) con Resend, Telegram, Vercel, Google y Meta, y firmarlo donde falte. Telegram
+                  no ofrece contrato de encargado para la Bot API con la que le llega el aviso, así
+                  que ahí la decisión es qué garantía se aplica o si se retira del circuito de datos
+                  personales
+                </DatoPendiente>
+              </p>
               <p>
                 Con precisión, porque es lo que exige informar bien: la etiqueta de Google se carga
                 en todas las páginas desde la primera visita. Mientras no aceptes, esta web le indica
@@ -236,7 +258,7 @@ export default function PoliticaPrivacidad() {
                 aviso de qué página estás viendo, con tu dirección IP y tu navegador. Si prefieres
                 que no lo reciba, puedes bloquear esa etiqueta desde tu navegador, como se explica en
                 la{' '}
-                <Link href="/politica-de-cookies/" className="text-tinta">
+                <Link href="/politica-de-cookies/">
                   política de cookies
                 </Link>
                 .
@@ -268,7 +290,6 @@ export default function PoliticaPrivacidad() {
                     href="https://eur-lex.europa.eu/eli/dec_impl/2023/1795/oj"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-tinta"
                   >
                     eur-lex.europa.eu
                   </a>
@@ -277,7 +298,6 @@ export default function PoliticaPrivacidad() {
                     href="https://www.dataprivacyframework.gov/list"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-tinta"
                   >
                     dataprivacyframework.gov
                   </a>
@@ -332,7 +352,7 @@ export default function PoliticaPrivacidad() {
               <BloqueLegal titulo="Cookies">
                 <p>
                   Cada cookie caduca por sí sola en el plazo que figura en la{' '}
-                  <Link href="/politica-de-cookies/" className="text-tinta">
+                  <Link href="/politica-de-cookies/">
                     política de cookies
                   </Link>
                   : 180 días la que guarda tu decisión y 90 las demás.
@@ -389,7 +409,7 @@ export default function PoliticaPrivacidad() {
               </ul>
               <p>
                 Para ejercerlos, escríbenos a{' '}
-                <a href={`mailto:${nap.email}`} className="text-tinta">
+                <a href={`mailto:${nap.email}`}>
                   {nap.email}
                 </a>{' '}
                 diciendo qué derecho quieres ejercer y adjuntando algo que acredite que eres tú. Si
@@ -402,7 +422,6 @@ export default function PoliticaPrivacidad() {
                   href="https://www.aepd.es"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-tinta"
                 >
                   www.aepd.es
                 </a>
