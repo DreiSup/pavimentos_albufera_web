@@ -47,25 +47,29 @@ const enlaces = [
  * **La cabecera de escritorio empieza en `cabecera-ancha` (1180 px), no en `md`
  * ni en `xl`.** El punto de ruptura es propio —`tailwind.config.ts`,
  * `extend.screens`— porque ninguno de los de serie cae donde esta fila cabe.
- * Medido sobre el DOM, ya sin el enlace de `/precios/`: los tres bloques suman
- * **928,4 px** de ancho natural —logotipo 276 + nav 333,3 + teléfono 99 y
- * botón 200,1 con su hueco de 20—, y los `px-lat-desktop` ponen 96 más. Con la
- * barra de scroll de escritorio (15 px) el suelo a hueco cero son **1039,4 px
- * de ventana**.
+ * Medido sobre el DOM, ya sin el enlace de `/precios/` y **remedido el
+ * 2026-09-18 con el logotipo en fila**: los tres bloques suman **987,1 px** de
+ * ancho natural —logotipo 334,7 + nav 333,3 + teléfono 99 y botón 200,1 con su
+ * hueco de 20—, y los `px-lat-desktop` ponen 96 más. Con la barra de scroll de
+ * escritorio (15 px) el suelo a hueco cero son **1098,1 px de ventana**.
  *
  * Por qué 1180 y no 1024, medido a los dos anchos encendiendo la fila a la
  * fuerza:
  *
- * - **1024 no cabe.** Deja 913 px de contenido para 928,4 de hijos: los tres
- *   bloques quedan pegados —0 px entre logotipo y nav, 0 px entre nav y
- *   teléfono— y el botón se come 15,4 px del gutter derecho. El logotipo y el
- *   teléfono aguantan (276 px y una línea) porque llevan `shrink-0` y
- *   `whitespace-nowrap`, así que no se ve roto: se ve apretado, que es peor de
- *   detectar. No hay scroll horizontal porque el desbordamiento se lo traga el
- *   padding.
- * - **1180 cabe con holgura:** 1069 px de contenido, **70,3 px de hueco a cada
- *   lado**, logotipo a sus 276 px, teléfono en una línea, botón en una línea y
- *   los 48 px de gutter intactos. Es el ancho del iPad en horizontal.
+ * - **1024 no cabe**, y con el logotipo en fila ya ni aritméticamente: deja
+ *   913 px de contenido para 987,1 de hijos, o sea 74,1 de desbordamiento.
+ *   Cuando el logotipo eran 276 px la suma daba 928,4 y sí cabía al byte, con
+ *   los tres bloques pegados —0 px entre logotipo y nav, 0 entre nav y
+ *   teléfono— y 15,4 px robados al gutter derecho. Ese caso no se veía roto,
+ *   se veía apretado, que es peor de detectar: el logotipo lleva `shrink-0` y
+ *   el teléfono `whitespace-nowrap`.
+ * - **1180 cabe con holgura:** 1069 px de contenido, **41,0 px de hueco a cada
+ *   lado**, logotipo a sus 334,7 px, teléfono en una línea, botón en una línea
+ *   y los 48 px de gutter intactos. Es el ancho del iPad en horizontal.
+ *
+ * ⚠️ El logotipo en fila se ha comido 58,7 de los 70,3 px de hueco que había.
+ * El punto de ruptura sigue valiendo, pero **el siguiente elemento que entre en
+ * esta fila obliga a recalcularlo**, no a apretarla.
  *
  * Por debajo de 1180 vale la cabecera de móvil —logotipo + hamburguesa— con su
  * `MenuMovil` y su `BarraMovil`, que es un estado completo y ya diseñado
@@ -106,38 +110,88 @@ export default function Cabecera() {
         {/* El logotipo es una sola imagen y no cambia con el scroll. Las dos
             variantes tipográficas —dos líneas y una línea— existían para que el
             ancho no se moviera al comprimirse la cabecera; con una imagen de
-            caja fija ese problema no llega a plantearse. Va el wordmark solo:
-            el bloque completo mete la senda de losas encima y el claim debajo,
-            y en una barra de 70-84 px eso deja las palabras a 6-8 px de altura
-            de mayúscula. El bloque completo vive en el pie, que sí tiene sitio.
+            caja fija ese problema no llega a plantearse.
+
+            **Lleva la senda de losas desde el 2026-09-18**, por encargo del
+            dueño: «el logo completo, no solo el texto». Lo que NO lleva es el
+            bloque apilado del pie, y ese sigue descartado por lo mismo de
+            siempre: apilar senda sobre wordmark deja las palabras en 13,9 px
+            de mayúscula en escritorio y 11,8 en móvil —medido con el bloque a
+            64 px dentro de la barra de 84 y a 54 dentro de la de 70—, o sea
+            por debajo de lo que ya hay. La salida es **componer en fila**
+            —senda a la izquierda, wordmark a la derecha— en un activo nuevo,
+            `logo-marca-fila.png`. Así la altura de la barra no se toca: 38 px
+            de logotipo en 70, y 53 en 84.
+
+            Lo que cuesta, dicho: en fila el wordmark es el 73 % del ancho del
+            conjunto, así que para que la senda quepa el texto encoge. Altura
+            de mayúscula **22,8 → 20,2 px en escritorio y 19,0 → 14,5 en
+            móvil**. Las dos siguen por encima de los 11 px que mide la del
+            texto corrido de 16 px, y más del doble del caso que se descartó
+            por ilegible.
+
+            Por qué en fila y no subiendo la barra: la altura vive en
+            `--cabecera-actual` (`app/globals.css`) y de ella cuelgan cinco
+            `sticky`; el ancho de la fila de escritorio vive en
+            `cabecera-ancha` (`tailwind.config.ts`). Con el logotipo en fila no
+            hace falta mover ninguno de los dos —ver la cuenta de ancho más
+            abajo—, y esa es justo la razón de elegirla.
             `design/01` §4.1 y `design/02` §B9. */}
-        {/* `min-h-tactil` y no la altura de la imagen: el enlace medía 24 px de
-            alto, que es lo que mide el wordmark, y es el enlace a la home desde
-            las 53 rutas. La imagen no cambia de tamaño; lo que crece es el área
-            de toque, centrada en una barra que ya mide 70-84 px. */}
+        {/* `min-h-tactil` y no la altura de la imagen: es el enlace a la home
+            desde las 52 rutas y la imagen mide 38 px en móvil, por debajo del
+            objetivo táctil. En escritorio son 53 y la altura mínima ya no
+            manda, pero se queda: quien cambie la altura del logotipo no tiene
+            que acordarse de volver a ponerla. La imagen no cambia de tamaño;
+            lo que crece es el área de toque, centrada en una barra que ya mide
+            70-84 px. */}
         <Link href="/" className="no-underline text-tinta flex items-center min-h-tactil">
           {/* `<img>` y no `next/image`, medido: la cabecera y el pie viven en el
               layout, así que meter el componente de imagen aquí lo mete en las
-              49 rutas. Cuesta **+5,1 kB brotli** en las que hoy no lo cargan
+              52 rutas. Cuesta **+5,1 kB brotli** en las que hoy no lo cargan
               —las tres legales pasan de 97,7 a 102,8— y sube el máximo del sitio
               de 108,2 a 109,3 kB, o sea la mitad del margen que queda hasta el
               techo de 112. A cambio no da nada: el logotipo es de caja fija, no
               tiene `srcset` que resolver, y el archivo ya está servido al ancho
               que se pinta. El original de 1881 px vive en `logo.png`, que es el
-              del JSON-LD; este pesa 8,9 kB. */}
+              del JSON-LD; este pesa 13,8 kB, 4,6 más que el wordmark solo que
+              sustituye. Son bytes de imagen, no de JS: el presupuesto de
+              `design/06` no se mueve. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/marca/logo-texto.png"
+            src="/marca/logo-marca-fila.png"
             alt="Pavimentos Albufera"
-            width={276}
-            height={24}
-            /* Sobre el pliegue en las 49 rutas, así que no es perezosa. */
+            width={1004}
+            height={159}
+            /* Sobre el pliegue en las 52 rutas, así que no es perezosa. */
             loading="eager"
             decoding="async"
-            /* `shrink-0` no es decorativo: es una imagen de caja fija con `width`
-               y `height` declarados, y como ítem de flex se encogía hasta 36 px
-               a 768. Con las dos medidas puestas, encoger no recorta: deforma. */
-            className="h-[20px] w-[230px] shrink-0 md:h-[24px] md:w-[276px]"
+            /* `shrink-0` no es decorativo: como ítem de flex la imagen se
+               encogía hasta 36 px a 768.
+
+               El ancho se deja en `auto` y manda la altura: con `width` y
+               `height` declarados el navegador reserva el hueco por la
+               proporción del archivo, sin salto de maquetación, y así no hay
+               dos pares de números —móvil y escritorio— que puedan dejar de
+               coincidir con la proporción real y deformar el logotipo. Salen
+               **239,94 × 38 px** en móvil y **334,66 × 53** desde 768.
+
+               La cuenta de ancho: el logotipo pasa de 276 a 334,7, o sea
+               +58,7, los hijos de la fila de escritorio suman 987,1 en vez de
+               928,4, y a 1180 px de ventana los dos huecos caen de 70,3 a
+               **41,0 px cada uno** (medido, no calculado). `cabecera-ancha` se
+               queda en 1180; el suelo a hueco cero sube de 1039,4 a 1098,1 px
+               de ventana. Esas cifras van en la convención del bloque de
+               arriba, que **descuenta los 15 px de la barra de scroll** de
+               escritorio.
+
+               En móvil no hay barra de scroll que descontar, así que el hueco
+               hasta la hamburguesa se mide sobre el viewport entero: **70,1 px
+               a 390 y 40,1 a 360**. Y de ahí sale la altura de 38 y no más:
+               **a 320 px la fila entra por 0,06 px**, que es el margen que
+               queda; con 42 se pasaba de largo. A 320 el aire de antes eran
+               10 px y ahora es cero, y 320 está por debajo del ancho normativo
+               de `design/02`. */
+            className="h-[38px] w-auto shrink-0 md:h-[53px]"
           />
         </Link>
 

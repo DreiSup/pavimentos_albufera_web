@@ -698,35 +698,72 @@ está cerrada y entre 34 y 46 no hay nada.
 
 ```
 height: 84px · padding: 0 48px · border-bottom: 1px solid #1B1E1C · background: #E9EAE6
-logo     imagen /marca/logo-texto.png · 24px de alto (20 en móvil) · sin cambio con el scroll
+logo     imagen /marca/logo-marca-fila.png · 53px de alto (38 en móvil) · ancho automático,
+         334,7px (239,9 en móvil) · senda + wordmark EN FILA · sin cambio con el scroll
 nav      Instrument Sans 500 16px · gap: 28px · cada enlace min-height: 44px
 activo   font-weight: 600 + border-bottom: 2px solid #1B1E1C
 derecha  teléfono en Martian Mono 12px color #5C625E  +  botón de contorno «Pedir presupuesto»
 ```
 
-**El logotipo es una imagen desde el 2026-09-01, y va el wordmark solo.** El bloque completo
-apila la senda de losas encima y el claim debajo: en una barra de 70-84 px eso deja las palabras
-a 6-8 px de altura de mayúscula y el claim en 3-4 px. El bloque completo se pinta en el pie
-(§4.4), que es el único sitio del sitio con alto para él.
+**El logotipo es una imagen desde el 2026-09-01. Lleva la senda de losas desde el 2026-09-18, y
+la lleva en fila.** Lo pidió el dueño —«el logo completo, no solo el texto»—, y la forma de dárselo
+sin encoger el nombre hasta lo ilegible es **componer en horizontal**: senda a la izquierda,
+wordmark a la derecha, alineados por la base. Es un archivo propio, `logo-marca-fila.png`, no un
+recorte del bloque del pie. La receta exacta —recortes, proporciones y el relleno que lo centra—
+está en `public/README.md`.
+
+**Lo que sigue descartado es apilar.** El bloque del pie mete la senda encima del wordmark y, con
+el claim, otra línea más debajo. Medido en la caja que deja la barra —64 px de bloque en los 84 de
+escritorio, 54 en los 70 de móvil—, apilar sin el claim deja la mayúscula en **13,9 px en
+escritorio y 11,8 en móvil**, y con el claim en 12,3 y 10,4, con el claim mismo en 4. Las dos
+cifras están por debajo de lo que ya había, que es justo lo que se quería evitar. El bloque
+apilado se pinta en el pie (§4.4), que es el único sitio del sitio con alto para él.
+
+**Lo que cuesta, medido.** En fila el wordmark es el 73 % del ancho del conjunto, así que para que
+la senda entre, el texto encoge:
+
+| | Antes (wordmark solo) | Ahora (senda + wordmark) |
+|---|---|---|
+| Caja del logotipo, escritorio | 276 × 24 px | **334,7 × 53 px** |
+| Caja del logotipo, móvil | 230 × 20 px | **239,9 × 38 px** |
+| Altura de mayúscula, escritorio | 22,8 px | **20,2 px** |
+| Altura de mayúscula, móvil | 19,0 px | **14,5 px** |
+
+Las dos alturas de mayúscula siguen por encima de los 11 px que mide la del texto corrido de
+16 px, y más del doble de los 6-8 px con que se descartó el bloque apilado en 2026-09-01. **La
+altura de la barra no se toca**: 38 px de logotipo en 70 y 53 en 84, con su centro óptico —el
+centroide de tinta, no la caja— en el centro de la barra.
+
+**Los 38 px de móvil son el techo, no una preferencia.** La fila de móvil es logotipo +
+hamburguesa de 44 px dentro de un gutter de 18: quedan **70,1 px de hueco a 390 px de viewport y
+40,1 a 360**, y a 320 la fila entra por **0,06 px**. Un punto más de altura y a 320 deja de
+caber. 320 está por debajo del ancho normativo de `02-pantallas.md` (390), pero sí cabía antes, y
+ese es el número que fija la altura.
 
 **Esta cabecera empieza en `cabecera-ancha` = 1180 px, no en 768. Enmienda del 2026-09-17,
 medida sobre el DOM.** Es un punto de ruptura **propio del proyecto**, declarado en
 `tailwind.config.ts` (`extend.screens`), porque ninguno de los de serie cae donde esta fila cabe:
 `lg` (1024) se queda corto y `xl` (1280) deja fuera al iPad en horizontal, que es tráfico real.
 
-Las cifras, con el nav ya sin `/precios/` (4 enlaces):
+Las cifras, con el nav ya sin `/precios/` (4 enlaces) y **medidas de nuevo sobre el DOM el
+2026-09-18**, con el logotipo ya en fila:
 
 | Ancho de ventana | Contenido útil | Hijos | Hueco a cada lado | Veredicto |
 |---|---|---|---|---|
-| 1024 | 913 px | 928,4 px | **0 px** | ❌ Los tres bloques pegados, y 15,4 px robados al gutter derecho |
-| **1180** | **1069 px** | 928,4 px | **70,3 px** | ✅ Logotipo a 276 px, teléfono y botón en una línea, gutter intacto |
-| 1280 | 1169 px | 928,4 px | 120,3 px | ✅ |
+| 1024 | 913 px | 987,1 px | **−37 px** | ❌ No cabe: 74,1 px de desbordamiento |
+| **1180** | **1069 px** | 987,1 px | **41,0 px** | ✅ Logotipo a 334,7 px, teléfono y botón en una línea, gutter intacto |
+| 1280 | 1169 px | 987,1 px | 91,0 px | ✅ |
 
-Los **928,4 px de hijos** son logotipo 276 + nav 333,3 + (teléfono 99 + hueco 20 + botón 200,1);
+Los **987,1 px de hijos** son logotipo 334,7 + nav 333,3 + (teléfono 99 + hueco 20 + botón 200,1);
 el contenido útil descuenta los 96 px de gutter y los 15 de la barra de scroll de escritorio. El
-suelo aritmético —hueco cero— son 1039,4 px de ventana, y **caber al byte no es caber**: a 1024
-nada se rompe visiblemente, porque el logotipo lleva `shrink-0` y el teléfono `white-space:
+suelo aritmético —hueco cero— son **1098,1 px de ventana**, y **caber al byte no es caber**: a
+1024 nada se rompe visiblemente, porque el logotipo lleva `shrink-0` y el teléfono `white-space:
 nowrap`, así que el fallo no se ve roto, se ve apretado.
+
+⚠️ **El logotipo en fila se come 58,7 de los 70,3 px de hueco que había.** `cabecera-ancha` se
+queda en **1180**: los 41 px por hueco que deja siguen siendo holgura de verdad, y el suelo
+aritmético sube a 1098,1, todavía por debajo. Pero el margen ya no da para otro elemento en esta
+fila: **el siguiente que entre obliga a recalcular el punto de ruptura**, no a apretar.
 
 Por debajo de 1180 vale **la cabecera de móvil**: logotipo + hamburguesa, con `MenuMovil` y la
 barra fija de §4.3, que se esconde en el mismo punto. No es una banda sin navegación: es el
