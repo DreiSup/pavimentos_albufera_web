@@ -15,7 +15,7 @@ import BarraConfianza from '@/components/layout/BarraConfianza'
 import Acordeon from '@/components/secciones/Acordeon'
 import FormularioPresupuesto from '@/components/secciones/FormularioPresupuesto'
 import { JsonLd, schemaFAQ } from '@/lib/schema'
-import { acabados, acabadosPublicados, contarDocumentados, proyectos } from '@/lib/datos'
+import { acabadosPublicados, proyectos, recuentoAcabadosPublicados } from '@/lib/datos'
 import { faqHome } from '@/content/faq'
 import { PASOS, SERVICIOS } from '@/content/servicios'
 import { CODIGO_COLOR, NOMBRE_MODELO, NOMBRE_SERVICIO, RUTA_SERVICIO } from '@/lib/tipos'
@@ -130,6 +130,21 @@ const DIAPOSITIVAS_HERO: { slug: string; superficiePendiente?: string }[] = [
  * adoquín pequeño arena y manta gris—, así que es un cambio de ORIGEN, no de
  * contenido: `piedra-inglesa-crema` tiene obra y no tiene muestra, y lo único
  * que la mantenía fuera de esta rejilla era estar en la posición 12 del JSON.
+ *
+ * ⚠️ **El criterio de esta rejilla NO es el del chip que tiene encima**, y hay
+ * que saberlo antes de tocarla. El chip cuenta `documentados`, que exige
+ * municipio confirmado (`estaDocumentado`); aquí se filtra por «tiene obra
+ * asociada», que es más laxo y que `lib/datos.ts` desaconseja **para contar**.
+ * Para elegir qué se enseña no es lo mismo: el muestrario existe para que el
+ * visitante vea el modelo y el color, y eso una muestra con obra asociada lo
+ * cumple aunque el municipio siga sin confirmar. La rejilla no afirma dónde se
+ * hizo; el chip sí, y por eso cuenta más fino.
+ *
+ * La diferencia son hoy **cuatro muestras y una sola discrepancia**: la cuarta
+ * es `manta-gris`, cuya obra no tiene municipio. Con el criterio del chip saldría
+ * `piedra-inglesa-gris` en su lugar. Cambiarlo **no es refactor, es contenido**
+ * —`manta-gris` está en los pendientes de CLAUDE.md a la espera de que el dueño
+ * confirme el modelo—, así que se deja como está y se deja dicho.
  */
 const muestraHome = acabadosPublicados.filter((a) => a.proyectos.length > 0).slice(0, 4)
 /**
@@ -188,7 +203,16 @@ function etiquetaDeObra(proyecto: Proyecto, superficiePendiente?: string) {
   const modelo = proyecto.modelo ? ` · ${NOMBRE_MODELO[proyecto.modelo].toUpperCase()}` : ''
   const color = proyecto.color ? ` · ${CODIGO_COLOR[proyecto.color]}` : ''
   return [
-    `${proyecto.municipio ?? ''} · ${proyecto.provincia ?? ''}`.toUpperCase(),
+    /* El municipio y la provincia son opcionales en el modelo de contenido, y
+       la interpolación a cadena vacía que había aquí pintaba un « · » suelto en
+       cuanto faltara uno: exactamente el maquillaje que prohíbe CLAUDE.md. El
+       patrón es el de `TarjetaProyecto`, el mismo corchete atenuado, en
+       versalitas porque toda la etiqueta lo está. */
+    <>
+      {proyecto.municipio?.toUpperCase() ?? <DatoPendiente>MUNICIPIO</DatoPendiente>}
+      {' · '}
+      {proyecto.provincia?.toUpperCase() ?? <DatoPendiente>PROVINCIA</DatoPendiente>}
+    </>,
     `${NOMBRE_SERVICIO[proyecto.servicio].toUpperCase()}${modelo}${color}`,
     <>
       {proyecto.superficie ?? <DatoPendiente>{superficiePendiente ?? 'm²'}</DatoPendiente>}
@@ -205,8 +229,15 @@ const diapositivasHero = DIAPOSITIVAS_HERO.map(({ slug, superficiePendiente }) =
     etiqueta: <EtiquetaTecnica lineas={etiquetaDeObra(proyecto, superficiePendiente)} />,
   }
 })
-const totalAcabados = acabados.length
-const documentados = contarDocumentados()
+/**
+ * El recuento de lo PUBLICADO, el mismo que imprime `/acabados/`: diez muestras
+ * y siete con obra documentada. La portada contaba `acabados.length` —el
+ * catálogo entero, dieciséis— al lado de una rejilla que ya solo sale de
+ * `acabadosPublicados`, y el visitante que tocaba «Abrir el muestrario
+ * completo» aterrizaba en diez. Un contador que no cuadra con lo que hay debajo
+ * es el mismo error del bloque de posición, contado con números.
+ */
+const { publicados: totalAcabados, documentados } = recuentoAcabadosPublicados()
 
 export default function Home() {
   return (
@@ -229,8 +260,10 @@ export default function Home() {
             del dueño del 2026-09-17. En escritorio el titular sigue en su columna y
             no hay velo, porque no pisa ninguna foto.
           - **La foto es un carrusel de cuatro obras** (`design/01 §3.15`), y pasa
-            solo. Cero JavaScript: el pase es un `@keyframes` de opacidad. Con
-            movimiento reducido no pasa nada y se ve la primera foto fija. */}
+            solo. El pase es un `@keyframes` de opacidad, sin un byte de JavaScript;
+            lo único que hidrata es su botón de pausa, que exige la WCAG 2.2.2. Con
+            movimiento reducido no pasa nada, se ve la primera foto fija y el botón
+            se retira. */}
       <section className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-x-16 md:gap-y-6 md:grid-rows-[1fr_auto_auto_1fr] px-[18px] md:px-lat-desktop pt-8 md:pt-14">
         {/* `relative z-10` porque en móvil comparte celda con el carrusel y va
             detrás en el DOM; `self-start` para que se apoye en el borde superior de
@@ -265,7 +298,11 @@ export default function Home() {
         >
           {/* El velo solo existe donde el titular pisa la foto. En escritorio el
               titular tiene su columna, así que sobra y se retira: las fotos se ven
-              como son. */}
+              como son.
+              Va como `children` del carrusel, que lo pinta entre las fotos y las
+              etiquetas técnicas: oscurece la FOTO, no el texto que va encima de
+              ella. Cuando caía también sobre la etiqueta la dejaba en 2,64 : 1.
+              → `design/01` §3.15 */}
           <div className="velo absolute inset-0 md:hidden" aria-hidden="true" />
         </CarruselFotos>
 
@@ -447,9 +484,14 @@ export default function Home() {
             <h2 className="font-display font-bold fs-h2 text-34 md:text-46 m-0">
               Obra hecha, no catálogo de proveedor
             </h2>
+            {/* La frase prometía filtrar por acabado, por tipo de espacio o por
+                municipio, y `/proyectos/` ya no tiene filtros: se retiraron con
+                ellos los bytes de JS del cliente, y la rejilla sale entera en el
+                HTML. Se queda la primera frase, literalmente la que abre
+                `app/proyectos/page.tsx`: las dos pantallas dicen ya lo mismo, y
+                no hace falta copy nuevo para dejar de prometer lo que no hay. */}
             <p className="text-16 md:text-20 text-tinta-media max-w-[60ch] m-0">
-              Todas las fotos de esta web son trabajos nuestros. Puedes filtrarlos por acabado, por
-              tipo de espacio o por municipio.
+              Todas las fotos de esta web son trabajos nuestros.
             </p>
           </div>
 
