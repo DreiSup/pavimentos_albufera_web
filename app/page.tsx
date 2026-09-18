@@ -111,13 +111,16 @@ const servicios = [
  * cuatro son de impreso: es lo que hay fotografiado en horizontal. La cuarta,
  * Corbera, entra para que el pase no enseñe una sola técnica.
  *
- * `superficiePendiente` recoge el único m² que la portada afirmaba: los 180 de
- * Moncada, que `content/proyectos.json` guarda como «sin confirmar» y que ya se
- * pintaban entre corchetes. No se inventa ninguno para las otras tres; donde no
- * hay dato, se ve que no lo hay.
+ * 🔴 **Aquí ya no hay superficie.** Los 180 m² de Moncada vivían en un
+ * `superficiePendiente` de esta lista —el único m² que la portada afirmaba, y
+ * lo afirmaba entre corchetes—. El 2026-09-18 el dueño decidió que lo que no se
+ * sabe NO SE PUBLIQUE, ni siquiera atenuado: ninguna de las cuatro obras tiene
+ * `superficie` en `content/proyectos.json`, así que el dato sale de la etiqueta
+ * del hero en las cuatro. El criterio se aplica igual al año — lo tiene Moncada
+ * y no lo tienen las otras tres—, y por eso la tercera línea es opcional.
  */
-const DIAPOSITIVAS_HERO: { slug: string; superficiePendiente?: string }[] = [
-  { slug: 'moncada-impreso-espiga-117', superficiePendiente: '180' },
+const DIAPOSITIVAS_HERO: { slug: string }[] = [
+  { slug: 'moncada-impreso-espiga-117' },
   { slug: 'denia-impreso-piedra-inglesa' },
   { slug: 'alzira-impreso-adoquin-irregular-107' },
   { slug: 'corbera-fratasado-arena' },
@@ -194,39 +197,43 @@ function tamanosCompartidos(src?: string) {
 }
 
 /**
- * La etiqueta técnica de una diapositiva, con la MISMA regla que
- * `TarjetaProyecto`: municipio y provincia, luego técnica, modelo y color, y
- * por último superficie y año. Nada se escribe a mano, todo sale del modelo de
- * contenido, y lo que falta se ve faltar.
+ * La etiqueta técnica de una diapositiva: municipio y provincia, luego técnica,
+ * modelo y color, y por último el año si consta. Nada se escribe a mano, todo
+ * sale del modelo de contenido.
+ *
+ * ⚠️ **Se aparta a propósito de `TarjetaProyecto` en la tercera línea**, y hay
+ * que saberlo antes de «unificarlas». La tarjeta enseña superficie y año, y
+ * pinta entre corchetes lo que falte, porque vive dentro de una ficha de obra
+ * que el visitante ha ido a buscar. Esta etiqueta va encima de la primera foto
+ * de la portada, en un carrusel que pasa solo: el 2026-09-18 el dueño decidió
+ * que ahí lo que no se sabe no se publica. Ninguna de las cuatro obras tiene
+ * superficie y solo Moncada tiene año, así que la línea se OMITE cuando queda
+ * vacía en vez de dejar un « · » suelto o un corchete colgando. Dos líneas, no
+ * tres, y sigue leyéndose.
+ *
+ * El municipio y la provincia sí conservan el corchete: son el dato que
+ * sostiene la etiqueta —sin ellos no se sabe de qué obra habla la foto— y hoy
+ * las cuatro diapositivas los tienen, así que no se pinta ninguno.
  */
-function etiquetaDeObra(proyecto: Proyecto, superficiePendiente?: string) {
+function etiquetaDeObra(proyecto: Proyecto) {
   const modelo = proyecto.modelo ? ` · ${NOMBRE_MODELO[proyecto.modelo].toUpperCase()}` : ''
   const color = proyecto.color ? ` · ${CODIGO_COLOR[proyecto.color]}` : ''
   return [
-    /* El municipio y la provincia son opcionales en el modelo de contenido, y
-       la interpolación a cadena vacía que había aquí pintaba un « · » suelto en
-       cuanto faltara uno: exactamente el maquillaje que prohíbe CLAUDE.md. El
-       patrón es el de `TarjetaProyecto`, el mismo corchete atenuado, en
-       versalitas porque toda la etiqueta lo está. */
     <>
       {proyecto.municipio?.toUpperCase() ?? <DatoPendiente>MUNICIPIO</DatoPendiente>}
       {' · '}
       {proyecto.provincia?.toUpperCase() ?? <DatoPendiente>PROVINCIA</DatoPendiente>}
     </>,
     `${NOMBRE_SERVICIO[proyecto.servicio].toUpperCase()}${modelo}${color}`,
-    <>
-      {proyecto.superficie ?? <DatoPendiente>{superficiePendiente ?? 'm²'}</DatoPendiente>}
-      {proyecto.superficie || superficiePendiente ? ' m²' : ''} ·{' '}
-      {proyecto.anio ?? <DatoPendiente>año</DatoPendiente>}
-    </>,
+    ...(proyecto.anio ? [String(proyecto.anio)] : []),
   ]
 }
 
-const diapositivasHero = DIAPOSITIVAS_HERO.map(({ slug, superficiePendiente }) => {
+const diapositivasHero = DIAPOSITIVAS_HERO.map(({ slug }) => {
   const proyecto = proyectos.find((p) => p.slug === slug)!
   return {
     imagen: proyecto.imagenes[0],
-    etiqueta: <EtiquetaTecnica lineas={etiquetaDeObra(proyecto, superficiePendiente)} />,
+    etiqueta: <EtiquetaTecnica lineas={etiquetaDeObra(proyecto)} />,
   }
 })
 /**
