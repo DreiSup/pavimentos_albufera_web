@@ -222,8 +222,23 @@ export default function FormularioPresupuesto({
       {/* Fuera del condicional a propósito: la variante corta también recoge
           nombre y teléfono, así que necesita el mismo consentimiento. Antes
           solo la llevaba el formulario largo. */}
-      <label className="flex items-start gap-3 font-sans text-14 text-tinta-media">
-        <input type="checkbox" name="privacidad" required disabled={enviando} className="mt-1" />
+      {/* `min-h-tactil` sobre el `<label>`, que es el elemento que recibe el
+          toque: el `<input type="checkbox">` mide 13 × 13 px —el tamaño por
+          defecto del navegador— y el label envolvente se quedaba en 22,4 px de
+          alto cuando el texto cabía en una línea. Los 44 px que pide CLAUDE.md
+          se consiguen sin tocar la casilla, que es lo que se ve.
+          `items-center` en vez de `items-start` + `mt-1`: con la altura mínima,
+          alinear arriba dejaba 21 px muertos debajo de un texto de una línea, y
+          el margen por elemento está prohibido. */}
+      <label className="flex items-center gap-3 min-h-tactil font-sans text-14 text-tinta-media">
+        <input
+          type="checkbox"
+          name="privacidad"
+          required
+          disabled={enviando}
+          aria-invalid={Boolean(estado.errores.privacidad)}
+          aria-describedby={estado.errores.privacidad ? 'privacidad-error' : undefined}
+        />
         <span>
           He leído y acepto la{' '}
           <Link href="/politica-de-privacidad/" className="text-tinta">
@@ -232,8 +247,10 @@ export default function FormularioPresupuesto({
           . *
         </span>
       </label>
+      {/* Esta casilla no pasa por `Campo`, así que su mensaje se asocia a mano.
+          Aquí el foco no se mueve: el `aria-live` es la única vía. */}
       {estado.errores.privacidad ? (
-        <p className="font-sans text-14 font-semibold text-error m-0" aria-live="polite">
+        <p id="privacidad-error" className="font-sans text-14 font-semibold text-error m-0" aria-live="polite">
           {estado.errores.privacidad}
         </p>
       ) : null}
