@@ -30,6 +30,25 @@ export const nap = {
 }
 
 /**
+ * Un enlace es de WhatsApp, o no lo es. Predicado único del sitio.
+ *
+ * Lo comparten los dos sitios que tienen que reconocer ese enlace sin que nadie
+ * se lo diga: `EventosGlobales`, que delega el clic en `document` y decide si
+ * eso es un `whatsapp_click`, y `Boton`, que decide si eso se pinta en verde de
+ * WhatsApp con su icono. Antes solo existía en el primero, escrito a mano.
+ *
+ * Que sea el mismo predicado es lo que sostiene la regla: **el botón se ve de
+ * WhatsApp exactamente cuando se mide como WhatsApp.** Ni un CTA verde que no
+ * cuenta, ni un clic contado que no se anunciaba como tal.
+ *
+ * Deliberadamente laxo —`includes`, no `startsWith`— para seguir cubriendo
+ * `api.whatsapp.com` y cualquier `wa.me` con parámetros delante.
+ */
+export function esEnlaceWhatsApp(href: string | undefined): boolean {
+  return Boolean(href && href.includes('wa.me'))
+}
+
+/**
  * Identificadores de etiqueta. Se exponen tal cual vienen del entorno: una
  * variable declarada pero en blanco tiene que llegar en blanco a quien la
  * consume, o el modo no-op se rompe con una cadena vacía.

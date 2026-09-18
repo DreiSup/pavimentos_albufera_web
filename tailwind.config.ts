@@ -25,6 +25,20 @@ const config: Config = {
       'sobre-tinta': '#DADCD6',
       'pendiente-oscuro': '#9AA09B',
       error: '#8C3A2B',
+      /**
+       * ⚠️ NO ES UN COLOR DEL SISTEMA. Es el verde de marca de WhatsApp, y el
+       * nombre lo dice a propósito para que nadie lo tome mañana por un acento
+       * propio. Segunda y última excepción a la paleta de seis, autorizada por
+       * el dueño el 2026-09-18, después de la del logotipo.
+       *
+       * Empieza y acaba en los botones cuyo `href` es un enlace de WhatsApp
+       * —`esEnlaceWhatsApp`, en `lib/config.ts`—. Ningún texto, borde, fondo,
+       * estado, foco ni separador del sitio puede usarlo para nada más.
+       * → `design/01` §2.1
+       */
+      'verde-whatsapp': '#25D366',
+      /** Su `:hover`, cada canal al 87 %. Mismo gesto que `pigmento-hover`. */
+      'verde-whatsapp-hover': '#20B859',
     },
     borderRadius: { none: '0', DEFAULT: '0' },
     boxShadow: {
