@@ -97,12 +97,43 @@ cambio**—. `/microcemento/` sigue sin FAQ y `/zonas/[municipio]/` sigue con 3,
 ⛔ **La sección de Precio, que era la 05, se retira el 2026-09-18.** Misma decisión del dueño
 que retiró `/precios/` el día antes —no quiere precios en la web—, extendida ahora a la
 calculadora, que era todo lo que esa sección contenía. Detalle en §A5. Las secciones ya eran
-condicionales y se renumeran solas, así que **no quedó hueco que recomponer**: medido a 390,
-768, 1024 y 1366 px en `/hormigon-impreso/`, la costura entre `04 · Cuándo NO` (fondo `--tinta`)
-y `05 · Cómo trabajamos` (fondo `--fondo-alt`) es de 0 px y ninguna de las cuatro tiene scroll
-horizontal. La numeración de esta tabla **no es fija**: un servicio sin `aplicaciones` o sin
-`cuandoNo` empieza y sigue con otros números, y `/hormigon-fratasado/` y
-`/hormigon-desactivado/` llevan cuatro secciones desde que existen.
+condicionales y se renumeran solas: el numerado, el submenú y el cuerpo siguen contando lo
+mismo, medido a 390, 768, 1024 y 1366 px en las seis páginas y en las cuatro landings, sin un
+número saltado, sin un ancla huérfana y sin scroll horizontal. La numeración de esta tabla **no
+es fija**: un servicio sin `aplicaciones` o sin `cuandoNo` empieza y sigue con otros números, y
+`/hormigon-fratasado/` y `/hormigon-desactivado/` llevan cuatro secciones desde que existen.
+
+⚠️ **Lo que sí quedó: el fondo alterno. Enmienda del 2026-09-18, medida.** Este párrafo decía
+«no quedó hueco que recomponer», y lo decía midiendo solo `/hormigon-impreso/`, donde la ficha
+técnica y el `Cuándo NO` separan las dos bandas alternas de la plantilla. `Precio` iba en fondo
+base **justo entre ellas**, y hay una página donde no queda nada en medio: `/lp/hormigon-lavado/`
+es la única que esconde la ficha técnica por `ocultarSecciones` y además no tiene `Cuándo NO`.
+Muestrario y `Cómo trabajamos` quedaban pegadas: **1029 px seguidos de `#DADCD6` sin costura a
+390 px** (410 + 619), y 482 + 573 a 768.
+
+El remedio es el de §A1, del día anterior y por la misma causa: **el fondo alterno lo da la
+posición, no la sección**, y cuando se cae una banda el alterno se reparte otra vez. La regla es
+local —ninguna banda comparte fondo con la que tiene encima— y se recorre de abajo arriba:
+**cede el alterno la banda de arriba**, porque hacia abajo el reparto arrastraría a `Obra
+ejecutada`, cuyas tarjetas van en `--fondo-alt` (`01` §3.12), y al cierre. `Cuándo NO` va en
+`--tinta` y separa por sí misma, así que nunca colisiona: `alterna · tinta · alterna` es
+correcto y no se mueve.
+
+**Siete de las diez páginas salen idénticas.** Cambian tres:
+
+| Página | Qué cambia |
+|---|---|
+| `/lp/hormigon-lavado/` | Aplicaciones toma la alterna y Muestrario la base |
+| `/microcemento/` y `/lp/microcemento/` | `Cómo trabajamos` toma la base y `Obra ejecutada` la alterna |
+
+⚠️ **El par de microcemento no lo abrió la calculadora.** Son las dos únicas sin FAQ
+—`/microcemento/` no lleva porque ninguna pregunta del catálogo le aplica sin reescribirla—, así
+que `Obra ejecutada` y el cierre ya eran dos bandas base pegadas antes del 2026-09-18. Sale
+gratis de la misma regla y se arregla con ella.
+
+Dos hijos invierten ahora su fondo con su banda, que es lo que `01` §3.12 ya hacía con la
+tarjeta de proyecto: el filete que separa las filas de Aplicaciones por debajo de `xl` y las
+propias tarjetas de obra. Sin eso, en `/lp/hormigon-lavado/` desaparecían los tres filetes.
 
 La sección 04 es la que más vende de toda la web y **ninguna competencia la tiene**: decirle al
 cliente cuándo no contratar este servicio. Va en negro a página completa por eso.
