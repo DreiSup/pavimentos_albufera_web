@@ -87,7 +87,7 @@ trata igual que el logotipo: se nombra, se acota y se dice dónde no va.
 | Token | Hex | Contraste | Uso |
 |---|---|---|---|
 | `verde-whatsapp` | `#25D366` | **8,48 : 1** con `--tinta` | Fondo del botón cuyo `href` abre WhatsApp |
-| `verde-whatsapp-hover` | `#20B859` | **6,46 : 1** con `--tinta` | Su `:hover`. Cada canal del anterior al 87 % |
+| `verde-whatsapp-hover` | `#20B859` | **6,45 : 1** con `--tinta` | Su `:hover`. Cada canal del anterior al 87 % |
 
 - **El rótulo va en `--tinta`, no en blanco, y no es una licencia estética.** `#25D366` con texto
   blanco mide **1,98 : 1**: no llega ni a la mitad del 4,5 : 1 que pide AA, y el botón lleva texto
@@ -106,6 +106,13 @@ trata igual que el logotipo: se nombra, se acota y se dice dónde no va.
   propio botón, igual que los azules del logotipo son la marca de la casa puesta en su archivo.
 - **El ocre no se toca.** Sigue siendo el único color de acción del sistema y la regla del §2.2 se
   aplica igual. → §2.2, apartado final.
+- **El borde del botón es del mismo verde, no de tinta**, igual que el primario lo lleva del mismo
+  ocre. Eso deja la silueta del botón a **1,64 : 1** contra `--fondo`, por debajo del 3 : 1 que
+  pide el contraste no textual — pero es exactamente la situación que el botón primario ya tiene
+  (**1,86 : 1**) y que el sistema aceptó al elegir rellenos planos sin borde ajeno. Lo que
+  identifica los dos botones es su rótulo, que sí cumple de sobra. Se deja consistente a
+  propósito: un borde oscuro solo alrededor del de WhatsApp lo haría el único botón del sitio con
+  contorno propio.
 - ⚠️ El hex está tomado del verde de marca de WhatsApp de uso corriente. **Sin confirmar contra
   la guía de marca oficial de Meta**: si el dueño tiene el valor exacto, se cambia en el token y
   se rehace la medida de contraste, que es lo único que hay que volver a comprobar.
@@ -772,6 +779,14 @@ barra fija.
 Comprobado ruta a ruta contra el HTML servido, y en las dos direcciones: **cero anclas a `wa.me`
 sin el verde, cero botones verdes que no vayan a `wa.me`.**
 
+⚠️ **El cierre de la portada se estrecha a 768 px, y es el único sitio donde el icono cuesta
+algo.** Esa fila vive en media columna junto al formulario, con `px-[30px]` a cada lado de los dos
+botones, y ya venía apretada: `Llamar al 627 663 146` partía en tres líneas antes de tocar nada.
+Con los 28 px del icono más su `gap` pasa a cuatro, y la fila crece de **79 a 104 px de alto**.
+Medido solo a 768; a 390 y a 1366 los dos botones caben en una línea. No se arregla desde `Boton`
+—la salida es que esa fila siga en columna hasta `lg`, y eso se escribe en `app/page.tsx`—, así
+que queda anotado, no parcheado.
+
 La razón de resolverlo así y no con `variante="whatsapp"`: un sitio de llamada nuevo que se
 olvide del prop **no falla ningún build**, se queda gris y no lo ve nadie. Y hay un segundo
 efecto que es el que de verdad lo justifica: el predicado es **el mismo** con el que
@@ -783,7 +798,7 @@ vuelve solo a su variante normal: sin número no hay WhatsApp que anunciar.
 **El foco se deja en el global** (`outline: 2px solid var(--pigmento); offset: 2px`), no se le
 pone uno propio, y el verde **no empeora nada**: el `offset` de 2 px deja el anillo fuera del
 botón, así que su color adyacente sigue siendo el fondo de la página por los dos lados, no el
-relleno. Medido dónde cae cada uno: el del menú de móvil sobre `--tinta` (ocre a **7,48 : 1**) y
+relleno. Medido dónde cae cada uno: el del menú de móvil sobre `--tinta` (ocre a **7,47 : 1**) y
 los otros cinco sobre `--fondo` (**1,86 : 1**). Ese 1,86 es exactamente el que ya tenían de
 `contorno` y el que tiene hoy **cualquier** botón del sitio sobre fondo claro; es una debilidad
 anterior y general del anillo global, no de esta pieza, y arreglarla es tocar `app/globals.css`
