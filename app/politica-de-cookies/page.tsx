@@ -1,28 +1,12 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import PlantillaLegal from '@/components/secciones/PlantillaLegal'
+import PlantillaLegal, { BloqueLegal } from '@/components/secciones/PlantillaLegal'
 import TablaFichaTecnica from '@/components/datos/TablaFichaTecnica'
-import DatoPendiente from '@/components/datos/DatoPendiente'
 import { cookiesPropias, cookiesTerceros, type FichaCookie, ultimaRevisionLegal } from '@/content/legal'
 
 export const metadata: Metadata = {
   title: 'Política de cookies',
   alternates: { canonical: '/politica-de-cookies/' },
-}
-
-/**
- * Bloque con subtítulo dentro de una sección legal: el subtítulo en mono y
- * versalitas, como toda etiqueta del sitio, pegado a lo suyo con un hueco menor
- * que el que separa los bloques entre sí. Es lo único que agrupa seis
- * definiciones seguidas en una columna de 68ch.
- */
-function Bloque({ titulo, children }: { titulo: string; children: React.ReactNode }) {
-  return (
-    <div className="flex flex-col gap-2">
-      <h3 className="font-mono text-d-12 tracking-[0.05em] uppercase text-acero">{titulo}</h3>
-      {children}
-    </div>
-  )
 }
 
 /**
@@ -44,18 +28,36 @@ function Cookie({ ficha }: { ficha: FichaCookie }) {
 }
 
 /**
- * El texto de las definiciones es el que trajo el dueño, palabra por palabra.
+ * Política de cookies rehecha contra `lib/legal/09-instrucciones-legales.md`
+ * §4, que recorre el contenido obligatorio del apartado 3.1.1 de la **Guía
+ * sobre el uso de las cookies de la AEPD, versión de mayo de 2024**.
  *
- * **La sección «Cookies que utiliza esta web» es el encargo que él mismo dejó
- * escrito dentro de su documento**: avisar de todas las cookies de las que haya
- * que avisar, además de las que su texto ya enumera, ahora que la web nueva
- * lleva Consent Mode v2 y el píxel de Meta. Ese encargo no se publica —es una
- * nota para quien maqueta, no texto legal—, se atiende.
+ * **Lo que se retira del texto heredado, y por qué no se podía matizar:**
  *
- * El inventario está levantado leyendo el código de este repositorio, y solo el
- * código: qué cookie escribe cada archivo, con qué caducidad y detrás de qué
- * condición. Lo que decide Google o Meta y no consta aquí —los nombres de sus
- * cookies y su duración— va entre corchetes, porque afirmarlo sería copiarlo de
+ * 1. **«El Usuario acepta expresamente, por la utilización del sitio web, el
+ *    tratamiento de la información recabada».** Seguir navegando no es una
+ *    forma válida de prestar el consentimiento, y la inactividad no lo implica
+ *    en ningún caso. La frase se elimina; no se suaviza.
+ * 2. **«La mayoría se borran del disco duro al finalizar la sesión».** Falso
+ *    aquí: 180 días la que guarda la decisión y 90 las otras tres.
+ * 3. **Las seis definiciones genéricas de tipos de cookies**, que ocupaban la
+ *    página entera sin nombrar una sola cookie de este sitio —cookies de
+ *    personalización y de compra que esta web no tiene—. Se sustituyen por una
+ *    explicación corta y por el inventario real.
+ * 4. **Google Analytics como «servicio prestado por Google, Inc.» de Mountain
+ *    View.** El responsable para el EEE es Google Ireland Limited.
+ *
+ * 🔴 **Lo que esta página NO puede arreglar.** La guía exige que retirar el
+ * consentimiento sea tan fácil como prestarlo, y da el criterio operativo:
+ * acceso sencillo y permanente al panel de configuración. Hoy ese panel no
+ * existe, y tampoco hay elección granular por finalidad. Esta página dice la
+ * verdad —borrar la cookie en el navegador— porque es lo único que hoy
+ * funciona; lo que falta es código, no texto. → `09-instrucciones-legales.md`
+ * §6.1 y §6.4.
+ *
+ * El inventario sigue levantado leyendo el código de este repositorio, y solo
+ * el código. Lo que decide Google o Meta y no consta aquí —los nombres de sus
+ * cookies y su duración— va como marcador, porque afirmarlo sería copiarlo de
  * algún sitio sin haberlo comprobado. Las fuentes archivo por archivo están en
  * `content/legal.tsx`.
  */
@@ -67,99 +69,58 @@ export default function PoliticaCookies() {
       entradilla={
         <>
           <p>
-            Las Cookies son ficheros que se descargan en su ordenador al acceder a determinadas
-            páginas web. Las cookies permiten a una página web, entre otras cosas, almacenar y
-            recuperar información sobre los hábitos de navegación de un usuario o de su equipo y,
-            dependiendo de la información que contengan y de la forma en que utilice su equipo,
-            pueden utilizarse para reconocer al usuario.. El navegador del usuario memoriza cookies
-            en el disco duro solamente durante la sesión actual ocupando un espacio de memoria mínimo
-            y no perjudicando al ordenador. Las cookies no contienen ninguna clase de información
-            personal específica, y la mayoría de las mismas se borran del disco duro al finalizar la
-            sesión de navegador (las denominadas cookies de sesión).
+            Una cookie es un pequeño archivo que una web guarda en tu dispositivo cuando la visitas,
+            y que puede volver a leer después. Sirve para recordar algo entre una página y la
+            siguiente —por ejemplo, una decisión que ya has tomado— y también, según quién la ponga y
+            para qué, para reconocer tu navegador y seguir tu actividad de una visita a otra.
           </p>
           <p>
-            La mayoría de los navegadores aceptan como estándar a las cookies y, con independencia de
-            las mismas, permiten o impiden en los ajustes de seguridad las cookies temporales o
-            memorizadas. Sin su expreso consentimiento mediante la activación de las cookies en su
-            navegador, no enlazará en las cookies los datos memorizados con sus datos personales
-            proporcionados en el momento del registro o la compra.
+            Aquí tienes las que usa pavimentos-albufera.com, una a una, con quién las pone, para qué
+            sirven, cuánto duran y si hace falta tu permiso. Para lo demás —qué datos personales
+            tratamos, a quién se los enviamos y qué derechos tienes— está la{' '}
+            <Link href="/politica-de-privacidad/" className="text-tinta">
+              política de privacidad
+            </Link>
+            .
           </p>
         </>
       }
       secciones={[
         {
-          titulo: 'Tipos de Cookies que puede utilizar este sitio web',
+          titulo: 'Cómo te pedimos permiso, y qué pasa con cada opción',
           contenido: (
             <>
-              <Bloque titulo="Cookies técnicas">
-                <p>
-                  Son aquéllas que permiten al usuario la navegación a través de una página web,
-                  plataforma o aplicación y la utilización de las diferentes opciones o servicios que
-                  en ella existan como, por ejemplo, controlar el tráfico y la comunicación de datos,
-                  identificar la sesión, acceder a partes de acceso restringido, recordar los elementos
-                  que integran un pedido, realizar el proceso de compra de un pedido, realizar la
-                  solicitud de inscripción o participación en un evento, utilizar elementos de
-                  seguridad durante la navegación, almacenar contenidos para la difusión de videos o
-                  sonido o compartir contenidos a través de redes sociales.
-                </p>
-              </Bloque>
-
-              <Bloque titulo="Cookies de personalización">
-                <p>
-                  Son aquéllas que permiten al usuario acceder al servicio con algunas características
-                  de carácter general predefinidas en función de una serie de criterios en el terminal
-                  del usuario como por ejemplo serian el idioma, el tipo de navegador a través del cual
-                  accede al servicio, la configuración regional desde donde accede al servicio, etc
-                </p>
-              </Bloque>
-
-              <Bloque titulo="Cookies de análisis">
-                <p>
-                  Son aquéllas que bien tratadas por nosotros o por terceros, nos permiten cuantificar
-                  el número de usuarios y así realizar la medición y análisis estadístico de la
-                  utilización que hacen los usuarios del servicio ofertado. Para ello se analiza su
-                  navegación en nuestra página web con el fin de mejorar la oferta de productos o
-                  servicios que le ofrecemos
-                </p>
-              </Bloque>
-
-              <Bloque titulo="Cookies publicitarias">
-                <p>
-                  Son aquéllas que, bien tratadas por nosotros o por terceros, nos permiten gestionar
-                  de la forma más eficaz posible la oferta de los espacios publicitarios que hay en la
-                  página web, adecuando el contenido del anuncio al contenido del servicio solicitado o
-                  al uso que realice de nuestra página web. Para ello podemos analizar sus hábitos de
-                  navegación en Internet y podemos mostrarle publicidad relacionada con su perfil de
-                  navegación.
-                </p>
-              </Bloque>
-
-              <Bloque titulo="Cookies de publicidad comportamental">
-                <p>
-                  Son aquéllas que permiten la gestión, de la forma más eficaz posible, de los espacios
-                  publicitarios que, en su caso, el editor haya incluido en una página web, aplicación
-                  o plataforma desde la que presta el servicio solicitado. Estas cookies almacenan
-                  información del comportamiento de los usuarios obtenida a través de la observación
-                  continuada de sus hábitos de navegación, lo que permite desarrollar un perfil
-                  específico para mostrar publicidad en función del mismo.
-                </p>
-              </Bloque>
-
-              <Bloque titulo="Cookies de terceros">
-                <p>
-                  Este sito web puede utilizar servicios de terceros que, por cuenta del propio sitio,
-                  recopilaran información con fines estadísticos, de uso del Site por parte del usuario
-                  y para la prestación de otros servicios relacionados con la actividad del sitio web y
-                  otros servicios de Internet. En particular, este sitio Web utiliza Google Analytics,
-                  un servicio analítico de web prestado por Google, Inc. con domicilio en los Estados
-                  Unidos con sede central en 1600 Amphitheatre Parkway, Mountain View, California
-                  94043. Para la prestación de estos servicios, estos utilizan cookies que recopilan la
-                  información, incluida la dirección IP del usuario, que será transmitida, tratada y
-                  almacenada por Google en los términos fijados en la Web Google.com. Incluyendo la
-                  posible transmisión de dicha información a terceros por razones de exigencia legal o
-                  cuando dichos terceros procesen la información por cuenta de Google
-                </p>
-              </Bloque>
+              <p>
+                En la primera visita aparece abajo un aviso con dos botones del mismo tamaño y al
+                mismo nivel: <strong>Aceptar</strong> y <strong>Rechazar</strong>. Ninguna opción
+                viene marcada de antemano, y no hace falta aceptar para usar la web: rechazando
+                funciona igual. Hoy la elección es conjunta: aceptar o rechazar cubre a la vez la
+                analítica y la publicidad, sin poder elegir una y no la otra.
+              </p>
+              <p>
+                Si <strong>aceptas</strong>, se cargan la etiqueta de Google —Google Analytics 4 y
+                Google Ads— y la de Meta, y se guardan las cookies de analítica y de publicidad que
+                figuran más abajo.
+              </p>
+              <p>
+                Si <strong>rechazas</strong>, la etiqueta de Meta no llega a cargarse, no se guardan
+                las cookies de publicidad de esta web y a Google se le indica, mediante el Consent
+                Mode v2, que no puede usar almacenamiento en tu dispositivo.
+              </p>
+              <p>
+                Dos precisiones que no vienen en las plantillas al uso y que aquí sí, porque es lo
+                que hace este sitio. La primera: la etiqueta de Google se carga en todas las páginas
+                desde la primera visita, aceptes o no, y en el estado denegado Google recibe
+                igualmente el aviso de qué página estás viendo, con tu dirección IP y tu navegador.
+                La segunda: la cookie <span className="font-mono text-d-14">pa_ref</span>, que guarda
+                el código de referencia, se escribe en la primera visita, antes de que hayas
+                contestado al aviso. Si no quieres ninguna de las dos cosas, más abajo se explica
+                cómo bloquearlas y borrarlas desde el navegador.
+              </p>
+              <p>
+                Navegar por la web, desplazarte o cerrar el aviso <strong>no</strong> equivale a
+                aceptar. Mientras no pulses uno de los dos botones, el aviso sigue ahí.
+              </p>
             </>
           ),
         },
@@ -168,59 +129,162 @@ export default function PoliticaCookies() {
           contenido: (
             <>
               <p>
-                Esta es la lista de las cookies que esta web instala o lee, con lo que hace cada una
-                y cuánto dura. Mientras no aceptes, no se guarda ninguna cookie de analítica ni de
-                publicidad: los cuatro permisos del Consent Mode de Google arrancan denegados y la
-                etiqueta de Meta no llega a cargarse.
-              </p>
-              <p>
                 De las cookies que ponen Google y Meta, esta web decide cuándo pueden cargarse, pero
                 no sus nombres ni su duración: los fija cada proveedor. Lo que no se puede afirmar
                 está entre corchetes, a la espera de confirmarlo con ellos.
               </p>
 
-              <Bloque titulo="Cookies propias">
+              <BloqueLegal titulo="Cookies propias">
                 <div className="flex flex-col gap-6">
                   {cookiesPropias.map((ficha) => (
                     <Cookie key={ficha.nombre} ficha={ficha} />
                   ))}
                 </div>
-              </Bloque>
+              </BloqueLegal>
 
-              <Bloque titulo="Cookies de terceros">
+              <BloqueLegal titulo="Cookies de terceros">
                 <div className="flex flex-col gap-6">
                   {cookiesTerceros.map((ficha) => (
                     <Cookie key={ficha.nombre} ficha={ficha} />
                   ))}
                 </div>
-              </Bloque>
+              </BloqueLegal>
+
+              <BloqueLegal titulo="Cookies exentas de permiso">
+                <p>
+                  Hay cookies que la ley no obliga a consentir porque sin ellas el servicio que has
+                  pedido no puede prestarse. En esta web solo hay una:{' '}
+                  <span className="font-mono text-d-14">pa_consent</span>, la que guarda tu propia
+                  decisión sobre las demás. Todas las otras necesitan tu permiso.
+                </p>
+              </BloqueLegal>
             </>
           ),
         },
         {
-          titulo: 'Cómo desactivarlas',
+          titulo: 'Cuánto duran',
           contenido: (
             <>
               <p>
-                El Usuario acepta expresamente, por la utilización del sitio web, el tratamiento de
-                la información recabada en la forma y con los fines anteriormente mencionados. Y
-                asimismo reconoce conocer la posibilidad de rechazar el tratamiento de tales datos o
-                información rechazando el uso de Cookies mediante la selección de la configuración
-                apropiada a tal fin en su navegador. Si bien esta opción de bloqueo de Cookies en su
-                navegador puede no permitirle el uso pleno de todas las funcionalidades del sitio
-                web.
+                Cada cookie caduca sola en el plazo que figura en su ficha: <strong>180 días</strong>{' '}
+                la que guarda tu decisión, <strong>90 días</strong> las de referencia, atribución y
+                clic de anuncio. Las que instalan Google y Meta duran lo que decida cada uno, y por
+                eso su duración aparece entre corchetes hasta poder confirmarla.
               </p>
               <p>
-                Puede usted permitir, bloquear o eliminar las cookies instaladas en su equipo
-                mediante la configuración de las opciones del navegador instalado en su dispositivo.
-                Si tiene dudas sobre esta política de cookies, puede contactar con nosotros a través
-                de la{' '}
-                <Link href="/presupuesto/" className="text-tinta">
-                  página de contacto
-                </Link>{' '}
-                o a través de los datos habilitados para tal efecto en el propio sitio web.
+                La decisión que tomas en el aviso se conserva 180 días y no se te vuelve a preguntar
+                durante ese tiempo. La Agencia Española de Protección de Datos considera buena
+                práctica que ese plazo no pase de 24 meses.
               </p>
             </>
+          ),
+        },
+        {
+          titulo: 'Quién más recibe estos datos, y dónde',
+          contenido: (
+            <>
+              <p>
+                Los terceros que operan cookies en este sitio son dos, y son estos:{' '}
+                <strong>Google Ireland Limited</strong>, para la analítica de Google Analytics 4 y la
+                medición de Google Ads, y <strong>Meta Platforms Ireland Limited</strong>, para la
+                medición y la segmentación de los anuncios de Facebook e Instagram. Cada uno trata
+                esos datos según su propia política, enlazada en su ficha de arriba.
+              </p>
+              <p>
+                Ambos tratan datos también en <strong>Estados Unidos</strong>. Esa transferencia se
+                ampara en la decisión de adecuación de la Comisión Europea de 10 de julio de 2023
+                —el <em>EU-US Data Privacy Framework</em>—, que solo alcanza a las entidades
+                certificadas; lo que no cubra necesita una garantía del artículo 46 del RGPD. El
+                detalle, con los enlaces oficiales y lo que queda por comprobar de cada proveedor,
+                está en la{' '}
+                <Link href="/politica-de-privacidad/" className="text-tinta">
+                  política de privacidad
+                </Link>
+                .
+              </p>
+            </>
+          ),
+        },
+        {
+          titulo: 'Publicidad segmentada',
+          contenido: (
+            <p>
+              Si aceptas, los datos que recogen estas cookies los usan Google y Meta para medir sus
+              anuncios y para decidir qué anuncios ver. Esta web no toma ninguna decisión automática
+              sobre ti: los presupuestos los hace y los contesta una persona. Cómo se describe
+              exactamente esa segmentación está detallado en la{' '}
+              <Link href="/politica-de-privacidad/" className="text-tinta">
+                política de privacidad
+              </Link>
+              .
+            </p>
+          ),
+        },
+        {
+          titulo: 'Cómo cambiar de idea y cómo borrarlas',
+          contenido: (
+            <>
+              <BloqueLegal titulo="Para volver a elegir">
+                <p>
+                  Esta web todavía no tiene un panel donde cambiar tu decisión después de haberla
+                  tomado, y lo decimos en lugar de dar un rodeo. Mientras no lo tenga, la forma de
+                  volver a elegir es borrar la cookie{' '}
+                  <span className="font-mono text-d-14">pa_consent</span> de este sitio en tu
+                  navegador: al hacerlo, el aviso vuelve a aparecer en la siguiente visita y puedes
+                  contestar otra cosa.
+                </p>
+                <p>
+                  Si borras todas las cookies de pavimentos-albufera.com se van también{' '}
+                  <span className="font-mono text-d-14">pa_ref</span>,{' '}
+                  <span className="font-mono text-d-14">pa_attr</span> y{' '}
+                  <span className="font-mono text-d-14">_fbc</span>, y con ellas el código de
+                  referencia y los datos de qué anuncio te trajo.
+                </p>
+              </BloqueLegal>
+
+              <BloqueLegal titulo="Dónde está eso en cada navegador">
+                <p>
+                  Todos los navegadores permiten ver, borrar y bloquear las cookies de un sitio
+                  concreto, y también bloquear las de terceros para todos los sitios. La opción suele
+                  estar en los ajustes, dentro de privacidad:
+                </p>
+                <ul>
+                  <li>
+                    <strong>Chrome:</strong> Configuración → Privacidad y seguridad → Cookies y otros
+                    datos de sitios.
+                  </li>
+                  <li>
+                    <strong>Safari:</strong> Ajustes → Safari → Avanzado → Datos de sitios web, en
+                    iPhone y iPad; Safari → Ajustes → Privacidad, en Mac.
+                  </li>
+                  <li>
+                    <strong>Firefox:</strong> Ajustes → Privacidad y seguridad → Cookies y datos del
+                    sitio.
+                  </li>
+                  <li>
+                    <strong>Edge:</strong> Configuración → Cookies y permisos del sitio.
+                  </li>
+                </ul>
+                <p>
+                  Si bloqueas las cookies de este sitio, la web sigue funcionando: lo único que
+                  pierdes es que recordemos tu decisión, y el aviso volverá a salirte.
+                </p>
+              </BloqueLegal>
+            </>
+          ),
+        },
+        {
+          titulo: 'Más información',
+          contenido: (
+            <p>
+              Quién es el responsable, qué datos personales se tratan, a quién se envían, cuánto se
+              conservan y cómo ejercer tus derechos está en la{' '}
+              <Link href="/politica-de-privacidad/" className="text-tinta">
+                política de privacidad
+              </Link>
+              . Esta política de cookies puede cambiar cuando cambien las cookies del sitio; la fecha
+              de la última revisión encabeza la página.
+            </p>
           ),
         },
       ]}
