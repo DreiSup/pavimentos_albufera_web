@@ -303,12 +303,19 @@ export default function Home() {
         {/* `self-start` para que la caja acabe donde acaba el texto; `pb-20` reserva
             la banda inferior del carrusel —control de pausa a la izquierda, etiqueta
             técnica a la derecha— para cuando el contenido llegue hasta abajo. */}
-        <div className="col-start-1 row-start-1 relative z-10 self-start flex flex-col gap-6 md:gap-8 px-[18px] md:px-lat-desktop pt-8 md:pt-14 pb-20">
-          <h1 className="font-display font-extrabold fs-hero text-46 md:text-88 leading-[1.05] md:leading-[1.02] text-fondo m-0 md:max-w-[12ch]">
+        <div className="hero-columna col-start-1 row-start-1 relative z-10 self-start flex flex-col px-[18px] md:px-lat-desktop">
+          {/* El tamaño, la interlínea, el ancho máximo y los tres espacios de esta
+              columna salen de variables de `.hero-pantalla` en vez de utilidades,
+              y no es un capricho de implementación: en una ventana baja el
+              contenido tiene que ocupar menos para que quede corte que ver, y con
+              utilidades eso serían cuatro juegos de clases repetidos por cada
+              escalón. Los valores siguen saliendo de la escala cerrada del §2.4.
+              → `app/globals.css`, «el asomo es del CONTENIDO» */}
+          <h1 className="hero-titular font-display font-extrabold fs-hero text-fondo m-0">
             Hormigón que se ve bien 20 años después
           </h1>
 
-          <p className="text-16 md:text-20 text-fondo max-w-[46ch] m-0">
+          <p className="hero-parrafo text-fondo max-w-[46ch] m-0">
             Pavimentos de hormigón impreso, pulido, lavado y microcemento en Valencia, Castellón y
             Alicante. 17 años ejecutando obra propia, con 10 años de garantía y mantenimiento
             incluido.

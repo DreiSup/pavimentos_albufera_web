@@ -52,6 +52,21 @@ export default function Consentimiento() {
     setEstado(guardado === 'aceptado' || guardado === 'rechazado' ? guardado : 'pendiente')
   }, [])
 
+  /**
+   * `data-consentimiento="pendiente"` en el `<html>`: el único sitio del que el
+   * CSS puede enterarse de que este aviso está ocupando la parte baja de la
+   * ventana. Lo pone ya el script en línea de `app/layout.tsx` —antes del primer
+   * pintado, para que el hero no se redimensione al hidratar—, y aquí se
+   * mantiene al día: quien decide lo pierde en el mismo gesto y el hero recupera
+   * su alto completo. → `app/globals.css`, `--banda-consentimiento`
+   */
+  useEffect(() => {
+    if (estado === null) return
+    const raiz = document.documentElement
+    if (estado === 'pendiente') raiz.setAttribute('data-consentimiento', 'pendiente')
+    else raiz.removeAttribute('data-consentimiento')
+  }, [estado])
+
   useEffect(() => {
     if (estado === null || estado === 'pendiente') return
     const concedido = estado === 'aceptado' ? 'granted' : 'denied'
