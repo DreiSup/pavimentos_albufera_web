@@ -133,10 +133,17 @@ Lo que arrastra, y hay que saberlo antes de revisarlo:
 - **Sobre el velo no cabe `--tinta-media`.** La entradilla del hero pasa a `--fondo` y el botón
   de contorno a su variante `sobreOscuro`. No es una preferencia: es la única combinación de la
   paleta cerrada que llega a AA ahí.
-- ⚠️ **En escritorio la portada se descarga más foto.** `sizes` pasa a `100vw`, y a 1366 px las
-  cuatro fotos del hero suben de **284,3 a 566,1 kB** —la del LCP, de 101,6 a 216,9—. A 390 px
-  no cambia nada. Es el precio de la decisión, no un descuido, y se deja a la vista aquí: si
-  alguna vez pesa más que el efecto, lo que se revisa es el 88 %, no el velo.
+- ⚠️ **En escritorio la portada se descarga más foto.** `sizes` pasa a `100vw`, y a 1366 px la
+  foto del LCP sube de 101,6 a **216,9 kB**. A 390 px no cambia nada. Es el precio de la
+  decisión, no un descuido, y se deja a la vista aquí: si alguna vez pesa más que el efecto, lo
+  que se revisa es el 88 %, no el velo.
+  🔴 **Corregido el 2026-09-18 con la respuesta real de `/_next/image`.** No son bytes de más:
+  son el original entero. `sharp` no amplía, así que `w=1200`, `w=1536` y `w=2048` devuelven el
+  MISMO archivo de 222.109 B para un original de 1200×900, y el peldaño 750 de antes se estaba
+  ampliando 1,82× sobre un hueco que hoy es de pantalla completa. `sizes` no puede recuperar
+  esos bytes. Lo único que sí se recupera, y se ha hecho, son **40,8 kB de la diapositiva de
+  Denia** acotando el `sizes` a 1200 px por encima de esa ventana. Las cuatro fotos del pase a
+  1366×768 y DPR 1 son hoy **506.093 B**, contra 547.870 antes del tope.
 
 **14.b — La etiqueta técnica del hero se recorta a municipio y acabado.** Decía «MONCADA ·
 VALENCIA / HORMIGÓN IMPRESO · ESPIGA · C-117 / 2025» y dice «MONCADA · VALENCIA / HORMIGÓN

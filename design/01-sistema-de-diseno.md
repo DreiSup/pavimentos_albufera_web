@@ -644,11 +644,14 @@ proporción dentro de una rejilla y pasa a ser **la sección entera, con el text
 dos anchos. `app/page.tsx` + `.hero-pantalla` de `app/globals.css`.
 
 ```
-alto      min-height: calc((100svh − --cabecera-actual − --barra-movil) * --hero-asomo)
+alto      min-height: calc(--hero-util * --hero-asomo)
+--hero-util  100svh − --cabecera-actual − --barra-movil − --banda-consentimiento
           --hero-asomo 0,88 · --barra-movil 56px, y 0 a partir de cabecera-ancha (1180 px)
+          --banda-consentimiento 0, y 184/148/104 px mientras el aviso de cookies está puesto
 capas     carrusel y columna de texto en la MISMA celda de rejilla, el texto con z-10
 texto     titular 46/88 px, entradilla y 2 botones, todo en --fondo sobre el velo
           self-start y pb-20: la caja acaba donde acaba el texto y reserva la banda de abajo
+          tamaños y espacios por VARIABLE, no por utilidad: se compactan en ventana baja
 ```
 
 - **«Casi todo el alto, dejando ver el corte», contestado expresamente por el dueño.** No el
@@ -670,10 +673,70 @@ texto     titular 46/88 px, entradilla y 2 botones, todo en --fondo sobre el vel
 - **Sin `proporcion`.** Es lo que la hace opcional en el componente: con una `aspect-ratio` viva
   y la anchura en `auto`, el navegador deduce la anchura de la altura —el cálculo que ya devolvió
   scroll horizontal dos veces—. Comprobado `scrollWidth === clientWidth` a 390, 768 y 1366.
-- **`sizes` pasa a `100vw`** a todos los anchos. A 390 px no cambia nada (ya lo era, y `fill`
-  elige el candidato por la anchura). En escritorio sí: a 1366 el candidato pasa de 750 a 1536 y
-  las cuatro fotos del hero de **284,3 a 566,1 kB**, la del LCP de 101,6 a 216,9. Es el precio
-  de la decisión y está anotado en `design/05` §C #14.
+- **`sizes` es `(min-width: 1200px) 1200px, 100vw`.** Hasta 1200 px de ventana es `100vw` y a
+  390 no cambia nada (ya lo era, y `fill` elige el candidato por la anchura). El tope de 1200
+  se añade el 2026-09-18 porque ahí se acaban los originales: las cuatro fotos del pase miden
+  1200, 2048, 1200 y 898 px.
+  🔴 **Y el tope NO abarata el LCP, que es lo que parecía.** `sharp` no amplía: para el original
+  de Moncada, 1200×900, `w=1200`, `w=1536` y `w=2048` devuelven el MISMO archivo de 222.109 B
+  (216,9 kB). Los 216,9 kB no son un candidato inflado, son el original entero, y el salto desde
+  los 101,6 kB de `50vw` es el precio real de un hueco que pasó de media pantalla a pantalla
+  completa —con 750 px se estaba ampliando 1,82×—. Lo que el tope sí ahorra son **40,8 kB, el
+  7,6 % del pase**, todos en la diapositiva de Denia, la única con 2048 px de origen. Medido con
+  `curl` contra `next start`, `Accept: image/avif`, a 1366×768 y DPR 1.
+  **La calidad de la primera se queda en 75.** A 60 serían 147.159 B, −73,2 kB, pero el peldaño
+  de 1200 solo lo pide un escritorio: en móvil sigue siendo `w=640`, 73.585 B, q75, sin un byte
+  de diferencia. → `design/05` §C #14
+
+#### El hero en la primera visita, con el aviso de cookies puesto
+
+**Cierre del 2026-09-18.** El apartado de arriba se midió con la cookie de consentimiento ya
+aceptada, y esa es otra web. Mientras nadie ha decidido, `Consentimiento.tsx` ocupa la parte
+baja de la ventana con un bloque `fixed bottom-0 z-50` —181,6 px hasta 500 px de ancho, 96 a
+partir de 1024—, y ahí es justo donde el hero a pantalla completa pone **el control de pausa,
+la etiqueta técnica y el corte**. Medido a 390×844 antes de esto: borde inferior del hero en
+701,8 px, aviso empezando en 606,4. Un pase automático cuyo botón de pausa queda debajo de una
+capa incumple la WCAG 2.2.2 igual que si el botón no existiera.
+
+- **`--banda-consentimiento` se resta al alto útil**, y vale 0 en cuanto hay decisión. Tres
+  escalones —**184 / 148 / 104 px** en `<768`, `768–1023` y `≥1024`— que **espejan la altura
+  medida del aviso** a 21 anchos, redondeando siempre hacia arriba: pasarse solo agranda el
+  asomo, quedarse corto vuelve a enterrar el control. Es la misma clase de espejo que
+  `--barra-movil`, y se vuelve a medir si se toca el texto del aviso o su tipografía.
+- 🔴 **La marca la pone un `<script>` en línea de `app/layout.tsx`, antes del primer pintado.**
+  Dejársela al efecto de `Consentimiento.tsx` encoge el hero DESPUÉS de pintarlo, que es el
+  mismo redimensionado del elemento del LCP por el que este § rechazó `dvh`. Medido sin el
+  script: **CLS 0,156 a 390×844**. Con él, **0,000 en los seis tamaños**. El efecto sigue
+  existiendo solo para mantener la marca al día cuando el visitante decide.
+- **El alto útil pasa a `--hero-util`, con la rama `@supports` del `svh` dentro.** Así
+  `.hero-pantalla` tiene UNA sola declaración de `min-height` viva: una segunda regla plana en
+  cualquier parte del archivo anulaba en silencio el `@supports` y devolvía el sitio a `vh`.
+- **El contenido se compacta en ventana baja**, porque `--hero-asomo` es un mínimo y nunca es
+  él quien se come el corte: se lo come un contenido más alto que el mínimo. Dos escalones por
+  alto de ventana, con sus gemelos para cuando el aviso está puesto, todos dentro de la escala
+  cerrada del §2.4. El titular de 64 px solo llega hasta 1179 px de ancho: de ahí en adelante
+  sobra alto y se queda en 88, porque un titular que se pinta a 64 en la primera visita y salta
+  a 88 al aceptar es peor que un asomo de menos.
+- ⚠️ **El interletraje viaja con el tamaño.** La escala de `tailwind.config.ts` lo lleva dentro
+  de cada peldaño —46 a −0,02em, 64 a −0,025, 88 a −0,03—; al pasar de `text-88` a una
+  variable se perdía y el titular ganaba una línea entera, de 359 a 448,8 px a 768×1024.
+- ⚠️ **`--hero-pb` no baja de 80 px en móvil.** La etiqueta técnica mide 69,8 px y va a sangre
+  abajo, donde los botones son de ancho completo: recortar ese hueco no ahorra alto, encima un
+  texto sobre otro. En escritorio los botones son de ancho automático y el suelo lo pone el
+  control de pausa, 44 px.
+
+Medido en el build de producción, con el aviso en pantalla: control alcanzable con el puntero
+y con el tabulador, etiqueta entera visible y asomo de **66,5 px a 390×844**, 30,6 a 768×1024,
+67,4 a 1024×768 y 50,0 a 1366×768. Con la decisión tomada, el asomo es 142,2 · 162,1 · **131,4**
+· 82,1 px —a 1024×768 no existía—.
+
+🔴 **Dos tamaños no caben, y no es CSS, es aritmética.** A 320×568 y 360×640 el aviso mide
+181,6 px, la barra 56 y la cabecera 70: quedan 260 y 332 px de ventana. El suelo de este hero
+—titular, entradilla, dos CTA, los 70 px de etiqueta y los 44 del control— son ~427 px con el
+texto más pequeño de la escala que no lo recorta. Ahí el control sigue alcanzable por scroll y
+por tabulador, que es lo que la WCAG 2.2.2 pide. A 320×568 tampoco hay asomo sin el aviso:
+514,7 px de contenido contra 442 de ventana útil. Se deja dicho en vez de maquillarlo quitando
+la entradilla.
 
 #### Control de pausa
 
