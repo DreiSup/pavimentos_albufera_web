@@ -78,7 +78,13 @@ export default function FormularioPresupuesto({
         params: {
           form_location: origen,
           space_type: estado.resumen?.espacio,
-          municipality: estado.resumen?.municipio,
+          // `|| undefined` para que el parámetro no viaje cuando no se ha
+          // recogido. La variante corta no pide municipio y el resumen traía
+          // un guion de relleno: GA4 y Meta estaban recibiendo `—` como
+          // municipio en todos los leads de la portada y de las seis páginas de
+          // servicio. Una dimensión personalizada no se rellena hacia atrás, así
+          // que ese valor basura no se limpia después.
+          municipality: estado.resumen?.municipio || undefined,
           // Las dos claves de unión con el lead que llega al buzón. `event_id`
           // es el mismo que el Server Action manda a Meta CAPI; `reference_code`
           // el que viaja dentro del mensaje de WhatsApp y del aviso de Telegram.
@@ -99,10 +105,15 @@ export default function FormularioPresupuesto({
         <p className="font-display font-bold fs-h2 text-26 m-0">
           Te llamamos hoy mismo si nos escribes antes de las 18:00, y mañana a primera hora si no.
         </p>
+        {/* `design/02` §B1, estado 4: «el resumen de lo enviado». Lo enviado,
+            no la plantilla del formulario largo. La variante corta no pide ni
+            superficie ni municipio, y el panel pintaba sus dos líneas con un
+            guion: un estado vacío que no dice nada y que además hace dudar de
+            si el dato se perdió por el camino. */}
         <div className="font-mono text-d-11 leading-[1.9] text-sobre-tinta">
           <p className="m-0">{estado.resumen?.espacio}</p>
-          <p className="m-0">{estado.resumen?.superficie} m²</p>
-          <p className="m-0">{estado.resumen?.municipio}</p>
+          {estado.resumen?.superficie ? <p className="m-0">{estado.resumen.superficie} m²</p> : null}
+          {estado.resumen?.municipio ? <p className="m-0">{estado.resumen.municipio}</p> : null}
         </div>
         <div className="flex flex-wrap gap-3">
           <Boton variante="contorno" sobreOscuro href="/acabados/">
@@ -128,7 +139,16 @@ export default function FormularioPresupuesto({
       <input type="hidden" name="evento_id" value={eventoId} />
       <input type="hidden" name="origen" value={origen} />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* La fila se reparte por el ancho REAL de la columna, no por el del
+          documento. `md:grid-cols-2` miraba la ventana, y este formulario se
+          monta en ocho sitios dentro de columnas de anchos distintos: a 768 px
+          la columna del cierre mide 296,5 px, cada pista salía a 140,3 px y
+          «NOMBRE Y APELLIDOS *» —167,2 px de ancho intrínseco— partía en dos
+          líneas, bajando su input 20,9 px respecto al del teléfono. Con
+          `auto-fit` la fila se parte sola por debajo de 376 px de columna y a
+          1024 px sigue dando dos pistas de 204,3 px, como hasta ahora.
+          → `design/02` §B1 */}
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4">
         <Campo etiqueta="Nombre y apellidos" htmlFor="nombre" obligatorio>
           <input id="nombre" name="nombre" type="text" required readOnly={enviando} className={claseInput} />
         </Campo>
@@ -222,8 +242,23 @@ export default function FormularioPresupuesto({
       {/* Fuera del condicional a propósito: la variante corta también recoge
           nombre y teléfono, así que necesita el mismo consentimiento. Antes
           solo la llevaba el formulario largo. */}
-      <label className="flex items-start gap-3 font-sans text-14 text-tinta-media">
-        <input type="checkbox" name="privacidad" required disabled={enviando} className="mt-1" />
+      {/* `min-h-tactil` sobre el `<label>`, que es el elemento que recibe el
+          toque: el `<input type="checkbox">` mide 13 × 13 px —el tamaño por
+          defecto del navegador— y el label envolvente se quedaba en 22,4 px de
+          alto cuando el texto cabía en una línea. Los 44 px que pide CLAUDE.md
+          se consiguen sin tocar la casilla, que es lo que se ve.
+          `items-center` en vez de `items-start` + `mt-1`: con la altura mínima,
+          alinear arriba dejaba 21 px muertos debajo de un texto de una línea, y
+          el margen por elemento está prohibido. */}
+      <label className="flex items-center gap-3 min-h-tactil font-sans text-14 text-tinta-media">
+        <input
+          type="checkbox"
+          name="privacidad"
+          required
+          disabled={enviando}
+          aria-invalid={Boolean(estado.errores.privacidad)}
+          aria-describedby={estado.errores.privacidad ? 'privacidad-error' : undefined}
+        />
         <span>
           He leído y acepto la{' '}
           <Link href="/politica-de-privacidad/" className="text-tinta">
@@ -232,8 +267,10 @@ export default function FormularioPresupuesto({
           . *
         </span>
       </label>
+      {/* Esta casilla no pasa por `Campo`, así que su mensaje se asocia a mano.
+          Aquí el foco no se mueve: el `aria-live` es la única vía. */}
       {estado.errores.privacidad ? (
-        <p className="font-sans text-14 font-semibold text-error m-0" aria-live="polite">
+        <p id="privacidad-error" className="font-sans text-14 font-semibold text-error m-0" aria-live="polite">
           {estado.errores.privacidad}
         </p>
       ) : null}

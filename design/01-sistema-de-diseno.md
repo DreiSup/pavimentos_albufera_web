@@ -339,6 +339,25 @@ error      border: 2px solid #8C3A2B  +  mensaje Instrument Sans 600 14px color 
 Nunca `placeholder` como etiqueta. El `placeholder` solo se usa como ejemplo de formato
 («Largo × ancho»). Sobre fondo oscuro, el borde es `#DADCD6` y el texto `#E9EAE6`.
 
+**El mensaje de error va colgado del campo con `aria-describedby`**, y lo pone el componente,
+no cada llamada. Un `aria-invalid="true"` con `aria-describedby` a `null` anuncia «inválido» y
+se calla el motivo, que es lo único que sirve para corregirlo. La ayuda se asocia igual. Solo se
+listan los `id` que se pintan de verdad, y si el control ya traía su propio `aria-describedby`
+el suyo va primero. `components/ui/Campo.tsx`.
+
+**Casilla de verificación** — la única del sitio es la de privacidad del formulario:
+
+```
+casilla    el control nativo, sin repintar: 13 × 13 px en el navegador
+objetivo   el <label> que la envuelve, min-height: 44px · display: flex · align-items: center · gap: 12px
+texto      Instrument Sans 14px · color: #5C625E, con enlace en #1B1E1C
+```
+
+El objetivo táctil de 44 px es el del label, no el de la casilla: el label ya recibe el toque,
+y agrandarlo no repinta el control. Sin la altura mínima se quedaba en **22,4 px** cuando el
+texto cabía en una línea. `align-items: center` y no `flex-start`: con altura mínima, alinear
+arriba deja 21 px muertos bajo un texto de una línea y se lee como un `gap` mal puesto.
+
 ### 3.8 Etiqueta técnica
 
 La firma del sistema. Tres variantes:

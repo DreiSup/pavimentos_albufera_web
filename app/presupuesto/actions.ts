@@ -356,14 +356,27 @@ export async function enviarPresupuesto(
     if (!entregado) {
       return {
         estado: 'error',
-        errores: { form: 'No hemos podido enviarlo. Llámanos o escríbenos por WhatsApp y lo resolvemos ahora.' },
+        errores: {
+          // El literal `[teléfono]` es el del microcopy de `design/02` §B1 y no
+          // un dato pendiente: `FormularioPresupuesto` lo sustituye por
+          // `nap.telefono` al pintarlo, porque el número vive en configuración y
+          // el Server Action no es quien lo compone. Sin él, ese `.replace()`
+          // era código muerto sobre un camino vivo y el mensaje perdía la única
+          // vía de contacto que ofrece.
+          form: 'No hemos podido enviarlo. Llámanos al [teléfono] o escríbenos por WhatsApp y lo resolvemos ahora.',
+        },
       }
     }
   }
 
+  // El resumen viaja tal cual, con la cadena vacía cuando el campo no se pide.
+  // El guion de relleno que había antes no era solo un hueco feo en el panel de
+  // «Recibido»: `FormularioPresupuesto` lo reenvía como `municipality` a GA4 y
+  // al Pixel, así que cada lead de la variante corta declaraba `—` de
+  // municipio. Quién decide si un campo se enseña es quien lo pinta.
   return {
     estado: 'enviado',
     errores: {},
-    resumen: { espacio, superficie: superficie || '—', municipio: municipio || '—' },
+    resumen: { espacio, superficie, municipio },
   }
 }
