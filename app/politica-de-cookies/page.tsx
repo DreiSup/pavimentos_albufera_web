@@ -238,7 +238,10 @@ export default function PoliticaCookies() {
                   <span className="font-mono text-d-14">pa_ref</span>,{' '}
                   <span className="font-mono text-d-14">pa_attr</span> y{' '}
                   <span className="font-mono text-d-14">_fbc</span>, y con ellas el código de
-                  referencia y los datos de qué anuncio te trajo.
+                  referencia y los datos de qué anuncio te trajo. Ojo con una:{' '}
+                  <span className="font-mono text-d-14">pa_ref</span> se vuelve a escribir, con un
+                  código nuevo, la próxima vez que entres. Si lo que quieres es que no se escriba,
+                  no basta con borrarla: hay que bloquear las cookies de este sitio.
                 </p>
               </BloqueLegal>
 

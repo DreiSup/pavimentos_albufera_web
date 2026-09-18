@@ -208,7 +208,7 @@ export const cookiesPropias: FichaCookie[] = [
       {
         etiqueta: '¿NECESITA CONSENTIMIENTO?',
         valor:
-          'Sí: es un identificador único y no está exenta. Hoy se escribe en la primera visita, antes de que puedas decidir. Puedes borrarla desde tu navegador, como se explica más abajo.',
+          'Sí: es un identificador único y no está exenta. Hoy se escribe en la primera visita, antes de que puedas decidir. Si la borras se genera un código nuevo en la visita siguiente: para que no llegue a escribirse hay que bloquear las cookies de este sitio en el navegador.',
       },
     ],
   },
@@ -382,7 +382,7 @@ export const destinatarios: FilaDestinatario[] = [
       {
         etiqueta: 'QUÉ RECIBE',
         valor:
-          'Todo el formulario, incluida la foto que adjuntes, el código de referencia y el origen de la visita',
+          'Todo el formulario, incluida la foto que adjuntes, el código de referencia, el origen de la visita y qué habías contestado al aviso de cookies al enviarlo',
       },
       { etiqueta: 'DÓNDE TRATA LOS DATOS', valor: 'Estados Unidos' },
       { etiqueta: 'EN QUÉ CONDICIÓN', valor: 'Encargado del tratamiento (art. 28 RGPD)' },
@@ -398,7 +398,7 @@ export const destinatarios: FilaDestinatario[] = [
       {
         etiqueta: 'QUÉ RECIBE',
         valor:
-          'Nombre, teléfono, correo, qué quieres pavimentar, municipio, origen de la visita y código de referencia. No recibe la foto',
+          'Nombre, teléfono, correo, qué quieres pavimentar, municipio, origen de la visita, código de referencia y qué habías contestado al aviso de cookies. No recibe la foto',
       },
       { etiqueta: 'DÓNDE TRATA LOS DATOS', valor: 'Emiratos Árabes Unidos (Telegram FZ-LLC, Dubái)' },
       { etiqueta: 'EN QUÉ CONDICIÓN', valor: 'Encargado del tratamiento (art. 28 RGPD)' },
