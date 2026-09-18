@@ -29,8 +29,14 @@ const { publicados: total, documentados } = recuentoAcabadosPublicados()
 /**
  * Una sola fila de chips, la de técnica. La de color se retiró el 2026-09-17
  * (`design/02` §A3): filtrar por pigmento pedía al visitante el dato que viene a
- * buscar, y con un solo eje el estado vacío deja de ser alcanzable porque cada
- * opción sale del propio catálogo que se pinta.
+ * buscar.
+ *
+ * ⚠️ Un solo eje **no basta** para que el estado vacío deje de ser alcanzable,
+ * aunque las opciones salgan del propio catálogo que se pinta. `?tecnica=` es la
+ * otra puerta y `FiltrosAcabados` la lee al montar: medido antes de este cambio,
+ * `/acabados/?tecnica=desactivado` servía «0 ACABADOS · DESACTIVADO» con la
+ * rejilla vacía. Por eso el componente recibe las opciones y valida la URL
+ * contra ellas: la lista de aquí es la única puerta de entrada al filtro.
  */
 const grupoTecnica: GrupoAcabados = {
   clave: 'tecnica',

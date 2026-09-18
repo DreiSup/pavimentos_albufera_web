@@ -114,11 +114,15 @@ Cualquier dependencia que ponga en riesgo el presupuesto de JS se descarta.
 
 Recogido en detalle en `02-pantallas.md`. Resumen:
 
-- **Filtros del muestrario y del índice de proyectos.** Dos ejes combinables. Filtran en
-  cliente sobre datos ya cargados: sin salto de red, sin estado de carga. Cada filtro
-  aplicado se refleja en la URL como query param para que el estado sea compartible.
-  Con cero resultados aparece el estado vacío, que **no es un error**: dice que solo se
-  enseñan acabados ejecutados de verdad y ofrece quitar filtros o preguntar.
+- **Filtro del muestrario.** ⚠️ Corregido el 2026-09-18: aquí decía «filtros del muestrario y del
+  índice de proyectos, dos ejes combinables», y ya no queda ni una de las tres cosas.
+  `/proyectos/` no tiene filtros —se retiraron—, y al muestrario le queda **un solo eje**, el de
+  técnica, desde el 2026-09-17 (`02` §A3). Filtra en cliente sobre datos ya cargados: sin salto de
+  red, sin estado de carga. El filtro aplicado se refleja en la URL como query param para que el
+  estado sea compartible, y **la URL se valida contra las mismas opciones que la barra**: un
+  `?tecnica=` que no está entre los chips no se aplica. Con cero resultados aparece el estado
+  vacío, que **no es un error**: dice que solo se enseñan acabados ejecutados de verdad y ofrece
+  quitar filtros o preguntar.
 - **Acordeón de FAQ.** Uno abierto de inicio, el resto cerrados. Al abrir uno se cierra el
   anterior. Implementar con `<details>`/`<summary>` o con botón + `aria-expanded`.
 - **Submenú de la página de servicio.** Anclado bajo la cabecera en escritorio. Marca en ocre

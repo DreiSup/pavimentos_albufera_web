@@ -173,10 +173,17 @@ tienen muestra fotográfica**, 7 de ellos con obra documentada.
     de abajo y donde la barra de scroll es superpuesta y no ocupa alto.
 - **Rejilla de 4** con las muestras (`01 §3.10`). Desde el 2026-09-17 solo queda un eje, así que
   ya no hay combinación que cruzar.
-- **Estado vacío** (`01 §3.13`). ⚠️ **Con un solo eje deja de ser alcanzable**: las opciones de
-  técnica salen del mismo catálogo que se pinta, así que ninguna puede dar cero. El componente
-  se queda —quien manda es el contenido, y un catálogo que cambie no debe dejar la rejilla en
-  blanco sin decirlo—, pero no hay forma de probarlo desde la interfaz.
+- **Estado vacío** (`01 §3.13`). ⚠️ **Corregido el 2026-09-18: un solo eje no bastaba.** Esta
+  línea afirmaba que ya no era alcanzable porque las opciones salen del mismo catálogo que se
+  pinta, y era falso: la otra puerta es la URL. Medido, `/acabados/?tecnica=desactivado` servía
+  «0 ACABADOS · DESACTIVADO» con la rejilla vacía —`desactivado` tiene página de servicio y ni un
+  acabado con muestra—. `FiltrosAcabados` lee `?tecnica=` al montar, así que **la URL es interfaz
+  aunque el chip no exista**. Ahora valida contra las mismas opciones que recibe la barra y, si no
+  está, ni lo aplica ni lo deja en la URL. El componente se queda por el único caso que sí manda
+  el contenido: que ningún acabado del catálogo tenga muestra.
+- **Al reescribir la URL se conserva el resto de la query.** El filtro toca su propio parámetro y
+  nada más. Reconstruirla desde `pathname` se llevaba por delante el `gclid` de una visita de
+  pago antes de que `Atribucion.tsx` lo hubiera guardado en cookie.
 - **Bloque «Cómo se lee un código»** en `--tinta`, `1fr 1fr`: a la izquierda el argumento, a la
   derecha `IMPRESO / ESPIGA / C-117` en mono 20 px con las barras en `--acero`, y las tres
   definiciones (técnica, modelo, color) en 3 columnas. Cierra con la advertencia honesta:

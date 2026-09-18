@@ -38,6 +38,28 @@ export type AcabadoFiltrable = {
   muestra: ReactNode
 }
 
+/**
+ * Escribe el estado del filtro en la URL **sin tocar el resto de la query**.
+ *
+ * 🔴 Antes se reconstruía la URL entera —`` `${pathname}${valor ? `?…` : ''}` ``—
+ * y eso borraba cualquier otro parámetro. En una pantalla cualquiera sería un
+ * detalle; en esta no: el tráfico de pago aterriza en `/acabados/?gclid=…` desde
+ * los anuncios de modelo, `Atribucion.tsx` lee `gclid`/`gbraid`/`wbraid`/`utm_*`
+ * de `window.location.search` en su propio efecto, y el orden entre dos efectos
+ * de cliente no está garantizado. Un clic en un chip —o, desde hoy, un
+ * `?tecnica=` inventado— llegaba a dejar la URL sin el identificador de campaña
+ * antes de que nadie lo hubiera guardado en cookie.
+ *
+ * `replaceState` y no `router.push`: aquí no se cambia de página, y cada
+ * navegación del App Router contaba como un `page_view` más en GA4.
+ */
+function escribirUrl(clave: string, valor: string | null) {
+  const url = new URL(window.location.href)
+  if (valor) url.searchParams.set(clave, valor)
+  else url.searchParams.delete(clave)
+  window.history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`)
+}
+
 export default function FiltrosAcabados({
   muestras,
   grupo,
@@ -53,22 +75,25 @@ export default function FiltrosAcabados({
    * Aquí se lee una sola vez, al montar, para que `?tecnica=impreso` —el enlace
    * compartible que pide 02-pantallas §A3, y el que `PaginaServicio` usa para
    * mandar aquí desde cada técnica— siga funcionando.
+   *
+   * 🔴 **Y se valida contra `grupo.opciones`, porque la URL es interfaz aunque
+   * el chip no exista.** Medido antes de esta línea:
+   * `/acabados/?tecnica=desactivado` servía «0 ACABADOS · DESACTIVADO», rejilla
+   * vacía y estado vacío, mientras cuatro sitios del repo afirmaban que con un
+   * solo eje eso ya no podía pasar. Un valor que no está en la barra no se
+   * aplica, y además se borra de la URL con el mismo `escribirUrl()` que usa
+   * `aplicar()`: un enlace compartible que dice una cosa y enseña otra miente.
    */
   useEffect(() => {
     const valor = new URLSearchParams(window.location.search).get(grupo.clave)
-    if (valor) setFiltro(valor)
-  }, [grupo.clave])
+    if (!valor) return
+    if (grupo.opciones.some((o) => o.valor === valor)) setFiltro(valor)
+    else escribirUrl(grupo.clave, null)
+  }, [grupo.clave, grupo.opciones])
 
   function aplicar(valor: string | null) {
     setFiltro(valor)
-
-    // `replaceState` y no `router.push`: aquí no se cambia de página, y cada
-    // navegación del App Router contaba como un `page_view` más en GA4.
-    window.history.replaceState(
-      null,
-      '',
-      `${window.location.pathname}${valor ? `?${grupo.clave}=${valor}` : ''}`,
-    )
+    escribirUrl(grupo.clave, valor)
   }
 
   function actualizar(valor: string | null) {
@@ -142,10 +167,13 @@ export default function FiltrosAcabados({
         </div>
       </div>
 
-      {/* Con un solo eje, y sus opciones sacadas del mismo catálogo que se pinta,
-          ninguna técnica puede quedarse a cero: el estado vacío ya no es
-          alcanzable. Se queda porque quien manda las muestras es el contenido, y
-          un catálogo que cambie no debe dejar la rejilla en blanco sin decirlo. */}
+      {/* Qué puede dejar esto a cero, ahora que hay dos puertas y las dos leen la
+          misma lista: ninguna técnica, porque las opciones salen del mismo
+          catálogo que se pinta, y ningún `?tecnica=` inventado, porque el efecto
+          de arriba lo descarta. Queda un solo caso, y es el que justifica que el
+          componente siga aquí: que `muestras` llegue vacío, es decir, que ningún
+          acabado del catálogo tenga muestra. Manda el contenido, y un catálogo
+          que cambie no debe dejar la rejilla en blanco sin decirlo. */}
       {filtrados.length > 0 ? (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-[14px_10px] md:gap-[32px_24px]">
           {filtrados.map((m) => m.muestra)}
