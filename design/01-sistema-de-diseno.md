@@ -318,8 +318,11 @@ activo    background: #D9A441 · color: #1B1E1C · border: 1px solid #D9A441
 :focus    outline: 2px solid #D9A441; outline-offset: 2px
 ```
 
-Variante sobre fondo oscuro (calculadora de precios): inactivo con
-`border: 1px solid #DADCD6; color: #E9EAE6`; activo igual que arriba.
+Variante sobre fondo oscuro: inactivo con `border: 1px solid #DADCD6; color: #E9EAE6`; activo
+igual que arriba. ⚠️ **Sin consumidor desde el 2026-09-18**: su único uso eran los chips de la
+calculadora de precios, retirada del sitio (`02-pantallas.md §A5`). La variante **se queda
+especificada y en el código de `Chip`** —es un estado del componente, no código muerto de una
+pantalla— y el siguiente bloque sobre `--tinta` que necesite chips la encuentra escrita.
 
 ### 3.7 Campo de formulario
 
@@ -617,8 +620,9 @@ estado de móvil, completo y ya diseñado, en una ventana más ancha. **Punto de
 (1180) y altura de la caja (768) son dos cosas distintas** y no se mueven juntas.
 
 ⚠️ `cabecera-ancha` nombra esta fila y la barra de §4.3, y nada más. Los `xl:` que quedan en el
-repo —submenú de servicio, filtros, hero de servicio, calculadora, ficha técnica— responden a
-pistas de rejilla propias, con su propia cifra en `02-pantallas.md`, y no siguen a la cabecera.
+repo —submenú de servicio, filtros, hero de servicio, ficha técnica— responden a pistas de
+rejilla propias, con su propia cifra en `02-pantallas.md`, y no siguen a la cabecera. El de la
+calculadora se fue con ella el 2026-09-18.
 
 En móvil la caja mide 70 px, y `--cabecera-actual` de `tokens.css` lo espeja con una media
 query: es el `top` del que cuelgan la barra de confianza, el submenú de servicio y las dos

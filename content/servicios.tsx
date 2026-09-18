@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react'
 import DatoPendiente from '@/components/datos/DatoPendiente'
-import type { OpcionUso } from '@/components/secciones/Calculadora'
 import type { PreguntaFAQ } from '@/components/secciones/Acordeon'
 import { PREGUNTAS } from '@/content/faq'
 import type { Imagen, ServicioId } from '@/lib/tipos'
@@ -13,9 +12,16 @@ import type { Imagen, ServicioId } from '@/lib/tipos'
  *
  * ⚠️ **Regla de este archivo, heredada de `design/05` §B7: cero copy inventado.**
  * Los textos salen de sitios ya aprobados — la tabla de metadatos del §7.5 del
- * documento maestro, la lista de espacios y la de servicios de la home, y la
- * tabla de precios. Lo que no tiene fuente va entre corchetes con
- * `<DatoPendiente>`, no se rellena a ojo.
+ * documento maestro, y la lista de espacios y la de servicios de la home. Lo
+ * que no tiene fuente va entre corchetes con `<DatoPendiente>`, no se rellena
+ * a ojo.
+ *
+ * ⚠️ **La tabla de precios ya no es fuente de nada aquí.** El 2026-09-18 el
+ * dueño extendió a la calculadora la decisión que el 2026-09-17 retiró
+ * `/precios/`: no quiere precios en la web. Con ella se fueron los rangos de
+ * €/m² de los cuatro servicios que los declaraban. Siguen escritos en
+ * `design/02` §A5 y `design/03` §5 como especificación histórica, y de ahí no
+ * vuelven a una pantalla sin que lo pida él.
  *
  * Es TSX y no JSON precisamente por eso: los `<DatoPendiente>` van dentro de
  * los valores de la ficha técnica.
@@ -34,7 +40,6 @@ export type SeccionServicio =
   | 'seccion-muestrario'
   | 'seccion-ficha'
   | 'seccion-cuando-no'
-  | 'seccion-precio'
   | 'seccion-como'
   | 'seccion-obra'
 
@@ -55,8 +60,6 @@ export type Servicio = {
   aplicaciones?: { intro: string; lista: Aplicacion[] }
   fichaTecnica: { etiqueta: string; valor: ReactNode }[]
   cuandoNo?: { titulo: string; texto: string; alternativas: { href: string; texto: string }[] }
-  /** Sin rango de precio aprobado no hay calculadora. Inventar cifras es peor que no darlas. */
-  usosCalculadora?: OpcionUso[]
   /** Sin preguntas aplicables no hay sección de FAQ ni marcado `FAQPage`. */
   faq?: PreguntaFAQ[]
 
@@ -200,10 +203,6 @@ export const SERVICIOS: Record<ServicioId, Servicio> = {
         { href: '/microcemento/', texto: 'Ver microcemento' },
       ],
     },
-    usosCalculadora: [
-      { id: 'peatonal', etiqueta: 'Peatonal (patios, porches, jardines)', rango: [28, 38] },
-      { id: 'vehicular', etiqueta: 'Paso de vehículos (entradas, rampas)', rango: [35, 48] },
-    ],
     // Las únicas dos preguntas del catálogo que nombran el impreso viven aquí y
     // solo aquí.
     faq: [
@@ -256,10 +255,6 @@ export const SERVICIOS: Record<ServicioId, Servicio> = {
         { href: '/microcemento/', texto: 'Ver microcemento' },
       ],
     },
-    usosCalculadora: [
-      { id: 'interior', etiqueta: 'Interior de vivienda', rango: [30, 45] },
-      { id: 'industrial', etiqueta: 'Nave o parking', rango: [22, 35] },
-    ],
     faq: FAQ_SOLERA,
   },
 
@@ -305,9 +300,6 @@ export const SERVICIOS: Record<ServicioId, Servicio> = {
         { href: '/hormigon-pulido/', texto: 'Ver hormigón pulido' },
       ],
     },
-    usosCalculadora: [
-      { id: 'sobre-existente', etiqueta: 'Sobre suelo existente', rango: [55, 85] },
-    ],
     // Sin FAQ a propósito. El microcemento no lleva solera, así que ninguna de
     // las preguntas del catálogo —curado del hormigón, resellado de exterior,
     // precio de una solera de 10 cm— le aplica sin reescribirla. Y reescribirla
@@ -348,7 +340,6 @@ export const SERVICIOS: Record<ServicioId, Servicio> = {
       { etiqueta: 'ÁRIDO', valor: <DatoPendiente>tipo y calibre</DatoPendiente> },
       ...FICHA_SOLERA.slice(3),
     ],
-    usosCalculadora: [{ id: 'lavado', etiqueta: 'Hormigón lavado', rango: [30, 42] }],
   },
 
   fratasado: {

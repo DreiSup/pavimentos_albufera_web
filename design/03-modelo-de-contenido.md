@@ -239,7 +239,10 @@ corchetes hasta que los confirme.
 **Se presupuesta aparte:** demolición del pavimento anterior, movimiento de tierras, drenajes y
 rebajes de acceso difícil.
 
-Multiplicadores de la calculadora, **derivados por diseño y sin validar**:
+Multiplicadores de la calculadora, **derivados por diseño y sin validar**. ⛔ **Histórico desde
+el 2026-09-18**: la calculadora se retiró del sitio y estas cifras no alimentan ya ninguna
+pantalla. Se conservan escritas, junto con la especificación de `02-pantallas.md §A5`, porque
+son el único sitio donde quedan; no se borran para que reponerlas sea leer y no reinventar.
 
 | Estado del terreno | Multiplicador | Motivo |
 |---|---|---|

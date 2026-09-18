@@ -314,6 +314,8 @@ Esto es lo que un plan honesto tiene que decir:
 **Landing viable sin FAQ:** `/lp/microcemento/` — ninguna pregunta del catálogo le aplica sin reescribirla, y reescribirla es copy nuevo.
 🔴 **Landings BLOQUEADAS pendientes de dato del dueño:** `/lp/hormigon-fratasado/` y `/lp/hormigon-desactivado/`. **La calculadora no tiene rango para esos dos servicios**, y una landing de Ads con un corchete es dinero quemado. La regla del proyecto prohíbe rellenarlo. Nadie lo había dicho.
 
+⚠️ **Enmienda del 2026-09-18: este bloqueo, tal como está escrito, ya no existe.** El dueño retiró la calculadora del sitio entero (`02-pantallas.md §A5`), así que **ninguna landing lleva rango de precio** y el dato que faltaba para esas dos ya no lo pide ninguna pantalla. Eso **no las desbloquea por sí solo**: lo que queda por contestar deja de ser un dato y pasa a ser una decisión —si el dueño quiere campaña de pago para fratasado y desactivado—, y las mismas cuatro de `content/landings.ts` siguen siendo las cuatro. Lo mismo vale para las filas 2.6 de las tablas de abajo y para `content/campanas.ts`, que nunca se llegó a crear y ya no tiene motivo.
+
 ### Bloques ya aprobados que se recomponen
 
 `PaginaServicio.tsx` **se extiende, no se clona**: ya es una landing parametrizada con secciones opcionales. La landing es la misma plantilla con secciones desactivadas.

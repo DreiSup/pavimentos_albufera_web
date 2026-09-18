@@ -12,7 +12,6 @@ import TarjetaProyecto, { TAMANOS_TARJETA_PROYECTO } from '@/components/contenid
 import EstadoVacio from '@/components/ui/EstadoVacio'
 import Migas from '@/components/layout/Migas'
 import SubmenuServicio from '@/components/secciones/SubmenuServicio'
-import Calculadora from '@/components/secciones/Calculadora'
 import Acordeon from '@/components/secciones/Acordeon'
 import FormularioPresupuesto from '@/components/secciones/FormularioPresupuesto'
 import { JsonLd, schemaFAQ, schemaServicio } from '@/lib/schema'
@@ -104,14 +103,18 @@ export default function PaginaServicio({ servicio }: { servicio: Servicio }) {
   // grande y además el pequeño. El hero no entra —su foto no se repite abajo—.
   const fotosDeObra = new Set(proyectos.map((p) => p.imagenes[0]?.src).filter(Boolean))
 
-  // El numerado sigue el orden real de las secciones presentes. Si un servicio
-  // no tiene rango de precio aprobado, no hay hueco vacío ni número saltado.
+  // El numerado sigue el orden real de las secciones presentes. Un servicio sin
+  // `aplicaciones` o sin `cuandoNo` no deja hueco vacío ni número saltado.
+  //
+  // ⚠️ **Aquí ya no hay sección de precio, y es decisión del dueño**, la misma
+  // que retiró `/precios/` el 2026-09-17 y que el 2026-09-18 alcanza también a
+  // la calculadora: no quiere precios en la web. No es que falte el rango, es
+  // que no se pone. Reponer esta entrada exige que lo pida él. → `design/02` §A5
   const todas: (Seccion | null)[] = [
     servicio.aplicaciones ? { id: 'seccion-aplicaciones', texto: 'Aplicaciones' } : null,
     { id: 'seccion-muestrario', texto: 'Muestrario' },
     { id: 'seccion-ficha', texto: 'Ficha técnica' },
     servicio.cuandoNo ? { id: 'seccion-cuando-no', texto: 'Cuándo NO' } : null,
-    servicio.usosCalculadora ? { id: 'seccion-precio', texto: 'Precio' } : null,
     { id: 'seccion-como', texto: 'Cómo trabajamos' },
     { id: 'seccion-obra', texto: 'Obra ejecutada' },
   ]
@@ -298,15 +301,6 @@ export default function PaginaServicio({ servicio }: { servicio: Servicio }) {
                 </Boton>
               ))}
             </div>
-          </div>
-        </Aparece>
-      ) : null}
-
-      {servicio.usosCalculadora && monta('seccion-precio') ? (
-        <Aparece as="section" id="seccion-precio" className="px-[18px] md:px-lat-desktop py-9 md:py-22">
-          <div className="flex flex-col gap-6">
-            <AntetituloSeccion numero={numero('seccion-precio')}>Precio</AntetituloSeccion>
-            <Calculadora reducida={false} usos={servicio.usosCalculadora} />
           </div>
         </Aparece>
       ) : null}

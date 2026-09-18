@@ -32,7 +32,8 @@ Cómo leer el prototipo:
 - `01 SISTEMA` es la lámina de tokens y componentes. Empieza por ahí.
 - Interacciones reales que puedes probar: filtros del muestrario (incluido el estado
   «sin resultados»), acordeón de FAQ, submenú de la página de servicio y la calculadora
-  de precios.
+  de precios. ⚠️ **La calculadora solo existe en el prototipo**: se retiró del sitio el
+  2026-09-18 (§7 y `02-pantallas.md §A5`). El prototipo no se reescribe hacia atrás.
 
 ## 3. Fidelidad
 
@@ -129,9 +130,9 @@ Recogido en detalle en `02-pantallas.md`. Resumen:
   la sección seleccionada. **En producción debe seguir el scroll** con un IntersectionObserver
   (`rootMargin: '-150px 0px -55% 0px'`): en el prototipo solo responde al clic por una
   limitación del entorno de previsualización, no por diseño.
-- **Calculadora de precios.** Superficie × rango del uso × multiplicador del terreno. Devuelve
-  un rango redondeado a la decena, nunca una cifra exacta. Recalcula al teclear.
-  Los multiplicadores están **sin validar** por el cliente: ver `05-pendientes`.
+- ~~**Calculadora de precios.**~~ ⛔ **Retirada del sitio el 2026-09-18**, decisión del dueño:
+  no quiere precios en la web, ni en una página propia ni dentro de las de servicio. El
+  componente ya no existe. Su especificación, en pasado, en `02-pantallas.md §A5`.
 - **Formulario de presupuesto.** Cuatro estados: vacío, error de teléfono, enviando y
   confirmación. Validación de teléfono a 9 cifras en cliente y en servidor.
 - **Movimiento** (§8.6): aparición suave de secciones al entrar en pantalla, una sola vez;
@@ -147,7 +148,6 @@ Casi todo es estático. El estado de cliente es local a cada pantalla:
 | Muestrario | `tecnica`, `color` | Query params en la URL |
 | Índice de proyectos | `servicio`, `modelo`, `municipio`, `anio` | Query params |
 | Servicio | `seccionActiva` (submenú), `faqAbierta` | Ninguna |
-| Calculadora | `m2`, `uso`, `terreno` | Ninguna |
 | Presupuesto | `campos`, `errores`, `estadoEnvio` | Ninguna |
 | Global | `menuMovilAbierto` | Ninguna |
 
@@ -209,8 +209,9 @@ Orden de implementación recomendado, cada paso desplegable y revisable:
 5. **Servicio de impreso**, y de ahí los 5 servicios restantes con la misma plantilla.
 6. **Índice de proyectos + ficha de proyecto**, con las 11 obras.
 7. **Presupuesto** — Server Action, Resend, honeypot, los cuatro estados.
-8. ~~**Precios**, con la calculadora.~~ Paso retirado el 2026-09-17: la página ya no existe.
-   La calculadora se queda donde sigue teniendo sentido, dentro de cada página de servicio.
+8. ~~**Precios**, con la calculadora.~~ Paso retirado entero. La página se borró el 2026-09-17 y
+   la calculadora el 2026-09-18, cuando el dueño extendió la misma decisión al componente: **el
+   sitio no da un precio en ninguna pantalla.** No queda nada de este paso por construir.
 9. **Empresa, zonas, blog, legales, 404.**
 10. **SEO técnico** — las redirecciones 301, sitemap generado, robots, canónicas, schema.
 11. **Analítica y consentimiento**, y la lista de comprobación del §12.
