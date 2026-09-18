@@ -80,7 +80,7 @@ export type Servicio = {
 
 /**
  * Preguntas que hablan de una solera de hormigón en general, no de un acabado
- * concreto: curado, resellado, precio por m² y clientes de empresa.
+ * concreto: curado, resellado y clientes de empresa.
  *
  * ⚠️ **`grietas` y `sobreExistente` NO están aquí, y es deliberado**: las dos
  * nombran el hormigón impreso dentro del texto. Cuando las seis páginas
@@ -88,12 +88,7 @@ export type Servicio = {
  * hormigón impreso?» y `/hormigon-pulido/` respondía «en microcemento sí, y ahí
  * está su gran ventaja» — mandando al lector fuera de la página en la que está.
  */
-const FAQ_SOLERA: PreguntaFAQ[] = [
-  PREGUNTAS.pisar,
-  PREGUNTAS.resellar,
-  PREGUNTAS.presupuestoBarato,
-  PREGUNTAS.empresas,
-]
+const FAQ_SOLERA: PreguntaFAQ[] = [PREGUNTAS.pisar, PREGUNTAS.resellar, PREGUNTAS.empresas]
 
 /** Espacios tal como están redactados en la home. No se reescriben aquí. */
 const ESPACIO = {
@@ -159,9 +154,9 @@ export const SERVICIOS: Record<ServicioId, Servicio> = {
     id: 'impreso',
     ruta: '/hormigon-impreso/',
     nombre: 'Hormigón impreso',
-    title: 'Hormigón impreso Valencia | Precio y acabados',
+    title: 'Hormigón impreso Valencia | Acabados y obra ejecutada',
     description:
-      'Hormigón impreso para patios, entradas y piscinas. Mira los acabados reales, consulta el precio por m² y pide presupuesto sin compromiso.',
+      'Hormigón impreso para patios, entradas y piscinas. Mira los acabados reales y pide presupuesto sin compromiso.',
     h1: 'Hormigón impreso en Valencia, Castellón y Alicante',
     entradilla:
       'Textura de piedra natural, adoquín o madera sobre una solera continua. Sin juntas donde crezca la hierba, sin baldosas que se levanten y con un mantenimiento que se reduce a barrer.',
@@ -210,7 +205,6 @@ export const SERVICIOS: Record<ServicioId, Servicio> = {
       PREGUNTAS.grietas,
       PREGUNTAS.sobreExistente,
       PREGUNTAS.resellar,
-      PREGUNTAS.presupuestoBarato,
     ],
   },
 
@@ -220,7 +214,7 @@ export const SERVICIOS: Record<ServicioId, Servicio> = {
     nombre: 'Hormigón pulido',
     title: 'Hormigón pulido Valencia | Interior e industrial',
     description:
-      'Hormigón pulido para naves, parkings, garajes e interiores de vivienda. Precio por m², ficha técnica y obras ejecutadas.',
+      'Hormigón pulido para naves, parkings, garajes e interiores de vivienda. Ficha técnica y obras ejecutadas.',
     h1: 'Hormigón pulido en Valencia, Castellón y Alicante',
     entradilla: 'Superficie lisa y brillante. De la nave industrial al salón de casa.',
     etiquetaHero: ['PULIDO', 'HA-25 · EHE-08'],
@@ -264,7 +258,7 @@ export const SERVICIOS: Record<ServicioId, Servicio> = {
     nombre: 'Microcemento',
     title: 'Microcemento en Valencia | Sin obra ni escombros',
     description:
-      'Renueva suelos, baños y paredes sin picar lo que ya tienes. Microcemento aplicado sobre azulejo, terrazo o gres. Precio y proyectos.',
+      'Renueva suelos, baños y paredes sin picar lo que ya tienes. Microcemento aplicado sobre azulejo, terrazo o gres.',
     h1: 'Microcemento en Valencia, Castellón y Alicante',
     entradilla: 'Renueva suelos y paredes sin levantar lo que ya tienes.',
     etiquetaHero: ['MICROCEMENTO', 'SOBRE SOPORTE EXISTENTE'],
@@ -302,8 +296,9 @@ export const SERVICIOS: Record<ServicioId, Servicio> = {
     },
     // Sin FAQ a propósito. El microcemento no lleva solera, así que ninguna de
     // las preguntas del catálogo —curado del hormigón, resellado de exterior,
-    // precio de una solera de 10 cm— le aplica sin reescribirla. Y reescribirla
-    // es copy nuevo, que según `design/05` §B7 lo escribe el cliente.
+    // agrietado de una solera de 10 cm— le aplica sin reescribirla. Y
+    // reescribirla es copy nuevo, que según `design/05` §B7 lo escribe el
+    // cliente.
     // 🔴 Pendiente: sus preguntas propias (soporte, espesor, baños, plazo).
   },
 
@@ -313,7 +308,7 @@ export const SERVICIOS: Record<ServicioId, Servicio> = {
     nombre: 'Hormigón lavado',
     title: 'Hormigón lavado y árido visto en Valencia',
     description:
-      'Pavimento antideslizante de clase 3 para zonas peatonales, piscinas y accesos. Ficha técnica, acabados y precio orientativo.',
+      'Pavimento antideslizante de clase 3 para zonas peatonales, piscinas y accesos. Ficha técnica y acabados.',
     h1: 'Hormigón lavado en Valencia, Castellón y Alicante',
     entradilla: 'Árido visto, antideslizante. Ideal para zonas de paso y piscinas.',
     etiquetaHero: ['LAVADO', 'ÁRIDO VISTO · CLASE 3'],

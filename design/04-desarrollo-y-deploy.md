@@ -164,7 +164,7 @@ Del §7.5. `title` ≤ 60 caracteres, `description` ≤ 155.
 | Ruta | Title |
 |---|---|
 | `/` | Pavimentos de hormigón en Valencia \| Pavimentos Albufera |
-| `/hormigon-impreso/` | Hormigón impreso Valencia \| Precio y acabados |
+| `/hormigon-impreso/` | Hormigón impreso Valencia \| Acabados y obra ejecutada |
 | `/hormigon-pulido/` | Hormigón pulido Valencia \| Interior e industrial |
 | `/microcemento/` | Microcemento en Valencia \| Sin obra ni escombros |
 | `/hormigon-lavado/` | Hormigón lavado y árido visto en Valencia |
@@ -173,6 +173,19 @@ Del §7.5. `title` ≤ 60 caracteres, `description` ≤ 155.
 | `/proyectos/` | Proyectos ejecutados \| Pavimentos Albufera |
 | `/empresa/` | Quiénes somos \| Pavimentos Albufera |
 | `/presupuesto/` | Pide presupuesto sin compromiso |
+
+⛔ **Fuera la promesa de precio del `title` y de la `description`, el 2026-09-18.** Misma
+decisión del dueño que retiró `/precios/` y la calculadora: si el sitio ya no da ningún precio,
+anunciarlo en el resultado de búsqueda y en el anuncio de pago es una promesa que la página no
+cumple. Afecta a **ocho rutas**: las cuatro de servicio que la llevaban —`/hormigon-impreso/`
+(title y description), `/hormigon-pulido/`, `/microcemento/` y `/hormigon-lavado/`
+(description)— y sus **cuatro landings `/lp/`**, que heredan los dos campos del mismo objeto de
+`content/servicios.tsx` y no tienen copy propio que tocar. Son borrados, no reclamos nuevos: lo
+único que se escribe es la segunda mitad del title de impreso, `Acabados y obra ejecutada`, y
+las dos son secciones que esa misma página sirve (§A2, filas 02 y 06), con 12 acabados y 5 obras
+documentadas detrás. `/hormigon-fratasado/` y `/hormigon-desactivado/` no se tocan: «presupuesto
+sin compromiso» sigue siendo verdad y es la misma fórmula con la que cierra la `description` del
+layout raíz.
 
 Las descripciones completas están en el §7.5 del documento maestro. Para las rutas generadas
 (`[slug]`, `[modelo]`, `[municipio]`) se construyen desde los datos, sin plantilla vacía:
