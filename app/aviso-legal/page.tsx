@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import PlantillaLegal from '@/components/secciones/PlantillaLegal'
 import TablaFichaTecnica from '@/components/datos/TablaFichaTecnica'
-import DatoPendiente from '@/components/datos/DatoPendiente'
 import { identificacion, ultimaRevisionLegal } from '@/content/legal'
+import { nap } from '@/lib/config'
 
 export const metadata: Metadata = {
   title: 'Aviso legal',
@@ -12,176 +12,222 @@ export const metadata: Metadata = {
 }
 
 /**
- * El texto es el que trajo el dueño, palabra por palabra. Aquí no se redacta
- * nada: lo único que se hace es maquetarlo con los componentes del sistema.
+ * Aviso legal rehecho contra `lib/legal/09-instrucciones-legales.md` §2. No es
+ * una corrección del texto heredado: el heredado se retira entero, porque
+ * parchearlo dejaba contradicciones.
  *
- * Dos cosas que sí son decisión de esta página, y por qué:
+ * **Qué manda esta página y qué no.** Manda el artículo 10.1 de la Ley 34/2002
+ * (LSSI-CE): identificar al prestador. Todo lo demás —propiedad intelectual,
+ * condiciones de uso, enlaces, ley aplicable— es costumbre razonable, no
+ * obligación, y así se le dijo al dueño para que sepa dónde gastar asesoría.
  *
- * 1. **«Datos identificativos» no está en el documento del dueño.** Su texto
- *    dice «la empresa» de principio a fin y nunca la nombra, y el art. 10 de la
- *    LSSI-CE que él mismo cita obliga a publicar esos datos. La sección se añade
- *    con los huecos entre corchetes; el teléfono y el domicilio salen de
- *    `lib/config.ts`, que es el único sitio del proyecto donde viven.
- * 2. **Los párrafos largos se parten en varios.** No se cambia ni una palabra ni
- *    el orden: se corta por final de frase. A 390 px un bloque de nueve frases
- *    seguidas no se lee, y el ritmo vertical es justo lo que más importa en un
- *    documento largo.
+ * **Tres cosas que había y ya no están, y por qué:**
+ *
+ * 1. **La sección «Ley de protección de datos personales».** Duplicaba la
+ *    política de privacidad y la contradecía: se apoyaba en el artículo 9 de la
+ *    LOPD de 1999, derogada por la LO 3/2018. El aviso legal identifica al
+ *    titular; la privacidad explica el tratamiento. Queda un enlace.
+ * 2. **«Las cookies desaparecen al terminar la sesión del usuario».** Es falso:
+ *    duran 90 y 180 días. Lo que dicen las cookies lo dice su propia página.
+ * 3. **«Puede garantizarse el correcto funcionamiento los 365 días del año, 24
+ *    horas al día»** y **«la empresa garantiza que el sitio web cumple con la
+ *    legislación vigente»**. Son dos promesas que nadie puede sostener y que no
+ *    pide ninguna norma. Un aviso legal no es el sitio para prometer.
+ *
+ * También se retira «inscritos en los registros públicos correspondientes»
+ * referido a los contenidos del sitio: nadie ha comprobado ninguna inscripción,
+ * y afirmarla en la página que sirve para responder de lo que se afirma es
+ * exactamente el error que trajo hasta aquí.
+ *
+ * ⚠️ La letra f) del artículo 10.1 —precio, impuestos incluidos— **no aplica
+ * hoy**: el dueño retiró los precios del sitio entero el 2026-09-18. Si vuelven
+ * a publicarse, esta página vuelve a tener una obligación que hoy no tiene.
  */
 export default function AvisoLegal() {
   return (
     <PlantillaLegal
       titulo="Aviso legal"
       ultimaActualizacion={ultimaRevisionLegal}
+      entradilla={
+        <>
+          <p>
+            Esta página identifica a la empresa titular de pavimentos-albufera.com y explica en qué
+            condiciones se puede usar el sitio. Publicarla es una obligación del artículo 10 de la
+            Ley 34/2002, de servicios de la sociedad de la información y de comercio electrónico.
+          </p>
+          <p>
+            Cómo tratamos tus datos personales no se explica aquí, sino en la{' '}
+            <Link href="/politica-de-privacidad/" className="text-tinta">
+              política de privacidad
+            </Link>
+            , y qué cookies usamos, en la{' '}
+            <Link href="/politica-de-cookies/" className="text-tinta">
+              política de cookies
+            </Link>
+            .
+          </p>
+        </>
+      }
       secciones={[
         {
           titulo: 'Datos identificativos',
-          contenido: <TablaFichaTecnica filas={identificacion} />,
-        },
-        {
-          titulo: 'Aviso legal y privacidad',
           contenido: (
             <>
+              <TablaFichaTecnica filas={identificacion} />
               <p>
-                Este sitio web pone a disposición de los usuarios el presente documento con el que
-                pretende dar cumplimiento a las obligaciones dispuestas en la Ley 34/2002, de
-                Servicios de la Sociedad de la Información y del Comercio Electrónico (LSSI-CE), así
-                como informar a todos los usuarios respecto a cuáles son las condiciones de uso.
+                Los datos entre corchetes son los que la empresa todavía no ha facilitado para su
+                publicación. Están señalados a propósito: preferimos que se vea lo que falta a
+                rellenarlo con un dato aproximado.
               </p>
               <p>
-                Toda persona que acceda a este sitio asume el papel de usuario, comprometiéndose a la
-                observancia y cumplimiento riguroso de las disposiciones aquí dispuestas, así como a
-                cualesquiera otra disposición legal que fuera de aplicación. La empresa se reserva el
-                derecho a modificar cualquier tipo de información que pudiera aparecer en el sitio
-                web, sin que exista obligación de preavisar o poner en conocimiento de los usuarios
-                dichas obligaciones, entendiéndose como suficiente con la publicación pertinente. La
-                empresa garantiza a los usuarios que el sitio web cumple con la legislación vigente y
-                se encuentra sometido a todas las obligaciones dispuestas en dicho código.
-              </p>
-              <p>
-                La empresa se exime de cualquier tipo de responsabilidad derivada de la información
-                publicada en su sitio web, siempre que esta información haya sido manipulada o
-                introducida por un tercero ajeno al mismo.
-              </p>
-              <p>
-                El sitio web puede utilizar cookies (pequeños archivos de información que el servidor
-                envía al ordenador de quien accede a la página) para llevar a cabo determinadas
-                funciones que son consideradas imprescindibles para el correcto funcionamiento y
-                visualización del sitio. Las cookies utilizadas en el sitio web tienen, en todo caso,
-                carácter temporal con la única finalidad de hacer más eficaz su transmisión ulterior
-                y desaparecen al terminar la sesión del usuario.
-              </p>
-              <p>
-                Es posible que se redirija a contenidos de terceros sitios web. Dado que el prestador
-                no puede controlar siempre los contenidos introducidos por los terceros en sus sitios
-                web, éste no asume ningún tipo de responsabilidad respecto a dichos contenidos. En
-                todo caso, la empresa manifiesta que procederá a la retirada inmediata de cualquier
-                contenido que pudiera contravenir la legislación nacional o internacional, la moral o
-                el orden público, procediendo a la retirada inmediata de la redirección a dicho sitio
-                web, poniendo en conocimiento de las autoridades competentes el contenido en
-                cuestión.
-              </p>
-              <p>
-                La empresa no se hace responsable de la información y contenidos almacenados, a
-                título enunciativo pero no limitativo, en foros, chat´s, generadores de blogs,
-                comentarios, redes sociales o cualesquiera otro medio que permita a terceros publicar
-                contenidos de forma independiente en la página web del prestador. No obstante y en
-                cumplimiento de lo dispuesto en el art. 11 y 16 de la LSSI-CE, el sitio web se pone a
-                disposición de todos los usuarios, autoridades y fuerzas de seguridad, y colaborando
-                de forma activa en la retirada o en su caso bloqueo de todos aquellos contenidos que
-                pudieran afectar o contravenir la legislación nacional, o internacional, derechos de
-                terceros o la moral y el orden público. En caso de que el usuario considere que
-                existe en el sitio web algún contenido que pudiera ser susceptible de esta
-                clasificación, se ruega lo notifique de forma inmediata al administrador del sitio
-                web.
-              </p>
-              <p>
-                Este sitio web ha sido revisado y probado para que funcione correctamente. En
-                principio, puede garantizarse el correcto funcionamiento los 365 días del año, 24
-                horas al día. No obstante, el prestador no descarta la posibilidad de que existan
-                ciertos errores de programación, o que acontezcan causas de fuerza mayor, catástrofes
-                naturales, huelgas, o circunstancias semejantes que hagan imposible el acceso a la
-                página web.
+                Puedes ponerte en contacto con nosotros de forma directa y efectiva por correo
+                electrónico, en{' '}
+                <a href={`mailto:${nap.email}`} className="text-tinta">
+                  {nap.email}
+                </a>
+                , o por teléfono en el número de arriba.
               </p>
             </>
           ),
         },
         {
-          titulo: 'Ley de protección de datos personales',
+          titulo: 'Objeto del sitio y aceptación',
           contenido: (
             <>
               <p>
-                Esta empresa se encuentra profundamente comprometido con el cumplimiento de la
-                normativa española de protección de datos de carácter personal, y garantiza el
-                cumplimiento íntegro de las obligaciones dispuestas, así como la implementación de
-                las medidas de seguridad dispuestas en el art. 9 de la Ley 15/1999, de Protección de
-                Datos de Carácter Personal (LOPD) y en el Reglamento de Desarrollo de la LOPD.
+                Este sitio web presenta los trabajos de pavimento de hormigón que ejecuta Pavimentos
+                Albufera y permite pedir un presupuesto sin compromiso. No es una tienda: no se
+                venden productos ni servicios en línea, no hay carrito ni pasarela de pago, y no hay
+                cuentas de usuario ni zona privada.
               </p>
               <p>
-                Este sitio web pone a disposición de los usuarios la{' '}
-                <Link href="/politica-de-privacidad/" className="text-tinta">
-                  Política de Privacidad
-                </Link>{' '}
-                de la entidad informando a los usuarios respecto a los siguientes aspectos:
+                Acceder al sitio y usarlo supone aceptar estas condiciones en la versión publicada en
+                ese momento. Si no estás de acuerdo con ellas, no uses el sitio.
               </p>
-              <ul>
-                <li>Datos del Responsable del tratamiento.</li>
-                <li>Datos tratados.</li>
-                <li>Fichero en el que se almacenan.</li>
-                <li>Finalidad del tratamiento.</li>
-                <li>
-                  Obligatoriedad o no de facilitarlos, así como las consecuencias en caso de no
-                  facilitarlos.
-                </li>
-                <li>
-                  Sobre los derechos que asisten a todo usuario y el procedimiento para ejercitarlos.
-                </li>
-              </ul>
+              <p>
+                La empresa puede modificar en cualquier momento la información publicada aquí, así
+                como estas condiciones. La versión que rige es la que esté publicada en cada momento,
+                y la fecha de la última revisión encabeza esta página.
+              </p>
             </>
           ),
         },
         {
-          titulo: 'Ley de propiedad intelectual',
+          titulo: 'Condiciones de uso',
           contenido: (
             <>
               <p>
-                Este sitio web, incluyendo a título enunciativo pero no limitativo su programación,
-                edición, compilación y demás elementos necesarios para su funcionamiento, los
-                diseños, logotipos, texto y/o gráficos son propiedad del mismo o en su caso dispone
-                de licencia o autorización expresa por parte de los autores. Todos los contenidos del
-                sitio web se encuentran debidamente protegidos por la normativa de propiedad
-                intelectual e industrial, así como inscritos en los registros públicos
-                correspondientes.
+                Quien accede al sitio se compromete a usarlo conforme a la ley, a estas condiciones y
+                a las buenas costumbres, y a no emplearlo para fines ilícitos, para dañar el sitio o
+                sus sistemas, ni para perjudicar derechos de terceros.
               </p>
               <p>
-                Independientemente de la finalidad para la que fueran destinados, la reproducción
-                total o parcial, uso, explotación, distribución y comercialización, requiere en todo
-                caso de la autorización escrita previa por parte de la empresa. Cualquier uso no
-                autorizado previamente será considerado un incumplimiento grave de los derechos de
-                propiedad intelectual o industrial del autor.
+                La empresa no responde de la información publicada en su sitio web cuando esa
+                información haya sido manipulada o introducida por un tercero ajeno a ella.
               </p>
               <p>
-                Los diseños, logotipos, texto y/o gráficos ajenos al prestador y que pudieran
-                aparecer en el sitio web, pertenecen a sus respectivos propietarios, siendo ellos
-                mismos responsables de cualquier posible controversia que pudiera suscitarse respecto
-                a los mismos. En todo caso, esta empresa cuenta con la autorización expresa y previa
-                por parte de los mismos y autoriza expresamente a que terceros puedan redirigir
-                directamente a los contenidos concretos del sitio web, debiendo en todo caso
-                redirigir al sitio web principal.
-              </p>
-              <p>
-                Se reconoce a favor de sus titulares los correspondientes derechos de propiedad
-                industrial e intelectual, no implicando su sola mención o aparición en el sitio web
-                la existencia de derechos o responsabilidad alguna del prestador sobre los mismos,
-                como tampoco respaldo, patrocinio o recomendación por parte del mismo. Para realizar
-                cualquier tipo de observación respecto a posibles incumplimientos de los derechos de
-                propiedad intelectual o industrial, así como sobre cualquiera de los contenidos del
-                sitio web, puede hacerlo a través de la{' '}
-                <Link href="/presupuesto/" className="text-tinta">
-                  página de contacto
-                </Link>{' '}
-                o a través de los datos habilitados para tal efecto en el propio sitio web.
+                Si detectas en este sitio un contenido que consideres ilícito o lesivo para derechos
+                de terceros, comunícanoslo por correo electrónico a{' '}
+                <a href={`mailto:${nap.email}`} className="text-tinta">
+                  {nap.email}
+                </a>{' '}
+                y lo revisaremos. La empresa colabora con las autoridades y con las fuerzas y cuerpos
+                de seguridad en la retirada de contenidos en los términos de los artículos 11 y 16 de
+                la LSSI-CE.
               </p>
             </>
+          ),
+        },
+        {
+          titulo: 'Propiedad intelectual e industrial',
+          contenido: (
+            <>
+              <p>
+                El sitio web y sus elementos —programación, diseño, estructura, textos, fotografías,
+                logotipos y gráficos— pertenecen a Pavimentos Albufera S.L. o se usan con
+                autorización de sus titulares, y están protegidos por la normativa de propiedad
+                intelectual e industrial.
+              </p>
+              <p>
+                La reproducción total o parcial, el uso, la explotación, la distribución y la
+                comercialización de esos contenidos requieren autorización previa y por escrito de la
+                empresa, sea cual sea su finalidad. Sí se permite enlazar directamente a las páginas
+                de este sitio, siempre que el enlace no dé a entender una relación, un patrocinio o
+                una recomendación que no existan.
+              </p>
+              <p>
+                Los logotipos, marcas, textos o imágenes de terceros que puedan aparecer en el sitio
+                pertenecen a sus respectivos titulares, y su mera aparición aquí no implica ningún
+                derecho sobre ellos ni ninguna relación con ellos.
+              </p>
+              <p>
+                Para cualquier observación sobre propiedad intelectual o industrial, escríbenos a{' '}
+                <a href={`mailto:${nap.email}`} className="text-tinta">
+                  {nap.email}
+                </a>
+                .
+              </p>
+            </>
+          ),
+        },
+        {
+          titulo: 'Enlaces a otros sitios',
+          contenido: (
+            <>
+              <p>
+                Este sitio puede enlazar a páginas de terceros —por ejemplo, a la política de
+                privacidad de un proveedor o a un perfil en una red social—. La empresa no controla
+                esos sitios ni responde de sus contenidos, de sus condiciones ni de lo que hagan con
+                tus datos: al seguir el enlace sales de pavimentos-albufera.com y pasas a regirte por
+                las condiciones de quien esté al otro lado.
+              </p>
+              <p>
+                Lo mismo vale para los enlaces de contacto: al pulsar el número de teléfono llamas
+                con tu propio operador, y al pulsar el enlace de WhatsApp la conversación ocurre
+                dentro de WhatsApp y se rige por las condiciones y la política de privacidad de Meta.
+              </p>
+            </>
+          ),
+        },
+        {
+          titulo: 'Disponibilidad del sitio',
+          contenido: (
+            <p>
+              La empresa procura que el sitio esté disponible y funcione correctamente, pero no puede
+              garantizar que no vaya a haber interrupciones, errores de programación o averías
+              ajenas, ni responde de los daños que puedan derivarse de que el sitio no esté
+              accesible en un momento dado.
+            </p>
+          ),
+        },
+        {
+          titulo: 'Protección de datos y cookies',
+          contenido: (
+            <p>
+              Cómo se recogen, para qué se usan, a quién se envían y cuánto se conservan tus datos
+              personales se explica en la{' '}
+              <Link href="/politica-de-privacidad/" className="text-tinta">
+                política de privacidad
+              </Link>
+              . Qué cookies utiliza este sitio, cuánto duran y cómo aceptarlas, rechazarlas o
+              borrarlas se explica en la{' '}
+              <Link href="/politica-de-cookies/" className="text-tinta">
+                política de cookies
+              </Link>
+              . Este aviso legal no repite ninguna de las dos cosas a propósito: dos textos que
+              explican lo mismo acaban diciéndolo distinto.
+            </p>
+          ),
+        },
+        {
+          titulo: 'Legislación aplicable',
+          contenido: (
+            <p>
+              Este aviso legal se rige por la legislación española. Para resolver cualquier
+              controversia serán competentes los juzgados y tribunales que determine la normativa
+              aplicable; cuando el usuario tenga la condición de consumidor, los de su propio
+              domicilio.
+            </p>
           ),
         },
       ]}
