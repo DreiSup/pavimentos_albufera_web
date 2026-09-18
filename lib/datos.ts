@@ -68,12 +68,16 @@ export function estaPublicado(acabado: Acabado): boolean {
  *
  * 🔴 **Por qué vive aquí y no en la pantalla.** La regla se aplicó primero solo
  * en `app/acabados/page.tsx`, y los seis huecos rayados siguieron saliendo en
- * las seis páginas de servicio (seis de las doce tarjetas de `/hormigon-impreso/`
- * a 390 px), en las cuatro landings de `/lp/`, en seis fichas de
- * `/acabados/[modelo]/` y en `/zonas/denia/`. Una pantalla que se acuerda es una
- * pantalla que se olvida: `acabadosPorServicio`, `acabadosPorModelo`,
- * `acabadosPorProyectos` y `tecnicasEnUso` salen todas de esta lista, así que
- * heredan la misma verdad sin decidir nada.
+ * otras nueve rutas. Reparto medido sobre el HTML prerenderizado, 19 bloques:
+ * seis en `/hormigon-impreso/` —seis de sus doce tarjetas—, seis en
+ * `/lp/hormigon-impreso/`, uno en cada una de las seis fichas de modelo y uno en
+ * `/zonas/denia/`. **Una sola página de servicio y una sola landing, no las seis
+ * y las cuatro**: los seis acabados sin muestra son todos de impreso, así que
+ * ninguna otra técnica los pedía.
+ *
+ * Una pantalla que se acuerda es una pantalla que se olvida: `acabadosPorServicio`,
+ * `acabadosPorModelo`, `acabadosPorProyectos` y `tecnicasEnUso` salen todas de
+ * esta lista, así que heredan la misma verdad sin decidir nada.
  *
  * `acabados` —las dieciséis— se queda para lo que sí necesita el catálogo
  * entero: las rutas de `/acabados/[modelo]/` y el sitemap.
@@ -149,6 +153,20 @@ export function tecnicasEnUso(): ServicioId[] {
 export function modelosDelCatalogo(): ModeloId[] {
   const set = new Set(acabados.map((a) => a.modelo).filter((m): m is ModeloId => Boolean(m)))
   return Array.from(set)
+}
+
+/**
+ * Los parámetros de `/acabados/[modelo]/`: un valor por molde y, para las
+ * técnicas sin molde, el slug del propio acabado.
+ *
+ * 🔴 **Origen único, y por eso existe.** `generateStaticParams` y `app/sitemap.ts`
+ * escribían cada uno estas dos reglas por su cuenta. Coincidían por duplicación,
+ * no por construcción, y **ningún gate del `postbuild` contrasta el sitemap
+ * contra las rutas generadas**: el día que una de las dos copias cambiara, el
+ * sitemap declararía un 404 y no lo vería nadie.
+ */
+export function rutasDeAcabado(): string[] {
+  return [...modelosDelCatalogo(), ...acabados.filter((a) => !a.modelo).map((a) => a.slug)]
 }
 
 export function articuloPorSlug(slug: string): Articulo | undefined {

@@ -19,9 +19,9 @@ import {
   acabados,
   acabadosPorModelo,
   articuloQueExplica,
-  modelosDelCatalogo,
   proyectosDe,
   proyectosPorModelo,
+  rutasDeAcabado,
 } from '@/lib/datos'
 import type { Imagen } from '@/lib/tipos'
 import {
@@ -52,20 +52,21 @@ import {
  */
 
 /**
- * ⚠️ Las dos listas salen del CATÁLOGO ENTERO, no de `acabadosPublicados`, y
- * tienen que seguir saliendo de ahí: `app/sitemap.ts` declara exactamente estas
- * rutas con las mismas dos reglas. Filtrar aquí por muestra dejaría
+ * ⚠️ Las rutas salen del CATÁLOGO ENTERO, no de `acabadosPublicados`, y tienen
+ * que seguir saliendo de ahí. Filtrar por muestra dejaría
  * `/acabados/piedra-silleria/` y `/acabados/piedra-rodena/` en 404 declarados en
  * el sitemap, y ningún gate del `postbuild` lo vería: ninguna 301 apunta a
  * `/acabados/`, así que `verificar-redirecciones.mjs` no las mira.
  *
+ * `rutasDeAcabado()` es el origen único que comparte con `app/sitemap.ts`: allí
+ * estaban las mismas dos reglas escritas otra vez, y coincidir por duplicación
+ * no es coincidir.
+ *
  * Lo que sí cambia es lo que se PINTA dentro: `resolver` compone las variantes
  * con `acabadosPorModelo`, que ya solo devuelve publicados.
  */
-const slugsSinModelo = acabados.filter((a) => !a.modelo).map((a) => a.slug)
-
 export function generateStaticParams() {
-  return [...modelosDelCatalogo(), ...slugsSinModelo].map((modelo) => ({ modelo }))
+  return rutasDeAcabado().map((modelo) => ({ modelo }))
 }
 
 type Ficha = {

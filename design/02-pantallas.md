@@ -142,9 +142,11 @@ tienen muestra fotográfica**, 7 de ellos con obra documentada.
   `content/acabados.json` y `/acabados/[modelo]/` sigue generando sus rutas —`piedra-silleria` y
   `piedra-rodena` cuelgan solo de ellas—. El día que llegue la foto, vuelven solas.
 - **Y la regla no es de esta pantalla: es del catálogo.** Enmienda del 2026-09-18. Se aplicó
-  primero solo aquí, y los seis huecos siguieron saliendo en las seis páginas de servicio —medido:
-  12 tarjetas en `/hormigon-impreso/` a 390 px, 6 con la trama—, en las cuatro landings `/lp/`,
-  en las fichas de `/acabados/[modelo]/` y en `/zonas/denia/`. Ahora el origen es
+  primero solo aquí, y los seis huecos siguieron saliendo en otras nueve rutas. **Reparto medido
+  sobre el HTML prerenderizado, 19 bloques:** 6 en `/hormigon-impreso/` —6 de sus 12 tarjetas—,
+  6 en `/lp/hormigon-impreso/`, 1 en cada una de las 6 fichas de modelo y 1 en `/zonas/denia/`.
+  Una sola página de servicio y una sola landing, **no las seis y las cuatro**: los seis acabados
+  sin muestra son todos de impreso, así que ninguna otra técnica los pedía. Ahora el origen es
   `acabadosPublicados` en `lib/datos.ts`, y de él salen `acabadosPorServicio`, `acabadosPorModelo`,
   `acabadosPorProyectos` y `tecnicasEnUso`: **ninguna pantalla vuelve a decidir esto**. Para contar
   lo publicado hay `recuentoAcabadosPublicados()`, que devuelve 10 y 7 —no 16 y 8—.

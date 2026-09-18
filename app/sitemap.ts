@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next'
 import { sitio } from '@/lib/config'
-import { acabados, articulos, proyectos, zonas } from '@/lib/datos'
+import { articulos, proyectos, rutasDeAcabado, zonas } from '@/lib/datos'
 import { SERVICIOS } from '@/content/servicios'
 
 // Las seis rutas de servicio salen del propio catálogo: añadir un servicio no
@@ -27,15 +27,15 @@ const rutasEstaticas = [
 ]
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  // Las mismas dos formas que genera `app/acabados/[modelo]/page.tsx`: los
-  // acabados con molde por modelo, y los de las técnicas sin molde por su slug.
-  const modelos = Array.from(new Set(acabados.map((a) => a.modelo).filter(Boolean)))
-  const sinModelo = acabados.filter((a) => !a.modelo).map((a) => a.slug)
-
+  // ⚠️ `rutasDeAcabado()`, no las dos reglas otra vez. Aquí se recalculaban —los
+  // acabados con molde por modelo, los de las técnicas sin molde por su slug— y
+  // coincidían con `generateStaticParams` por duplicación, no por construcción.
+  // Ningún gate del `postbuild` contrasta este archivo contra las rutas que el
+  // build genera, así que una copia desfasada sería un 404 declarado en el
+  // sitemap sin nadie mirando. → `lib/datos.ts`
   return [
     ...rutasEstaticas.map((ruta) => ({ url: `${sitio.url}${ruta}` })),
-    ...modelos.map((m) => ({ url: `${sitio.url}/acabados/${m}/` })),
-    ...sinModelo.map((s) => ({ url: `${sitio.url}/acabados/${s}/` })),
+    ...rutasDeAcabado().map((r) => ({ url: `${sitio.url}/acabados/${r}/` })),
     ...proyectos.map((p) => ({ url: `${sitio.url}/proyectos/${p.slug}/` })),
     ...zonas.map((z) => ({ url: `${sitio.url}/zonas/${z.slug}/` })),
     ...articulos.map((a) => ({ url: `${sitio.url}/blog/${a.slug}/` })),
