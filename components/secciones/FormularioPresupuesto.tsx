@@ -139,7 +139,16 @@ export default function FormularioPresupuesto({
       <input type="hidden" name="evento_id" value={eventoId} />
       <input type="hidden" name="origen" value={origen} />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* La fila se reparte por el ancho REAL de la columna, no por el del
+          documento. `md:grid-cols-2` miraba la ventana, y este formulario se
+          monta en ocho sitios dentro de columnas de anchos distintos: a 768 px
+          la columna del cierre mide 296,5 px, cada pista salía a 140,3 px y
+          «NOMBRE Y APELLIDOS *» —167,2 px de ancho intrínseco— partía en dos
+          líneas, bajando su input 20,9 px respecto al del teléfono. Con
+          `auto-fit` la fila se parte sola por debajo de 376 px de columna y a
+          1024 px sigue dando dos pistas de 204,3 px, como hasta ahora.
+          → `design/02` §B1 */}
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4">
         <Campo etiqueta="Nombre y apellidos" htmlFor="nombre" obligatorio>
           <input id="nombre" name="nombre" type="text" required readOnly={enviando} className={claseInput} />
         </Campo>
