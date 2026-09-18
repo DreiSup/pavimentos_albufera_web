@@ -551,7 +551,7 @@ export default function Home() {
             <div className="flex flex-col gap-2 border-t border-tinta pt-4">
               <p className="font-mono text-d-11 text-acero uppercase m-0">Con desplazamiento</p>
               <p className="text-16 text-tinta-media m-0">
-                Murcia, Albacete, Almería, Tarragona y Teruel, a partir de <DatoPendiente>100</DatoPendiente> m².
+                Murcia, Albacete, Almería, Tarragona y Teruel, a partir de 100 m².
               </p>
             </div>
             {/* «Consúltanos» era la última palabra de la frase y no llevaba a ningún
