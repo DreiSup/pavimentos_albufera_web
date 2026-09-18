@@ -291,38 +291,85 @@ La pantalla que cierra el embudo. Copy del §7.4.
 | Sube una foto del espacio | archivo | no |
 | Acepto la política de privacidad | casilla | sí |
 
-Nombre y teléfono comparten fila (`1fr 1fr`); el resto ocupa el ancho.
+Nombre y teléfono comparten fila; el resto ocupa el ancho.
 Botón de envío ocre a ancho completo: `Enviar y que me llamen`.
 
-**Microcopy literal**, sin reescribir:
+⚠️ **Enmienda del 2026-09-18: la fila de nombre y teléfono se reparte por el ancho de su
+columna, no por el de la ventana.** Decía `1fr 1fr` y se implementaba con `md:grid-cols-2`,
+que mira el documento; pero este formulario se monta en ocho sitios y en la variante corta
+cae dentro de media columna. Medido a 768 px en la portada, en `/presupuesto/` y en
+`/hormigon-impreso/`: columna de **296,5 px** → pistas de **140,3 px** → la etiqueta
+`NOMBRE Y APELLIDOS *`, que mide **167,2 px** de ancho intrínseco, parte en dos líneas y baja
+su input **20,9 px** respecto al del teléfono. Ahora es
+`grid-cols-[repeat(auto-fit,minmax(180px,1fr))]`: una sola pista por debajo de **376 px** de
+columna y dos por encima. A 1024 px las pistas siguen midiendo **204,3 px**, como antes.
+
+**Microcopy literal**, sin reescribir. Esta lista es cerrada: **todo mensaje que el formulario
+pueda pintar está aquí, y lo que no está aquí no se pinta.**
+
 - Ayuda de superficie: *Un cálculo aproximado nos vale. Largo × ancho.*
-- Ayuda de la foto: *Con una foto podemos darte un rango antes incluso de la visita.*
+- Ayuda de la foto: *Con una foto podemos darte un rango antes incluso de la visita.
+  Máximo 4 MB.*
 - Enviando: *Enviando…*
 - Confirmación: *Recibido. Te llamamos hoy mismo si nos escribes antes de las 18:00, y mañana a
   primera hora si no.*
+- Error de nombre: *Escribe tu nombre.*
 - Error de teléfono: *Escribe un número de 9 cifras para que podamos llamarte.*
+- Error de correo: *Escribe un correo electrónico válido para que podamos escribirte, o deja el
+  campo vacío.*
+- Error del desplegable: *Selecciona qué quieres pavimentar.*
+- Error de la casilla de privacidad: *Tienes que aceptar la política de privacidad.*
+- Error de tipo de la foto: *La foto tiene que ser una imagen.*
+- Error de tamaño de la foto, en servidor: *La foto no puede pasar de 4 MB.*
+- Error de tamaño de la foto, en cliente: *Esta foto pasa de 4 MB. Elige otra o redúcela antes
+  de enviarla.*
+- Límite de envíos: *Demasiados envíos seguidos. Llámanos o escríbenos por WhatsApp.*
 - Error de envío: *No hemos podido enviarlo. Llámanos al `[teléfono]` o escríbenos por WhatsApp
   y lo resolvemos ahora.*
+
+⚠️ **Enmienda del 2026-09-18: los doce mensajes nuevos de esta lista son transcripción, no copy
+nuevo.** Ya se pintaban desde `app/presupuesto/actions.ts` y desde el propio componente, y
+ninguno estaba escrito aquí: la lista se declaraba autoritativa siendo falsa sobre casi todo lo
+que el formulario dice. El **error de correo** es el que trajo la revisión, y describe el estado
+real desde que el campo es opcional en las dos variantes —se rechaza el formato inválido, nunca
+el campo vacío—.
+
+⚠️ **`[teléfono]` del error de envío es microcopy, no un dato pendiente.** Sale literal del
+Server Action y lo sustituye `FormularioPresupuesto` por el número de configuración al pintarlo;
+no lleva tratamiento de corchete. Se había perdido del mensaje en código y el `.replace()` del
+componente era código muerto sobre un camino vivo.
 
 **Los cuatro estados:**
 
 1. **Vacío.** Bordes de campo en `#5C625E`. Botón activo.
 2. **Error de teléfono.** El campo pasa a `border: 2px solid #8C3A2B`, mensaje debajo en
-   `#8C3A2B` 600, `aria-invalid="true"` y foco movido al campo. El resto de campos conserva lo
-   escrito. Se valida al enviar, no al teclear.
+   `#8C3A2B` 600, `aria-invalid="true"`, **`aria-describedby` apuntando a ese mensaje** y foco
+   movido al campo. El resto de campos conserva lo escrito. Se valida al enviar, no al teclear.
+   ⚠️ **Enmienda del 2026-09-18:** faltaba el `aria-describedby`, y sin él mover el foco por
+   programa anuncia «Teléfono, inválido» sin decir por qué. Lo pone `01 §3.7` para todos los
+   campos a la vez, no esta pantalla.
 3. **Enviando.** Botón en estado deshabilitado (`01 §3.4`) con el texto *Enviando…*; los campos
    en `readonly`. Sin *spinner*: la web no tiene animaciones de carga.
 4. **Confirmación.** El formulario se sustituye por un bloque en `--tinta` con el antetítulo
    `RECIBIDO`, el mensaje de confirmación en 26 px, la etiqueta técnica con el resumen de lo
    enviado (espacio, superficie, municipio) y dos salidas: `Ver el muestrario` y
    `Ver proyectos`. **No se vuelve a pedir nada.**
+   ⚠️ **Enmienda del 2026-09-18: el resumen enseña lo que esa variante recoge, y nada más.**
+   La corta no pide superficie ni municipio, y el panel pintaba sus dos líneas como `— m²` y
+   `—`. El guion de relleno no era solo un hueco vacío: el componente reenvía ese mismo resumen
+   a GA4 y al Pixel, así que **todos los leads de la portada y de las seis páginas de servicio
+   declaraban `—` como `municipality`**. Una dimensión personalizada de GA4 no se rellena hacia
+   atrás. El Server Action devuelve la cadena vacía y decide quien pinta.
 
 **Móvil:** todo en una columna, formulario primero después de la entradilla, datos de confianza
 al final. La barra fija inferior sigue presente: es la vía alternativa si el formulario asusta.
 
 Implementación: Server Action + Resend, honeypot oculto, límite de envíos por IP, validación
-de teléfono también en servidor. Adjunto: máximo 10 MB, tipos de imagen; si excede, error
-inline sin perder el resto del formulario.
+de teléfono también en servidor. Adjunto: **máximo 4 MB**, tipos de imagen; si excede, error
+inline sin perder el resto del formulario. ⚠️ **Enmienda del 2026-09-18:** decía 10 MB, igual
+que `design/04` §6. El tope real lo pone Vercel, que corta el cuerpo de una función en 4,5 MB, y
+los Server Actions se ejecutan como función; ya estaba en CLAUDE.md y en el código, solo faltaba
+aquí. Por eso la ayuda de la foto dice «Máximo 4 MB».
 
 ## B2 · Ficha de acabado — `/acabados/[modelo]/`
 
