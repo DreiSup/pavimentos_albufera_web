@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useEffect, useRef } from 'react'
 import { nap } from '@/lib/config'
 import Boton from '../ui/Boton'
+import { IconoTelefono } from '../ui/Iconos'
 
 export default function MenuMovil({
   onCerrar,
@@ -110,8 +111,32 @@ export default function MenuMovil({
         </div>
       </div>
 
+      {/*
+        Los dos CTA del menú son el mismo par que la barra fija, apilados a 1 px
+        uno del otro, así que **o llevan icono los dos o no lo lleva ninguno**:
+        con uno solo se leen como dos piezas de sistemas distintos. El de
+        WhatsApp se lo pone `Boton` por su `href`; el de teléfono se escribe aquí
+        a mano, con su `gap-2`, y **a propósito no se deduce de `tel:`**. Si
+        `Boton` antepusiera el auricular a todo `href` que empiece por `tel:`,
+        los 28 px del icono caerían también en los botones que dicen
+        `Llamar al 627 663 146` —cierre de portada y de las landings—, que es
+        justo la fila que esta sesión viene a descongestionar: ahí el botón de
+        llamar es el que ya encoge, y darle un icono lo parte una línea más.
+
+        Los dos van a los 20 px por defecto, no a los 24 de la barra fija: la
+        barra no está en pantalla con el menú abierto —este panel es
+        `fixed inset-0`—, y quien sí está al lado es el `Boton` de WhatsApp de
+        debajo. → `design/01` §3.16
+      */}
       <div className="mt-auto pt-8 flex flex-col gap-[1px]">
-        <Boton variante="primario" href={nap.telefonoHref ?? '/presupuesto/'} data-ubicacion="mobile_menu" anchoCompleto>
+        <Boton
+          variante="primario"
+          href={nap.telefonoHref ?? '/presupuesto/'}
+          data-ubicacion="mobile_menu"
+          anchoCompleto
+          className="gap-2"
+        >
+          <IconoTelefono />
           Llamar
         </Boton>
         <Boton variante="contorno" sobreOscuro href={nap.whatsappHref ?? '/presupuesto/'} data-ubicacion="mobile_menu" anchoCompleto>
