@@ -111,7 +111,14 @@ export default function Consentimiento() {
       ) : null}
 
       {estado === 'pendiente' ? (
-        <div className="fixed bottom-0 md:bottom-0 left-0 right-0 z-50 bg-tinta text-fondo px-[18px] py-4 md:px-lat-desktop md:py-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 md:mb-0 mb-[56px]">
+        /* 🔴 `cabecera-ancha:mb-0`, NO `md:mb-0`. El margen inferior de 56 px es
+           el hueco de `BarraMovil`, y esa barra se apaga en 1180 px, no en 768:
+           con `md:mb-0` el aviso se montaba ENCIMA de «Llamar» y «WhatsApp» en
+           toda la banda de 768 a 1179 px —medido a 768, 900 y 1024—, tapando en
+           la primera visita los dos únicos CTA fijos del sitio. Es el mismo
+           punto de ruptura mal espejado que `--barra-movil` ya documenta en
+           `globals.css`: las tres cosas se mueven juntas o no se mueven. */
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-tinta text-fondo px-[18px] py-4 md:px-lat-desktop md:py-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 mb-[56px] cabecera-ancha:mb-0">
           <p className="text-14 md:text-16 text-sobre-tinta m-0 max-w-[68ch]">
             Usamos analítica y publicidad para entender cómo se usa esta web y mostrarte anuncios
             relevantes. Hasta que aceptes no se guarda ninguna cookie de analítica ni de publicidad.
