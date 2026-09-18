@@ -101,13 +101,13 @@ export const PREGUNTAS = {
   microJuntas: {
     pregunta: '¿Lleva juntas?',
     respuesta:
-      'No. Es un revestimiento continuo: no hay piezas, así que no hay juntas donde se acumule la suciedad ni corte entre una estancia y la siguiente. Donde el suelo de debajo tenga una junta estructural, esa se respeta y se deja pasar.',
+      'No. Es un revestimiento continuo: no hay piezas, así que no hay juntas donde se acumule la suciedad ni corte entre una estancia y la siguiente.',
     tema: 'juntas',
   },
   microHumedad: {
     pregunta: '¿Y si el suelo tiene humedad?',
     respuesta:
-      'Entonces no se aplica todavía. El soporte tiene que estar seco, por debajo del 5 %, y una filtración hay que resolverla antes. El microcemento no tapa la humedad, la hereda: y lo mismo con las fisuras, porque él no se agrieta solo, pero copia lo que hace el suelo que tiene debajo.',
+      'Entonces todavía no se aplica: el soporte tiene que estar seco, por debajo del 5 %. Y con las fisuras pasa igual que con el agua, porque el microcemento no se agrieta solo, pero copia lo que haga el suelo que tiene debajo.',
     tema: 'terreno',
   },
   microLimpieza: {
