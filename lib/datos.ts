@@ -74,16 +74,6 @@ export function modelosEnUso(): ModeloId[] {
   return Array.from(set)
 }
 
-export function aniosEnUso(): number[] {
-  const set = new Set(proyectos.map((p) => p.anio).filter((a): a is number => Boolean(a)))
-  return Array.from(set).sort((a, b) => b - a)
-}
-
-export function municipiosEnUso(): string[] {
-  const set = new Set(proyectos.map((p) => p.municipio).filter((m): m is string => Boolean(m)))
-  return Array.from(set).sort()
-}
-
 export function articuloPorSlug(slug: string): Articulo | undefined {
   return articulos.find((a) => a.slug === slug)
 }
