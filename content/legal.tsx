@@ -8,9 +8,12 @@ import { nap } from '@/lib/config'
  * privacidad.
  *
  * El texto que trajo el dueño dice «la empresa» de principio a fin y no llega a
- * nombrarla: razón social, CIF y domicilio no están en ninguna parte del
- * documento. No se inventan. Van entre corchetes atenuados, que es justo lo que
- * significan — un dato que falta, no un dato que se maquilla.
+ * nombrarla: razón social, CIF y domicilio no estaban en ninguna parte del
+ * documento. El 2026-09-18 el dueño confirmó los dos primeros —«Pavimentos
+ * Albufera Sociedad Limitada» y «B02882090», escritos aquí tal como él los
+ * dictó— y siguen sin confirmar el domicilio social y la fecha de última
+ * actualización. Lo que falta se queda entre corchetes atenuados, que es justo
+ * lo que significan — un dato que falta, no un dato que se maquilla.
  *
  * ⚠️ El teléfono y el domicilio salen de `lib/config.ts`, nunca escritos aquí:
  * un solo teléfono y una sola dirección en todo el sitio. Y se leen de
@@ -23,8 +26,8 @@ import { nap } from '@/lib/config'
  */
 export const identificacion: FilaTablaTecnica[] = [
   { etiqueta: 'TITULAR DEL SITIO WEB', valor: nap.nombre },
-  { etiqueta: 'RAZÓN SOCIAL', valor: <DatoPendiente>razón social</DatoPendiente> },
-  { etiqueta: 'NIF O CIF', valor: <DatoPendiente>NIF o CIF</DatoPendiente> },
+  { etiqueta: 'RAZÓN SOCIAL', valor: 'Pavimentos Albufera Sociedad Limitada' },
+  { etiqueta: 'NIF O CIF', valor: 'B02882090' },
   {
     etiqueta: 'DOMICILIO',
     valor: nap.direccion ?? <DatoPendiente>domicilio social</DatoPendiente>,
