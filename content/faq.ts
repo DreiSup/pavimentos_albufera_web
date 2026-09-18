@@ -12,6 +12,19 @@ import type { PreguntaFAQ } from '@/components/secciones/Acordeon'
  *
  * El `tema` no es decorativo: es el parámetro `question_topic` del evento
  * `faq_open`, y su ranking es el mapa de objeciones reales del negocio.
+ *
+ * ⛔ **`presupuestoBarato` se retira el 2026-09-18, por decisión expresa del dueño.**
+ * Era «¿Qué pasa si el presupuesto que tengo es de 18 €/m²?», y es el último
+ * precio que quedaba en el sitio después de que el 2026-09-17 se retirase
+ * `/precios/` y el 2026-09-18 la calculadora. Viajaba además dentro del JSON-LD
+ * de `FAQPage`, que es lo que lee Google. `'precio'` se queda en `TEMAS_FAQ`
+ * (`lib/eventos.ts`): ese vocabulario ya tenía temas sin pregunta —`juntas`,
+ * `zona`, `proceso`— y es el catálogo de objeciones posibles, no el de las
+ * publicadas.
+ *
+ * ⚠️ **Al irse, el catálogo entero baja a 5 preguntas y ninguna lista puede
+ * cumplir ya lo que `design/02` especifica.** No se rellena con una pregunta
+ * inventada: eso sería copy nuevo. El hueco está medido en el informe.
  */
 export const PREGUNTAS = {
   pisar: {
@@ -38,12 +51,6 @@ export const PREGUNTAS = {
       'Cada 2 o 3 años en entradas de coche y zonas de piscina. Cada 5 o 6 en terrazas y jardines de uso peatonal. Nosotros te avisamos.',
     tema: 'mantenimiento',
   },
-  presupuestoBarato: {
-    pregunta: '¿Qué pasa si el presupuesto que tengo es de 18 €/m²?',
-    respuesta:
-      'Que revises qué incluye. A ese precio no salen los materiales de una solera de 10 cm con mallazo y fibra. Normalmente falta el hormigón, el armado o el sellado, y aparece en la factura final.',
-    tema: 'precio',
-  },
   empresas: {
     pregunta: '¿Trabajáis para empresas y constructoras?',
     respuesta:
@@ -57,7 +64,6 @@ export const faqHome: PreguntaFAQ[] = [
   PREGUNTAS.grietas,
   PREGUNTAS.sobreExistente,
   PREGUNTAS.resellar,
-  PREGUNTAS.presupuestoBarato,
   PREGUNTAS.empresas,
 ]
 

@@ -29,7 +29,7 @@ literal del §7.1 del documento maestro.
 | 07 | Proyectos | Rejilla de 3×3, **las 9 obras documentadas** | Carrusel horizontal de tarjetas de 220 px, las 9 |
 | 08 | Garantía | Fondo `--tinta`, `1fr 1fr`: titular a la izquierda, 2 párrafos a la derecha separados por `border-top` | Apilado, mismo fondo |
 | 09 | Zonas | `380px 1fr` + 3 anillos en columnas. El tercero cierra con un enlace-etiqueta `CONSÚLTANOS →` a `/presupuesto/` | 3 anillos en filas con `border-top` |
-| 10 | FAQ | `380px 1fr` + acordeón de 6 | Acordeón de 6, filas de 56 px |
+| 10 | FAQ | `380px 1fr` + acordeón de 5 | Acordeón de 5, filas de 56 px |
 | 11 | Cierre | `1fr 1fr`: titular 64 px + 2 botones a la izquierda, formulario corto a la derecha | Titular 34 px, 2 botones, formulario corto |
 
 **El fondo alterno lo da la posición, no la sección.** Al retirar Precios e intercambiar
@@ -81,8 +81,18 @@ reutilizan literal el §7.1 filtrado a este servicio. Cero texto nuevo.
 | 04 | Cuándo NO elegir impreso | **Fondo `--tinta` a página completa.** `1fr 1fr`. 2 botones de contorno claro a los otros servicios |
 | 05 | Cómo trabajamos | 4 columnas, idéntico a la home |
 | 06 | Obra ejecutada | 3 tarjetas de proyecto de esta técnica |
-| 07 | FAQ | Acordeón de 5, específicas del servicio |
+| 07 | FAQ | Acordeón de 4 en `/hormigon-impreso/`, de 3 en el resto. Específicas del servicio |
 | 08 | Cierre | `1fr 1fr` con formulario de 3 campos |
+
+⛔ **La FAQ de esta plantilla pierde una pregunta el 2026-09-18, y la cifra de la fila 07
+baja.** El dueño contesta expresamente que se retire «¿Qué pasa si el presupuesto que tengo es
+de 18 €/m²?»: es el último precio que quedaba en el sitio y viajaba además dentro del JSON-LD de
+`FAQPage`. El catálogo de `content/faq.ts` se queda en **5 preguntas**, así que las cifras de
+esta tabla y la de la fila 10 de §A1 **no se pueden volver a cumplir sin copy nuevo**, que según
+`design/05` §B7 lo escribe el cliente. Se bajan a lo que hay en vez de rellenar el acordeón con
+una pregunta inventada. Cuentas exactas: home 6 → 5, `/hormigon-impreso/` 5 → 4, y las cuatro
+que comparten `FAQ_SOLERA` 4 → 3 —**esas ya iban con 4 contra un 5 especificado antes de este
+cambio**—. `/microcemento/` sigue sin FAQ y `/zonas/[municipio]/` sigue con 3, que es lo suyo.
 
 ⛔ **La sección de Precio, que era la 05, se retira el 2026-09-18.** Misma decisión del dueño
 que retiró `/precios/` el día antes —no quiere precios en la web—, extendida ahora a la
