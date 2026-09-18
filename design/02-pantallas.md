@@ -348,6 +348,14 @@ componente era código muerto sobre un camino vivo.
    ⚠️ **Enmienda del 2026-09-18:** faltaba el `aria-describedby`, y sin él mover el foco por
    programa anuncia «Teléfono, inválido» sin decir por qué. Lo pone `01 §3.7` para todos los
    campos a la vez, no esta pantalla.
+   🔴 **«El resto de campos conserva lo escrito» NO se cumple hoy, medido el 2026-09-18.** Tras
+   rechazar `juan@empresa` en `/presupuesto/` a 390 px, vuelven vacíos **los seis**: `nombre`,
+   `telefono`, `municipio`, `superficie`, `email` y la casilla de privacidad. No es el Server
+   Action: React reinicia los campos no controlados en cuanto la acción resuelve. Duele
+   justo aquí, porque el correo es el único campo donde `type="email"` acepta lo que zod
+   rechaza, así que es el rechazo más probable y se lleva por delante seis campos del
+   formulario largo. **Esta pasada no lo arregla:** exige que la acción devuelva lo enviado
+   como `defaultValue`, y el adjunto no sobrevive a ese viaje de ninguna manera.
 3. **Enviando.** Botón en estado deshabilitado (`01 §3.4`) con el texto *Enviando…*; los campos
    en `readonly`. Sin *spinner*: la web no tiene animaciones de carga.
 4. **Confirmación.** El formulario se sustituye por un bloque en `--tinta` con el antetítulo
