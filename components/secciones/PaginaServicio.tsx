@@ -117,7 +117,31 @@ function repartirFondos(bandas: Banda[]): (b: Banda) => Fondo {
  */
 function CtaContacto({ ubicacion }: { ubicacion: Ubicacion }) {
   return (
-    <div className="flex flex-col md:flex-row gap-3">
+    /**
+     * ⚠️ **El par pasa a fila en `cabecera-ancha` (1180 px), no en `md` (768).**
+     *
+     * Medido en `/lp/hormigon-impreso/`, con el aviso de cookies en pantalla y
+     * el teléfono real puesto. En `md:flex-row` los dos botones se reparten una
+     * columna que a 800 px mide 320 px, y como ninguno puede encoger por debajo
+     * de su palabra más larga, el que encoge el rótulo es el de llamar:
+     * `Llamar al 627 663 146` se partía en **tres líneas** y la fila pasaba de
+     * 56 a **78,8 px** en toda la banda 776–847. Contrastado quitando el
+     * `<svg>` del DOM: sin icono, a 800 y a 824 la misma fila mide 56 px, así
+     * que el coste es del icono y no de la fila. Desde 848 px ya cabía con
+     * icono, y a 768–775 falla con icono y sin él.
+     *
+     * A 1180 los dos rótulos caben **enteros**, sin partir ninguna línea:
+     * 222,7 + 260,6 de botón más 12 de `gap` son 495,3 sobre los 510 px de
+     * columna. Por debajo de ahí el par va apilado y cada botón ocupa el ancho
+     * completo, que es exactamente lo que ya hacía en móvil. Así no hay ni una
+     * anchura en la que un rótulo se parta: o caben los dos al lado, o van uno
+     * encima de otro.
+     *
+     * Es el mismo punto en el que la cabecera despliega su fila completa y se
+     * apaga la barra fija (`design/01` §4.1 y §4.3), y por la misma razón: es
+     * donde deja de haber que estrechar nada para que quepa.
+     */
+    <div className="flex flex-col cabecera-ancha:flex-row gap-3">
       <Boton
         variante="tinta"
         href={nap.telefonoHref ?? '/presupuesto/'}
