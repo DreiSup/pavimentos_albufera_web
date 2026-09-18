@@ -531,18 +531,33 @@ velo        lo que le pase el hero como `children` (§2.8, solo móvil)
 capa 2      las 4 etiquetas técnicas (§3.8) · inset-x-0 bottom-0, alineadas a la derecha,
             44 px reservados a su izquierda · pointer-events: none · cada una se funde CON
             su foto, no con el carrusel
-botón       pausa · 44×44 · abajo a la izquierda, en la banda reservada
-pase        @keyframes de opacidad + visibility · ciclo 24 s · 4 diapositivas · 6 s cada una
-            cruce de 3 puntos porcentuales (≈0,7 s) entre una y la siguiente
-            animation-delay NEGATIVO: el turno de cada una, menos una vuelta entera
+control     pausa · 44×44 · abajo a la izquierda, en la banda reservada. <input> el PRIMER
+            hijo del marco (lo exige el `~`), <label> el ÚLTIMO (lo pinta encima sin z-index)
+pase        ciclo 24 s · 4 diapositivas · 6 s cada una · animation-delay NEGATIVO: el turno
+            de cada una, menos una vuelta entera. DOS @keyframes de opacidad + visibility,
+            uno por capa, con el mismo reparto y distinta forma de relevarse:
+              `carrusel`           fotos     · CRUZAN · 3 puntos porcentuales (≈0,72 s)
+              `carrusel-etiqueta`  etiquetas · RELEVAN · 1,5 + 1,5 puntos, sin solaparse
 estado base opacity: 0 + visibility: hidden · la PRIMERA, `.carrusel__paso--primera`, visible
 ```
 
-Siete cosas que definen el componente, y ninguna es decorativa:
+Lo que define el componente, y nada de ello es decorativo:
 
-- **El pase es de servidor y cuesta cero bytes de JavaScript.** El proyecto no admite librerías
-  de animación y aquí no hace falta ninguna: todo el pase es CSS. Lo único que hidrata es el
-  botón de pausa, que es un control, no el pase.
+- **Todo el componente es de servidor y cuesta cero bytes de JavaScript.** El proyecto no
+  admite librerías de animación y aquí no hace falta ninguna: el pase es CSS, y desde el
+  2026-09-18 el control de pausa también. Nada del hero hidrata.
+- **Las fotos cruzan; las etiquetas se relevan.** El mismo `@keyframes` para las dos capas
+  pintaba **dos etiquetas monoespaciadas superpuestas** durante el cruce —medido en el build de
+  producción a 390 px: opacidades 0,83 y 0,17, y en pantalla se leía «C‑117SA · GRIS», dos obras
+  distintas encima—. Una foto sobre otra es un fundido; un dato sobre otro es un dato falso. La
+  capa de etiquetas baja a 0 en el 23,5 % del ciclo y la siguiente no empieza a subir hasta el
+  98,5 %, que es **ese mismo instante**: 0,36 s de bajada, 0,36 s de subida, dentro de la misma
+  ventana que el cruce de las fotos, así que la etiqueta sigue pegada a su foto.
+  Verificado barriendo un ciclo entero sobre el build de producción, **1.201 muestras
+  deterministas cada 20 ms** (fijando `currentTime` de las ocho animaciones) más **1.501 en vivo
+  con `requestAnimationFrame`**: **cero muestras con dos etiquetas por encima de 0,05**, cero por
+  encima de 0 siquiera, y como máximo **una** con `visibility: visible`. Las fotos siguen
+  cruzando: la suma de sus cuatro opacidades no baja de **0,9999996**.
 - **El estado base es la portada correcta, no un apilamiento.** Con `prefers-reduced-motion:
   reduce`, o en un navegador que no anime, lo que queda es una sola foto fija. La animación
   entera vive dentro de un `@media (prefers-reduced-motion: no-preference)`; **no se delega en
@@ -556,9 +571,10 @@ Siete cosas que definen el componente, y ninguna es decorativa:
   Sacándola a una capa propia por encima del velo, las cuatro miden **13,91 : 1**: la etiqueta
   es `bg-tinta` opaco, así que el píxel de debajo es el mismo pase quien pase.
 - **El índice va en `--carrusel-i` y el estado activo en una clase, nunca en `:nth-child`.**
-  Del marco cuelgan seis clases de hijo —fotos, velo, etiquetas y botón—, y cualquier selector
-  posicional cuenta lo que no debe. Por eso la diapositiva activa por defecto es
-  `.carrusel__paso--primera` y no `:first-child`: la primera etiqueta es el sexto hijo.
+  Del marco cuelgan cinco clases de hijo —interruptor, fotos, velo, etiquetas y la caja del
+  control—, y cualquier selector posicional cuenta lo que no debe. Por eso la diapositiva activa
+  por defecto es `.carrusel__paso--primera` y no `:first-child`: la primera etiqueta es el
+  séptimo hijo, y desde que el interruptor abre la lista ni la primera foto es la primera.
 - **El retardo es negativo, y por eso la primera vuelta cruza.** Con el retardo positivo, las
   tres que esperaban no tenían animación viva durante su espera y aparecían de golpe: medidos
   pausando `document.getAnimations()`, **tres huecos en los primeros 24 s** —5,30-5,95 s,
@@ -569,7 +585,9 @@ Siete cosas que definen el componente, y ninguna es decorativa:
   retira nada: un lector de pantalla recorría los cuatro textos alternativos y las cuatro
   etiquetas técnicas seguidos, con o sin movimiento reducido. Con `visibility` en el estado base
   y en el `@keyframes`, el árbol del hero pasa de **101 nodos y 4 imágenes a 30 nodos y 1**.
-  Durante los 0,72 s del cruce hay dos, que es exactamente lo que hay en pantalla.
+  Durante los 0,72 s del cruce hay dos FOTOS, que es exactamente lo que hay en pantalla. En la
+  capa de etiquetas nunca hay dos: su ventana es más estrecha y entra la siguiente en el mismo
+  instante en que sale la anterior. Medido: máximo **una** con `visibility: visible`.
 - **Solo la primera foto es prioritaria, y las otras tres pesan menos.** La primera es la
   candidata a LCP, la única precargada y la única a calidad 75. Las tres que esperan salen
   perezosas —para no disputarle la cola— y a `quality={60}`: están dentro del viewport inicial,
@@ -582,36 +600,74 @@ Siete cosas que definen el componente, y ninguna es decorativa:
   JavaScript. Con otro número se escribe el `@keyframes` de ese número; fingir que el
   componente es genérico sería mentir sobre lo que hace.
 
-#### Botón de pausa
+#### Control de pausa
 
-**Pieza nueva, 2026-09-18.** `components/contenido/BotonPausaCarrusel.tsx`. La WCAG 2.2.2, nivel
-A, exige poder parar todo contenido que se mueva solo durante más de cinco segundos, y un pase
-de 24 s en bucle infinito lo es; `prefers-reduced-motion` cubre a quien lo lleva activado, que
-no es lo mismo. **Decisión del dueño, contestada expresamente: el pase sigue siendo automático y
-se añade un control pequeño y discreto sobre la foto.**
+**Pieza nueva, 2026-09-18.** La WCAG 2.2.2, nivel A, exige poder parar todo contenido que se
+mueva solo durante más de cinco segundos, y un pase de 24 s en bucle infinito lo es;
+`prefers-reduced-motion` cubre a quien lo lleva activado, que no es lo mismo. **Decisión del
+dueño, contestada expresamente: el pase sigue siendo automático y se añade un control pequeño y
+discreto sobre la foto.**
+
+🔴 **Enmendado el mismo 2026-09-18: era un botón de cliente y ahora no es JavaScript.** Vive
+dentro de `components/contenido/CarruselFotos.tsx`; `BotonPausaCarrusel.tsx` se retira.
 
 ```
+control  <input type="checkbox" role="switch"> recortado a 1×1, PRIMER hijo del marco
+         + <label for> de 44×44, ÚLTIMO hijo. Lo que se ve y se toca es el <label>
 caja     44×44 (min-w-tactil/min-h-tactil) · absolute bottom-0 left-0 dentro del marco
 color    sobre-oscuro bg-tinta text-fondo — el mismo recuadro opaco de la etiqueta §3.8
-glifo    SVG en línea, currentColor: ‖ mientras pasa, ▶ en pausa. Sin librería de iconos
-foco     el outline ocre global de `globals.css`, 2 px, offset 2
-estado   aria-pressed + aria-label que cambia · data-pausa en el marco → animation-play-state
+glifo    SVG en línea, currentColor: ‖ mientras pasa, ▶ en pausa. Los DOS van en el HTML
+         y los alterna `:checked`. Sin librería de iconos
+foco     outline ocre de 2 px con offset −2, hacia DENTRO, sobre el <label>
+estado   `:checked` del input → `~ .carrusel__paso { animation-play-state: paused }`
+nombre   fijo: «Pausa del pase de fotos». El estado lo pone `checked`, no el nombre
 ```
 
-- **El estado se entiende sin color:** lo dice la forma del glifo, no el pigmento. El botón es
+- **El estado se entiende sin color:** lo dice la forma del glifo, no el pigmento. El control es
   siempre tinta sobre foto, y el glifo mide **13,91 : 1** contra su propio fondo, así que el
   contraste no depende de qué foto haya debajo ni de que exista el velo.
-- **No es un `<input type="checkbox">`.** Esa era la salida sin JavaScript que este mismo §
-  apuntaba, y se descarta: un interruptor no admite `aria-pressed`, que es el estado que pide un
-  control de dos posiciones sobre algo que ya está corriendo. Un botón que alterna es estado
-  real, el único motivo que admite CLAUDE.md para cruzar la frontera de cliente.
-- **Escribe `data-pausa` en el marco en vez de resolverse con `:has()`.** `:has()` no es
-  universal, y un botón de pausa que en algún navegador no pare nada es peor promesa que no
-  tenerlo. Verificado: con el botón pulsado el reloj de la animación avanza 17 ms en 900, y al
-  soltarlo vuelve a 900 de 900.
-- **Con movimiento reducido el botón se retira entero** (`display: none` sobre
-  `.carrusel__pausa`). No hay pase que parar, y así sale también del orden de tabulación en vez
-  de dejar un foco que no hace nada.
+- 🔴 **Sí es un `<input type="checkbox">`, y la versión anterior de este § decía lo contrario.**
+  Se rechazaba porque «un interruptor no admite `aria-pressed`». Esa razón pesaba la restricción
+  equivocada: un interruptor lleva su estado en `aria-checked`, que es exactamente lo mismo, y a
+  cambio el botón de cliente costaba algo que no se puede pagar. **El pase arranca en el primer
+  pintado, porque es CSS; el botón no existía hasta hidratar, y con el JavaScript desactivado no
+  existía nunca.** En esa ventana había movimiento automático que no se podía parar, que es
+  literalmente lo que prohíbe la 2.2.2. Verificado con la ejecución de scripts desactivada por
+  CDP: el pase corre —dos capturas a 6,5 s de distancia son distintas— y **el clic en el control
+  lo para** —las dos siguientes son idénticas byte a byte—. Cero JavaScript en el hero entero.
+- 🔴 **El nombre es un sustantivo, no un verbo, y no cambia.** Antes combinaba `aria-pressed` con
+  un `aria-label` que se reescribía, y un lector llegaba a decir «pausar el pase de fotos,
+  pulsado». Los dos patrones válidos eran nombre fijo con estado, o nombre que describe la acción
+  siguiente sin estado; se toma el primero, porque un interruptor nativo trae el estado puesto.
+  «Pausar/Reanudar el pase de fotos» habría repetido la contradicción en otra forma
+  —«pausar…, desactivado»—, así que se reordenan las mismas palabras a **«Pausa del pase de
+  fotos»**. Comprobado en el árbol de accesibilidad, no leyendo el JSX:
+  `{role: switch, name: "Pausa del pase de fotos", checked: false}` → `{… checked: true}`.
+- **El `~` en vez de `:has()`.** `:has()` no es universal, y un control de pausa que en algún
+  navegador no pare nada es peor promesa que no tenerlo. Eso es lo que obliga a que el `<input>`
+  sea el primer hijo del marco: el combinador solo mira hacia delante. Verificado: con el
+  interruptor marcado el reloj de la animación avanza **17 ms en 2.000**, y al desmarcarlo
+  vuelve a 2.000 de 2.000. Con ratón y con la barra espaciadora.
+- 🔴 **El anillo de foco va hacia dentro.** El marco es `overflow: hidden` y el control se apoya
+  en su esquina inferior izquierda: con el `outline-offset: 2` global se recortaban **dos de sus
+  cuatro lados**, y al llegar con el tabulador se veía media escuadra. Con `outline-offset: -2px`
+  el anillo se dibuja dentro de los 44 px. No se mueve el control adentro porque su esquina es
+  la banda que la capa de etiquetas ya le reserva. Verificado tabulando —cuatro pulsaciones desde
+  el principio del documento— y midiendo los cuatro lados contra el rectángulo del marco.
+- **El interruptor se recorta, no se oculta.** `clip-path: inset(50%)` sobre 1×1: `display: none`
+  y `visibility: hidden` lo sacarían del orden de tabulación, y es el elemento que recibe el
+  foco. El recorte se lleva por delante su propio anillo, que es lo que se quiere.
+- **Con movimiento reducido el control se retira entero** (`display: none` sobre `.carrusel__pausa`
+  **y sobre `.carrusel__interruptor`**, que son dos piezas y la tabulable es la segunda). No hay
+  pase que parar, y así sale también del orden de tabulación en vez de dejar un foco que no hace
+  nada. Verificado emulando la media feature: 0 animaciones, una foto y una etiqueta visibles, y
+  el tabulador no alcanza el control.
+- ⚠️ **Un `id` es único por documento, así que el componente es de uno por página.** Hoy lo es:
+  solo lo usa el hero de la home. Si algún día hacen falta dos en la misma página, el `id` pasa a
+  ser una prop obligatoria; se deja como constante documentada en vez de fingir una generalidad
+  que nadie usa, igual que el `@keyframes` de cuatro diapositivas.
+- ⚠️ **Ya no se puede medir el uso de la pausa** sin volver a cruzar la frontera de cliente.
+  Nadie lo había pedido; queda dicho porque era gratis con el botón anterior y ahora no lo es.
 - **La etiqueta técnica le reserva su banda.** `pl-11` sobre la capa de etiquetas: a 768 px, la
   única anchura del sitio en que pasaba, la columna del carrusel mide 304 px y la etiqueta los
   llenaba enteros, así que el botón se le montaba encima. Se le quita sitio a la etiqueta, que

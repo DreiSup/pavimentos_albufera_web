@@ -260,10 +260,11 @@ export default function Home() {
             del dueño del 2026-09-17. En escritorio el titular sigue en su columna y
             no hay velo, porque no pisa ninguna foto.
           - **La foto es un carrusel de cuatro obras** (`design/01 §3.15`), y pasa
-            solo. El pase es un `@keyframes` de opacidad, sin un byte de JavaScript;
-            lo único que hidrata es su botón de pausa, que exige la WCAG 2.2.2. Con
-            movimiento reducido no pasa nada, se ve la primera foto fija y el botón
-            se retira. */}
+            solo. El pase es un `@keyframes` de opacidad y su control de pausa —el que
+            exige la WCAG 2.2.2— un `<input type="checkbox">` que lee el propio CSS:
+            el hero entero es de servidor y no hidrata nada, así que no hay ventana en
+            la que se mueva algo que no se pueda parar. Con movimiento reducido no pasa
+            nada, se ve la primera foto fija y el control se retira. */}
       <section className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-x-16 md:gap-y-6 md:grid-rows-[1fr_auto_auto_1fr] px-[18px] md:px-lat-desktop pt-8 md:pt-14">
         {/* `relative z-10` porque en móvil comparte celda con el carrusel y va
             detrás en el DOM; `self-start` para que se apoye en el borde superior de
