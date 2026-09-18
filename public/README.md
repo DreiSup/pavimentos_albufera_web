@@ -31,7 +31,8 @@ en `design/01-sistema-de-diseno.md` §2.1.
 - `blog/` — el `slug` del artículo: `guia-hormigon-pulido.jpg`.
 - `marca/` — seis archivos, todos derivados del mismo original de 1881 × 836 px que entregó
   el dueño. **No hay `logo.svg`**: el original es un mapa de bits con degradados en cada elipse
-  de la senda, y vectorizarlo lo redibujaría.
+  de la senda, y vectorizarlo lo redibujaría. Hay un vectorial fuera del repo, `img/logo.svg`, y
+  se ha medido: el veredicto está al final de esta sección.
 
   | Archivo | Qué lleva | Dónde se pinta |
   |---|---|---|
@@ -108,6 +109,43 @@ en `design/01-sistema-de-diseno.md` §2.1.
   cuantiza bien —por eso el del pie, con la senda al triple de ancho, pesa 27,0. El claro de la
   fila va al revés: **7,4 kB contra los 9,3 del wordmark claro** que releva, y solo se pide al
   abrir el menú.
+
+  ---
+
+  **`img/logo.svg`: medido el 2026-09-18, y el PNG se queda.** El dueño aportó ese día un
+  vectorial que no existía cuando se compuso la fila. Está fuera del control de versiones, igual
+  que el resto de `/img/`. La evaluación, en los tres ejes que importaban:
+
+  - **Fidelidad — es donde se cae, y no por poco.** No son «degradados por elipse»: son 97
+    trazados dentro de **un solo `<g>` con un único `<linearGradient>` compartido**, 0
+    `radialGradient`, 0 `<text>`, 0 `<image>`. Consecuencia medida, tinta media en RGB sobre el
+    original compuesto y sobre el SVG rasterizado a 1881 × 836:
+
+    | Zona | Original | SVG |
+    |---|---|---|
+    | «Pavimentos» | 8,7 · 21,2 · 48,5 | 2,5 · 88,1 · 163,0 |
+    | «Albufera» | 7,6 · 80,0 · 164,5 | 2,7 · 80,9 · 156,9 |
+    | Losa cercana | 5,7 · 41,6 · 90,6 | 2,5 · 71,8 · 148,7 |
+    | Losa lejana | 71,3 · 151,4 · 235,1 | 6,5 · 81,1 · 164,9 |
+
+    O sea: **el wordmark de dos azules se queda en uno solo** —`#000D2A` y `#014BA2` son la
+    identidad, `design/01` §2.1— y **la senda pierde la profundidad**, que es lo único que dibuja
+    la perspectiva: en el original la losa lejana es mucho más clara que la cercana y en el SVG
+    son la misma. En la banda de las losas lejanas el trazado pone **5.146 píxeles de tinta
+    oscura donde el original tiene 1.676**: no está calcado, está redibujado. Y el degradado
+    introduce **`#00D9FF`**, un cian que no es ninguno de los tres valores que §2.1 autoriza.
+  - **Nitidez a 2× — no hay nada que ganar.** `logo-marca-fila.png` son 1004 px para una caja de
+    334,7, o sea **3,0×**: a densidad 2 sobran un 50 % de píxeles y a densidad 3 va 1:1. El
+    vectorial no recupera resolución que falte, porque no falta.
+  - **Peso — aquí el SVG gana, y se dice.** 41.045 B crudos pero **8.788 B en brotli q11**, contra
+    los 13.826 del PNG, que ya viene comprimido y no baja. Serían **≈5,0 kB menos** en una
+    petición, cacheada, compartida por las 52 rutas. No compensa: son bytes de imagen, no de JS,
+    el presupuesto de `design/06` no los cuenta, y lo que se compra con ellos es una marca que ya
+    no es la marca.
+
+  Rehacer los 97 rellenos a mano para devolverle los dos azules y la profundidad **es redibujar el
+  logotipo**, que es exactamente lo que este archivo lleva prohibiendo desde el principio. El
+  vectorial se queda en `/img/`, sin uso, por si algún día llega uno del estudio que hizo la marca.
 
 ## Reglas
 

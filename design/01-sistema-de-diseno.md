@@ -66,6 +66,16 @@ Cuatro decisiones, y su porqué:
   así que la caja de recorte queda apuntada aquí: es lo único que hace falta para rehacerlo.
 - **PNG, no SVG.** `public/README.md` ya cierra esta puerta —la senda son degradados por elipse y
   vectorizarla la redibuja—, y sigue cerrada en miniatura. **No existe ningún SVG en el repo.**
+  ✅ **Reevaluado el 2026-09-18 contra un vectorial real**, `img/logo.svg`, que el dueño aportó
+  ese día. La puerta se queda cerrada, y ahora con cifras: el archivo son 97 trazados en **un solo
+  `<linearGradient>` compartido**, no un degradado por elipse. Medido sobre el original compuesto
+  y sobre el SVG rasterizado al mismo tamaño, tinta media por zona en RGB:
+  **«Pavimentos» (8,7 · 21,2 · 48,5) y «Albufera» (7,6 · 80,0 · 164,5) en el original** —o sea los
+  dos azules de este §2.1— **contra (2,5 · 88,1 · 163,0) y (2,7 · 80,9 · 156,9) en el SVG**: el
+  mismo azul dos veces. La senda pierde igual su profundidad —losa cercana y lejana pasan de
+  (5,7 · 41,6 · 90,6) y (71,3 · 151,4 · 235,1) a (2,5 · 71,8 · 148,7) y (6,5 · 81,1 · 164,9)— y el
+  degradado introduce `#00D9FF`, un cian que no es ninguno de los tres valores que este párrafo
+  autoriza. El detalle, con el peso y la nitidez, en `public/README.md`.
 - **Teja opaca en `--fondo`.** Es lo único que resuelve el modo oscuro sin duplicar archivo: la
   pestaña clara y la oscura ven el mismo cuadrado. Probada la alternativa —teja `#000D2A` con la
   senda de la variante clara— y a 16 px la senda pierde el azul y se lee gris: el color, que es lo
