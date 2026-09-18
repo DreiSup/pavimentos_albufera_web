@@ -39,13 +39,42 @@ Valores auxiliares, derivados y no sustituibles por otros:
 identidad es un archivo entregado por el dueño y trae **dos azules que el sistema no tiene**:
 `#000D2A` en «Pavimentos» y la senda cercana, y `#014BA2` en «Albufera» y la senda lejana. No se
 corrigen al gris del sistema: es la marca, y una marca no se repinta para que encaje en la web
-que la enseña. La excepción **empieza y acaba en `public/marca/`**: ningún texto, borde, fondo ni
-estado del sitio puede usar esos valores.
+que la enseña. La excepción **empieza y acaba en los derivados de marca**: `public/marca/` y, desde
+el 2026-09-17, `app/icon.png` y `app/apple-icon.png`, que son la misma marca en miniatura. Ningún
+texto, borde, fondo ni estado del sitio puede usar esos valores.
 
 De ahí sale un tercer valor derivado, también exclusivo del logotipo: **`#8FB4D6`**, el azul de
 la variante clara. Existe porque `#000D2A` mide **1,1 : 1** contra `--tinta` —sobre el pie el
 logotipo original desaparece— y hace falta un par claro que conserve el contraste entre las dos
 palabras. El detalle de cómo se derivan las variantes está en `public/README.md`.
+
+**El icono de pestaña, 2026-09-17.** El dueño pidió «el logotipo en miniatura» en la pestaña. Lo
+que hay en la pestaña es **la senda sola**, sin wordmark, y eso no es una licencia: el bloque
+completo a 16 px deja «Pavimentos Albufera» en una mancha gris de dos píxeles de alto —probado y
+mirado—, así que publicarlo sería el mismo maquillaje que el claim del §`public/README.md`.
+
+| Archivo | Lado | Recorte | Margen |
+|---|---|---|---|
+| `app/icon.png` | 256 px | senda de `img/logo_nuevo.png`, caja `(411, 22) → (1528, 537)` | 4 % |
+| `app/apple-icon.png` | 180 px | la misma | 10 %, que es lo que pide el recorte redondeado de iOS |
+
+Cuatro decisiones, y su porqué:
+
+- **Fuente: `img/logo_nuevo.png`, no `public/marca/logo.png`.** El original que entregó el dueño
+  está en RGBA a color real; los cuatro de `public/marca/` están cuantizados a paleta. Para
+  reescalar conviene el que conserva el degradado de cada elipse. `/img/` está en `.gitignore`,
+  así que la caja de recorte queda apuntada aquí: es lo único que hace falta para rehacerlo.
+- **PNG, no SVG.** `public/README.md` ya cierra esta puerta —la senda son degradados por elipse y
+  vectorizarla la redibuja—, y sigue cerrada en miniatura. **No existe ningún SVG en el repo.**
+- **Teja opaca en `--fondo`.** Es lo único que resuelve el modo oscuro sin duplicar archivo: la
+  pestaña clara y la oscura ven el mismo cuadrado. Probada la alternativa —teja `#000D2A` con la
+  senda de la variante clara— y a 16 px la senda pierde el azul y se lee gris: el color, que es lo
+  único que sobrevive a ese tamaño, se perdía. Por eso no hay rama `prefers-color-scheme`.
+- **Un solo archivo, sin `.ico` de varios tamaños.** Comparado el reescalado del navegador desde
+  los 256 px contra un mapa de bits pre-escalado a 16: la diferencia es marginal y ninguno de los
+  dos resuelve las elipses. **A 16 px se ve una loma azul con la base oscura**, que es la
+  perspectiva de la senda, no sus losas. Se leen a partir de 24-32 px. Es el techo del motivo, no
+  del archivo.
 
 ### 2.2 La regla del ocre
 
