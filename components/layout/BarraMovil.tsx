@@ -26,6 +26,12 @@ export default function BarraMovil() {
         data-ubicacion="sticky_mobile"
         className="min-h-boton flex items-center justify-center gap-2 bg-pigmento text-tinta font-sans font-semibold text-16 no-underline"
       >
+        {/*
+          24 px, y es el único sitio del repo que se sale de los 20 por defecto.
+          Aquí cabe: el rótulo es una palabra, el botón es media pantalla y no
+          hay nada que estrechar. Comprobado el 2026-09-18 que subir los otros
+          seis a 24 no lo paga el cierre de la portada. → `design/01` §3.16
+        */}
         <IconoTelefono className="w-6 h-6" />
         Llamar
       </a>

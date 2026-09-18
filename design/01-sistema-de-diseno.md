@@ -756,7 +756,7 @@ igual métrica que 3.1  ·  min-height 56/48 px  ·  radius 0  ·  gap: 8px entr
 background: #25D366 · color: #1B1E1C · border: 1px solid #25D366
 :hover  background: #20B859
 :focus  outline: 2px solid #D9A441; outline-offset: 2px   (el global; ver abajo)
-icono   20px dentro de Boton · 24px en la barra fija de móvil
+icono   20px dentro de Boton · 24px en la barra fija de móvil (dos tamaños, medidos: ver abajo)
 ```
 
 **Se pide por destino, no por prop.** `Boton` mira su propio `href` con `esEnlaceWhatsApp()`
@@ -779,13 +779,38 @@ barra fija.
 Comprobado ruta a ruta contra el HTML servido, y en las dos direcciones: **cero anclas a `wa.me`
 sin el verde, cero botones verdes que no vayan a `wa.me`.**
 
-⚠️ **El cierre de la portada se estrecha a 768 px, y es el único sitio donde el icono cuesta
-algo.** Esa fila vive en media columna junto al formulario, con `px-[30px]` a cada lado de los dos
-botones, y ya venía apretada: `Llamar al 627 663 146` partía en tres líneas antes de tocar nada.
-Con los 28 px del icono más su `gap` pasa a cuatro, y la fila crece de **79 a 104 px de alto**.
-Medido solo a 768; a 390 y a 1366 los dos botones caben en una línea. No se arregla desde `Boton`
-—la salida es que esa fila siga en columna hasta `lg`, y eso se escribe en `app/page.tsx`—, así
-que queda anotado, no parcheado.
+#### Lo que cuesta el icono, medido de nuevo el 2026-09-18
+
+La versión anterior de este párrafo daba una cifra que no reproduce, y en el sitio equivocado.
+Decía que a 768 px el icono llevaba el cierre de la portada de tres líneas a cuatro y la fila de
+79 a 104 px. **A 768 px el icono no cuesta nada:** con `<svg>` y sin él —quitándolo del DOM en el
+navegador, con el aviso de cookies en pantalla y el teléfono real puesto— esa fila mide **78,8 px
+en los dos casos**. A 768 ya partía sola.
+
+Donde sí cuesta es en una banda estrecha y concreta, **776–847 px**:
+
+| Ancho de ventana | Columna | Con icono | Sin icono |
+|---|---|---|---|
+| 390 | 354 (apilados) | 108 px | 108 px |
+| 768 | 304 | 78,8 px | 78,8 px |
+| 800 | 320 | **78,8 px** (3 líneas) | **56 px** |
+| 824 | 332 | **78,8 px** (3 líneas) | **56 px** |
+| 848 | 344 | 56 px | 56 px |
+| 1180 y más | 510 | 56 px | 56 px |
+
+Los 28 px —20 del dibujo más 8 de `gap`— se los come el botón de WhatsApp, y el flex se los quita
+al de al lado: el que parte en tres líneas es **el de llamar**, que es el que lleva el número.
+
+**Arreglado en las landings, no en la portada.** `CtaContacto`
+(`components/secciones/PaginaServicio.tsx`) pasa de `md:flex-row` a **`cabecera-ancha:flex-row`**:
+apilado y a ancho completo hasta 1180 px, en fila desde ahí. A 1180 los dos rótulos caben enteros
+—222,7 + 260,6 + 12 de `gap` = **495,3 px sobre los 510** de la columna—, así que ya no hay ni una
+anchura en la que un rótulo se parta: o van los dos al lado, o van uno encima de otro. Es el mismo
+punto en el que la cabecera despliega su fila y se apaga la barra fija, y por la misma razón.
+
+🔴 **El cierre de la portada conserva el defecto**, idéntico y medido: `app/page.tsx` tiene la
+misma fila `md:flex-row`, con las mismas cifras de la tabla, y el archivo lo está tocando otra
+sesión. Un cambio de una palabra —`md:` por `cabecera-ancha:` en la línea 604— lo cierra.
 
 La razón de resolverlo así y no con `variante="whatsapp"`: un sitio de llamada nuevo que se
 olvide del prop **no falla ningún build**, se queda gris y no lo ve nadie. Y hay un segundo
@@ -823,6 +848,31 @@ un foco distinto del `Llamar` que tiene al lado.
 - `aria-hidden="true"` y `focusable="false"` en los dos, siempre. El botón ya dice «Llamar» o
   «WhatsApp» en texto, y el icono no sustituye nunca al rótulo. Un clic sobre el `<svg>` resuelve
   al `<a>` por `closest()`, que es como `EventosGlobales` lo mide.
+
+**Dos tamaños, y es una decisión, no un descuido.** 20 px por defecto; 24 px **solo** en la barra
+fija de móvil. Se probó a dejar uno solo, en las dos direcciones, y las dos se caen con la cifra
+delante (2026-09-18, medido en el navegador):
+
+- **24 en todas partes no lo paga el cierre de la portada.** Con el icono a 24 esa fila pasa a
+  **cuatro líneas y 104,4 px a 768 px**, y a 848 sube de 56 a 78,8. Es decir: subir el icono
+  convertía en verdad la frase falsa que este mismo apartado arrastraba. Son 32 px en la única
+  fila del sitio donde no sobra ninguno.
+- **Bajar la barra fija a 20 tampoco**, porque el motivo para agrandar era que a 20 px «se cierra
+  el calado del auricular», y **no se cierra**. Capturado a 1× y ampliado con vecino más próximo,
+  la ranura que separa el auricular del borde de la burbuja mide **1 px a 20 px y 2 px a 24**.
+  Estrecha, pero continua, y el icono se lee.
+
+Así que el tamaño lo decide **el ancho de la columna**: 24 donde el rótulo es una palabra y el
+botón ocupa media pantalla —la barra fija—, y 20 dentro de `Boton`, que es el que aparece en filas
+de dos con rótulos largos.
+
+**Los dos CTA del menú de móvil llevan icono, los dos a 20 px.** Estaban desparejados —WhatsApp con
+icono, «Llamar» sin él, apilados a 1 px uno del otro— y así se leen como piezas de sistemas
+distintos. El auricular se escribe a mano en `MenuMovil.tsx`, con su `gap-2`, y **no se deduce de
+`tel:`** como se hace con `wa.me`: si `Boton` antepusiera el icono a todo `href` que empieza por
+`tel:`, los 28 px caerían también en los botones que dicen `Llamar al 627 663 146`, que son justo
+los que ya encogen. Van a 20 y no a los 24 de la barra fija porque la barra no está en pantalla con
+el menú abierto —el panel es `fixed inset-0`— y quien sí está al lado es el `Boton` de WhatsApp.
 
 ## 4. Elementos transversales
 
@@ -908,8 +958,8 @@ consume el único ocre de acción de la pantalla.
 
 **Enmienda del 2026-09-18: verde y los dos iconos.** La mitad de WhatsApp deja de ser tinta y
 pasa a `#25D366` con el rótulo en `--tinta` (§2.1, §3.16); la de llamar conserva su ocre y solo
-gana el icono de auricular. Los dos iconos miden 24 px y son la misma pieza dibujada una vez
-(§3.16). **Los dos siguen siendo anclas crudas, no `Boton`**, y eso no es descuido: `Boton` monta
+gana el icono de auricular. Los dos iconos miden 24 px **aquí y solo aquí** —en `Boton` van a 20,
+y §3.16 dice con qué medición se decidió cada uno— y son la misma pieza dibujada una vez (§3.16). **Los dos siguen siendo anclas crudas, no `Boton`**, y eso no es descuido: `Boton` monta
 un `next/link` y estos dos CTA tienen que funcionar sin que hidrate nada, que es lo que `design/06`
 exige de los dos enlaces de más intención del sitio. Lo compartido es el token de color, no la
 clase.

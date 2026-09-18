@@ -18,7 +18,27 @@
  */
 
 type PropsIcono = {
-  /** Tamaño y color. Por defecto 20 px, que es la proporción del rótulo de 16. */
+  /**
+   * Tamaño y color. **Por defecto 20 px, y son dos tamaños a propósito: 20 aquí,
+   * 24 solo en la barra fija de móvil.** Se intentó dejar uno y los dos intentos
+   * se cayeron con la cifra delante — el 2026-09-18, medido en el navegador:
+   *
+   * - **Subir a 24 en todas partes no lo paga el cierre de la portada.** Entre
+   *   768 y 847 px esa fila mete los dos botones en una columna de 304–344 px, y
+   *   con el icono a 24 `Llamar al 627 663 146` pasa de tres líneas a **cuatro**
+   *   y la fila de 78,8 a **104,4 px**. Son 32 px (24 del dibujo más 8 de `gap`)
+   *   en el sitio donde no sobra ninguno.
+   * - **Bajar la barra fija a 20 tampoco se sostiene:** el argumento para
+   *   agrandar era que a 20 px se cierra el calado del auricular, y **no se
+   *   cierra**. Capturado a 1× y ampliado con vecino más próximo, la ranura que
+   *   separa el auricular del borde de la burbuja mide **1 px a 20 y 2 px a 24**.
+   *   Estrecha, pero continua.
+   *
+   * Así que el tamaño lo decide el ancho de la columna, no el gusto: 24 px donde
+   * el rótulo es una palabra y el botón ocupa media pantalla —la barra fija—, y
+   * 20 px dentro de `Boton`, que es el que sale en filas de dos con rótulos
+   * largos. → `design/01` §3.16
+   */
   className?: string
 }
 
