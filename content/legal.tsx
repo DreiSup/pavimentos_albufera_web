@@ -304,7 +304,6 @@ export const cookiesTerceros: FichaCookie[] = [
             href="https://policies.google.com/privacy"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-tinta"
           >
             policies.google.com/privacy
           </a>
@@ -351,7 +350,6 @@ export const cookiesTerceros: FichaCookie[] = [
             href="https://www.facebook.com/privacy/policy"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-tinta"
           >
             facebook.com/privacy/policy
           </a>
@@ -371,6 +369,33 @@ export const cookiesTerceros: FichaCookie[] = [
  * tratamiento del artículo 28: tratan los datos por cuenta de la empresa y con
  * sus instrucciones, no para lo suyo. Google y Meta, en la parte publicitaria,
  * no encajan ahí, y por eso su fila dice consentimiento y las otras no.
+ *
+ * 🔴 **Que sean encargados es el encuadre correcto; que exista el contrato del
+ * artículo 28.3 no lo sabe nadie.** Esa afirmación va con marcador visible en la
+ * prosa de `app/politica-de-privacidad/page.tsx`, no aquí: es una sola decisión
+ * del dueño sobre los cinco, no cinco filas de tabla.
+ *
+ * 🔴 **Qué recibe Meta y qué recibe Google: son dos patas, no una.** Hasta el
+ * 2026-09-18 la fila de Meta solo contaba la del servidor —los hashes de la
+ * CAPI— y se dejaba fuera todo lo que manda el navegador, que va **en claro**.
+ * Informar de menos es la dirección mala del art. 13.1.e, así que las dos filas
+ * se han reescrito leyendo las tres fuentes:
+ *
+ * - `lib/meta-capi.ts` — `user_data` de la CAPI. Hashea `ph`, `em`, `ct` y dos
+ *   que la ficha no nombraba: `country`, que es el hash de «es» y **se añade
+ *   siempre** aunque ninguna pantalla pregunte el país, y `external_id`, que es
+ *   el hash del código de referencia. `fn`, `ln` y `st` existen en el módulo
+ *   pero **no se informan**: `app/presupuesto/actions.ts` no los rellena en la
+ *   llamada, así que hoy no viajan, y anunciar un dato que no sale es el mismo
+ *   error en la otra dirección.
+ * - `components/secciones/FormularioPresupuesto.tsx` — el `params` del `Lead`:
+ *   `form_location`, `space_type`, `municipality`, `event_id`, `reference_code`
+ *   y `currency`.
+ * - `lib/eventos.ts` — `paramsComunes()` añade `page_path` y `device_type`, y
+ *   `registrarEvento` pasa **el mismo objeto** a `gtag` y a `fbq`. De ahí que
+ *   las dos filas enumeren casi lo mismo: no es copia, es que es el mismo envío.
+ *   Lo que las separa es que Meta suma los hashes de la CAPI y las cookies
+ *   `_fbp`/`_fbc`.
  */
 export type FilaDestinatario = { destino: string; filas: FilaTablaTecnica[] }
 
@@ -427,7 +452,7 @@ export const destinatarios: FilaDestinatario[] = [
       {
         etiqueta: 'QUÉ RECIBE',
         valor:
-          'Cifrados con SHA-256: teléfono, correo y municipio. Sin cifrar: dirección IP, navegador, página desde la que envías y las cookies _fbp y _fbc',
+          'Cifrados con SHA-256: teléfono, correo, municipio, el código de referencia de tu visita y el país «es», que no te preguntamos en ninguna pantalla. Sin cifrar: dirección IP, navegador, página desde la que envías, las cookies _fbp y _fbc, y —desde tu navegador— otra vez el municipio y el código de referencia en texto legible, qué quieres pavimentar, en qué punto de la web estaba el formulario, la página, el tipo de dispositivo, un identificador de este envío y la moneda',
       },
       {
         etiqueta: 'DÓNDE TRATA LOS DATOS',
@@ -447,7 +472,7 @@ export const destinatarios: FilaDestinatario[] = [
       {
         etiqueta: 'QUÉ RECIBE',
         valor:
-          'Los avisos de navegación y de contacto: página, tipo de dispositivo, dónde pulsaste y, al enviar el formulario, el municipio que hayas escrito y el código de referencia',
+          'Los avisos de navegación y de contacto: página, tipo de dispositivo, dónde pulsaste y, al enviar el formulario, qué quieres pavimentar, el municipio que hayas escrito, el código de referencia de tu visita, en qué punto de la web estaba el formulario, un identificador de este envío y la moneda. Y, como en cualquier petición a un servidor, tu dirección IP y tu navegador',
       },
       {
         etiqueta: 'DÓNDE TRATA LOS DATOS',
