@@ -360,6 +360,8 @@ pueda pintar está aquí, y lo que no está aquí no se pinta.**
 - Límite de envíos: *Demasiados envíos seguidos. Llámanos o escríbenos por WhatsApp.*
 - Error de envío: *No hemos podido enviarlo. Llámanos al `[teléfono]` o escríbenos por WhatsApp
   y lo resolvemos ahora.*
+- Aviso del adjunto perdido, tras un rechazo del servidor: *Vuelve a adjuntar la foto: por
+  seguridad, el navegador no conserva el archivo.*
 
 ⚠️ **Enmienda del 2026-09-18: los doce mensajes nuevos de esta lista son transcripción, no copy
 nuevo.** Ya se pintaban desde `app/presupuesto/actions.ts` y desde el propio componente, y
@@ -382,14 +384,33 @@ componente era código muerto sobre un camino vivo.
    ⚠️ **Enmienda del 2026-09-18:** faltaba el `aria-describedby`, y sin él mover el foco por
    programa anuncia «Teléfono, inválido» sin decir por qué. Lo pone `01 §3.7` para todos los
    campos a la vez, no esta pantalla.
-   🔴 **«El resto de campos conserva lo escrito» NO se cumple hoy, medido el 2026-09-18.** Tras
-   rechazar `juan@empresa` en `/presupuesto/` a 390 px, vuelven vacíos **los seis**: `nombre`,
-   `telefono`, `municipio`, `superficie`, `email` y la casilla de privacidad. No es el Server
-   Action: React reinicia los campos no controlados en cuanto la acción resuelve. Duele
-   justo aquí, porque el correo es el único campo donde `type="email"` acepta lo que zod
-   rechaza, así que es el rechazo más probable y se lleva por delante seis campos del
-   formulario largo. **Esta pasada no lo arregla:** exige que la acción devuelva lo enviado
-   como `defaultValue`, y el adjunto no sobrevive a ese viaje de ninguna manera.
+   ✅ **«El resto de campos conserva lo escrito» se cumple desde el 2026-09-18.** Antes no: tras
+   rechazar `juan@empresa` en `/presupuesto/` a 390 px volvían vacíos los siete campos y la
+   casilla. No era el Server Action —React resetea los campos no controlados en cuanto la acción
+   resuelve—, y dolía justo aquí, porque el correo es el único campo donde `type="email"` acepta
+   lo que zod rechaza: el rechazo más probable se llevaba por delante el formulario entero, y en
+   un móvil quien acaba de teclear nombre, teléfono, superficie y municipio no lo vuelve a
+   escribir. Ahora la acción devuelve lo enviado en `EstadoEnvio.valores` —**los valores crudos
+   del `FormData`**, no los analizados, o el `.transform()` del teléfono le devolvería
+   `961000000` a quien escribió `+34 961 000 000`— y cada control lo declara como `defaultValue`.
+   Siguen sin ser campos controlados: no hay `value` ni `onChange`, así que teclear no repinta
+   nada. **Se devuelve en los cinco caminos de error**, incluido el fallo de envío. Medido a 390,
+   768 y 1366 px, en la variante larga y en la corta de la portada.
+
+   ⚠️ **El desplegable necesita además un `key`, y es el único.** El reseteo de React 19.0.0 es
+   un `form.reset()` nativo, que devuelve cada control a su valor por defecto del DOM. En un
+   `<input>` y en un `<textarea>` React reescribe ese valor por defecto en cada repintado, así
+   que el reseteo ya encuentra el nuevo; en un `<select>`, `defaultValue` solo marca
+   `defaultSelected` **en el montaje**, y sin remontar el desplegable volvía a «Entrada de
+   garaje» con los otros seis campos intactos. `key={escrito?.espacio}` lo remonta, y el
+   remontaje ocurre antes del reseteo dentro del mismo *commit*.
+
+   🔴 **El adjunto no vuelve, y no hay forma de que vuelva:** ninguna página puede colocar un
+   archivo en el `<input type="file">` de quien la visita. Así que no se finge —el adjunto se
+   perdería en silencio y el correo diría «Foto adjunta: no»—: cuando el envío rechazado traía
+   foto, el campo pinta el aviso de la lista de microcopy por el hueco de `error` de `Campo`,
+   que es el único que `01 §3.7` anuncia y asocia con `aria-describedby`. Los dos errores de foto
+   rechazada mandan sobre él: describen un archivo que además no valía.
 3. **Enviando.** Botón en estado deshabilitado (`01 §3.4`) con el texto *Enviando…*; los campos
    en `readonly`. Sin *spinner*: la web no tiene animaciones de carga.
 4. **Confirmación.** El formulario se sustituye por un bloque en `--tinta` con el antetítulo
