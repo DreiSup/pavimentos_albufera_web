@@ -94,7 +94,8 @@ const ID_INTERRUPTOR = 'pausa-carrusel'
  * `children` → etiquetas → control, y no es cosmético: el velo del titular llega
  * como `children`, y cuando la etiqueta técnica iba dentro de la misma pasada
  * que su foto el velo le caía ENCIMA y la dejaba en 2,64 : 1 —AA pide 4,5— en
- * móvil, mientras en escritorio, sin velo, estaba en 13,9. El velo tiene que
+ * móvil, mientras en escritorio, que entonces no llevaba velo, estaba en 13,9.
+ * Desde el 2026-09-18 el velo va a los dos anchos. El velo tiene que
  * oscurecer la foto, no el texto que va sobre ella. Las dos capas llevan el
  * mismo `--carrusel-i`, así que cada etiqueta se funde con su foto aunque no
  * sea su hermana.
@@ -217,8 +218,8 @@ export default function CarruselFotos({
           glifo va `aria-hidden` y quien lo anuncia es el `<input>`.
           `sobre-oscuro bg-tinta text-fondo` es el mismo recuadro opaco de la
           etiqueta técnica (§3.8): 13,9 : 1 sobre su propio fondo, así que el
-          contraste no depende de qué foto haya debajo ni de que el velo exista
-          —en escritorio no existe—. 44 px de objetivo táctil por `min-*-tactil`,
+          contraste no depende de qué foto haya debajo ni de cómo sea el velo.
+          44 px de objetivo táctil por `min-*-tactil`,
           y el anillo de foco lo pinta `globals.css` hacia DENTRO, porque el marco
           recorta y en esta esquina se comían dos de sus cuatro lados. */}
       <label
