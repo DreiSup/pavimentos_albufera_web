@@ -18,6 +18,11 @@ export default function MenuMovil({
 
   useEffect(() => {
     document.body.style.overflow = 'hidden'
+    /* Quién tenía el foco antes de abrir, para devolvérselo al cerrar. En la
+       práctica es siempre la hamburguesa, porque es lo único que abre este
+       panel, pero se guarda el elemento y no un selector: así sigue valiendo si
+       algún día lo abre otra cosa. */
+    const foco = document.activeElement
     /* El foco entra por la `×`, no por el primer elemento del panel. Desde que
        el logotipo es un enlace a la home, `querySelector('a, button')` devuelve
        ese enlace, y abrir un menú dejando el foco sobre «irse a otra página» es
@@ -48,6 +53,12 @@ export default function MenuMovil({
     return () => {
       document.body.style.overflow = ''
       document.removeEventListener('keydown', onKeyDown)
+      /* `design/02` §B9 lo pedía desde el principio —«devuelve el foco al botón
+         de hamburguesa»— y **no lo hacía nadie**: medido con teclado, al pulsar
+         `Esc` el foco caía al `<body>` y había que tabular desde el principio
+         del documento. Si el panel se cierra navegando, la página cambia y esto
+         no llega a notarse; si se cierra con `Esc` o con la `×`, sí. */
+      if (foco instanceof HTMLElement && foco.isConnected) foco.focus()
     }
   }, [onCerrar])
 

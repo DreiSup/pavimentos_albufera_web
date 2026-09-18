@@ -785,6 +785,8 @@ Enmendado el 2026-08-31; deroga las tres cláusulas que animaban la altura:
 - Al pie del panel, los dos botones de contacto a ancho completo (`Llamar` ocre + `WhatsApp`
   contorno claro).
 - Atrapa el foco, se cierra con `Esc`, `body` con `overflow: hidden`, y devuelve el foco al
-  botón de hamburguesa. Sin animación de deslizamiento: aparece y desaparece. **El foco entra por
+  botón de hamburguesa — ⚠️ **eso último lo decía este párrafo desde el principio y no lo hacía
+  nadie**: medido con teclado, al pulsar `Esc` el foco caía al `<body>`. Implementado el
+  2026-09-18. Sin animación de deslizamiento: aparece y desaparece. **El foco entra por
   la `×`**, no por el primer elemento: desde que el logotipo es un enlace, el primero sería «irse
   a la portada», y un menú no se abre con el foco puesto en salir de la página.
