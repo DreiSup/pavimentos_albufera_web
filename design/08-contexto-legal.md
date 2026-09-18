@@ -73,17 +73,33 @@ Todo ocurre en el Server Action `app/presupuesto/actions.ts`.
 | **Resend** (correo, EE. UU.) | Todo el formulario **incluida la foto**, la referencia, el estado de consentimiento y la atribución | **No** — `actions.ts:372` |
 | **Telegram** (Telegram FZ-LLC, Dubái) | Nombre · teléfono · correo · qué pavimentar · municipio · origen · referencia · atribución | **No** — `actions.ts:290` |
 | **Meta CAPI** | SHA-256 de teléfono (con prefijo `34`), correo y municipio · país `es` · `external_id` · **y en claro: IP, user-agent, URL, `_fbp`, `_fbc`** | **Sí** — solo si `pa_consent === 'aceptado'`, `actions.ts:335` |
-| **Google** (GA4 y Ads) | `gtag.js` se carga siempre; los cuatro permisos de Consent Mode v2 arrancan en `denied` | Parcial: Consent Mode, no bloqueo duro |
+| **Google** (GA4 y Ads) | 🔴 **Los eventos se envían aunque se RECHACE.** Ver abajo | **No** (solo cambian los permisos) |
 | **Meta Pixel** | Bloqueo duro: no se carga sin consentimiento | Sí |
 | **Vercel** | Alojamiento y logs de servidor | — |
 
-**Dos hechos que la investigación tiene que atender:**
+**Cuatro hechos que la investigación tiene que atender:**
 
 1. **Resend y Telegram reciben datos personales sin ninguna puerta de consentimiento.** La
    justificación escrita en el código es que son la ejecución del servicio que la persona ha pedido,
-   no publicidad. Eso hay que contrastarlo con la base jurídica que corresponda.
+   no publicidad. Eso hay que contrastarlo con la base jurídica que corresponda. *(Matiz que apareció
+   en la revisión: Resend, Telegram y Vercel no son «cesiones» sino **encargados del tratamiento**
+   —art. 28 RGPD—, y a un encargado no se le legitima con el consentimiento del interesado sino con
+   un contrato del art. 28.3.)*
 2. **Telegram FZ-LLC está en Dubái y Resend en Estados Unidos.** Son transferencias fuera del EEE, y
    el documento publicado hoy afirma exactamente lo contrario (§6).
+3. 🔴 **Rechazar el banner NO impide que los eventos lleguen a Google.** `window.gtag` se define
+   incondicionalmente (`app/layout.tsx:96`) y `gtag.js` se inyecta con la única condición de que haya
+   identificador configurado (`app/layout.tsx:103`). `registrarEvento` (`lib/eventos.ts:189`) llama a
+   `window.gtag?.(...)` sin mirar el consentimiento. **Con el banner rechazado —y mientras está sin
+   contestar— sí se transmiten** `generate_lead`, `phone_click`, `whatsapp_click`, `email_click`,
+   `scroll_depth`, `faq_open` y `samples_filter`, con `page_path`, `device_type`, `click_location` y,
+   en el lead, **`municipality` (texto libre tal como lo tecleó el visitante) y `reference_code`**. Lo
+   que cambia al rechazar son los cuatro permisos de Consent Mode, **no el envío**. Qué hace Google
+   después con un ping denegado no es legible en este repo.
+4. 🔴 **`pa_ref` se escribe SIEMPRE**, antes y al margen de cualquier decisión de consentimiento
+   (`app/api/atribucion/route.ts:146`). Es un identificador de 90 días que además viaja a Google
+   dentro de `reference_code`. Que una cookie no exenta se escriba sin consentimiento previo es
+   justo el supuesto del art. 22.2 de la LSSI.
 
 ---
 
@@ -145,6 +161,37 @@ sabiendo que el texto de debajo es todavía el heredado. Vive en `content/legal.
 
 ---
 
+---
+
+## 6 bis · Lo que ya dictaminó la primera revisión (2026-09-18)
+
+Antes de este documento se hizo una revisión con verificación adversarial: unos agentes leyeron la
+ley, otros el código, y dos más intentaron **refutar** cada cita contra el BOE, el DOUE y los PDF de
+la AEPD. Lo que sobrevivió a esa refutación:
+
+**Veredicto de los tres documentos: hay que REHACERLOS.** No corregirlos.
+
+- **Aviso legal**: le faltan cuatro datos que el art. 10.1 de la LSSI-CE exige, y ocho de sus frases
+  contradicen lo que hace el sitio. Sobra entera su sección de protección de datos.
+- **Política de cookies**: diez incumplimientos de la **Guía sobre el uso de las cookies de la AEPD,
+  versión de MAYO 2024** — entre ellos, no poder retirar el consentimiento, no tener panel por
+  finalidad, y no identificar a los terceros que operan de verdad.
+- **Política de privacidad**: catorce puntos obligatorios del art. 13 del RGPD sin cubrir, y nueve
+  contradicciones, cinco de ellas marcadas como bloqueantes.
+
+**Una obligación nueva que apareció al confirmarse la razón social:** al ser **sociedad limitada**,
+el art. 10.1.b) de la LSSI pasa de «depende» a **obligatorio**, y hay que publicar los **datos de
+inscripción en el Registro Mercantil**. Hoy la tabla de identificación no tiene ninguna fila para
+eso, y el dato no existe en el repo.
+
+**Dos afirmaciones se cayeron en la refutación, y conviene no repetirlas:** el RGPD **no** obliga a
+informar en la política del plazo de un mes de respuesta ni de la gratuidad del ejercicio de
+derechos (arts. 12.3 y 12.5 obligan a *cumplirlo*, no a *informarlo*); y el campo
+`estatus_derogacion` de la API del BOE **no sirve** para decidir si una norma está derogada, porque
+devuelve lo mismo para la LO 15/1999, que sí lo está.
+
+---
+
 ## 7 · Lo que NO está confirmado
 
 - **Domicilio social** de la empresa.
@@ -152,8 +199,11 @@ sabiendo que el texto de debajo es todavía el heredado. Vive en `content/legal.
 - **Las finalidades del tratamiento**: la política tiene un hueco literal, «…y otras finalidades
   (INDICAR)». El dueño no sabe qué va ahí; por eso se encargó esta investigación.
 - **Plazos de conservación**: el repo no define ninguno para los datos del formulario.
-- **Los contratos de encargado del tratamiento** con Resend, Telegram, Vercel, Google y Meta: nadie
-  ha comprobado si existen.
+- **Los contratos de encargado del tratamiento** (art. 28.3 RGPD) con Resend, Telegram, Vercel,
+  Google y Meta: nadie ha comprobado si existen.
+- **Los datos de inscripción en el Registro Mercantil**, obligatorios por ser S.L. (§6 bis).
+- **Prueba del consentimiento del formulario**: la casilla se valida, pero no queda registro de
+  fecha, ni de versión del texto aceptado, ni de nada que sirva para demostrarlo después.
 
 ---
 
