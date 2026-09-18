@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import type { ReactNode } from 'react'
 import { notFound } from 'next/navigation'
 import Aparece from '@/components/ui/Aparece'
 import Boton from '@/components/ui/Boton'
@@ -8,7 +7,6 @@ import EstadoVacio from '@/components/ui/EstadoVacio'
 import Foto from '@/components/contenido/Foto'
 import EtiquetaTecnica from '@/components/datos/EtiquetaTecnica'
 import { IMAGEN_MODELO } from '@/content/modelos'
-import DatoPendiente from '@/components/datos/DatoPendiente'
 import FichaObra from '@/components/datos/FichaObra'
 import MuestraAcabado from '@/components/contenido/MuestraAcabado'
 import TarjetaProyecto from '@/components/contenido/TarjetaProyecto'
@@ -159,27 +157,36 @@ export async function generateMetadata({
   }
 }
 
-/** Datos del oficio que solo están confirmados para algunas técnicas. El resto
- *  se pinta pendiente: extender el registro técnico a los seis servicios es
- *  justamente lo que pide el §2.3 del documento maestro. */
+/**
+ * Datos del oficio que solo están confirmados para algunas técnicas.
+ *
+ * ⛔ **Las tres filas condicionales dejan de pintarse pendientes el 2026-09-18.**
+ * Antes salían siempre, y en las cinco técnicas sin dato salían con el valor
+ * entero entre corchetes: una ficha de cinco filas de las que tres no decían
+ * nada. El dueño contesta que de lo que falta no quiere versión atenuada —«todo
+ * lo que falte, quítalo, prefiero que no aparezca»—, así que cada fila aparece
+ * solo donde hay dato y desaparece donde no lo hay.
+ *
+ * Se condiciona **fila a fila y no el bloque entero** porque el dato confirmado
+ * no es el mismo en las dos técnicas que lo tienen: de impreso se sabe el
+ * espesor y el uso, y de lavado la clase de resbaladicidad. Con un solo
+ * `if` por técnica, lavado perdería su única fila propia.
+ *
+ * Suelo de la tabla: `TÉCNICA` siempre, y `COLOR` en todo acabado suelto. Así
+ * la ficha más corta —pulido, fratasado y microcemento— sigue teniendo dos
+ * filas, y ninguna se queda vacía.
+ */
 function filasTecnicas(ficha: Ficha) {
-  const espesor: ReactNode =
-    ficha.servicio === 'impreso' ? '10 cm' : <DatoPendiente>pendiente</DatoPendiente>
-  const antideslizamiento: ReactNode =
-    ficha.servicio === 'lavado' ? 'Clase 3, Rd > 45' : <DatoPendiente>pendiente</DatoPendiente>
-  const usos: ReactNode =
-    ficha.servicio === 'impreso' ? (
-      'Peatonal y paso de vehículos'
-    ) : (
-      <DatoPendiente>pendiente</DatoPendiente>
-    )
+  const esImpreso = ficha.servicio === 'impreso'
 
   return [
     { etiqueta: 'TÉCNICA', valor: NOMBRE_SERVICIO[ficha.servicio] },
     ...(ficha.codigo ? [{ etiqueta: 'COLOR', valor: ficha.codigo }] : []),
-    { etiqueta: 'ESPESOR RECOMENDADO', valor: espesor },
-    { etiqueta: 'ANTIDESLIZAMIENTO', valor: antideslizamiento },
-    { etiqueta: 'USOS', valor: usos },
+    ...(esImpreso ? [{ etiqueta: 'ESPESOR RECOMENDADO', valor: '10 cm' }] : []),
+    ...(ficha.servicio === 'lavado'
+      ? [{ etiqueta: 'ANTIDESLIZAMIENTO', valor: 'Clase 3, Rd > 45' }]
+      : []),
+    ...(esImpreso ? [{ etiqueta: 'USOS', valor: 'Peatonal y paso de vehículos' }] : []),
   ]
 }
 
