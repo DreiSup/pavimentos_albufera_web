@@ -1,5 +1,4 @@
 import type { ReactNode } from 'react'
-import DatoPendiente from '@/components/datos/DatoPendiente'
 import type { PreguntaFAQ } from '@/components/secciones/Acordeon'
 import { PREGUNTAS } from '@/content/faq'
 import type { Imagen, ServicioId } from '@/lib/tipos'
@@ -161,20 +160,15 @@ export const PASOS: { numero: string; titulo: string; texto: ReactNode }[] = [
   {
     numero: '02',
     titulo: 'Presupuesto cerrado',
-    texto: (
-      <>
-        Te lo enviamos en <DatoPendiente>48 horas</DatoPendiente>, desglosado. Lo que pone es lo que
-        se paga.
-      </>
-    ),
+    texto: <>Te lo enviamos lo antes posible, desglosado. Lo que pone es lo que se paga.</>,
   },
   {
     numero: '03',
     titulo: 'Ejecución',
     texto: (
       <>
-        <DatoPendiente>Equipo propio</DatoPendiente>. Una superficie de 80-100 m² se ejecuta en 2 o 3
-        días. Después necesita entre 24 y 48 horas sin pisar y 28 días para curar del todo.
+        Equipo propio. Una superficie de 80-100 m² se ejecuta en 2 o 3 días. Después necesita entre
+        24 y 48 horas sin pisar y 28 días para curar del todo.
       </>
     ),
   },
