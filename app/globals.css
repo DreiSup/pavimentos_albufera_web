@@ -180,10 +180,11 @@ a {
    seguidos. `visibility: hidden` sí las retira, y se hereda hasta la <img>.
 
    ⚠️ Y el estado activo NO puede ser `:first-child`. El marco tiene dos capas
-   de pasadas —las fotos y, por encima del velo, sus etiquetas— más el propio
-   velo entre medias: la primera etiqueta es el sexto hijo, no el primero. El
-   componente marca la activa con su clase, igual que ya pasaba el índice por
-   propiedad personalizada en vez de por `:nth-child`. */
+   de pasadas —las fotos y, por encima del velo, sus etiquetas—, el velo entre
+   medias y, desde que el control de pausa es CSS, un `<input>` ABRIENDO la
+   lista: la primera etiqueta es el séptimo hijo y ni la primera foto es la
+   primera. El componente marca la activa con su clase, igual que ya pasaba el
+   índice por propiedad personalizada en vez de por `:nth-child`. */
 .carrusel__paso {
   opacity: 0;
   visibility: hidden;
@@ -201,8 +202,9 @@ a {
      `visibility` se interpola a saltos, y con la regla de CSS de que basta un
      extremo `visible` para que lo sea todo el tramo: la diapositiva entra en el
      árbol de accesibilidad en el 97 %, cuando empieza a verse, y sale en el
-     25 %, cuando ya no se ve. Durante los 0,72 s del cruce hay dos, que es
-     exactamente lo que hay en pantalla. */
+     25 %, cuando ya no se ve. Durante los 0,72 s del cruce hay dos FOTOS, que es
+     exactamente lo que hay en pantalla; la capa de etiquetas tiene su propia
+     ventana, más estrecha, y ahí nunca hay dos. */
   @keyframes carrusel {
     0%,
     22% {
@@ -211,6 +213,38 @@ a {
     }
     25%,
     97% {
+      opacity: 0;
+      visibility: hidden;
+    }
+    100% {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+
+  /* 🔴 La misma pasada NO sirve para el texto. Con las etiquetas cruzándose como
+     las fotos se pintaban DOS a la vez sobre la esquina: medido en el build de
+     producción a 390 px, opacidades 0,83 y 0,17, y en pantalla se leía
+     «C-117SA · GRIS» de dos obras distintas superpuestas. Una foto encima de
+     otra es un fundido; un dato encima de otro es un dato falso.
+
+     Se releva en vez de cruzar, dentro de la MISMA ventana de 3 puntos: la que
+     sale cae a 0 en el 23,5 % y la que entra no arranca hasta el 98,5 %, que es
+     ese mismo instante —98,5 % + 25 % de escalonado = 123,5 %—. Así el reparto
+     de la etiqueta sigue pegado al de su foto, hay 0,36 s de bajada y 0,36 s de
+     subida, y en ningún momento del ciclo dos etiquetas pasan de 0.
+
+     Mismo trato para `visibility`, y con la misma regla del extremo `visible`:
+     la que entra aparece en el árbol de accesibilidad en el 98,5 % y la que sale
+     se va en el 23,5 %, el mismo punto. El relevo también es del lector. */
+  @keyframes carrusel-etiqueta {
+    0%,
+    22% {
+      opacity: 1;
+      visibility: visible;
+    }
+    23.5%,
+    98.5% {
       opacity: 0;
       visibility: hidden;
     }
@@ -247,18 +281,93 @@ a {
     animation-fill-mode: none;
   }
 
-  /* WCAG 2.2.2, nivel A: el pase se puede parar. El botón escribe el atributo
-     en el marco y la regla alcanza a las DOS capas de pasadas, fotos y
-     etiquetas, porque las dos cuelgan de él. */
-  .carrusel[data-pausa='true'] .carrusel__paso {
+  /* ⚠️ DESPUÉS de la abreviada, y por eso no está arriba: `animation:` reinicia
+     `animation-name`, así que puesta antes esta línea no sobreviviría. Las dos
+     capas comparten ciclo, retardo y escalonado; lo único que cambia es la
+     forma de relevarse. */
+  .carrusel__paso--etiqueta {
+    animation-name: carrusel-etiqueta;
+  }
+
+  /* WCAG 2.2.2, nivel A: el pase se puede parar, y desde el primer pintado.
+     El interruptor es el PRIMER hijo del marco y la regla alcanza a las DOS
+     capas de pasadas, fotos y etiquetas, porque las dos son hermanas suyas.
+     `~` y no `:has()` a propósito: `:has()` no es universal, y un control de
+     pausa que en algún navegador no pare nada es peor promesa que no tenerlo. */
+  .carrusel__interruptor:checked ~ .carrusel__paso {
     animation-play-state: paused;
   }
 }
 
+/* El control de pausa, que desde el 2026-09-18 no es JavaScript.
+   Era un botón de cliente, y el pase —que es CSS puro— arrancaba en el primer
+   pintado: entre ese instante y la hidratación, y para siempre con el JS
+   desactivado, había movimiento que no se podía parar. Eso es justo lo que
+   prohíbe la WCAG 2.2.2. Ahora el estado lo guarda un `<input type="checkbox">`
+   y lo lee el propio CSS, así que el control existe exactamente desde que
+   existe el movimiento. → `design/01` §3.15 */
+.carrusel__interruptor {
+  position: absolute;
+  /* 🔴 LA MISMA ESQUINA QUE SU CAJA, y no es cosmético: el que recibe el foco es
+     este `<input>` y el que pinta el anillo es el `<label>`, así que el
+     «llévalo a la vista» del navegador apunta aquí y el anillo aparece allí.
+     Sin estas dos líneas el input se queda en su posición estática —la esquina
+     SUPERIOR izquierda del marco—, que a 768 px ya está a la vista: el navegador
+     no hace scroll y el anillo se pinta abajo del todo de un marco de 1.184 px.
+     Medido: la caja arranca en y=1.280 con el viewport acabando en 1.024, o sea
+     256 px por debajo de lo que se ve. Con el anclaje, la misma tabulación deja
+     scrollY=811 y la caja en y=469: dentro. A 390 y 1366 px salía bien por
+     casualidad, porque ahí el marco cabe en la pantalla.
+     Con el `<button>` anterior no podía pasar, porque el que recibía el foco
+     era la caja; separarlos rompió esa garantía y esto la devuelve. */
+  bottom: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  /* Recortado, NO `display: none` ni `visibility: hidden`: los dos lo sacarían
+     del orden de tabulación, y este es el elemento que recibe el foco. El
+     recorte se lleva por delante su propio anillo, que es lo que se quiere: el
+     foco se pinta sobre la caja visible, tres reglas más abajo. */
+  clip-path: inset(50%);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* 🔴 El anillo va hacia DENTRO, y no es una preferencia estética. El marco del
+   carrusel es `overflow: hidden` y el control se apoya en su esquina inferior
+   izquierda: con el `outline-offset: 2` global se recortaban dos de sus cuatro
+   lados y al llegar con el tabulador se veía media escuadra. Con offset
+   negativo el anillo se dibuja dentro de los 44 px y se ve entero.
+   No se mueve el control adentro porque su esquina es la banda de 44 px que la
+   capa de etiquetas ya le reserva con `pl-11` (§3.15). */
+.carrusel__interruptor:focus-visible ~ .carrusel__pausa {
+  outline: 2px solid var(--pigmento);
+  outline-offset: -2px;
+}
+
+/* Los dos glifos viajan siempre en el HTML y es `:checked` quien elige. Sin
+   marcar: dos barras, el pase corre y el control lo para. Marcado: el
+   triángulo, el pase está parado y el control lo reanuda. */
+.carrusel__glifo--reanudar {
+  display: none;
+}
+.carrusel__interruptor:checked ~ .carrusel__pausa .carrusel__glifo--pausar {
+  display: none;
+}
+.carrusel__interruptor:checked ~ .carrusel__pausa .carrusel__glifo--reanudar {
+  display: inline;
+}
+
 /* Con movimiento reducido no hay pase que parar: el carrusel es una foto fija.
    El control se retira entero —`display: none` también lo saca del orden de
-   tabulación— en vez de quedarse mintiendo sobre un movimiento que no existe. */
+   tabulación— en vez de quedarse mintiendo sobre un movimiento que no existe.
+   Las DOS piezas, el interruptor y su caja: la que es tabulable es la primera,
+   así que dejársela fuera habría dejado un foco que no hace nada. */
 @media (prefers-reduced-motion: reduce) {
+  .carrusel__interruptor,
   .carrusel__pausa {
     display: none;
   }
