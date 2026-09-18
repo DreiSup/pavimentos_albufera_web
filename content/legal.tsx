@@ -208,7 +208,7 @@ export const cookiesPropias: FichaCookie[] = [
       {
         etiqueta: '¿NECESITA CONSENTIMIENTO?',
         valor:
-          'Sí. Es un identificador único y no está exenta. Hoy se escribe antes de que puedas decidir: es un defecto de esta web, ya detectado, y se corrige en el código, no en este texto.',
+          'Sí: es un identificador único y no está exenta. Hoy se escribe en la primera visita, antes de que puedas decidir. Puedes borrarla desde tu navegador, como se explica más abajo.',
       },
     ],
   },
@@ -457,7 +457,7 @@ export const destinatarios: FilaDestinatario[] = [
       {
         etiqueta: 'EN QUÉ CONDICIÓN',
         valor:
-          'Consentimiento (art. 6.1.a RGPD). Hoy la etiqueta de Google se carga también sin él y le llegan avisos de navegación: es un defecto de esta web, ya detectado, y se corrige en el código.',
+          'Consentimiento (art. 6.1.a RGPD) para las cookies y la publicidad personalizada. La etiqueta se carga desde la primera visita, y los avisos de navegación y de contacto le llegan aunque no hayas aceptado; lo que tu decisión gobierna es si Google puede usar almacenamiento en tu dispositivo.',
       },
     ],
   },

@@ -5,6 +5,26 @@ import Migas from '../layout/Migas'
 export type SeccionLegal = { titulo: string; contenido: ReactNode }
 
 /**
+ * Subtítulo dentro de una sección legal: mono, versalitas y acero, como toda
+ * etiqueta del sitio, pegado a lo suyo con un hueco menor que el que separa los
+ * bloques entre sí. Es lo único que agrupa seis definiciones seguidas en una
+ * columna de 68ch.
+ *
+ * Vivía suelto dentro de `app/politica-de-cookies/page.tsx`. Al rehacerse los
+ * tres documentos lo necesitan también privacidad —finalidades, destinatarios,
+ * transferencias— y aquí no hay nada de la política de cookies: es el tercer
+ * nivel de la plantilla, y su sitio es la plantilla.
+ */
+export function BloqueLegal({ titulo, children }: { titulo: string; children: ReactNode }) {
+  return (
+    <div className="flex flex-col gap-2">
+      <h3 className="font-mono text-d-12 tracking-[0.05em] uppercase text-acero">{titulo}</h3>
+      {children}
+    </div>
+  )
+}
+
+/**
  * 02-pantallas.md §B7: una sola plantilla para aviso legal, privacidad y
  * cookies. Sin hero, sin CTA, sin imágenes y sin ocre — la única página del
  * sitio sin acento.
