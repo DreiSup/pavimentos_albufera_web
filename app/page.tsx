@@ -15,7 +15,7 @@ import BarraConfianza from '@/components/layout/BarraConfianza'
 import Acordeon from '@/components/secciones/Acordeon'
 import FormularioPresupuesto from '@/components/secciones/FormularioPresupuesto'
 import { JsonLd, schemaFAQ } from '@/lib/schema'
-import { acabados, contarDocumentados, proyectos } from '@/lib/datos'
+import { acabados, acabadosPublicados, contarDocumentados, proyectos } from '@/lib/datos'
 import { faqHome } from '@/content/faq'
 import { PASOS, SERVICIOS } from '@/content/servicios'
 import { CODIGO_COLOR, NOMBRE_MODELO, NOMBRE_SERVICIO, RUTA_SERVICIO } from '@/lib/tipos'
@@ -123,7 +123,15 @@ const DIAPOSITIVAS_HERO: { slug: string; superficiePendiente?: string }[] = [
   { slug: 'corbera-fratasado-arena' },
 ]
 
-const muestraHome = acabados.filter((a) => a.proyectos.length > 0).slice(0, 4)
+/**
+ * Las cuatro muestras de la portada salen de `acabadosPublicados`, la misma
+ * lista que el muestrario, las seis páginas de servicio y las fichas de modelo.
+ * Hoy son las mismas cuatro que antes —espiga 117, adoquín irregular 107,
+ * adoquín pequeño arena y manta gris—, así que es un cambio de ORIGEN, no de
+ * contenido: `piedra-inglesa-crema` tiene obra y no tiene muestra, y lo único
+ * que la mantenía fuera de esta rejilla era estar en la posición 12 del JSON.
+ */
+const muestraHome = acabadosPublicados.filter((a) => a.proyectos.length > 0).slice(0, 4)
 /**
  * Las NUEVE obras documentadas, no una selección. Solo se ordenan: las
  * destacadas delante, porque en móvil la sección es un carril horizontal

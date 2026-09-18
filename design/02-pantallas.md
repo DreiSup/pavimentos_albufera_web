@@ -141,6 +141,13 @@ tienen muestra fotográfica**, 7 de ellos con obra documentada.
   Es un filtro de presentación, **no un borrado**: las seis entradas siguen en
   `content/acabados.json` y `/acabados/[modelo]/` sigue generando sus rutas —`piedra-silleria` y
   `piedra-rodena` cuelgan solo de ellas—. El día que llegue la foto, vuelven solas.
+- **Y la regla no es de esta pantalla: es del catálogo.** Enmienda del 2026-09-18. Se aplicó
+  primero solo aquí, y los seis huecos siguieron saliendo en las seis páginas de servicio —medido:
+  12 tarjetas en `/hormigon-impreso/` a 390 px, 6 con la trama—, en las cuatro landings `/lp/`,
+  en las fichas de `/acabados/[modelo]/` y en `/zonas/denia/`. Ahora el origen es
+  `acabadosPublicados` en `lib/datos.ts`, y de él salen `acabadosPorServicio`, `acabadosPorModelo`,
+  `acabadosPorProyectos` y `tecnicasEnUso`: **ninguna pantalla vuelve a decidir esto**. Para contar
+  lo publicado hay `recuentoAcabadosPublicados()`, que devuelve 10 y 7 —no 16 y 8—.
 - **Hero:** `1fr 420px`, H1 64 px, contador `10 ACABADOS · 7 CON OBRA DOCUMENTADA` en el
   antetítulo. **El contador es real, no decorativo**: cuenta lo que se pinta, con la regla de
   `03-modelo-de-contenido.md §1.1` —documentada = proyecto con municipio confirmado—. No vale
@@ -319,8 +326,17 @@ Genera una página indexable por modelo. Ejemplo: `/acabados/espiga/`.
   molde y para qué espacios funciona; a la derecha ficha técnica anclada del modelo —técnica,
   colores disponibles, espesor recomendado, antideslizamiento, usos.
 - **Colores disponibles en este modelo:** rejilla de 4 con la misma muestra en cada color
-  del catálogo que exista, cada una con su código. Si un color no tiene obra ejecutada, la
+  **publicado** de ese modelo, cada una con su código. Si un color no tiene obra ejecutada, la
   muestra va con el municipio entre corchetes.
+  ⚠️ **Enmienda del 2026-09-18.** Decía «cada color del catálogo que exista», y eso era la orden
+  de repintar aquí los seis huecos que el §A3 acababa de quitar del muestrario. Sale de
+  `acabadosPorModelo`, que ya solo devuelve publicados.
+  **Y la sección entera desaparece cuando no queda ninguno**: `/acabados/piedra-silleria/` y
+  `/acabados/piedra-rodena/` cuelgan solo de variantes sin muestra, y un H2 que promete colores
+  sobre una rejilla vacía es peor que el hueco rayado. **Las dos fichas se quedan** —tienen su
+  hero de molde en `content/modelos.ts`, `app/sitemap.ts` las declara y ningún gate del
+  `postbuild` contrasta el sitemap contra las rutas generadas, así que un 404 ahí no lo vería
+  nadie—. Ninguna 301 apunta a `/acabados/`: comprobado en `next.config.ts`, cero coincidencias.
 - **Obras donde se ha ejecutado:** 3 tarjetas de proyecto filtradas por este modelo. Si no hay
   ninguna documentada, el estado vacío del `01 §3.13` con el texto adaptado.
 - **Enlace cruzado:** enlace-etiqueta al artículo del blog que explica la técnica, si existe.

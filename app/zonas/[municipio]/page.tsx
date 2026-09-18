@@ -10,7 +10,7 @@ import MuestraAcabado from '@/components/contenido/MuestraAcabado'
 import Migas from '@/components/layout/Migas'
 import Acordeon from '@/components/secciones/Acordeon'
 import { JsonLd, schemaFAQ } from '@/lib/schema'
-import { acabados, proyectosDe, zonaPorSlug, zonas } from '@/lib/datos'
+import { acabadosPorProyectos, proyectosDe, zonaPorSlug, zonas } from '@/lib/datos'
 import { faqZona } from '@/content/faq'
 import { NOMBRE_SERVICIO, RUTA_SERVICIO } from '@/lib/tipos'
 
@@ -45,7 +45,10 @@ export default async function PaginaZona({ params }: { params: Promise<{ municip
   if (!zona) notFound()
 
   const proyectos = proyectosDe(zona.proyectos)
-  const acabadosZona = acabados.filter((a) => a.proyectos.some((slug) => zona.proyectos.includes(slug)))
+  // Publicados, no catálogo: `denia` ejecuta `piedra-inglesa` en gris y en
+  // crema, y la de crema no tiene muestra. Filtrando aquí por su cuenta, esta
+  // pantalla pintaba su bloque de posición al lado de la foto de la de gris.
+  const acabadosZona = acabadosPorProyectos(zona.proyectos)
   const primerProyecto = proyectos[0]
 
   // El hero de la zona es la primera foto del primer proyecto, y esa MISMA foto
