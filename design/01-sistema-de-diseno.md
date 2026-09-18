@@ -804,13 +804,15 @@ al de al lado: el que parte en tres líneas es **el de llamar**, que es el que l
 **Arreglado en las landings, no en la portada.** `CtaContacto`
 (`components/secciones/PaginaServicio.tsx`) pasa de `md:flex-row` a **`cabecera-ancha:flex-row`**:
 apilado y a ancho completo hasta 1180 px, en fila desde ahí. A 1180 los dos rótulos caben enteros
-—222,7 + 260,6 + 12 de `gap` = **495,3 px sobre los 510** de la columna—, así que ya no hay ni una
+—222,7 + 260,6 + 12 de `gap` = **495,3 px sobre los 510** de la columna, o sobre ~502,5 si el
+navegador pinta barra de scroll clásica de 15 px, que sigue cabiendo—, así que ya no hay ni una
 anchura en la que un rótulo se parta: o van los dos al lado, o van uno encima de otro. Es el mismo
 punto en el que la cabecera despliega su fila y se apaga la barra fija, y por la misma razón.
 
-🔴 **El cierre de la portada conserva el defecto**, idéntico y medido: `app/page.tsx` tiene la
-misma fila `md:flex-row`, con las mismas cifras de la tabla, y el archivo lo está tocando otra
-sesión. Un cambio de una palabra —`md:` por `cabecera-ancha:` en la línea 604— lo cierra.
+🔴 **El cierre de la portada conserva el defecto**, idéntico y medido: en `app/page.tsx`, la fila
+`md:flex-row` que envuelve los dos CTA con `data-ubicacion="home_close"` —hacia la línea 604, pero
+búsquese por la ubicación, que el archivo lo está tocando otra sesión— da las mismas cifras de la
+tabla. Un cambio de una palabra, `md:` por `cabecera-ancha:`, lo cierra.
 
 La razón de resolverlo así y no con `variante="whatsapp"`: un sitio de llamada nuevo que se
 olvide del prop **no falla ningún build**, se queda gris y no lo ve nadie. Y hay un segundo

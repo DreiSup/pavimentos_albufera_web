@@ -77,7 +77,8 @@ const config: Config = {
         // desde el 2026-09-18 el par de CTA de las landings (`CtaContacto` en
         // `PaginaServicio.tsx`), que a 1180 es donde `Llamar al 627 663 146` y
         // `Escribir por WhatsApp` caben enteros uno al lado del otro: 222,7 +
-        // 260,6 + 12 de `gap` = **495,3 px sobre los 510** de su columna.
+        // 260,6 + 12 de `gap` = **495,3 px sobre los 510** de su columna —o
+        // sobre ~502,5 contando los 15 px de barra de scroll de aquí abajo.
         //
         // La cifra sale del DOM, con el nav ya sin `/precios/`: logotipo 276 +
         // nav 333,3 + teléfono y botón 319,1 = **928,4 px de hijos**, más los

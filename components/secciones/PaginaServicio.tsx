@@ -132,7 +132,8 @@ function CtaContacto({ ubicacion }: { ubicacion: Ubicacion }) {
      *
      * A 1180 los dos rótulos caben **enteros**, sin partir ninguna línea:
      * 222,7 + 260,6 de botón más 12 de `gap` son 495,3 sobre los 510 px de
-     * columna. Por debajo de ahí el par va apilado y cada botón ocupa el ancho
+     * columna —o sobre ~502,5 si el navegador pinta barra de scroll clásica de
+     * 15 px, que sigue cabiendo. Por debajo el par va apilado y cada botón ocupa el ancho
      * completo, que es exactamente lo que ya hacía en móvil. Así no hay ni una
      * anchura en la que un rótulo se parta: o caben los dos al lado, o van uno
      * encima de otro.
