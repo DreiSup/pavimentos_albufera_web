@@ -2,7 +2,6 @@ import Link from 'next/link'
 import { CODIGO_COLOR, NOMBRE_MODELO, NOMBRE_SERVICIO } from '@/lib/tipos'
 import type { Proyecto } from '@/lib/tipos'
 import Foto from './Foto'
-import DatoPendiente from '../datos/DatoPendiente'
 
 /**
  * El `sizes` de la rejilla de tres columnas en la que vive la tarjeta. Se
@@ -23,8 +22,23 @@ export default function TarjetaProyecto({
   /** Solo se pasa para hacerlo coincidir con otro hueco de la misma pantalla. */
   tamanos?: string
 }) {
-  const modelo = proyecto.modelo ? NOMBRE_MODELO[proyecto.modelo] : '—'
-  const color = proyecto.color ? CODIGO_COLOR[proyecto.color] : null
+  // Tres líneas de datos separadas por ` · `, y cada una se compone filtrando lo
+  // que falta: el dueño decidió el 2026-09-18 que los datos de obra que no tiene
+  // no se ven, ni el valor ni el corchete. Se arman como lista y no interpolando
+  // separadores sueltos porque con los corchetes fuera un ` · ` huérfano o una
+  // línea en blanco son lo que queda a la vista. Una línea vacía no se pinta, y
+  // con ella se va su salto de línea.
+  const lineas = [
+    [proyecto.municipio, proyecto.provincia],
+    [
+      NOMBRE_SERVICIO[proyecto.servicio],
+      proyecto.modelo ? NOMBRE_MODELO[proyecto.modelo] : null,
+      proyecto.color ? CODIGO_COLOR[proyecto.color] : null,
+    ],
+    [proyecto.superficie ? `${proyecto.superficie} m²` : null, proyecto.anio],
+  ]
+    .map((linea) => linea.filter(Boolean).join(' · '))
+    .filter(Boolean)
 
   return (
     <Link
@@ -37,17 +51,11 @@ export default function TarjetaProyecto({
           {proyecto.titulo}
         </h3>
         <p className="font-mono text-d-10 md:text-d-11 leading-[1.9] text-acero m-0">
-          {proyecto.municipio ?? <DatoPendiente>municipio</DatoPendiente>}
-          {' · '}
-          {proyecto.provincia ?? <DatoPendiente>provincia</DatoPendiente>}
-          <br />
-          {NOMBRE_SERVICIO[proyecto.servicio]}
-          {proyecto.modelo ? ` · ${modelo}` : ''}
-          {color ? ` · ${color}` : ''}
-          <br />
-          {proyecto.superficie ? `${proyecto.superficie} m²` : <DatoPendiente>m²</DatoPendiente>}
-          {' · '}
-          {proyecto.anio ?? <DatoPendiente>año</DatoPendiente>}
+          {lineas.map((linea, i) => (
+            <span key={i} className="block">
+              {linea}
+            </span>
+          ))}
         </p>
       </div>
     </Link>
