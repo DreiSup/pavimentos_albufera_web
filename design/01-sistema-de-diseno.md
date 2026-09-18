@@ -657,6 +657,16 @@ nombre   fijo: «Pausa del pase de fotos». El estado lo pone `checked`, no el n
 - **El interruptor se recorta, no se oculta.** `clip-path: inset(50%)` sobre 1×1: `display: none`
   y `visibility: hidden` lo sacarían del orden de tabulación, y es el elemento que recibe el
   foco. El recorte se lleva por delante su propio anillo, que es lo que se quiere.
+- 🔴 **Y va anclado a la MISMA esquina que su caja** (`bottom: 0; left: 0`), aunque no se vea.
+  Separar «el que recibe el foco» de «el que pinta el anillo» rompe la garantía que traía de
+  serie el `<button>`: el navegador lleva a la vista el elemento enfocado, y si el interruptor se
+  queda en su posición estática —la esquina SUPERIOR izquierda del marco—, que ya está a la
+  vista, no hay scroll y el anillo se pinta fuera de la pantalla. **A 768 px el marco mide
+  1.184 px de alto en un viewport de 1.024**: medido con la misma tabulación, la caja arrancaba
+  en y=1.280 —**256 px por debajo del pliegue, anillo invisible**— y con el anclaje el navegador
+  deja `scrollY` en 811 y la caja en y=469. A 390 y 1366 px salía bien por casualidad, porque
+  ahí el marco cabe entero en la pantalla; eso es exactamente lo que hace peligrosa la
+  comprobación a un solo ancho.
 - **Con movimiento reducido el control se retira entero** (`display: none` sobre `.carrusel__pausa`
   **y sobre `.carrusel__interruptor`**, que son dos piezas y la tabulable es la segunda). No hay
   pase que parar, y así sale también del orden de tabulación en vez de dejar un foco que no hace

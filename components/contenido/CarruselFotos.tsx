@@ -58,7 +58,7 @@ const ID_INTERRUPTOR = 'pausa-carrusel'
  *
  * **El pase es CSS puro, cero bytes de JavaScript**, y desde el 2026-09-18 el
  * control de pausa también: el componente entero, marco, fotos, etiquetas y
- * botón, es de servidor. Vive en las clases `.carrusel*` de `app/globals.css`,
+ * control, es de servidor. Vive en las clases `.carrusel*` de `app/globals.css`,
  * con dos `@keyframes` de opacidad y un `animation-delay` escalonado por
  * diapositiva. No hay estado de React, no hay `IntersectionObserver` y no hay
  * librería de animación —el proyecto no admite ninguna—.

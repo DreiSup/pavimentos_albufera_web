@@ -308,6 +308,20 @@ a {
    existe el movimiento. → `design/01` §3.15 */
 .carrusel__interruptor {
   position: absolute;
+  /* 🔴 LA MISMA ESQUINA QUE SU CAJA, y no es cosmético: el que recibe el foco es
+     este `<input>` y el que pinta el anillo es el `<label>`, así que el
+     «llévalo a la vista» del navegador apunta aquí y el anillo aparece allí.
+     Sin estas dos líneas el input se queda en su posición estática —la esquina
+     SUPERIOR izquierda del marco—, que a 768 px ya está a la vista: el navegador
+     no hace scroll y el anillo se pinta abajo del todo de un marco de 1.184 px.
+     Medido: la caja arranca en y=1.280 con el viewport acabando en 1.024, o sea
+     256 px por debajo de lo que se ve. Con el anclaje, la misma tabulación deja
+     scrollY=811 y la caja en y=469: dentro. A 390 y 1366 px salía bien por
+     casualidad, porque ahí el marco cabe en la pantalla.
+     Con el `<button>` anterior no podía pasar, porque el que recibía el foco
+     era la caja; separarlos rompió esa garantía y esto la devuelve. */
+  bottom: 0;
+  left: 0;
   width: 1px;
   height: 1px;
   margin: 0;
