@@ -24,8 +24,8 @@ export default function Empresa() {
             17 años poniendo hormigón en la Comunidad Valenciana
           </h1>
           <p className="text-16 md:text-20 text-tinta-media m-0">
-            Empezamos en Sollana en <DatoPendiente>2009</DatoPendiente>. Desde entonces hemos
-            ejecutado <DatoPendiente>X.000</DatoPendiente> metros cuadrados de pavimento entre
+            Empezamos en Sollana en 2009. Desde entonces hemos ejecutado 100.000 metros cuadrados
+            de pavimento entre
             Valencia, Castellón y Alicante: entradas de casas, porches, contornos de piscina,
             naves, parkings y urbanizaciones enteras.
           </p>
