@@ -475,44 +475,93 @@ que cambian solas, sin gesto táctil. `components/contenido/CarruselFotos.tsx`.
 ```
 marco       relative · overflow: hidden · fondo --fondo-alt · la proporción del hueco
             (3/4 en móvil, altura de la celda en escritorio). radius 0, sin sombra
-diapositiva absolute inset-0 · una <Image fill object-cover> + su etiqueta técnica (§3.8)
-            abajo a la derecha, que se funde CON su foto y no con el carrusel
-pase        @keyframes de opacidad · ciclo 24 s · 4 diapositivas · 6 s cada una
+capa 1      las 4 fotos · absolute inset-0 · una <Image fill object-cover> por diapositiva
+velo        lo que le pase el hero como `children` (§2.8, solo móvil)
+capa 2      las 4 etiquetas técnicas (§3.8) · inset-x-0 bottom-0, alineadas a la derecha,
+            44 px reservados a su izquierda · pointer-events: none · cada una se funde CON
+            su foto, no con el carrusel
+botón       pausa · 44×44 · abajo a la izquierda, en la banda reservada
+pase        @keyframes de opacidad + visibility · ciclo 24 s · 4 diapositivas · 6 s cada una
             cruce de 3 puntos porcentuales (≈0,7 s) entre una y la siguiente
-estado base opacity: 0 · la PRIMERA opacity: 1
+            animation-delay NEGATIVO: el turno de cada una, menos una vuelta entera
+estado base opacity: 0 + visibility: hidden · la PRIMERA, `.carrusel__paso--primera`, visible
 ```
 
-Cuatro cosas que definen el componente, y ninguna es decorativa:
+Siete cosas que definen el componente, y ninguna es decorativa:
 
-- **Componente de servidor, cero bytes de JavaScript.** El proyecto no admite librerías de
-  animación y aquí no hace falta ninguna: todo el pase es CSS. El presupuesto de la ruta no se
-  mueve.
+- **El pase es de servidor y cuesta cero bytes de JavaScript.** El proyecto no admite librerías
+  de animación y aquí no hace falta ninguna: todo el pase es CSS. Lo único que hidrata es el
+  botón de pausa, que es un control, no el pase.
 - **El estado base es la portada correcta, no un apilamiento.** Con `prefers-reduced-motion:
   reduce`, o en un navegador que no anime, lo que queda es una sola foto fija. La animación
   entera vive dentro de un `@media (prefers-reduced-motion: no-preference)`; **no se delega en
   el `@media reduce` global** de `globals.css`, que solo recorta duración e iteraciones y
   dejaría los `animation-delay` vivos — «no autopasa» tiene que ser una declaración, no un
-  efecto secundario.
+  efecto secundario. Verificado emulando la media feature: 0 animaciones `carrusel`.
+- **Dos capas de pasadas, con el velo en medio.** El velo tiene que oscurecer la FOTO, no el
+  texto que va sobre ella. Con la etiqueta dentro de la misma pasada que su foto, el velo —que
+  llega como `children` y por tanto después— le caía encima y la dejaba en **2,64 : 1** en
+  móvil, contra los 4,5 que pide AA y los 13,9 que tenía en escritorio, donde no hay velo.
+  Sacándola a una capa propia por encima del velo, las cuatro miden **13,91 : 1**: la etiqueta
+  es `bg-tinta` opaco, así que el píxel de debajo es el mismo pase quien pase.
+- **El índice va en `--carrusel-i` y el estado activo en una clase, nunca en `:nth-child`.**
+  Del marco cuelgan seis clases de hijo —fotos, velo, etiquetas y botón—, y cualquier selector
+  posicional cuenta lo que no debe. Por eso la diapositiva activa por defecto es
+  `.carrusel__paso--primera` y no `:first-child`: la primera etiqueta es el sexto hijo.
+- **El retardo es negativo, y por eso la primera vuelta cruza.** Con el retardo positivo, las
+  tres que esperaban no tenían animación viva durante su espera y aparecían de golpe: medidos
+  pausando `document.getAnimations()`, **tres huecos en los primeros 24 s** —5,30-5,95 s,
+  11,30-11,95 y 17,30-17,95— con la suma de opacidades en **0,069**. Restando una vuelta entera
+  las cuatro arrancan en marcha, cada una en su fase, y la suma **no baja de 1** en ningún
+  momento del ciclo (mínimo medido 0,9999998, cero huecos).
+- **`visibility` viaja con `opacity`, y retira del árbol de accesibilidad.** `opacity: 0` no
+  retira nada: un lector de pantalla recorría los cuatro textos alternativos y las cuatro
+  etiquetas técnicas seguidos, con o sin movimiento reducido. Con `visibility` en el estado base
+  y en el `@keyframes`, el árbol del hero pasa de **101 nodos y 4 imágenes a 30 nodos y 1**.
+  Durante los 0,72 s del cruce hay dos, que es exactamente lo que hay en pantalla.
 - **Solo la primera foto es prioritaria.** Es la candidata a LCP y la única precargada. Las
-  demás salen perezosas para no disputarle la cola de descarga. Están dentro del viewport, así
-  que el navegador las pedirá igual, pero después y con menos prioridad.
+  demás salen perezosas para no disputarle la cola de descarga. ⚠️ **Están dentro del viewport
+  inicial, así que el navegador las pide igual**: medidos a 390 px y DPR 1, **238,1 kB de foto
+  antes del primer scroll**, de los que 166,2 kB son de las tres que esperan. Pendiente.
 - **El `@keyframes` está escrito para cuatro diapositivas.** CSS no sabe repartir «1/n» sin
   JavaScript. Con otro número se escribe el `@keyframes` de ese número; fingir que el
   componente es genérico sería mentir sobre lo que hace.
 
-⚠️ **Lo que este componente NO tiene: control de pausa.** La WCAG 2.2.2 (nivel A) pide poder
-parar el contenido que se mueve o se actualiza solo durante más de cinco segundos, y un pase de
-fotos lo es. `prefers-reduced-motion` cubre a quien lo tiene activado, que no es lo mismo.
-Se puede resolver sin JavaScript —un `<input type="checkbox">` con `:checked ~` y
-`animation-play-state: paused`— pero eso añade un control al hero que el dueño no ha pedido y
-cambia cómo se ve la portada. **Queda abierto, a la vista, en vez de darse por cumplido.**
+#### Botón de pausa
 
-⚠️ **Y las cuatro diapositivas están SIEMPRE en el árbol de accesibilidad.** `opacity: 0` no
-retira contenido: un lector de pantalla recorre los cuatro `alt` y las cuatro etiquetas
-técnicas del hero, con o sin movimiento reducido. No se arregla quitando los `alt` —son
-obligatorios (`public/README.md`)— ni con `aria-hidden` en las tres que esperan, porque las
-tres acaban siendo la visible. Se apunta aquí como lo que es: una consecuencia conocida de
-apilar cuatro fotos en un hueco, no un descuido.
+**Pieza nueva, 2026-09-18.** `components/contenido/BotonPausaCarrusel.tsx`. La WCAG 2.2.2, nivel
+A, exige poder parar todo contenido que se mueva solo durante más de cinco segundos, y un pase
+de 24 s en bucle infinito lo es; `prefers-reduced-motion` cubre a quien lo lleva activado, que
+no es lo mismo. **Decisión del dueño, contestada expresamente: el pase sigue siendo automático y
+se añade un control pequeño y discreto sobre la foto.**
+
+```
+caja     44×44 (min-w-tactil/min-h-tactil) · absolute bottom-0 left-0 dentro del marco
+color    sobre-oscuro bg-tinta text-fondo — el mismo recuadro opaco de la etiqueta §3.8
+glifo    SVG en línea, currentColor: ‖ mientras pasa, ▶ en pausa. Sin librería de iconos
+foco     el outline ocre global de `globals.css`, 2 px, offset 2
+estado   aria-pressed + aria-label que cambia · data-pausa en el marco → animation-play-state
+```
+
+- **El estado se entiende sin color:** lo dice la forma del glifo, no el pigmento. El botón es
+  siempre tinta sobre foto, y el glifo mide **13,91 : 1** contra su propio fondo, así que el
+  contraste no depende de qué foto haya debajo ni de que exista el velo.
+- **No es un `<input type="checkbox">`.** Esa era la salida sin JavaScript que este mismo §
+  apuntaba, y se descarta: un interruptor no admite `aria-pressed`, que es el estado que pide un
+  control de dos posiciones sobre algo que ya está corriendo. Un botón que alterna es estado
+  real, el único motivo que admite CLAUDE.md para cruzar la frontera de cliente.
+- **Escribe `data-pausa` en el marco en vez de resolverse con `:has()`.** `:has()` no es
+  universal, y un botón de pausa que en algún navegador no pare nada es peor promesa que no
+  tenerlo. Verificado: con el botón pulsado el reloj de la animación avanza 17 ms en 900, y al
+  soltarlo vuelve a 900 de 900.
+- **Con movimiento reducido el botón se retira entero** (`display: none` sobre
+  `.carrusel__pausa`). No hay pase que parar, y así sale también del orden de tabulación en vez
+  de dejar un foco que no hace nada.
+- **La etiqueta técnica le reserva su banda.** `pl-11` sobre la capa de etiquetas: a 768 px, la
+  única anchura del sitio en que pasaba, la columna del carrusel mide 304 px y la etiqueta los
+  llenaba enteros, así que el botón se le montaba encima. Se le quita sitio a la etiqueta, que
+  se reparte en una línea más; el control no cambia de esquina según el ancho. Medido a 390,
+  768, 1024 y 1366: sin solapes y sin scroll horizontal.
 
 **Límite medido: por debajo de 360 px el titular llena el marco.** A 390, 375 y 360 px quedan
 175, 64 y 44 px libres entre la última línea del titular y la etiqueta técnica. A 320 px el

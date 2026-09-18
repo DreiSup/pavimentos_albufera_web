@@ -169,32 +169,54 @@ a {
   background: var(--velo);
 }
 
-/* Carrusel de fotografía de obra (§3.15). Sin JavaScript.
-   El estado BASE es lo que importa: una sola foto visible, la primera. Sin
-   animación —movimiento reducido, o navegador que no la soporte— eso es lo que
-   queda, y es una portada correcta, no un apilamiento. */
+/* Carrusel de fotografía de obra (§3.15).
+   El estado BASE es lo que importa: una sola diapositiva visible, la primera.
+   Sin animación —movimiento reducido, o navegador que no la soporte— eso es lo
+   que queda, y es una portada correcta, no un apilamiento.
+
+   `visibility` viaja junto a `opacity` y NO es decorado: `opacity: 0` no retira
+   nada del árbol de accesibilidad, así que sin esta línea un lector de pantalla
+   recorría los cuatro textos alternativos y las cuatro etiquetas técnicas
+   seguidos. `visibility: hidden` sí las retira, y se hereda hasta la <img>.
+
+   ⚠️ Y el estado activo NO puede ser `:first-child`. El marco tiene dos capas
+   de pasadas —las fotos y, por encima del velo, sus etiquetas— más el propio
+   velo entre medias: la primera etiqueta es el sexto hijo, no el primero. El
+   componente marca la activa con su clase, igual que ya pasaba el índice por
+   propiedad personalizada en vez de por `:nth-child`. */
 .carrusel__paso {
   opacity: 0;
+  visibility: hidden;
 }
-.carrusel__paso:first-child {
+.carrusel__paso--primera {
   opacity: 1;
+  visibility: visible;
 }
 
 @media (prefers-reduced-motion: no-preference) {
   /* Cuatro diapositivas: cada una ocupa una cuarta parte del ciclo, con el
      cruce en los tres puntos porcentuales que separan 22 de 25 y 97 de 100.
-     La que entra sube mientras la anterior baja: el fondo nunca asoma. */
+     La que entra sube mientras la anterior baja: el fondo nunca asoma.
+
+     `visibility` se interpola a saltos, y con la regla de CSS de que basta un
+     extremo `visible` para que lo sea todo el tramo: la diapositiva entra en el
+     árbol de accesibilidad en el 97 %, cuando empieza a verse, y sale en el
+     25 %, cuando ya no se ve. Durante los 0,72 s del cruce hay dos, que es
+     exactamente lo que hay en pantalla. */
   @keyframes carrusel {
     0%,
     22% {
       opacity: 1;
+      visibility: visible;
     }
     25%,
     97% {
       opacity: 0;
+      visibility: hidden;
     }
     100% {
       opacity: 1;
+      visibility: visible;
     }
   }
 
@@ -202,11 +224,43 @@ a {
     /* La forma abreviada reinicia `animation-delay`, así que el escalonado va
        DESPUÉS. Mismo cuidado que en `.aparece` con `animation-timeline`. */
     animation: carrusel var(--carrusel-ciclo) linear infinite;
-    animation-delay: calc(var(--carrusel-i) * var(--carrusel-ciclo) / 4);
-    /* Sin relleno a propósito: durante su retardo, cada diapositiva se queda en
-       su `opacity` base —0 para las tres que esperan— en vez de adelantar el
-       fotograma 0 %, que las encendería todas a la vez en el primer segundo. */
+    /* 🔴 El retardo es NEGATIVO, y esa resta de una vuelta es el arreglo.
+       Con el retardo positivo que había, las tres diapositivas que esperan no
+       tenían animación viva durante su espera: se quedaban en su `opacity` base
+       —0— mientras la anterior se fundía a nada, y aparecían de golpe al
+       arrancar su ciclo. Medido pausando `document.getAnimations()`: tres huecos
+       en la primera vuelta —5,30-5,95 s, 11,30-11,95 s y 17,30-17,95 s— con la
+       suma de opacidades cayendo a 0,069. Solo en la primera vuelta, porque a
+       partir de la segunda el fotograma del 97 % ya está trayendo a la
+       siguiente.
+       Restando una vuelta entera, la animación de las cuatro arranca en marcha
+       en t=0, cada una en la fase que le toca: la 1 entra en el 75 % del ciclo,
+       la 2 en el 50 % y la 3 en el 25 %, todas con `opacity: 0`, y cada una
+       llega a su fotograma del 97 % justo cuando la anterior empieza a bajar.
+       La primera vuelta pasa a ser idéntica a las siguientes. */
+    animation-delay: calc(
+      var(--carrusel-i) * var(--carrusel-ciclo) / 4 - var(--carrusel-ciclo)
+    );
+    /* Sin relleno: ya no hay tramo de espera que rellenar, y `backwards` sobre
+       un retardo negativo no pinta nada distinto. Se deja declarado porque la
+       forma abreviada de arriba lo reinicia. */
     animation-fill-mode: none;
+  }
+
+  /* WCAG 2.2.2, nivel A: el pase se puede parar. El botón escribe el atributo
+     en el marco y la regla alcanza a las DOS capas de pasadas, fotos y
+     etiquetas, porque las dos cuelgan de él. */
+  .carrusel[data-pausa='true'] .carrusel__paso {
+    animation-play-state: paused;
+  }
+}
+
+/* Con movimiento reducido no hay pase que parar: el carrusel es una foto fija.
+   El control se retira entero —`display: none` también lo saca del orden de
+   tabulación— en vez de quedarse mintiendo sobre un movimiento que no existe. */
+@media (prefers-reduced-motion: reduce) {
+  .carrusel__pausa {
+    display: none;
   }
 }
 
