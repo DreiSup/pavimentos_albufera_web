@@ -111,6 +111,26 @@ a {
   border-bottom-color: var(--pendiente-oscuro);
 }
 
+/* Cuerpo de las tres páginas legales (design/02 §B7). Son los únicos textos
+   largos y corridos del sitio, y el navegador les pone márgenes por elemento a
+   `p`, `ul` y `h3`. Se anulan: el ritmo vertical lo pone el `gap` del
+   contenedor, que es la regla del proyecto.
+
+   Las enumeraciones del texto del dueño van en `<ul>` por semántica —son
+   listas, y un lector de pantalla tiene que poder contarlas—, pero SIN viñeta:
+   el sistema de diseño no tiene una y una página legal no es el sitio donde
+   inventarla. Visualmente son las mismas líneas que ya había, con su hueco. */
+.texto-legal :where(p, h3, ul, ol, li, dl) {
+  margin: 0;
+}
+.texto-legal ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 /* Secciones destino del submenú/sumario anclado.
    Los 150 px siguen siendo suficientes con la cabecera fija: el peor caso es
    escritorio, 84 px de cabecera + 56 px de submenú = 140. En móvil no hay
