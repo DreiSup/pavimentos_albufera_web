@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { enviarPresupuesto, type EstadoEnvio } from '@/app/presupuesto/actions'
 import Campo, { claseInput } from '../ui/Campo'
 import Boton from '../ui/Boton'
+import DatoPendiente from '../datos/DatoPendiente'
 import { nap } from '@/lib/config'
 import { EVENTOS, MONEDA, registrarEvento, type Ubicacion } from '@/lib/eventos'
 import { COOKIE_REFERENCIA, leerCookie } from '@/lib/cookies'
@@ -20,6 +21,40 @@ const ESPACIOS = [
   'Nave, parking o local',
   'Otro',
 ]
+
+/**
+ * `design/02` §B1: el aviso del adjunto perdido. Vive aquí y no en el Server
+ * Action porque no describe nada que haya pasado en el servidor —el archivo
+ * llegó y era válido—, sino lo que el navegador no deja hacer al repintar.
+ */
+const FOTO_NO_CONSERVADA = 'Vuelve a adjuntar la foto: por seguridad, el navegador no conserva el archivo.'
+
+/**
+ * Pinta el mensaje de error de envío poniendo el teléfono en el hueco que el
+ * Server Action deja marcado.
+ *
+ * Antes era un `.replace('[teléfono]', nap.telefono ?? nap.telefonoMostrado)`, y
+ * `telefonoMostrado` **nunca** es indefinido: con `NEXT_PUBLIC_TELEFONO` sin
+ * rellenar, el visitante leía «Llámanos al 96X XXX XXX» en un mensaje de error
+ * de verdad. Un número inventado presentado como real, que es peor que el hueco.
+ *
+ * Ahora el hueco se trata como en el resto del sitio —`app/page.tsx:603`,
+ * `app/presupuesto/page.tsx:48`—: con el número si lo hay, y con
+ * `<DatoPendiente>` si no. El microcopy no cambia ni una letra; lo que cambia es
+ * que el marcador se ve como lo que es. Los mensajes sin marcador —el del límite
+ * de envíos— pasan tal cual.
+ */
+function conTelefono(mensaje: string) {
+  const [antes, despues] = mensaje.split('[teléfono]')
+  if (despues === undefined) return mensaje
+  return (
+    <>
+      {antes}
+      {nap.telefono ?? <DatoPendiente>{nap.telefonoMostrado}</DatoPendiente>}
+      {despues}
+    </>
+  )
+}
 
 export default function FormularioPresupuesto({
   variante = 'completo',
@@ -39,6 +74,21 @@ export default function FormularioPresupuesto({
   const [eventoId, setEventoId] = useState('')
   const [errorFoto, setErrorFoto] = useState('')
   const eventoDisparado = useRef(false)
+
+  /**
+   * Lo que se escribió en el envío que el servidor rechazó.
+   *
+   * React resetea el formulario al terminar una acción, y el reseteo devuelve
+   * cada control a su `defaultValue`. Ese es justo el mecanismo que repuebla:
+   * el reseteo se coordina con el repintado del nuevo estado, así que los
+   * `defaultValue` de abajo ya son los del envío rechazado cuando ocurre. Sin
+   * ellos —que es como estaba— el reseteo vaciaba los siete campos y
+   * `design/02` §B1, estado 2, pide lo contrario.
+   *
+   * Los controles siguen siendo NO controlados: no hay `value` ni `onChange`,
+   * así que teclear no repinta nada y el formulario no gana estado por campo.
+   */
+  const escrito = estado.valores
 
   // Comprobación en cliente además de la del servidor. Una foto de móvil pasa
   // de 4 MB con facilidad, y sin esto el usuario espera a que suba para que le
@@ -131,7 +181,7 @@ export default function FormularioPresupuesto({
     <form action={accion} className="flex flex-col gap-4" aria-busy={enviando}>
       {estado.errores.form ? (
         <p className="font-sans text-14 font-semibold text-error" aria-live="polite">
-          {estado.errores.form.replace('[teléfono]', nap.telefono ?? nap.telefonoMostrado)}
+          {conTelefono(estado.errores.form)}
         </p>
       ) : null}
 
@@ -150,7 +200,15 @@ export default function FormularioPresupuesto({
           → `design/02` §B1 */}
       <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4">
         <Campo etiqueta="Nombre y apellidos" htmlFor="nombre" obligatorio>
-          <input id="nombre" name="nombre" type="text" required readOnly={enviando} className={claseInput} />
+          <input
+            id="nombre"
+            name="nombre"
+            type="text"
+            required
+            defaultValue={escrito?.nombre ?? ''}
+            readOnly={enviando}
+            className={claseInput}
+          />
         </Campo>
         <Campo etiqueta="Teléfono" htmlFor="telefono" obligatorio error={estado.errores.telefono}>
           <input
@@ -159,6 +217,7 @@ export default function FormularioPresupuesto({
             name="telefono"
             type="tel"
             required
+            defaultValue={escrito?.telefono ?? ''}
             readOnly={enviando}
             aria-invalid={Boolean(estado.errores.telefono)}
             className={claseInput}
@@ -185,6 +244,7 @@ export default function FormularioPresupuesto({
           autoComplete="email"
           autoCapitalize="none"
           spellCheck={false}
+          defaultValue={escrito?.email ?? ''}
           readOnly={enviando}
           aria-invalid={Boolean(estado.errores.email)}
           className={claseInput}
@@ -192,7 +252,26 @@ export default function FormularioPresupuesto({
       </Campo>
 
       <Campo etiqueta="¿Qué quieres pavimentar?" htmlFor="espacio" obligatorio>
-        <select id="espacio" name="espacio" required disabled={enviando} className={claseInput}>
+        {/* El `key` es lo que hace que este campo se repueble, y es el único
+            que lo necesita. Medido en React 19.0.0: el reseteo del formulario
+            es un `form.reset()` nativo, que devuelve cada control a su valor
+            POR DEFECTO DEL DOM. En un `<input>` y en un `<textarea>` React
+            escribe ese valor por defecto en cada repintado, así que el reseteo
+            ya encuentra el nuevo. En un `<select>` no: `defaultValue` solo
+            marca `defaultSelected` en el montaje —`react-dom` lo aplica al
+            crear el nodo y no vuelve a mirarlo—, y sin remontar, el reseteo
+            devolvía el desplegable a «Entrada de garaje» con lo escrito en los
+            otros seis campos intacto. Cambiar el `key` lo remonta, y el
+            remontaje ocurre antes del reseteo dentro del mismo commit. */}
+        <select
+          key={escrito?.espacio ?? ''}
+          id="espacio"
+          name="espacio"
+          required
+          defaultValue={escrito?.espacio || ESPACIOS[0]}
+          disabled={enviando}
+          className={claseInput}
+        >
           {ESPACIOS.map((e) => (
             <option key={e} value={e}>
               {e}
@@ -209,22 +288,53 @@ export default function FormularioPresupuesto({
             obligatorio
             ayuda="Un cálculo aproximado nos vale. Largo × ancho."
           >
-            <input id="superficie" name="superficie" type="text" readOnly={enviando} className={claseInput} />
+            <input
+              id="superficie"
+              name="superficie"
+              type="text"
+              defaultValue={escrito?.superficie ?? ''}
+              readOnly={enviando}
+              className={claseInput}
+            />
           </Campo>
 
           <Campo etiqueta="Municipio" htmlFor="municipio" obligatorio>
-            <input id="municipio" name="municipio" type="text" required readOnly={enviando} className={claseInput} />
+            <input
+              id="municipio"
+              name="municipio"
+              type="text"
+              required
+              defaultValue={escrito?.municipio ?? ''}
+              readOnly={enviando}
+              className={claseInput}
+            />
           </Campo>
 
           <Campo etiqueta="Cuéntanos algo más" htmlFor="mensaje">
-            <textarea id="mensaje" name="mensaje" rows={4} readOnly={enviando} className={claseInput} />
+            <textarea
+              id="mensaje"
+              name="mensaje"
+              rows={4}
+              defaultValue={escrito?.mensaje ?? ''}
+              readOnly={enviando}
+              className={claseInput}
+            />
           </Campo>
 
           <Campo
             etiqueta="Sube una foto del espacio"
             htmlFor="foto"
             ayuda="Con una foto podemos darte un rango antes incluso de la visita. Máximo 4 MB."
-            error={errorFoto || estado.errores.foto}
+            /* El único campo que no se puede repoblar: ningún sitio puede
+               colocar un archivo en el `<input type="file">` de quien lo
+               visita. Así que en vez de fingir que sigue ahí —el adjunto se
+               perdería en silencio y el correo diría «Foto adjunta: no»—, se
+               dice. Va por el hueco de `error` y no por el de `ayuda` porque
+               es lo único de esta pantalla que hay que rehacer antes de volver
+               a enviar, y porque `Campo` solo anuncia el de `error`. Los dos
+               mensajes de foto rechazada mandan sobre este: describen un
+               archivo que además no valía. */
+            error={errorFoto || estado.errores.foto || (escrito?.foto ? FOTO_NO_CONSERVADA : '')}
           >
             <input
               id="foto"
@@ -255,6 +365,7 @@ export default function FormularioPresupuesto({
           type="checkbox"
           name="privacidad"
           required
+          defaultChecked={escrito?.privacidad ?? false}
           disabled={enviando}
           aria-invalid={Boolean(estado.errores.privacidad)}
           aria-describedby={estado.errores.privacidad ? 'privacidad-error' : undefined}
