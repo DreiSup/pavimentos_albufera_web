@@ -66,8 +66,9 @@ Cuatro decisiones, y su porqué:
   así que la caja de recorte queda apuntada aquí: es lo único que hace falta para rehacerlo.
 - **PNG, no SVG.** `public/README.md` ya cierra esta puerta —la senda son degradados por elipse y
   vectorizarla la redibuja—, y sigue cerrada en miniatura. **No existe ningún archivo `.svg` en el
-  repo**, y sigue sin existir tras el 2026-09-18: los dos iconos de §3.16 son SVG en línea dentro
-  de un `.tsx`, no archivos, y no son la marca de la casa.
+  repo.** Enmienda de precisión del 2026-09-18: la frase decía «ningún SVG», y desde ese día hay
+  SVG en línea dentro de un `.tsx` —los dos iconos de §3.16—. No son archivos, no son la marca de
+  la casa y no tocan esta decisión, que va del logotipo.
 - **Teja opaca en `--fondo`.** Es lo único que resuelve el modo oscuro sin duplicar archivo: la
   pestaña clara y la oscura ven el mismo cuadrado. Probada la alternativa —teja `#000D2A` con la
   senda de la variante clara— y a 16 px la senda pierde el azul y se lee gris: el color, que es lo
