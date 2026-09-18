@@ -210,9 +210,14 @@ cumple entero. Los azules existen únicamente dentro de los archivos de
 escapen a un botón, un enlace, un borde o un estado. El único color de acción sigue siendo
 el ocre, y la regla del §2.2 no cambia.
 
-Consecuencia práctica: **el logotipo no se recolorea desde CSS.** Cada fondo tiene su
-archivo —`logo-texto.png` sobre fondo claro, `logo-texto-claro.png` y `logo-marca-claro.png`
+Consecuencia práctica: **el logotipo no se recolorea desde CSS.** Cada fondo tiene su archivo
+—`logo-marca-fila.png` sobre fondo claro; `logo-marca-fila-claro.png` y `logo-marca-claro.png`
 sobre tinta— y variar el color de la marca es sustituir el archivo, no tocar una clase.
+
+*(Decía `logo-texto.png` sobre fondo claro y `logo-texto-claro.png` sobre tinta. **Corregido el
+2026-09-18**: la cabecera pasó al archivo en fila el mismo día que se compuso, y el menú de móvil
+lo siguió. Los dos de wordmark solo siguen en `public/marca/` y ya no los pinta nadie; el
+inventario completo, con qué archivo se usa dónde, está en `public/README.md`.)*
 
 Hubo hasta el 2026-09-17 una recreación vectorial del dibujo (`MarcaSvg.tsx`, `lib/marca.ts`
 y una escala de ocho azules expuesta como `text-marca-*`), hecha cuando en el repositorio no

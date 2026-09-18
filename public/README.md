@@ -29,7 +29,7 @@ en `design/01-sistema-de-diseno.md` §2.1.
   cuando el dueño confirme a qué obra pertenecen.
 - `acabados/` — el `slug` del acabado: `espiga-117.jpg`.
 - `blog/` — el `slug` del artículo: `guia-hormigon-pulido.jpg`.
-- `marca/` — cinco archivos, todos recortados del mismo original de 1881 × 836 px que entregó
+- `marca/` — seis archivos, todos derivados del mismo original de 1881 × 836 px que entregó
   el dueño. **No hay `logo.svg`**: el original es un mapa de bits con degradados en cada elipse
   de la senda, y vectorizarlo lo redibujaría.
 
@@ -37,8 +37,9 @@ en `design/01-sistema-de-diseno.md` §2.1.
   |---|---|---|
   | `logo.png` | bloque completo: senda, wordmark y claim | Solo el campo `logo` del JSON-LD (`lib/schema.tsx`). Es el único sitio donde el claim se lee, porque no lo escala ninguna caja de la interfaz |
   | `logo-marca-fila.png` | senda + wordmark **en fila**, color de marca | `Cabecera` |
+  | `logo-marca-fila-claro.png` | senda + wordmark **en fila**, variante clara | `MenuMovil` |
   | `logo-texto.png` | wordmark, color de marca | **Sin uso desde el 2026-09-18**, cuando la cabecera pasó al de arriba. Se queda, no se borra: es el único derivado que aísla el wordmark en color de marca, y borrarlo obligaría a rehacerlo desde el original la próxima vez que haga falta |
-  | `logo-texto-claro.png` | wordmark, variante clara | `MenuMovil` |
+  | `logo-texto-claro.png` | wordmark, variante clara | **Sin uso desde el 2026-09-18**, cuando el menú de móvil pasó al de la fila. Se queda por lo mismo que su hermano: es el único que aísla el wordmark en variante clara |
   | `logo-marca-claro.png` | senda + wordmark **apilados**, variante clara | `Pie` |
 
   **Cómo se compone `logo-marca-fila.png`**, que es el único que no es un recorte directo. Del
@@ -58,6 +59,30 @@ en `design/01-sistema-de-diseno.md` §2.1.
   el wordmark, que se queda en el 73 % del ancho del conjunto. Bajar a 1,2 le devuelve al texto
   1,1 px de mayúscula y deja la senda en un icono; subir a 2,0 le quita 1,9.
 
+  **Cómo se compone `logo-marca-fila-claro.png`.** La misma receta, pero **sobre las piezas de la
+  variante clara que ya existían**, no sobre el original a color: así no hay que volver a derivar
+  la inversión de luminancia de la senda —que no es un umbral, ver más abajo— y el resultado
+  coincide con el que ya se ve en el pie. Las dos piezas:
+
+  1. wordmark: `logo-texto-claro.png` entero, 900 × 78;
+  2. senda: recorte `(187, 0) → (741, 256)` de `logo-marca-claro.png`, o sea 554 × 256. Su
+     proporción, 2,164, es la misma que la del recorte del original (1117 / 516 = 2,165).
+
+  Se montan con los mismos factores —senda a 1,7 × el alto del wordmark (133 px), hueco de
+  0,55 (43 px), alineadas por la base, y 125/269 de relleno transparente debajo (62 px)—: lienzo
+  de **1231 × 195**, proporción 6,313 contra los 6,312 del de la cabecera. Se reduce a
+  **1004 × 159**, las mismas medidas exactas que `logo-marca-fila.png`, para que los dos ocupen
+  la misma caja al mismo `height`. Cuantizado a 256 colores por octree, que es el que conserva el
+  canal alfa.
+
+  **Pesa 7.538 B**, o sea **1,9 kB MENOS que los 9.487 del `logo-texto-claro.png`** que releva, y
+  la mitad que el de la cabecera: la variante clara cuantiza mejor porque la senda invertida tiene
+  menos saltos de tono. Y no entra en ninguna carga inicial: `MenuMovil` solo se monta al pulsar la
+  hamburguesa. Medida la mayúscula del wordmark en los dos archivos de la fila: **60 px de archivo,
+  o sea 14,34 px CSS en la caja de 38** — idénticos, que es justo lo que se buscaba. Los 18,72 px
+  del wordmark solo que había antes en el menú se pierden, pero se pierden **a favor de enseñar la
+  misma marca que la barra**, y siguen por encima de los 11 px de la mayúscula del texto de 16.
+
   **Por qué hay variante clara.** El navy del original (`#000D2A`) mide **1,1 : 1** contra
   `--tinta`: sobre el pie o el menú móvil el logotipo no se ve poco, no se ve. La variante clara
   lleva el wordmark a `--fondo` con el azul en `#8FB4D6` —tinte derivado, solo del logotipo,
@@ -72,13 +97,17 @@ en `design/01-sistema-de-diseno.md` §2.1.
   repo no hace en ningún otro sitio.
 
   **Anchos.** Todos los de interfaz van a **3× la mayor caja en que se pintan**: 900 px los tres
-  recortes directos (cajas de 276, 230 y 222 px CSS) y **1004 px** el de la cabecera, cuya caja
-  mayor son 334,7 px. `logo.png` conserva los 1818 px del original recortado.
+  recortes directos (cajas de 276, 230 y 222 px CSS) y **1004 px** los dos de la fila, cuya caja
+  mayor son 334,7 px —el claro nunca se pinta por encima de 239,94, porque el menú solo existe por
+  debajo de `cabecera-ancha`, pero comparte medidas con el otro a propósito—. `logo.png` conserva
+  los 1818 px del original recortado.
 
   **Pesos.** `logo-marca-fila.png` pesa **13,8 kB** contra los 9,1 del `logo-texto.png` que
   releva: **+4,6 kB**, una sola petición, cacheada, compartida por las 52 rutas. Son bytes de
   imagen, no de JS: el presupuesto de `design/06` no se entera. El salto es la senda, que no
-  cuantiza bien —por eso el del pie, con la senda al triple de ancho, pesa 27,0.
+  cuantiza bien —por eso el del pie, con la senda al triple de ancho, pesa 27,0. El claro de la
+  fila va al revés: **7,4 kB contra los 9,3 del wordmark claro** que releva, y solo se pide al
+  abrir el menú.
 
 ## Reglas
 
