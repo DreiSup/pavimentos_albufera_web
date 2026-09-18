@@ -3,7 +3,6 @@ import Aparece from '@/components/ui/Aparece'
 import Boton from '@/components/ui/Boton'
 import { EnlaceEtiqueta } from '@/components/ui/EnlaceEtiqueta'
 import Foto from '@/components/contenido/Foto'
-import DatoPendiente from '@/components/datos/DatoPendiente'
 import Migas from '@/components/layout/Migas'
 
 export const metadata: Metadata = {
@@ -37,7 +36,7 @@ export default function Empresa() {
           <div className="flex flex-col gap-4">
             <h2 className="font-display font-bold fs-h2 text-34 md:text-46 m-0">Cómo trabajamos</h2>
             <p className="text-20 font-semibold text-tinta m-0">
-              <DatoPendiente>Equipo propio.</DatoPendiente> El que va a verte es el que mide, y el
+              Equipo propio. El que va a verte es el que mide, y el
               que mide es del equipo que ejecuta. No subcontratamos la obra a terceros, y por eso
               podemos dar 10 años de garantía sin letra pequeña.
             </p>
