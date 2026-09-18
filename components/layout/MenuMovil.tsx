@@ -93,7 +93,7 @@ export default function MenuMovil({
       </nav>
 
       <div className="mt-8 font-mono text-d-11 text-sobre-tinta leading-[2.2] flex flex-col gap-1">
-        <span>{nap.direccionMostrada}</span>
+        <span>{nap.direccion ?? `[${nap.direccionMostrada}]`}</span>
         {/* Entre corchetes mientras sea reserva, igual que `Pie` y `Cabecera`. */}
         <span>{nap.telefono ?? `[${nap.telefonoMostrado}]`}</span>
         <span>{nap.email}</span>
