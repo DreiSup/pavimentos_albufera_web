@@ -15,88 +15,205 @@ Estas seis están en el prototipo con estado interactivo real. Reprodúcelas exa
 
 ## A1 · Home — `/`
 
-13 secciones numeradas. Copy literal del §7.1 del documento maestro.
+**11 secciones numeradas. Enmienda del 2026-09-17, por decisión del dueño.** Eran 13. Copy
+literal del §7.1 del documento maestro.
 
 | # | Sección | Escritorio | Móvil |
 |---|---|---|---|
-| 01 | Hero | `1fr 1fr`. Titular 88 px a la izquierda, bloque de foto a sangre a la derecha con etiqueta técnica abajo. Alto mínimo del bloque: 660 px | Bloque de foto `3/4` con el titular a 46 px **dentro**, sobre la trama, y la etiqueta técnica abajo a la derecha. Debajo, entradilla y 2 botones de contorno a ancho completo |
+| 01 | Hero | `1fr 1fr`. Titular 88 px a la izquierda, **carrusel** a sangre a la derecha con etiqueta técnica abajo. Alto mínimo del bloque: 660 px. Sin velo: el titular no pisa la foto | **Carrusel** `3/4` con el titular a 46 px **dentro, sobre el velo** (`01 §2.8`), y la etiqueta técnica abajo a la derecha. Debajo, entradilla y 2 botones a ancho completo |
 | 02 | Barra de confianza | Anclada, una línea, 4 datos | No anclada, 4 filas numeradas |
-| 03 | Por dónde empezar | `380px 1fr` + rejilla de 3×2 con imagen `4/3` | Lista de 6 filas de 76 px con miniatura cuadrada de 76 px a la izquierda |
-| 04 | Muestrario | Fondo `--fondo-alt`. Antetítulo + enlace-etiqueta a la derecha. Chips en una fila. Rejilla de 4 | Chips en carril deslizante. Rejilla de 2×2 con 4 muestras. Enlace-etiqueta al final |
-| 05 | Servicios | Rejilla de 3×2, imagen `16/10`, título 26 px | Columna, imagen `16/10`, título 20 px |
-| 06 | Precios | `1fr 1fr`: texto e incluye/no incluye a la izquierda, tabla a la derecha | Todo apilado. Tabla en filas `space-between` con el rango a la derecha |
-| 07 | Cómo trabajamos | 4 columnas, numeral 34 px en `--acero` sobre `border-top` | 4 filas, numeral 26 px en columna fija de 42 px |
-| 08 | Proyectos | Rejilla de 3×2, 6 tarjetas | Carrusel horizontal de tarjetas de 220 px |
-| 09 | Reseñas | `380px 1fr` + 3 estados vacíos en línea | 2 estados vacíos apilados |
-| 10 | Garantía | Fondo `--tinta`, `1fr 1fr`: titular a la izquierda, 2 párrafos a la derecha separados por `border-top` | Apilado, mismo fondo |
-| 11 | Zonas | `380px 1fr` + 3 anillos en columnas | 3 anillos en filas con `border-top` |
-| 12 | FAQ | `380px 1fr` + acordeón de 6 | Acordeón de 6, filas de 56 px |
-| 13 | Cierre | `1fr 1fr`: titular 64 px + 2 botones a la izquierda, formulario corto a la derecha | Titular 34 px, 2 botones, formulario corto |
+| 03 | Por dónde empezar | `380px 1fr` + rejilla de 3×2 con imagen `4/3` | Rejilla de **2 columnas** con imagen `4/3` a ancho de celda y el texto debajo |
+| 04 | Servicios | Fondo `--fondo-alt`. Rejilla de 3×2, imagen `16/10`, título 26 px | Columna, imagen `16/10`, título 20 px |
+| 05 | Muestrario | Antetítulo + enlace-etiqueta a la derecha. Chips en una fila. Rejilla de 4 | Chips en carril deslizante. Rejilla de 2×2 con 4 muestras. Enlace-etiqueta al final |
+| 06 | Cómo trabajamos | Fondo `--fondo-alt`. 4 columnas, numeral 34 px en `--acero` sobre `border-top` | 4 filas, numeral 26 px en columna fija de 42 px |
+| 07 | Proyectos | Rejilla de 3×3, **las 9 obras documentadas** | Carrusel horizontal de tarjetas de 220 px, las 9 |
+| 08 | Garantía | Fondo `--tinta`, `1fr 1fr`: titular a la izquierda, 2 párrafos a la derecha separados por `border-top` | Apilado, mismo fondo |
+| 09 | Zonas | `380px 1fr` + 3 anillos en columnas. El tercero cierra con un enlace-etiqueta `CONSÚLTANOS →` a `/presupuesto/` | 3 anillos en filas con `border-top` |
+| 10 | FAQ | `380px 1fr` + acordeón de 6 | Acordeón de 6, filas de 56 px |
+| 11 | Cierre | `1fr 1fr`: titular 64 px + 2 botones a la izquierda, formulario corto a la derecha | Titular 34 px, 2 botones, formulario corto |
+
+**El fondo alterno lo da la posición, no la sección.** Al retirar Precios e intercambiar
+Servicios y Muestrario quedaban tres bloques base seguidos, así que el alterno se reparte otra
+vez para que el ritmo de `01 §2.1` siga siendo el de antes.
 
 **Ocre en escritorio:** CTA del hero + chip activo del muestrario.
-**Ocre en móvil:** barra fija `Llamar` + chip activo del muestrario. Los CTA del hero y del
-cierre bajan a contorno.
+**Ocre en móvil:** barra fija `Llamar` + chip activo del muestrario **+ el CTA del hero**, que
+por decisión del dueño del 2026-09-17 se queda en ocre y **no baja a contorno**. La excepción y
+su porqué están en `01 §2.2`. El CTA del cierre sí sigue la regla.
 
-**Sección 09, reseñas.** No hay ni una reseña real. Se maqueta el **estado vacío honesto**:
-la estructura de la tarjeta con `[texto de la reseña]` y `[NOMBRE] · [MUNICIPIO] · [AÑO]`
-atenuados, más la nota de que sin reseñas verificables no se marca `AggregateRating`. La
-sección se sostiene con el dato del 30 % que repite. **Prohibido inventar testimonios.**
+### Lo que se retiró de esta pantalla el 2026-09-17
 
-Formulario corto del cierre: nombre, teléfono y desplegable de espacio. El formulario completo
-vive en `/presupuesto/`.
+Las dos por decisión del dueño, y **retiradas del árbol, no ocultas con `display:none`**: lo que
+no se pinta tampoco se descarga ni se indexa.
+
+- **Precios** (era la 06). Los rangos de €/m² y la tabla salen de la portada; el dueño no quiere
+  precios en la web. Con ella se fue el único enlace a `/precios/` que quedaba dentro del
+  `<main>` de la home. ⚠️ **La cabecera sigue enlazando `/precios/`** — `components/layout/
+  Cabecera.tsx`, fuera del alcance de esta pantalla.
+- **Reseñas** (era la 09). Pintaba tres tarjetas con `[texto de la reseña]` y `[NOMBRE] ·
+  [MUNICIPIO] · [AÑO]`: estado vacío honesto, pero vacío. El dueño traerá reseñas reales.
+  **No se pierde copy:** el dato del 30 % que repite, que era lo único real de la sección,
+  ya estaba literal en Garantía. Sigue **prohibido inventar testimonios** y sigue sin
+  `AggregateRating` mientras no haya reseñas verificables.
+
+Formulario corto del cierre: nombre, teléfono, email y desplegable de espacio. El formulario
+completo vive en `/presupuesto/`.
+
+El **email es opcional en las dos variantes**, igual que en la tabla de §B1. Entra en la corta
+porque el dueño pide nombre, teléfono y correo en todo formulario de contacto, y opcional
+porque un campo obligatorio de más en el cierre de la home cuesta conversión. **Que pase a
+obligatorio sigue siendo decisión del dueño** —`design/06`, decisión 7—, y hasta que la conteste
+Enhanced Conversions solo puede contar con los leads que lo dejen por su cuenta.
 
 ## A2 · Servicio — `/hormigon-impreso/`
 
-**Plantilla de los 6 servicios.** 9 secciones. Copy de las 4 primeras del §7.2; las 5 restantes
+**Plantilla de los 6 servicios.** 8 secciones. Copy de las 4 primeras del §7.2; las restantes
 reutilizan literal el §7.1 filtrado a este servicio. Cero texto nuevo.
 
 | # | Sección | Notas |
 |---|---|---|
 | — | Migas | `INICIO / SERVICIOS / HORMIGÓN IMPRESO` |
 | — | Hero | `1fr 560px`. H1 a 64 px, entradilla, CTA ocre + contorno. Bloque de foto `4/3` con ficha |
-| — | Submenú | Anclado a 80 px, 7 anclas. Solo escritorio |
+| — | Submenú | Anclado a 80 px, **6 anclas como máximo**. Solo escritorio |
 | 01 | Aplicaciones | `380px 1fr`. Filas `300px 1fr`: nombre de aplicación en Archivo 26 px y matiz a la derecha |
 | 02 | Muestrario del servicio | Rejilla de 4 con los acabados de esta técnica, filtrados del inventario |
 | 03 | Ficha técnica | `380px 1fr` + tabla de 8 filas (`01 §3.8`, tercera variante) |
 | 04 | Cuándo NO elegir impreso | **Fondo `--tinta` a página completa.** `1fr 1fr`. 2 botones de contorno claro a los otros servicios |
-| 05 | Precio | `1fr 1fr`. Solo las 2 filas de este servicio, con el rango en mono 20 px. Calculadora reducida |
-| 06 | Cómo trabajamos | 4 columnas, idéntico a la home |
-| 07 | Obra ejecutada | 3 tarjetas de proyecto de esta técnica |
-| 08 | FAQ | Acordeón de 5, específicas del servicio |
-| 09 | Cierre | `1fr 1fr` con formulario de 3 campos |
+| 05 | Cómo trabajamos | 4 columnas, idéntico a la home |
+| 06 | Obra ejecutada | 3 tarjetas de proyecto de esta técnica |
+| 07 | FAQ | Acordeón de 5, específicas del servicio |
+| 08 | Cierre | `1fr 1fr` con formulario de 3 campos |
+
+⛔ **La sección de Precio, que era la 05, se retira el 2026-09-18.** Misma decisión del dueño
+que retiró `/precios/` el día antes —no quiere precios en la web—, extendida ahora a la
+calculadora, que era todo lo que esa sección contenía. Detalle en §A5. Las secciones ya eran
+condicionales y se renumeran solas, así que **no quedó hueco que recomponer**: medido a 390,
+768, 1024 y 1366 px en `/hormigon-impreso/`, la costura entre `04 · Cuándo NO` (fondo `--tinta`)
+y `05 · Cómo trabajamos` (fondo `--fondo-alt`) es de 0 px y ninguna de las cuatro tiene scroll
+horizontal. La numeración de esta tabla **no es fija**: un servicio sin `aplicaciones` o sin
+`cuandoNo` empieza y sigue con otros números, y `/hormigon-fratasado/` y
+`/hormigon-desactivado/` llevan cuatro secciones desde que existen.
 
 La sección 04 es la que más vende de toda la web y **ninguna competencia la tiene**: decirle al
 cliente cuándo no contratar este servicio. Va en negro a página completa por eso.
 
 En móvil no hay submenú: solo la barra de contacto. La ficha técnica se apila en pares.
 
+**Las pistas fijas de esta plantilla empiezan en 1280 px. Enmienda del 2026-09-17, medida.**
+`1fr 560px` con el H1 a 64 px necesita **1278 px de ancho de contenido**: la columna izquierda
+no puede bajar de la palabra más larga del H1 —558 px en `/microcemento/`, 472 en
+`/hormigon-desactivado/`, 374 en las otras cuatro— y hay que sumarle 64 de hueco, 560 de foto y
+96 de gutter. Encendido en 768 px el `1fr` no podía encoger por debajo de esa palabra y empujaba
+la página: **100 px de scroll horizontal del documento a 960 px en cuatro de las seis páginas,
+198 en desactivado y 285 en microcemento**. Lo mismo, por lo mismo, en las otras pistas
+fijas de la plantilla:
+
+| Pista | Dónde | Ancho de contenido que pide |
+|---|---|---|
+| `1fr 560px`, H1 64 px | Hero | 1278 px |
+| `1fr 340px` | Ficha técnica dentro del `380px 1fr` de su sección | 986 px |
+| `300px 1fr` | Filas de Aplicaciones, dentro del mismo `380px 1fr` | 980 px |
+| 6 anclas que no parten | Submenú (`01 §4.6`) | 1135 px |
+
+Por debajo de 1280 px cada una usa **su propio tratamiento apilado, el de móvil**, que ya estaba
+descrito: el hero se reparte en dos mitades con el H1 a 46 px, la ficha técnica se apila «en
+pares» como dice el párrafo de arriba, las aplicaciones apilan nombre y matiz y **el submenú no
+se pinta**, que es lo que ya dice «Solo escritorio» dos párrafos más arriba.
+
+⚠️ **Dos filas de esa tabla cambian el 2026-09-18 y el punto de ruptura NO se mueve.** La de la
+calculadora (`1fr 1fr` con chips de uso, ~960 px) desaparece con el componente. Y el submenú
+pasa de 7 anclas a 6 —se va `Precio`—, así que su carril de anclas mide **1039 px medidos a
+1366 px en `/hormigon-impreso/`, `/hormigon-pulido/` y `/microcemento/`**, que con los 96 px de
+gutter piden 1135 px de ventana en vez de 1259. **Los 1280 px se quedan donde están**: quien
+fija ese umbral es el hero, que sigue pidiendo 1278 px de contenido y no ha cambiado. Bajar el
+`xl` de la plantilla porque ahora quepa el submenú devolvería los 100–285 px de scroll
+horizontal que esta enmienda quitó.
+
+⚠️ Estos 1280 px **ya no coinciden** con la cabecera: desde el 2026-09-17 la de escritorio y la
+barra de contacto de móvil se mueven en `cabecera-ancha` = 1180 px (`01 §4.1` y §4.3), porque
+esa fila cabe ahí y estas pistas no —la del hero pide 1278 px de contenido y la del submenú
+1259—. Entre 1180 y 1279 se ve, a propósito, **nav de escritorio con la plantilla apilada**: son
+dos medidas distintas de dos cosas distintas, y forzar una a la otra rompe la que no cabe.
+
+⚠️ **Y una regla que esto rompe, sin arreglar en esta pasada.** Con la barra de contacto visible
+hasta 1279, entre 768 y 1279 hay **dos ocres de acción** en las seis páginas de servicio: el
+`Llamar` de la barra y el `Pedir presupuesto` del hero. Es la regla del ocre de `01 §2.2`, y el
+remedio ya está escrito en §A1 —«los CTA del hero y del cierre bajan a contorno» en móvil—, pero
+`Boton` no sabe cambiar de variante por punto de ruptura: hay que duplicar el par por
+breakpoint, como hace `app/presupuesto/page.tsx`. **Ya pasaba por debajo de 768**; lo que cambia
+es que ahora pasa en 512 px más de ancho.
+
 ## A3 · Muestrario — `/acabados/`
 
-El elemento firma. 16 acabados, 8 con obra documentada.
+El elemento firma. 16 acabados en el catálogo; **desde el 2026-09-17 se publican los 10 que
+tienen muestra fotográfica**, 7 de ellos con obra documentada.
 
-- **Hero:** `1fr 420px`, H1 64 px, contador `16 ACABADOS · 8 CON OBRA DOCUMENTADA` en el
-  antetítulo. **El contador es real, no decorativo**: se calcula del inventario con la regla de
+- **Solo se pinta el acabado que tiene foto.** Enmienda del 2026-09-17, por encargo del dueño.
+  Los seis sin muestra salían con el bloque de posición (`01 §3.12`), y seis huecos rayados
+  entre diez fotos son, en la rejilla de dos de móvil, media pantalla de nada. Se buscó original
+  para los seis en la mediateca y **ninguno hizo match**: la muestra lleva el código de color
+  impreso al lado, así que exige una foto que enseñe ese modelo **en ese color**, y eso solo lo
+  sostiene el dato, no el parecido. Queda anotado en `public/obras/INVENTARIO.md`.
+  Es un filtro de presentación, **no un borrado**: las seis entradas siguen en
+  `content/acabados.json` y `/acabados/[modelo]/` sigue generando sus rutas —`piedra-silleria` y
+  `piedra-rodena` cuelgan solo de ellas—. El día que llegue la foto, vuelven solas.
+- **Y la regla no es de esta pantalla: es del catálogo.** Enmienda del 2026-09-18. Se aplicó
+  primero solo aquí, y los seis huecos siguieron saliendo en otras nueve rutas. **Reparto medido
+  sobre el HTML prerenderizado, 19 bloques:** 6 en `/hormigon-impreso/` —6 de sus 12 tarjetas—,
+  6 en `/lp/hormigon-impreso/`, 1 en cada una de las 6 fichas de modelo y 1 en `/zonas/denia/`.
+  Una sola página de servicio y una sola landing, **no las seis y las cuatro**: los seis acabados
+  sin muestra son todos de impreso, así que ninguna otra técnica los pedía. Ahora el origen es
+  `acabadosPublicados` en `lib/datos.ts`, y de él salen `acabadosPorServicio`, `acabadosPorModelo`,
+  `acabadosPorProyectos` y `tecnicasEnUso`: **ninguna pantalla vuelve a decidir esto**. Para contar
+  lo publicado hay `recuentoAcabadosPublicados()`, que devuelve 10 y 7 —no 16 y 8—.
+- **Hero:** `1fr 420px`, H1 64 px, contador `10 ACABADOS · 7 CON OBRA DOCUMENTADA` en el
+  antetítulo. **El contador es real, no decorativo**: cuenta lo que se pinta, con la regla de
   `03-modelo-de-contenido.md §1.1` —documentada = proyecto con municipio confirmado—. No vale
   `proyectos.length > 0`: eso daría 9 y contradiría al diseño.
 - **Barra de filtros anclada** a `top: 80px`, con `border-top` y `border-bottom` en `--tinta`:
   - Fila 1: `TÉCNICA` — TODAS · IMPRESO · PULIDO · MICROCEMENTO · LAVADO · FRATASADO · DESACTIVADO
-  - Fila 2: `COLOR` — TODOS · 117 · 113 · 109 · 107 · GRIS · ARENA · CREMA
-  - Fila 3: resumen del filtro en mono 12 (`6 ACABADOS · IMPRESO · GRIS`) y, si hay filtro
+  - ~~Fila 2: `COLOR` — TODOS · 117 · 113 · 109 · 107 · GRIS · ARENA · CREMA~~
+    **Retirada el 2026-09-17, por encargo del dueño.** El muestrario es la pantalla a la que se
+    entra para ver qué colores hay, y filtrar por pigmento pedía de entrada el dato que el
+    visitante viene a buscar. El color no desaparece del catálogo: sigue impreso en cada muestra
+    (`C-117`, `GRIS`…) y en la ficha de `/acabados/[modelo]/`. Con él se van su estado, su
+    parámetro de URL y su mitad del resumen.
+  - Fila 2 (antes fila 3): resumen del filtro en mono 12 (`6 ACABADOS · IMPRESO`) y, si hay filtro
     aplicado, `QUITAR FILTROS ×`.
-  - La etiqueta de cada fila ocupa una columna fija de 84 px.
-- **Rejilla de 4** con las muestras (`01 §3.10`). Los dos ejes se combinan con AND.
-- **Estado vacío** (`01 §3.13`) cuando la combinación no existe. Probar `PULIDO` + `117`.
+  - La etiqueta de cada fila ocupa una columna fija de 84 px, alta 44 px, alineada con la
+    **primera** línea de chips.
+  - **Los chips de escritorio envuelven; no hay carril.** Enmienda del 2026-09-17: el carril
+    estaba puesto también en escritorio y de 768 px para arriba pintaba una barra de scroll
+    clásica de 15 px bajo cada fila (medido a 960 px: 1093 px de chips en una caja de 849). A
+    partir de 768 px la fila envuelve con `flex-wrap` y el mismo `gap`, así que en el lienzo de
+    1344 px sigue siendo la fila única que pide este párrafo y por debajo se apila en vez de
+    esconderse. El carril deslizante se queda **solo en móvil**, que es donde lo pide la línea
+    de abajo y donde la barra de scroll es superpuesta y no ocupa alto.
+- **Rejilla de 4** con las muestras (`01 §3.10`). Desde el 2026-09-17 solo queda un eje, así que
+  ya no hay combinación que cruzar.
+- **Estado vacío** (`01 §3.13`). ⚠️ **Corregido el 2026-09-18: un solo eje no bastaba.** Esta
+  línea afirmaba que ya no era alcanzable porque las opciones salen del mismo catálogo que se
+  pinta, y era falso: la otra puerta es la URL. Medido, `/acabados/?tecnica=desactivado` servía
+  «0 ACABADOS · DESACTIVADO» con la rejilla vacía —`desactivado` tiene página de servicio y ni un
+  acabado con muestra—. `FiltrosAcabados` lee `?tecnica=` al montar, así que **la URL es interfaz
+  aunque el chip no exista**. Ahora valida contra las mismas opciones que recibe la barra y, si no
+  está, ni lo aplica ni lo deja en la URL. El componente se queda por el único caso que sí manda
+  el contenido: que ningún acabado del catálogo tenga muestra.
+- **Al reescribir la URL se conserva el resto de la query.** El filtro toca su propio parámetro y
+  nada más. Reconstruirla desde `pathname` se llevaba por delante el `gclid` de una visita de
+  pago antes de que `Atribucion.tsx` lo hubiera guardado en cookie.
 - **Bloque «Cómo se lee un código»** en `--tinta`, `1fr 1fr`: a la izquierda el argumento, a la
   derecha `IMPRESO / ESPIGA / C-117` en mono 20 px con las barras en `--acero`, y las tres
   definiciones (técnica, modelo, color) en 3 columnas. Cierra con la advertencia honesta:
   *el color final varía con la luz, el árido y el sellado; la muestra orienta, la obra manda*.
 - **Cierre** a una línea: titular + 2 botones.
 
-En móvil: dos carriles de chips deslizantes anclados arriba, rejilla de 2, resumen y
-`QUITAR ×` en la misma fila.
+En móvil: un carril de chips deslizante anclado arriba —eran dos hasta el 2026-09-17—, rejilla de
+2, resumen y `QUITAR ×` en la misma fila.
 
-El estado de los filtros se refleja en la URL (`?tecnica=impreso&color=gris`) para que sea
-compartible y para que Google pueda indexar combinaciones con obra real.
+El estado del filtro se refleja en la URL (`?tecnica=impreso`) para que sea compartible y para que
+Google pueda indexar la técnica con obra real. Es además el enlace con el que cada página de
+servicio manda aquí (`PaginaServicio`, «Ver todos los acabados de…»). `?color=` ya no se lee.
 
 ## A4 · Ficha de proyecto — `/proyectos/[slug]/`
 
@@ -122,7 +239,36 @@ reales dentro de un `border: 1px dashed #5C625E`, indicando qué debe contar cad
 `EL ENCARGO` = qué había antes, qué problema tenía y con qué condición llegó el cliente;
 `LA EJECUCIÓN` = qué se hizo y qué dificultad concreta tuvo esta obra.
 
-## A5 · Precios — `/precios/`
+## A5 · Precios — `/precios/` · ⛔ RETIRADA EL 2026-09-17
+
+**Esta pantalla ya no existe en el sitio.** Decisión del dueño, en sus palabras: retirarla por
+completo; no quiere precios en la web. Se ha borrado `app/precios/`, su enlace del nav de
+`01 §4.1` y su entrada de `app/sitemap.ts`. Ninguna de las 33 redirecciones 301 de la migración
+apuntaba aquí —era una ruta nueva del rediseño, no una de la web vieja—, así que no hubo nada
+que repuntar.
+
+⛔ **Y la calculadora también, el 2026-09-18.** Al retirar la página, la calculadora se quedó
+viviendo dentro de las cuatro páginas de servicio que declaraban `usosCalculadora` y, por
+herencia de la plantilla, dentro de las cuatro landings de `/lp/`. Preguntado expresamente, el
+dueño contestó que fuera también: **el sitio no da un precio en ningún sitio.** Medido antes de
+retirarla, en `/hormigon-impreso/` a 390 px, escribir `80` en el campo de metros llevaba el
+bloque de resultado de «—» a «2240–3040 €».
+
+**Lo que ya no existe en código:** `components/secciones/Calculadora.tsx`, el campo
+`usosCalculadora` de `content/servicios.tsx` con sus cuatro rangos de €/m², y el miembro
+`seccion-precio` de la unión `SeccionServicio`. Ninguna pantalla monta nada de eso.
+
+**Dónde queda el dato, entonces.** La especificación de abajo **se conserva como histórico y no
+describe nada que se pinte hoy**: es el único sitio, junto con la tabla de multiplicadores de
+`03 §5`, donde quedan escritos los rangos y la fórmula. Se guarda para que reponerlos sea leer y
+no reinventar, y se lee en pasado. Volver a pintarlos exige que lo pida el dueño.
+
+⚠️ **Lo que esta retirada NO ha tocado, y sigue prometiendo precio:** las `description` de
+`/hormigon-impreso/`, `/hormigon-pulido/`, `/microcemento/` y `/hormigon-lavado/` en
+`content/servicios.tsx` siguen diciendo «consulta el precio por m²», «Precio por m²», «Precio y
+proyectos» y «precio orientativo». No se ven en la página, pero son lo que Google enseña en el
+resultado de búsqueda, y ahora prometen algo que la página ya no tiene. Reescribirlas es copy
+nuevo —`05 §B7`—, así que es decisión del dueño y está pendiente.
 
 - **Hero** `1fr 520px`, H1 64 px, antetítulo `PRECIOS ORIENTATIVOS · SIN IVA`.
 - **Tabla completa**, rejilla `1fr 300px 300px` con cabecera en mono 11
@@ -179,38 +325,93 @@ La pantalla que cierra el embudo. Copy del §7.4.
 | Sube una foto del espacio | archivo | no |
 | Acepto la política de privacidad | casilla | sí |
 
-Nombre y teléfono comparten fila (`1fr 1fr`); el resto ocupa el ancho.
+Nombre y teléfono comparten fila; el resto ocupa el ancho.
 Botón de envío ocre a ancho completo: `Enviar y que me llamen`.
 
-**Microcopy literal**, sin reescribir:
+⚠️ **Enmienda del 2026-09-18: la fila de nombre y teléfono se reparte por el ancho de su
+columna, no por el de la ventana.** Decía `1fr 1fr` y se implementaba con `md:grid-cols-2`,
+que mira el documento; pero este formulario se monta en ocho sitios y en la variante corta
+cae dentro de media columna. Medido a 768 px en la portada, en `/presupuesto/` y en
+`/hormigon-impreso/`: columna de **296,5 px** → pistas de **140,3 px** → la etiqueta
+`NOMBRE Y APELLIDOS *`, que mide **167,2 px** de ancho intrínseco, parte en dos líneas y baja
+su input **20,9 px** respecto al del teléfono. Ahora es
+`grid-cols-[repeat(auto-fit,minmax(180px,1fr))]`: una sola pista por debajo de **376 px** de
+columna y dos por encima. A 1024 px las pistas siguen midiendo **204,3 px**, como antes.
+
+**Microcopy literal**, sin reescribir. Esta lista es cerrada: **todo mensaje que el formulario
+pueda pintar está aquí, y lo que no está aquí no se pinta.**
+
 - Ayuda de superficie: *Un cálculo aproximado nos vale. Largo × ancho.*
-- Ayuda de la foto: *Con una foto podemos darte un rango antes incluso de la visita.*
+- Ayuda de la foto: *Con una foto podemos darte un rango antes incluso de la visita.
+  Máximo 4 MB.*
 - Enviando: *Enviando…*
 - Confirmación: *Recibido. Te llamamos hoy mismo si nos escribes antes de las 18:00, y mañana a
   primera hora si no.*
+- Error de nombre: *Escribe tu nombre.*
 - Error de teléfono: *Escribe un número de 9 cifras para que podamos llamarte.*
+- Error de correo: *Escribe un correo electrónico válido para que podamos escribirte, o deja el
+  campo vacío.*
+- Error del desplegable: *Selecciona qué quieres pavimentar.*
+- Error de la casilla de privacidad: *Tienes que aceptar la política de privacidad.*
+- Error de tipo de la foto: *La foto tiene que ser una imagen.*
+- Error de tamaño de la foto, en servidor: *La foto no puede pasar de 4 MB.*
+- Error de tamaño de la foto, en cliente: *Esta foto pasa de 4 MB. Elige otra o redúcela antes
+  de enviarla.*
+- Límite de envíos: *Demasiados envíos seguidos. Llámanos o escríbenos por WhatsApp.*
 - Error de envío: *No hemos podido enviarlo. Llámanos al `[teléfono]` o escríbenos por WhatsApp
   y lo resolvemos ahora.*
+
+⚠️ **Enmienda del 2026-09-18: los doce mensajes nuevos de esta lista son transcripción, no copy
+nuevo.** Ya se pintaban desde `app/presupuesto/actions.ts` y desde el propio componente, y
+ninguno estaba escrito aquí: la lista se declaraba autoritativa siendo falsa sobre casi todo lo
+que el formulario dice. El **error de correo** es el que trajo la revisión, y describe el estado
+real desde que el campo es opcional en las dos variantes —se rechaza el formato inválido, nunca
+el campo vacío—.
+
+⚠️ **`[teléfono]` del error de envío es microcopy, no un dato pendiente.** Sale literal del
+Server Action y lo sustituye `FormularioPresupuesto` por el número de configuración al pintarlo;
+no lleva tratamiento de corchete. Se había perdido del mensaje en código y el `.replace()` del
+componente era código muerto sobre un camino vivo.
 
 **Los cuatro estados:**
 
 1. **Vacío.** Bordes de campo en `#5C625E`. Botón activo.
 2. **Error de teléfono.** El campo pasa a `border: 2px solid #8C3A2B`, mensaje debajo en
-   `#8C3A2B` 600, `aria-invalid="true"` y foco movido al campo. El resto de campos conserva lo
-   escrito. Se valida al enviar, no al teclear.
+   `#8C3A2B` 600, `aria-invalid="true"`, **`aria-describedby` apuntando a ese mensaje** y foco
+   movido al campo. El resto de campos conserva lo escrito. Se valida al enviar, no al teclear.
+   ⚠️ **Enmienda del 2026-09-18:** faltaba el `aria-describedby`, y sin él mover el foco por
+   programa anuncia «Teléfono, inválido» sin decir por qué. Lo pone `01 §3.7` para todos los
+   campos a la vez, no esta pantalla.
+   🔴 **«El resto de campos conserva lo escrito» NO se cumple hoy, medido el 2026-09-18.** Tras
+   rechazar `juan@empresa` en `/presupuesto/` a 390 px, vuelven vacíos **los seis**: `nombre`,
+   `telefono`, `municipio`, `superficie`, `email` y la casilla de privacidad. No es el Server
+   Action: React reinicia los campos no controlados en cuanto la acción resuelve. Duele
+   justo aquí, porque el correo es el único campo donde `type="email"` acepta lo que zod
+   rechaza, así que es el rechazo más probable y se lleva por delante seis campos del
+   formulario largo. **Esta pasada no lo arregla:** exige que la acción devuelva lo enviado
+   como `defaultValue`, y el adjunto no sobrevive a ese viaje de ninguna manera.
 3. **Enviando.** Botón en estado deshabilitado (`01 §3.4`) con el texto *Enviando…*; los campos
    en `readonly`. Sin *spinner*: la web no tiene animaciones de carga.
 4. **Confirmación.** El formulario se sustituye por un bloque en `--tinta` con el antetítulo
    `RECIBIDO`, el mensaje de confirmación en 26 px, la etiqueta técnica con el resumen de lo
    enviado (espacio, superficie, municipio) y dos salidas: `Ver el muestrario` y
    `Ver proyectos`. **No se vuelve a pedir nada.**
+   ⚠️ **Enmienda del 2026-09-18: el resumen enseña lo que esa variante recoge, y nada más.**
+   La corta no pide superficie ni municipio, y el panel pintaba sus dos líneas como `— m²` y
+   `—`. El guion de relleno no era solo un hueco vacío: el componente reenvía ese mismo resumen
+   a GA4 y al Pixel, así que **todos los leads de la portada y de las seis páginas de servicio
+   declaraban `—` como `municipality`**. Una dimensión personalizada de GA4 no se rellena hacia
+   atrás. El Server Action devuelve la cadena vacía y decide quien pinta.
 
 **Móvil:** todo en una columna, formulario primero después de la entradilla, datos de confianza
 al final. La barra fija inferior sigue presente: es la vía alternativa si el formulario asusta.
 
 Implementación: Server Action + Resend, honeypot oculto, límite de envíos por IP, validación
-de teléfono también en servidor. Adjunto: máximo 10 MB, tipos de imagen; si excede, error
-inline sin perder el resto del formulario.
+de teléfono también en servidor. Adjunto: **máximo 4 MB**, tipos de imagen; si excede, error
+inline sin perder el resto del formulario. ⚠️ **Enmienda del 2026-09-18:** decía 10 MB, igual
+que `design/04` §6. El tope real lo pone Vercel, que corta el cuerpo de una función en 4,5 MB, y
+los Server Actions se ejecutan como función; ya estaba en CLAUDE.md y en el código, solo faltaba
+aquí. Por eso la ayuda de la foto dice «Máximo 4 MB».
 
 ## B2 · Ficha de acabado — `/acabados/[modelo]/`
 
@@ -223,8 +424,17 @@ Genera una página indexable por modelo. Ejemplo: `/acabados/espiga/`.
   molde y para qué espacios funciona; a la derecha ficha técnica anclada del modelo —técnica,
   colores disponibles, espesor recomendado, antideslizamiento, usos.
 - **Colores disponibles en este modelo:** rejilla de 4 con la misma muestra en cada color
-  del catálogo que exista, cada una con su código. Si un color no tiene obra ejecutada, la
+  **publicado** de ese modelo, cada una con su código. Si un color no tiene obra ejecutada, la
   muestra va con el municipio entre corchetes.
+  ⚠️ **Enmienda del 2026-09-18.** Decía «cada color del catálogo que exista», y eso era la orden
+  de repintar aquí los seis huecos que el §A3 acababa de quitar del muestrario. Sale de
+  `acabadosPorModelo`, que ya solo devuelve publicados.
+  **Y la sección entera desaparece cuando no queda ninguno**: `/acabados/piedra-silleria/` y
+  `/acabados/piedra-rodena/` cuelgan solo de variantes sin muestra, y un H2 que promete colores
+  sobre una rejilla vacía es peor que el hueco rayado. **Las dos fichas se quedan** —tienen su
+  hero de molde en `content/modelos.ts`, `app/sitemap.ts` las declara y ningún gate del
+  `postbuild` contrasta el sitemap contra las rutas generadas, así que un 404 ahí no lo vería
+  nadie—. Ninguna 301 apunta a `/acabados/`: comprobado en `next.config.ts`, cero coincidencias.
 - **Obras donde se ha ejecutado:** 3 tarjetas de proyecto filtradas por este modelo. Si no hay
   ninguna documentada, el estado vacío del `01 §3.13` con el texto adaptado.
 - **Enlace cruzado:** enlace-etiqueta al artículo del blog que explica la técnica, si existe.
@@ -232,6 +442,27 @@ Genera una página indexable por modelo. Ejemplo: `/acabados/espiga/`.
 - Enlace de vuelta al índice `/acabados/` en las migas y al final.
 
 ## B3 · Índice de proyectos — `/proyectos/`
+
+> 🔴 **Sin filtros desde el 2026-09-17, por decisión del dueño.** Esta pantalla ya no lleva barra
+> anclada, ni los cuatro grupos de chips, ni hoja inferior, ni resumen `9 OBRAS`, ni estado en
+> query params: se sirve la rejilla entera con las 9 obras. Todo lo que sigue —incluida la
+> enmienda de los chips que envuelven, de esta misma fecha— queda **descrito para el registro,
+> no vigente**. Lo que sí sigue siendo normativo de esta pantalla: el hero con H1 de 64 px y su
+> **contador real de obras** —el antetítulo `9 OBRAS DOCUMENTADAS`, que es el que queda— y la
+> rejilla de 3 con tarjetas de proyecto.
+>
+> Consecuencias, para que no haya que descubrirlas leyendo el código:
+>
+> - La entradilla decía «Filtra por servicio, modelo, municipio o año» y la `description` del
+>   `<head>` «Filtra por acabado, espacio o municipio». **Se han borrado las dos frases**, no
+>   sustituido: copy nuevo no se inventa. Las dos entradillas se quedan cortas a la espera de
+>   texto del dueño.
+> - Un enlace antiguo con `?servicio=…` no rompe: llega a la misma URL y ve todas las obras.
+> - `components/secciones/FiltrosProyectos.tsx` se borra. Con él desaparece la **única
+>   implementación en el repo del componente `01 §3.15`, la hoja inferior de filtros**:
+>   `FiltrosAcabados` nunca tuvo hoja, solo chips que envuelven. Si `/acabados/` también pierde
+>   sus filtros, `3.15` se queda sin uso y hay que retirarlo de la lámina.
+> - Esta pantalla ya no tiene ni un componente de cliente propio.
 
 Misma mecánica que el muestrario, con **cuatro ejes** en vez de dos.
 
@@ -241,6 +472,18 @@ Misma mecánica que el muestrario, con **cuatro ejes** en vez de dos.
 - Rejilla de 3 con tarjetas de proyecto. Resumen del filtro + `QUITAR FILTROS ×`.
 - Estado vacío del `01 §3.13`.
 - Estado de los filtros en query params.
+
+- **Los chips envuelven, y la barra de chips empieza en 1280 px.** Enmienda del 2026-09-17,
+  medida: los cuatro grupos llevaban carril, y el de `MODELO` desbordaba incluso a 1366 px
+  —1699 px de chips en una caja de 1255—, con su barra de scroll clásica bajo cada fila.
+  Envolviendo, la barra anclada mide **310 px de 1280 px para arriba** (solo envuelve `MODELO`)
+  y **466 px entre 768 y 1279**. Medio viewport de barra fija sobre la rejilla que el visitante
+  quiere comparar es justo lo que rechaza la decisión de abajo, y su motivo —«hasta 16
+  municipios no caben»— sigue siendo cierto a 960 px. Así que **por debajo de 1280 px manda la
+  hoja inferior**. ⚠️ Desde el 2026-09-17 este umbral **ya no coincide** con el de la cabecera
+  (`cabecera-ancha` = 1180, `01 §4.1` y §4.3): entre 1180 y 1279 se ve nav de escritorio con la
+  hoja inferior de filtros. Los dos estados están diseñados y el botón `FILTRAR` sigue a la
+  vista; lo que no cabe a ese ancho es la barra de chips, no el nav.
 
 **Decisión de filtros en móvil: hoja inferior, no acordeón ni chips.**
 Cuatro grupos con hasta 16 municipios no caben en carriles deslizantes —el usuario tendría que

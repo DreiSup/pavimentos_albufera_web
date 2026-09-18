@@ -51,7 +51,7 @@ components/
 ├── ui/              Boton · Chip · Campo · EnlaceEtiqueta · EstadoVacio · HojaFiltros
 ├── datos/           EtiquetaTecnica · FichaObra · TablaFichaTecnica · DatoPendiente
 ├── contenido/       BloquePosicion · MuestraAcabado · TarjetaProyecto · TarjetaArticulo
-└── secciones/       Acordeon · SubmenuServicio · Calculadora · FormularioPresupuesto
+└── secciones/       Acordeon · SubmenuServicio · FormularioPresupuesto · PaginaServicio
 
 content/             acabados.json · proyectos.json · zonas.json · blog/*.mdx
 lib/                 datos.ts (carga y filtros) · schema.ts (JSON-LD) · config.ts (NAP)
@@ -169,7 +169,7 @@ Del §7.5. `title` ≤ 60 caracteres, `description` ≤ 155.
 | `/microcemento/` | Microcemento en Valencia \| Sin obra ni escombros |
 | `/hormigon-lavado/` | Hormigón lavado y árido visto en Valencia |
 | `/acabados/` | Muestrario de acabados de hormigón impreso |
-| `/precios/` | Precio del hormigón impreso por m² en 2026 |
+| ~~`/precios/`~~ | ⛔ Ruta retirada el 2026-09-17 por decisión del dueño (`02-pantallas.md §A5`) |
 | `/proyectos/` | Proyectos ejecutados \| Pavimentos Albufera |
 | `/empresa/` | Quiénes somos \| Pavimentos Albufera |
 | `/presupuesto/` | Pide presupuesto sin compromiso |
@@ -240,7 +240,10 @@ ruta** —techo duro que rompe el build; objetivo informativo 105 kB. La unidad 
 `CLAUDE.md`.
 
 - Componentes de servidor por defecto. `'use client'` solo en: filtros del muestrario y del
-  índice, acordeón, calculadora, formulario, menú móvil, hoja de filtros y submenú anclado.
+  índice, acordeón, formulario, menú móvil, hoja de filtros y submenú anclado. La calculadora
+  era el séptimo y se retiró el 2026-09-18: con ella salieron 1,2 kB brotli q11 de **las 52
+  rutas**, porque viajaba en un chunk compartido y no en el de cada página. El máximo del sitio
+  bajó de 109,0 a 107,8 kB.
 - Fuentes con `next/font` y `display: swap`, subconjunto latino. Las tres familias son
   variables: un archivo por familia.
 - Sin librería de animación. Las tres transiciones del §8.6 se hacen con CSS y un
@@ -258,8 +261,12 @@ Banner de consentimiento conforme al RGPD: **nada se carga antes de aceptar**. E
 componente sobrio en `--tinta` con los mismos botones del sistema, anclado abajo en escritorio
 y por encima de la barra fija en móvil. Sin sombra, sin radio, sin animación de entrada.
 
-Eventos mínimos: envío de formulario, clic en `Llamar`, clic en `WhatsApp`, uso de la
-calculadora, y filtro aplicado en el muestrario (dice qué acabados interesan de verdad).
+Eventos mínimos: envío de formulario, clic en `Llamar`, clic en `WhatsApp` y filtro aplicado en
+el muestrario (dice qué acabados interesan de verdad). ⚠️ **`calculator_use` ya no se emite
+desde ninguna pantalla** desde el 2026-09-18: desapareció su único emisor. Su nombre **sigue en
+el contrato de `lib/eventos.ts` a propósito** —borrarlo de ahí impide volver a mirar en GA4 lo
+que se recogió—, y retirarlo es decisión de quien lleva la medición, no de quien quitó el
+componente.
 
 ## 10. Despliegue en GitHub y Vercel
 
@@ -311,7 +318,8 @@ Cada paso es desplegable y revisable por separado:
 5. Servicio de impreso, y de ahí los otros cinco.
 6. Índice y ficha de proyecto.
 7. Presupuesto, con la Server Action y sus cuatro estados.
-8. Precios y calculadora.
+8. ~~Precios y calculadora.~~ Paso retirado entero: la página el 2026-09-17 y la calculadora
+   el 2026-09-18. El sitio no da un precio en ninguna pantalla.
 9. Empresa, zonas, blog, legales, 404.
 10. SEO técnico: redirecciones, sitemap, robots, canónicas, JSON-LD.
 11. Analítica, consentimiento y la lista de comprobación del README §12.

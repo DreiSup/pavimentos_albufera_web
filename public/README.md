@@ -13,7 +13,10 @@ public/
 ```
 
 Los iconos de pestaña y las imágenes de compartición **no viven aquí**: son convenciones de
-archivo de Next 15 y van en `app/` (`icon.svg`, `apple-icon.png`, `opengraph-image.png`).
+archivo de Next 15 y van en `app/` (`icon.png`, `apple-icon.png`, `opengraph-image.png`).
+Decían `icon.svg` y nunca lo fueron: en este repo no hay un solo SVG. Los dos iconos son la
+senda del logotipo recortada del original; la caja de recorte y el porqué de cada decisión están
+en `design/01-sistema-de-diseno.md` §2.1.
 
 ## Nomenclatura
 

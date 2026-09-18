@@ -19,9 +19,9 @@ import {
   acabados,
   acabadosPorModelo,
   articuloQueExplica,
-  modelosEnUso,
   proyectosDe,
   proyectosPorModelo,
+  rutasDeAcabado,
 } from '@/lib/datos'
 import type { Imagen } from '@/lib/tipos'
 import {
@@ -51,10 +51,22 @@ import {
  * acabados del catálogo sin ruta indexable propia.
  */
 
-const slugsSinModelo = acabados.filter((a) => !a.modelo).map((a) => a.slug)
-
+/**
+ * ⚠️ Las rutas salen del CATÁLOGO ENTERO, no de `acabadosPublicados`, y tienen
+ * que seguir saliendo de ahí. Filtrar por muestra dejaría
+ * `/acabados/piedra-silleria/` y `/acabados/piedra-rodena/` en 404 declarados en
+ * el sitemap, y ningún gate del `postbuild` lo vería: ninguna 301 apunta a
+ * `/acabados/`, así que `verificar-redirecciones.mjs` no las mira.
+ *
+ * `rutasDeAcabado()` es el origen único que comparte con `app/sitemap.ts`: allí
+ * estaban las mismas dos reglas escritas otra vez, y coincidir por duplicación
+ * no es coincidir.
+ *
+ * Lo que sí cambia es lo que se PINTA dentro: `resolver` compone las variantes
+ * con `acabadosPorModelo`, que ya solo devuelve publicados.
+ */
 export function generateStaticParams() {
-  return [...modelosEnUso(), ...slugsSinModelo].map((modelo) => ({ modelo }))
+  return rutasDeAcabado().map((modelo) => ({ modelo }))
 }
 
 type Ficha = {
@@ -75,10 +87,20 @@ type Ficha = {
 function resolver(param: string): Ficha | null {
   const nombreModelo = NOMBRE_MODELO[param as ModeloId]
 
-  if (nombreModelo) {
+  // 🔴 La existencia de la ficha se decide contra el CATÁLOGO, no contra las
+  // variantes publicadas. `piedra-silleria` y `piedra-rodena` no tienen ninguna
+  // —sus únicas variantes son las que no hicieron match de color—, y con
+  // `variantes.length === 0` como puerta las dos rutas devolverían 404 mientras
+  // `generateStaticParams` y el sitemap las siguen declarando.
+  //
+  // La técnica sale de la primera entrada del catálogo con ese molde, no de
+  // `variantes[0]`, justo por esas dos: sin esta línea la ficha se quedaba sin
+  // servicio del que sacar título, descripción y enlace a la técnica.
+  const delCatalogo = acabados.find((a) => a.modelo === param)
+
+  if (nombreModelo && delCatalogo) {
     const variantes = acabadosPorModelo(param as ModeloId)
-    if (variantes.length === 0) return null
-    const servicio = variantes[0].servicio
+    const servicio = delCatalogo.servicio
     return {
       esModelo: true,
       servicio,
@@ -209,7 +231,14 @@ export default async function FichaAcabado({ params }: { params: Promise<{ model
         </div>
       </section>
 
-      {ficha.esModelo ? (
+      {/* Y no `ficha.esModelo` a secas: `/acabados/piedra-silleria/` y
+          `/acabados/piedra-rodena/` existen —tienen su hero de molde en
+          `content/modelos.ts` y el sitemap las declara— pero ninguna de sus
+          variantes tiene muestra. Con la sección incondicional las dos pintaban
+          un H2 prometiendo colores sobre una rejilla vacía, que es peor que el
+          hueco rayado que este lote viene a quitar: promete y no da. La ficha se
+          queda; la sección que no puede cumplirse, no. */}
+      {ficha.esModelo && ficha.variantes.length > 0 ? (
         <Aparece as="section" className="bg-fondo-alt px-[18px] md:px-lat-desktop py-9 md:py-22">
           <div className="flex flex-col gap-6">
             <h2 className="font-display font-bold fs-h2 text-34 md:text-46 m-0">

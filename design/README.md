@@ -32,7 +32,8 @@ Cómo leer el prototipo:
 - `01 SISTEMA` es la lámina de tokens y componentes. Empieza por ahí.
 - Interacciones reales que puedes probar: filtros del muestrario (incluido el estado
   «sin resultados»), acordeón de FAQ, submenú de la página de servicio y la calculadora
-  de precios.
+  de precios. ⚠️ **La calculadora solo existe en el prototipo**: se retiró del sitio el
+  2026-09-18 (§7 y `02-pantallas.md §A5`). El prototipo no se reescribe hacia atrás.
 
 ## 3. Fidelidad
 
@@ -53,7 +54,7 @@ Dos avisos:
 | Servicio (impreso) | `/hormigon-impreso/` | ✅ Maquetada. **Plantilla** de los otros 5 servicios |
 | Muestrario | `/acabados/` | ✅ Maquetada, con filtros y estado vacío |
 | Ficha de proyecto | `/proyectos/[slug]/` | ✅ Maquetada (Moncada). **Plantilla** de las 11 obras |
-| Precios | `/precios/` | ✅ Maquetada, con calculadora |
+| ~~Precios~~ | ~~`/precios/`~~ | ⛔ **Retirada del sitio el 2026-09-17**, decisión del dueño: no quiere precios en la web. Ver `02-pantallas.md §A5` |
 | Lámina de sistema | — | ✅ Tokens y componentes base |
 | Presupuesto | `/presupuesto/` | 📐 Especificada en `02-pantallas.md §B1`, sin maquetar |
 | Ficha de acabado | `/acabados/[modelo]/` | 📐 Especificada en `§B2` |
@@ -114,20 +115,24 @@ Cualquier dependencia que ponga en riesgo el presupuesto de JS se descarta.
 
 Recogido en detalle en `02-pantallas.md`. Resumen:
 
-- **Filtros del muestrario y del índice de proyectos.** Dos ejes combinables. Filtran en
-  cliente sobre datos ya cargados: sin salto de red, sin estado de carga. Cada filtro
-  aplicado se refleja en la URL como query param para que el estado sea compartible.
-  Con cero resultados aparece el estado vacío, que **no es un error**: dice que solo se
-  enseñan acabados ejecutados de verdad y ofrece quitar filtros o preguntar.
+- **Filtro del muestrario.** ⚠️ Corregido el 2026-09-18: aquí decía «filtros del muestrario y del
+  índice de proyectos, dos ejes combinables», y ya no queda ni una de las tres cosas.
+  `/proyectos/` no tiene filtros —se retiraron—, y al muestrario le queda **un solo eje**, el de
+  técnica, desde el 2026-09-17 (`02` §A3). Filtra en cliente sobre datos ya cargados: sin salto de
+  red, sin estado de carga. El filtro aplicado se refleja en la URL como query param para que el
+  estado sea compartible, y **la URL se valida contra las mismas opciones que la barra**: un
+  `?tecnica=` que no está entre los chips no se aplica. Con cero resultados aparece el estado
+  vacío, que **no es un error**: dice que solo se enseñan acabados ejecutados de verdad y ofrece
+  quitar filtros o preguntar.
 - **Acordeón de FAQ.** Uno abierto de inicio, el resto cerrados. Al abrir uno se cierra el
   anterior. Implementar con `<details>`/`<summary>` o con botón + `aria-expanded`.
 - **Submenú de la página de servicio.** Anclado bajo la cabecera en escritorio. Marca en ocre
   la sección seleccionada. **En producción debe seguir el scroll** con un IntersectionObserver
   (`rootMargin: '-150px 0px -55% 0px'`): en el prototipo solo responde al clic por una
   limitación del entorno de previsualización, no por diseño.
-- **Calculadora de precios.** Superficie × rango del uso × multiplicador del terreno. Devuelve
-  un rango redondeado a la decena, nunca una cifra exacta. Recalcula al teclear.
-  Los multiplicadores están **sin validar** por el cliente: ver `05-pendientes`.
+- ~~**Calculadora de precios.**~~ ⛔ **Retirada del sitio el 2026-09-18**, decisión del dueño:
+  no quiere precios en la web, ni en una página propia ni dentro de las de servicio. El
+  componente ya no existe. Su especificación, en pasado, en `02-pantallas.md §A5`.
 - **Formulario de presupuesto.** Cuatro estados: vacío, error de teléfono, enviando y
   confirmación. Validación de teléfono a 9 cifras en cliente y en servidor.
 - **Movimiento** (§8.6): aparición suave de secciones al entrar en pantalla, una sola vez;
@@ -143,7 +148,6 @@ Casi todo es estático. El estado de cliente es local a cada pantalla:
 | Muestrario | `tecnica`, `color` | Query params en la URL |
 | Índice de proyectos | `servicio`, `modelo`, `municipio`, `anio` | Query params |
 | Servicio | `seccionActiva` (submenú), `faqAbierta` | Ninguna |
-| Precios | `m2`, `uso`, `terreno` | Ninguna |
 | Presupuesto | `campos`, `errores`, `estadoEnvio` | Ninguna |
 | Global | `menuMovilAbierto` | Ninguna |
 
@@ -205,7 +209,9 @@ Orden de implementación recomendado, cada paso desplegable y revisable:
 5. **Servicio de impreso**, y de ahí los 5 servicios restantes con la misma plantilla.
 6. **Índice de proyectos + ficha de proyecto**, con las 11 obras.
 7. **Presupuesto** — Server Action, Resend, honeypot, los cuatro estados.
-8. **Precios**, con la calculadora.
+8. ~~**Precios**, con la calculadora.~~ Paso retirado entero. La página se borró el 2026-09-17 y
+   la calculadora el 2026-09-18, cuando el dueño extendió la misma decisión al componente: **el
+   sitio no da un precio en ninguna pantalla.** No queda nada de este paso por construir.
 9. **Empresa, zonas, blog, legales, 404.**
 10. **SEO técnico** — las redirecciones 301, sitemap generado, robots, canónicas, schema.
 11. **Analítica y consentimiento**, y la lista de comprobación del §12.

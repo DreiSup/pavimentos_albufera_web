@@ -28,7 +28,24 @@ const esquema = z.object({
     .string()
     .transform((v) => v.replace(/[\s+]/g, '').replace(/^34/, ''))
     .refine((v) => /^\d{9}$/.test(v), 'Escribe un número de 9 cifras para que podamos llamarte.'),
-  email: z.string().email().optional().or(z.literal('')),
+  // Opcional en las DOS variantes. Obligatorio es una decisión del dueño que
+  // sigue abierta —`design/06`, decisión 7—, y `design/02` §B1 lo marca «no».
+  //
+  // Se valida con `.refine()` sobre el valor ya recortado y no con
+  // `z.union([z.literal(''), z.string().email(MSG)])`: la unión emite
+  // `invalid_union` y el mensaje de abajo se perdería por el camino.
+  //
+  // El `.trim()` no es cosmético: zod rechaza ` juan@empresa.com ` con espacio
+  // alrededor, que es exactamente lo que deja un pegado desde el móvil.
+  email: z
+    .string()
+    .trim()
+    .optional()
+    .default('')
+    .refine(
+      (v) => v === '' || z.string().email().safeParse(v).success,
+      'Escribe un correo electrónico válido para que podamos escribirte, o deja el campo vacío.',
+    ),
   espacio: z.string().min(1, 'Selecciona qué quieres pavimentar.'),
   superficie: z.string().optional().default(''),
   municipio: z.string().optional().default(''),
@@ -224,6 +241,12 @@ export async function enviarPresupuesto(
             text: [
               '🔔 Nuevo presupuesto',
               `${nombre} · ${telefono}`,
+              // El aviso es lo primero que se lee, y muchas veces lo único: el
+              // email llegaba al buzón de Resend y a la CAPI, pero no aquí, así
+              // que quien atendía desde el móvil no tenía la segunda vía de
+              // contacto delante. Con `—` cuando no lo han dejado, para que la
+              // ausencia se vea y no se confunda con una línea que falta.
+              email || '—',
               espacio,
               municipio || '—',
               '',
@@ -333,14 +356,27 @@ export async function enviarPresupuesto(
     if (!entregado) {
       return {
         estado: 'error',
-        errores: { form: 'No hemos podido enviarlo. Llámanos o escríbenos por WhatsApp y lo resolvemos ahora.' },
+        errores: {
+          // El literal `[teléfono]` es el del microcopy de `design/02` §B1 y no
+          // un dato pendiente: `FormularioPresupuesto` lo sustituye por
+          // `nap.telefono` al pintarlo, porque el número vive en configuración y
+          // el Server Action no es quien lo compone. Sin él, ese `.replace()`
+          // era código muerto sobre un camino vivo y el mensaje perdía la única
+          // vía de contacto que ofrece.
+          form: 'No hemos podido enviarlo. Llámanos al [teléfono] o escríbenos por WhatsApp y lo resolvemos ahora.',
+        },
       }
     }
   }
 
+  // El resumen viaja tal cual, con la cadena vacía cuando el campo no se pide.
+  // El guion de relleno que había antes no era solo un hueco feo en el panel de
+  // «Recibido»: `FormularioPresupuesto` lo reenvía como `municipality` a GA4 y
+  // al Pixel, así que cada lead de la variante corta declaraba `—` de
+  // municipio. Quién decide si un campo se enseña es quien lo pinta.
   return {
     estado: 'enviado',
     errores: {},
-    resumen: { espacio, superficie: superficie || '—', municipio: municipio || '—' },
+    resumen: { espacio, superficie, municipio },
   }
 }

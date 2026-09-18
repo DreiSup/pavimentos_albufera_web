@@ -39,13 +39,42 @@ Valores auxiliares, derivados y no sustituibles por otros:
 identidad es un archivo entregado por el dueño y trae **dos azules que el sistema no tiene**:
 `#000D2A` en «Pavimentos» y la senda cercana, y `#014BA2` en «Albufera» y la senda lejana. No se
 corrigen al gris del sistema: es la marca, y una marca no se repinta para que encaje en la web
-que la enseña. La excepción **empieza y acaba en `public/marca/`**: ningún texto, borde, fondo ni
-estado del sitio puede usar esos valores.
+que la enseña. La excepción **empieza y acaba en los derivados de marca**: `public/marca/` y, desde
+el 2026-09-17, `app/icon.png` y `app/apple-icon.png`, que son la misma marca en miniatura. Ningún
+texto, borde, fondo ni estado del sitio puede usar esos valores.
 
 De ahí sale un tercer valor derivado, también exclusivo del logotipo: **`#8FB4D6`**, el azul de
 la variante clara. Existe porque `#000D2A` mide **1,1 : 1** contra `--tinta` —sobre el pie el
 logotipo original desaparece— y hace falta un par claro que conserve el contraste entre las dos
 palabras. El detalle de cómo se derivan las variantes está en `public/README.md`.
+
+**El icono de pestaña, 2026-09-17.** El dueño pidió «el logotipo en miniatura» en la pestaña. Lo
+que hay en la pestaña es **la senda sola**, sin wordmark, y eso no es una licencia: el bloque
+completo a 16 px deja «Pavimentos Albufera» en una mancha gris de dos píxeles de alto —probado y
+mirado—, así que publicarlo sería el mismo maquillaje que el claim del §`public/README.md`.
+
+| Archivo | Lado | Recorte | Margen |
+|---|---|---|---|
+| `app/icon.png` | 256 px | senda de `img/logo_nuevo.png`, caja `(411, 22) → (1528, 537)` | 4 % |
+| `app/apple-icon.png` | 180 px | la misma | 10 %, que es lo que pide el recorte redondeado de iOS |
+
+Cuatro decisiones, y su porqué:
+
+- **Fuente: `img/logo_nuevo.png`, no `public/marca/logo.png`.** El original que entregó el dueño
+  está en RGBA a color real; los cuatro de `public/marca/` están cuantizados a paleta. Para
+  reescalar conviene el que conserva el degradado de cada elipse. `/img/` está en `.gitignore`,
+  así que la caja de recorte queda apuntada aquí: es lo único que hace falta para rehacerlo.
+- **PNG, no SVG.** `public/README.md` ya cierra esta puerta —la senda son degradados por elipse y
+  vectorizarla la redibuja—, y sigue cerrada en miniatura. **No existe ningún SVG en el repo.**
+- **Teja opaca en `--fondo`.** Es lo único que resuelve el modo oscuro sin duplicar archivo: la
+  pestaña clara y la oscura ven el mismo cuadrado. Probada la alternativa —teja `#000D2A` con la
+  senda de la variante clara— y a 16 px la senda pierde el azul y se lee gris: el color, que es lo
+  único que sobrevive a ese tamaño, se perdía. Por eso no hay rama `prefers-color-scheme`.
+- **Un solo archivo, sin `.ico` de varios tamaños.** Comparado el reescalado del navegador desde
+  los 256 px contra un mapa de bits pre-escalado a 16: la diferencia es marginal y ninguno de los
+  dos resuelve las elipses. **A 16 px se ve una loma azul con la base oscura**, que es la
+  perspectiva de la senda, no sus losas. Se leen a partir de 24-32 px. Es el techo del motivo, no
+  del archivo.
 
 ### 2.2 La regla del ocre
 
@@ -58,6 +87,18 @@ palabras. El detalle de cómo se derivan las variantes está en `public/README.m
 Todos los demás botones son de contorno o de relleno en tinta. Cualquier ocre que no cumpla
 uno de esos dos roles, sobra. En móvil, la acción primaria persistente es la barra fija
 inferior, así que **los CTA del hero y del cierre bajan a contorno** para no competir con ella.
+
+**Excepción del hero de la home, decidida por el dueño el 2026-09-17.** El `Ver acabados` del
+hero de `/` es **ocre también en móvil**, así que esa pantalla enseña dos ocres de acción a la
+vez: ese botón y el `Llamar` de la barra fija. El dueño lo sabe y lo elige: con los dos botones
+del hero en contorno no se distinguía cuál era la acción principal, y prefiere perder la
+jerarquía frente a la barra antes que perderla entre los dos botones que tiene delante.
+
+Es **excepción de pantalla, no enmienda de la regla**: no se extiende al cierre de la home —sus
+dos botones siguen en tinta y contorno— ni a ninguna otra ruta. El párrafo de arriba sigue
+siendo la norma en las 50 restantes. Y no relaja nada del foco: `btn-primario` cambia el
+`outline` a `--tinta`, que es el único que contrasta sobre ocre, y viene ya dentro de la
+variante `primario` de `Boton`.
 
 Los antetítulos de sección van siempre en `--acero` sobre fondo claro y en `--fondo-alt` sobre
 fondo oscuro. **Nunca en ocre**: no son acciones.
@@ -89,6 +130,16 @@ En Tailwind: `font-display`, `font-sans`, `font-mono` (ver `tailwind.config.ts`)
 
 Escala cerrada del §8.3: **12 / 14 / 16 / 20 / 26 / 34 / 46 / 64 / 88**. No hay valores
 intermedios; si un titular no cabe, se acorta el titular.
+
+**Salvo cuando el titular no se puede acortar: entonces se parte por sílabas.** Enmienda del
+2026-09-17. El H1 de `/microcemento/` es el nombre del servicio y el copy viene del documento
+maestro: «Microcemento» a 46 px mide **404 px de palabra indivisible** y en un teléfono de
+390 px el H1 dispone de 354, o sea **47 px de scroll horizontal de la página entera**, medidos.
+No se sale ninguna caja: se sale la tinta de una línea. Y no hay a qué bajar, porque entre 34 y
+46 la escala no tiene nada. Así que los H1 llevan `hyphens: auto` —con el `lang="es"` del
+`<html>` da «Microce-mento», partición correcta en español— y `overflow-wrap: break-word` como
+red por si el navegador no trae patrones. **Solo el H1**: es el único tamaño de la escala que
+llega a no caber, y hay uno por página.
 
 | px | Interlineado | Fuente | Uso |
 |---|---|---|---|
@@ -170,9 +221,63 @@ geométrica con la tipografía display del sitio no es la marca de la empresa, y
 obligaba a abrir una excepción en la paleta que ya no hace falta. Queda en el historial por
 si algún día se quiere un logotipo que sí escale y se recoloree.
 
+### 2.8 El velo
+
+**Pieza nueva del sistema, 2026-09-17.** Hasta esta fecha el sistema **no tenía velo**, y por eso
+un comentario de `app/page.tsx` justificaba haber sacado el titular de encima de la foto del
+hero: sobre fotografía real el contraste deja de ser comprobable. El dueño ha decidido que el
+titular vuelva a ir encima. La decisión no se cumple pintando texto claro sobre una foto: se
+cumple añadiendo la pieza que faltaba, con su valor medido.
+
+| Token | Valor | Uso |
+|---|---|---|
+| `--velo` | `rgba(27, 30, 28, 0.68)` | Capa entre una fotografía y el texto que se pinta sobre ella |
+
+**No es un color nuevo.** Es `--tinta` con alfa, así que la paleta de seis del §2.1 sigue
+cerrada: no hay un séptimo hex en ninguna parte.
+
+**De dónde sale el 0,68.** No de mirar una captura. Se compone el velo sobre **cada píxel** de
+la foto igual que lo hace el navegador —en sRGB— y se busca el píxel que deja el contraste WCAG
+de `--fondo` (`#E9EAE6`) **más bajo**, sobre el recorte `3/4` real de un teléfono de 390 px
+(354 × 472 con `object-cover`). No se promedia: un promedio pasa por alto el reflejo de sol de
+40 px sobre el que cae una letra.
+
+| Fondo bajo el velo | Píxel más claro | Contraste de `--fondo` |
+|---|---|---|
+| **Blanco puro `#FFFFFF`** — el peor fondo que puede existir | — | **4,79 : 1** |
+| Moncada, impreso espiga 117 | `#FFFFFF` | 4,79 : 1 |
+| Denia, piedra inglesa gris | `#FFFFFF` | 4,79 : 1 |
+| Alzira, adoquín irregular 107 | `#FFFFFF` | 4,79 : 1 |
+| Corbera, fratasado arena | `rgb(255,247,220)` | 4,98 : 1 |
+| Negro puro | — | 15,26 : 1 |
+
+El número que manda es el primero, y las tres filas siguientes explican por qué: **tres de las
+cuatro fotos del carrusel tienen cielo quemado a blanco puro**, así que su peor caso real *es*
+el peor caso absoluto. Diseñar el velo contra `#FFFFFF` no es pesimismo de laboratorio, es
+describir lo que hay en pantalla — y de paso deja la garantía AA sin depender de qué foto se
+ponga mañana.
+
+Por debajo de `0,67` esa garantía se pierde (4,48 : 1 medido a 0,66). Con `0,68` quedan 0,29
+puntos de margen sobre el 4,5 : 1 que AA pide a texto normal —el titular es texto grande y le
+bastaría 3 : 1—, y la foto conserva el 32 % de su luz, suficiente para que se lea la textura,
+que es lo único que un muestrario de material tiene que enseñar.
+
+El cálculo se reproduce con cualquier implementación de la fórmula de luminancia relativa de
+WCAG 2.1; lo que no se puede cambiar sin rehacer la tabla es el recorte —`3/4` a 390 px— porque
+`object-cover` decide qué parte de la foto se ve y, con ella, cuál es el píxel más claro.
+
+**Dónde se usa, y dónde no.** Solo donde un texto del sitio se pinta encima de una fotografía.
+Hoy eso es un sitio: el hero de la home **por debajo de 768 px**. En escritorio el titular
+tiene su propia columna, no pisa nada, y el velo se retira —`md:hidden`— para que las fotos se
+vean como son. No es un tratamiento estético reutilizable: un velo que aparece donde no hace
+falta es una foto oscurecida sin motivo.
+
+La etiqueta técnica (§3.8) **no necesita velo y no cuenta como excepción**: trae su propio fondo
+`--tinta` opaco, y el velo compuesto sobre `--tinta` da exactamente `--tinta`.
+
 ## 3. Componentes base
 
-Los 14 componentes con los que se compone todo el sitio. Cualquier pantalla nueva se construye
+Los 15 componentes con los que se compone todo el sitio. Cualquier pantalla nueva se construye
 con estos; si hace falta uno nuevo, se crea en este mismo lenguaje y se añade aquí.
 
 ### 3.1 Botón primario (ocre)
@@ -242,8 +347,11 @@ activo    background: #D9A441 · color: #1B1E1C · border: 1px solid #D9A441
 :focus    outline: 2px solid #D9A441; outline-offset: 2px
 ```
 
-Variante sobre fondo oscuro (calculadora de precios): inactivo con
-`border: 1px solid #DADCD6; color: #E9EAE6`; activo igual que arriba.
+Variante sobre fondo oscuro: inactivo con `border: 1px solid #DADCD6; color: #E9EAE6`; activo
+igual que arriba. ⚠️ **Sin consumidor desde el 2026-09-18**: su único uso eran los chips de la
+calculadora de precios, retirada del sitio (`02-pantallas.md §A5`). La variante **se queda
+especificada y en el código de `Chip`** —es un estado del componente, no código muerto de una
+pantalla— y el siguiente bloque sobre `--tinta` que necesite chips la encuentra escrita.
 
 ### 3.7 Campo de formulario
 
@@ -259,6 +367,25 @@ error      border: 2px solid #8C3A2B  +  mensaje Instrument Sans 600 14px color 
 
 Nunca `placeholder` como etiqueta. El `placeholder` solo se usa como ejemplo de formato
 («Largo × ancho»). Sobre fondo oscuro, el borde es `#DADCD6` y el texto `#E9EAE6`.
+
+**El mensaje de error va colgado del campo con `aria-describedby`**, y lo pone el componente,
+no cada llamada. Un `aria-invalid="true"` con `aria-describedby` a `null` anuncia «inválido» y
+se calla el motivo, que es lo único que sirve para corregirlo. La ayuda se asocia igual. Solo se
+listan los `id` que se pintan de verdad, y si el control ya traía su propio `aria-describedby`
+el suyo va primero. `components/ui/Campo.tsx`.
+
+**Casilla de verificación** — la única del sitio es la de privacidad del formulario:
+
+```
+casilla    el control nativo, sin repintar: 13 × 13 px en el navegador
+objetivo   el <label> que la envuelve, min-height: 44px · display: flex · align-items: center · gap: 12px
+texto      Instrument Sans 14px · color: #5C625E, con enlace en #1B1E1C
+```
+
+El objetivo táctil de 44 px es el del label, no el de la casilla: el label ya recibe el toque,
+y agrandarlo no repinta el control. Sin la altura mínima se quedaba en **22,4 px** cuando el
+texto cabía en una línea. `align-items: center` y no `flex-start`: con altura mínima, alinear
+arriba deja 21 px muertos bajo un texto de una línea y se lee como un `gap` mal puesto.
 
 ### 3.8 Etiqueta técnica
 
@@ -391,6 +518,114 @@ formato:  04 · MUESTRARIO      (numeral de dos cifras, punto medio, nombre en m
 
 La numeración es continua dentro de la página y sirve al lector como índice implícito.
 
+### 3.15 Carrusel de fotografía de obra
+
+**Componente nuevo, 2026-09-17.** Decisión del dueño: el hero de la home enseña varias fotos
+que cambian solas, sin gesto táctil. `components/contenido/CarruselFotos.tsx`.
+
+```
+marco       relative · overflow: hidden · fondo --fondo-alt · la proporción del hueco
+            (3/4 en móvil, altura de la celda en escritorio). radius 0, sin sombra
+capa 1      las 4 fotos · absolute inset-0 · una <Image fill object-cover> por diapositiva
+velo        lo que le pase el hero como `children` (§2.8, solo móvil)
+capa 2      las 4 etiquetas técnicas (§3.8) · inset-x-0 bottom-0, alineadas a la derecha,
+            44 px reservados a su izquierda · pointer-events: none · cada una se funde CON
+            su foto, no con el carrusel
+botón       pausa · 44×44 · abajo a la izquierda, en la banda reservada
+pase        @keyframes de opacidad + visibility · ciclo 24 s · 4 diapositivas · 6 s cada una
+            cruce de 3 puntos porcentuales (≈0,7 s) entre una y la siguiente
+            animation-delay NEGATIVO: el turno de cada una, menos una vuelta entera
+estado base opacity: 0 + visibility: hidden · la PRIMERA, `.carrusel__paso--primera`, visible
+```
+
+Siete cosas que definen el componente, y ninguna es decorativa:
+
+- **El pase es de servidor y cuesta cero bytes de JavaScript.** El proyecto no admite librerías
+  de animación y aquí no hace falta ninguna: todo el pase es CSS. Lo único que hidrata es el
+  botón de pausa, que es un control, no el pase.
+- **El estado base es la portada correcta, no un apilamiento.** Con `prefers-reduced-motion:
+  reduce`, o en un navegador que no anime, lo que queda es una sola foto fija. La animación
+  entera vive dentro de un `@media (prefers-reduced-motion: no-preference)`; **no se delega en
+  el `@media reduce` global** de `globals.css`, que solo recorta duración e iteraciones y
+  dejaría los `animation-delay` vivos — «no autopasa» tiene que ser una declaración, no un
+  efecto secundario. Verificado emulando la media feature: 0 animaciones `carrusel`.
+- **Dos capas de pasadas, con el velo en medio.** El velo tiene que oscurecer la FOTO, no el
+  texto que va sobre ella. Con la etiqueta dentro de la misma pasada que su foto, el velo —que
+  llega como `children` y por tanto después— le caía encima y la dejaba en **2,64 : 1** en
+  móvil, contra los 4,5 que pide AA y los 13,9 que tenía en escritorio, donde no hay velo.
+  Sacándola a una capa propia por encima del velo, las cuatro miden **13,91 : 1**: la etiqueta
+  es `bg-tinta` opaco, así que el píxel de debajo es el mismo pase quien pase.
+- **El índice va en `--carrusel-i` y el estado activo en una clase, nunca en `:nth-child`.**
+  Del marco cuelgan seis clases de hijo —fotos, velo, etiquetas y botón—, y cualquier selector
+  posicional cuenta lo que no debe. Por eso la diapositiva activa por defecto es
+  `.carrusel__paso--primera` y no `:first-child`: la primera etiqueta es el sexto hijo.
+- **El retardo es negativo, y por eso la primera vuelta cruza.** Con el retardo positivo, las
+  tres que esperaban no tenían animación viva durante su espera y aparecían de golpe: medidos
+  pausando `document.getAnimations()`, **tres huecos en los primeros 24 s** —5,30-5,95 s,
+  11,30-11,95 y 17,30-17,95— con la suma de opacidades en **0,069**. Restando una vuelta entera
+  las cuatro arrancan en marcha, cada una en su fase, y la suma **no baja de 1** en ningún
+  momento del ciclo (mínimo medido 0,9999998, cero huecos).
+- **`visibility` viaja con `opacity`, y retira del árbol de accesibilidad.** `opacity: 0` no
+  retira nada: un lector de pantalla recorría los cuatro textos alternativos y las cuatro
+  etiquetas técnicas seguidos, con o sin movimiento reducido. Con `visibility` en el estado base
+  y en el `@keyframes`, el árbol del hero pasa de **101 nodos y 4 imágenes a 30 nodos y 1**.
+  Durante los 0,72 s del cruce hay dos, que es exactamente lo que hay en pantalla.
+- **Solo la primera foto es prioritaria, y las otras tres pesan menos.** La primera es la
+  candidata a LCP, la única precargada y la única a calidad 75. Las tres que esperan salen
+  perezosas —para no disputarle la cola— y a `quality={60}`: están dentro del viewport inicial,
+  así que el navegador las pide igual, y no hay forma en CSS de aplazar una imagen que sí está
+  en el viewport. Medido en un móvil de 390 px a DPR 1, las cuatro fotos del hero pasan de
+  **238,1 kB a 156,8 kB (−81,3 kB, −34,2 %)** y la portada entera de 429,8 a 349,2 kB, con el
+  mismo ancho servido en las cuatro. ⚠️ Toda calidad nueva hay que declararla en
+  `images.qualities` de `next.config.ts`.
+- **El `@keyframes` está escrito para cuatro diapositivas.** CSS no sabe repartir «1/n» sin
+  JavaScript. Con otro número se escribe el `@keyframes` de ese número; fingir que el
+  componente es genérico sería mentir sobre lo que hace.
+
+#### Botón de pausa
+
+**Pieza nueva, 2026-09-18.** `components/contenido/BotonPausaCarrusel.tsx`. La WCAG 2.2.2, nivel
+A, exige poder parar todo contenido que se mueva solo durante más de cinco segundos, y un pase
+de 24 s en bucle infinito lo es; `prefers-reduced-motion` cubre a quien lo lleva activado, que
+no es lo mismo. **Decisión del dueño, contestada expresamente: el pase sigue siendo automático y
+se añade un control pequeño y discreto sobre la foto.**
+
+```
+caja     44×44 (min-w-tactil/min-h-tactil) · absolute bottom-0 left-0 dentro del marco
+color    sobre-oscuro bg-tinta text-fondo — el mismo recuadro opaco de la etiqueta §3.8
+glifo    SVG en línea, currentColor: ‖ mientras pasa, ▶ en pausa. Sin librería de iconos
+foco     el outline ocre global de `globals.css`, 2 px, offset 2
+estado   aria-pressed + aria-label que cambia · data-pausa en el marco → animation-play-state
+```
+
+- **El estado se entiende sin color:** lo dice la forma del glifo, no el pigmento. El botón es
+  siempre tinta sobre foto, y el glifo mide **13,91 : 1** contra su propio fondo, así que el
+  contraste no depende de qué foto haya debajo ni de que exista el velo.
+- **No es un `<input type="checkbox">`.** Esa era la salida sin JavaScript que este mismo §
+  apuntaba, y se descarta: un interruptor no admite `aria-pressed`, que es el estado que pide un
+  control de dos posiciones sobre algo que ya está corriendo. Un botón que alterna es estado
+  real, el único motivo que admite CLAUDE.md para cruzar la frontera de cliente.
+- **Escribe `data-pausa` en el marco en vez de resolverse con `:has()`.** `:has()` no es
+  universal, y un botón de pausa que en algún navegador no pare nada es peor promesa que no
+  tenerlo. Verificado: con el botón pulsado el reloj de la animación avanza 17 ms en 900, y al
+  soltarlo vuelve a 900 de 900.
+- **Con movimiento reducido el botón se retira entero** (`display: none` sobre
+  `.carrusel__pausa`). No hay pase que parar, y así sale también del orden de tabulación en vez
+  de dejar un foco que no hace nada.
+- **La etiqueta técnica le reserva su banda.** `pl-11` sobre la capa de etiquetas: a 768 px, la
+  única anchura del sitio en que pasaba, la columna del carrusel mide 304 px y la etiqueta los
+  llenaba enteros, así que el botón se le montaba encima. Se le quita sitio a la etiqueta, que
+  se reparte en una línea más; el control no cambia de esquina según el ancho. Medido a 390,
+  768, 1024 y 1366: sin solapes y sin scroll horizontal.
+
+**Límite medido: por debajo de 360 px el titular llena el marco.** A 390, 375 y 360 px quedan
+175, 64 y 44 px libres entre la última línea del titular y la etiqueta técnica. A 320 px el
+titular ocupa los 374 px del marco entero y la etiqueta **se le monta encima**. 320 está por
+debajo del ancho normativo de `02-pantallas.md` (390) y esa pantalla ya tenía scroll horizontal
+por otro motivo, así que no se ha tapado con un número inventado: si algún día hay que sostener
+320, la pieza que falta es reservar la banda de la etiqueta, no encoger el titular —la escala
+está cerrada y entre 34 y 46 no hay nada.
+
 ## 4. Elementos transversales
 
 ### 4.1 Cabecera de escritorio
@@ -407,6 +642,35 @@ derecha  teléfono en Martian Mono 12px color #5C625E  +  botón de contorno «P
 apila la senda de losas encima y el claim debajo: en una barra de 70-84 px eso deja las palabras
 a 6-8 px de altura de mayúscula y el claim en 3-4 px. El bloque completo se pinta en el pie
 (§4.4), que es el único sitio del sitio con alto para él.
+
+**Esta cabecera empieza en `cabecera-ancha` = 1180 px, no en 768. Enmienda del 2026-09-17,
+medida sobre el DOM.** Es un punto de ruptura **propio del proyecto**, declarado en
+`tailwind.config.ts` (`extend.screens`), porque ninguno de los de serie cae donde esta fila cabe:
+`lg` (1024) se queda corto y `xl` (1280) deja fuera al iPad en horizontal, que es tráfico real.
+
+Las cifras, con el nav ya sin `/precios/` (4 enlaces):
+
+| Ancho de ventana | Contenido útil | Hijos | Hueco a cada lado | Veredicto |
+|---|---|---|---|---|
+| 1024 | 913 px | 928,4 px | **0 px** | ❌ Los tres bloques pegados, y 15,4 px robados al gutter derecho |
+| **1180** | **1069 px** | 928,4 px | **70,3 px** | ✅ Logotipo a 276 px, teléfono y botón en una línea, gutter intacto |
+| 1280 | 1169 px | 928,4 px | 120,3 px | ✅ |
+
+Los **928,4 px de hijos** son logotipo 276 + nav 333,3 + (teléfono 99 + hueco 20 + botón 200,1);
+el contenido útil descuenta los 96 px de gutter y los 15 de la barra de scroll de escritorio. El
+suelo aritmético —hueco cero— son 1039,4 px de ventana, y **caber al byte no es caber**: a 1024
+nada se rompe visiblemente, porque el logotipo lleva `shrink-0` y el teléfono `white-space:
+nowrap`, así que el fallo no se ve roto, se ve apretado.
+
+Por debajo de 1180 vale **la cabecera de móvil**: logotipo + hamburguesa, con `MenuMovil` y la
+barra fija de §4.3, que se esconde en el mismo punto. No es una banda sin navegación: es el
+estado de móvil, completo y ya diseñado, en una ventana más ancha. **Punto de ruptura del nav
+(1180) y altura de la caja (768) son dos cosas distintas** y no se mueven juntas.
+
+⚠️ `cabecera-ancha` nombra esta fila y la barra de §4.3, y nada más. Los `xl:` que quedan en el
+repo —submenú de servicio, filtros, hero de servicio, ficha técnica— responden a pistas de
+rejilla propias, con su propia cifra en `02-pantallas.md`, y no siguen a la cabecera. El de la
+calculadora se fue con ella el 2026-09-18.
 
 En móvil la caja mide 70 px, y `--cabecera-actual` de `tokens.css` lo espeja con una media
 query: es el `top` del que cuelgan la barra de confianza, el submenú de servicio y las dos
@@ -443,6 +707,10 @@ box-shadow: 0 -6px 18px rgba(27,30,28,0.18)
 
 Siempre visible en móvil, en todas las páginas. **Es el CTA primario de móvil**, y por eso
 consume el único ocre de acción de la pantalla.
+
+**Se esconde en `cabecera-ancha` = 1180 px, no en 768** (enmienda del 2026-09-17): sigue a la
+cabecera de §4.1, que empieza donde de verdad cabe. Las dos se mueven juntas, siempre: mover
+una sola deja una banda de anchos sin nav visible y sin barra de contacto a la vez.
 
 ### 4.4 Pie de página
 

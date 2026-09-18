@@ -8,8 +8,8 @@ import FiltrosAcabados, {
   type AcabadoFiltrable,
   type GrupoAcabados,
 } from '@/components/secciones/FiltrosAcabados'
-import { acabados, coloresEnUso, contarDocumentados, tecnicasEnUso } from '@/lib/datos'
-import { CODIGO_COLOR, NOMBRE_SERVICIO } from '@/lib/tipos'
+import { acabadosPublicados, recuentoAcabadosPublicados, tecnicasEnUso } from '@/lib/datos'
+import { NOMBRE_SERVICIO } from '@/lib/tipos'
 
 export const metadata: Metadata = {
   title: 'Muestrario de acabados de hormigón impreso',
@@ -18,33 +18,42 @@ export const metadata: Metadata = {
   alternates: { canonical: '/acabados/' },
 }
 
-const total = acabados.length
-const documentados = contarDocumentados()
+/**
+ * El muestrario publica solo los acabados con muestra fotográfica, y esa regla
+ * ya no vive aquí: `acabadosPublicados` es el origen, y de él salen también las
+ * seis páginas de servicio, las cuatro landings, las fichas de modelo y la zona.
+ * El porqué de la decisión está en `lib/datos.ts` → `estaPublicado`.
+ */
+const { publicados: total, documentados } = recuentoAcabadosPublicados()
 
-const grupos: GrupoAcabados[] = [
-  {
-    clave: 'tecnica',
-    etiqueta: 'Técnica',
-    todos: 'Todas',
-    opciones: tecnicasEnUso().map((t) => ({ valor: t, nombre: NOMBRE_SERVICIO[t] })),
-  },
-  {
-    clave: 'color',
-    etiqueta: 'Color',
-    todos: 'Todos',
-    opciones: coloresEnUso().map((c) => ({ valor: c, nombre: CODIGO_COLOR[c] })),
-  },
-]
+/**
+ * Una sola fila de chips, la de técnica. La de color se retiró el 2026-09-17
+ * (`design/02` §A3): filtrar por pigmento pedía al visitante el dato que viene a
+ * buscar.
+ *
+ * ⚠️ Un solo eje **no basta** para que el estado vacío deje de ser alcanzable,
+ * aunque las opciones salgan del propio catálogo que se pinta. `?tecnica=` es la
+ * otra puerta y `FiltrosAcabados` la lee al montar: medido antes de este cambio,
+ * `/acabados/?tecnica=desactivado` servía «0 ACABADOS · DESACTIVADO» con la
+ * rejilla vacía. Por eso el componente recibe las opciones y valida la URL
+ * contra ellas: la lista de aquí es la única puerta de entrada al filtro.
+ */
+const grupoTecnica: GrupoAcabados = {
+  clave: 'tecnica',
+  etiqueta: 'Técnica',
+  todos: 'Todas',
+  opciones: tecnicasEnUso().map((t) => ({ valor: t, nombre: NOMBRE_SERVICIO[t] })),
+}
 
 export default function Acabados() {
   /**
    * Las muestras se arman aquí, en servidor, y cruzan la frontera ya hechas.
-   * `FiltrosAcabados` solo elige cuáles se enseñan, así que las 16 muestras con
-   * sus fotos y sus enlaces salen en el HTML estático sin esperar a hidratar.
+   * `FiltrosAcabados` solo elige cuáles se enseñan, así que las diez muestras
+   * con sus fotos y sus enlaces salen en el HTML estático sin esperar a hidratar.
    */
-  const muestras: AcabadoFiltrable[] = acabados.map((a) => ({
+  const muestras: AcabadoFiltrable[] = acabadosPublicados.map((a) => ({
     clave: a.slug,
-    valores: { tecnica: a.servicio, color: a.color },
+    valores: { tecnica: a.servicio },
     muestra: <MuestraAcabado key={a.slug} acabado={a} />,
   }))
 
@@ -63,14 +72,14 @@ export default function Acabados() {
             </h1>
             <p className="text-16 md:text-20 text-tinta-media max-w-[52ch] m-0">
               Cada muestra es una obra ejecutada, con su modelo y su color reales. Filtra por
-              técnica y color, guárdate el código y dínoslo cuando hablemos.
+              técnica, guárdate el código y dínoslo cuando hablemos.
             </p>
           </div>
         </div>
       </section>
 
       <div className="px-[18px] md:px-lat-desktop">
-        <FiltrosAcabados muestras={muestras} grupos={grupos} />
+        <FiltrosAcabados muestras={muestras} grupo={grupoTecnica} />
       </div>
 
       <Aparece

@@ -12,7 +12,6 @@ import TarjetaProyecto, { TAMANOS_TARJETA_PROYECTO } from '@/components/contenid
 import EstadoVacio from '@/components/ui/EstadoVacio'
 import Migas from '@/components/layout/Migas'
 import SubmenuServicio from '@/components/secciones/SubmenuServicio'
-import Calculadora from '@/components/secciones/Calculadora'
 import Acordeon from '@/components/secciones/Acordeon'
 import FormularioPresupuesto from '@/components/secciones/FormularioPresupuesto'
 import { JsonLd, schemaFAQ, schemaServicio } from '@/lib/schema'
@@ -104,14 +103,18 @@ export default function PaginaServicio({ servicio }: { servicio: Servicio }) {
   // grande y además el pequeño. El hero no entra —su foto no se repite abajo—.
   const fotosDeObra = new Set(proyectos.map((p) => p.imagenes[0]?.src).filter(Boolean))
 
-  // El numerado sigue el orden real de las secciones presentes. Si un servicio
-  // no tiene rango de precio aprobado, no hay hueco vacío ni número saltado.
+  // El numerado sigue el orden real de las secciones presentes. Un servicio sin
+  // `aplicaciones` o sin `cuandoNo` no deja hueco vacío ni número saltado.
+  //
+  // ⚠️ **Aquí ya no hay sección de precio, y es decisión del dueño**, la misma
+  // que retiró `/precios/` el 2026-09-17 y que el 2026-09-18 alcanza también a
+  // la calculadora: no quiere precios en la web. No es que falte el rango, es
+  // que no se pone. Reponer esta entrada exige que lo pida él. → `design/02` §A5
   const todas: (Seccion | null)[] = [
     servicio.aplicaciones ? { id: 'seccion-aplicaciones', texto: 'Aplicaciones' } : null,
     { id: 'seccion-muestrario', texto: 'Muestrario' },
     { id: 'seccion-ficha', texto: 'Ficha técnica' },
     servicio.cuandoNo ? { id: 'seccion-cuando-no', texto: 'Cuándo NO' } : null,
-    servicio.usosCalculadora ? { id: 'seccion-precio', texto: 'Precio' } : null,
     { id: 'seccion-como', texto: 'Cómo trabajamos' },
     { id: 'seccion-obra', texto: 'Obra ejecutada' },
   ]
@@ -139,10 +142,27 @@ export default function PaginaServicio({ servicio }: { servicio: Servicio }) {
       <JsonLd data={schemaServicio(servicio.id, servicio.nombre, servicio.ruta)} />
       <Migas items={[{ nombre: 'Servicios' }, { nombre: servicio.nombre }]} />
 
-      {/* Hero */}
-      <section className="grid grid-cols-1 md:grid-cols-[1fr_560px] gap-8 md:gap-16 px-[18px] md:px-lat-desktop pb-8 md:pb-14">
+      {/*
+        Hero. `1fr 560px` con el H1 a 64 px es el hero de escritorio de
+        `design/02` §A2, y **necesita 1278 px de ancho de contenido**: medido, la
+        columna izquierda no puede bajar de la palabra más larga del H1 —558 px
+        en `/microcemento/`, 472 en `/hormigon-desactivado/`, 374 en las otras
+        cuatro— y a eso hay que sumarle los 64 px de hueco, los 560 de la foto y
+        los 96 de gutter. Encendido en `md` (768) el `1fr` no podía encoger por
+        debajo de esa palabra —`1fr` es `minmax(auto, 1fr)`— y empujaba la
+        página entera: 100 px de scroll horizontal del documento a 960 px en
+        cuatro de las seis páginas, 198 en desactivado y 285 en microcemento.
+
+        Así que el hero de escritorio empieza en `xl`, igual que la cabecera, y
+        entre 768 y 1279 se reparte en dos mitades con el H1 a 46 px —el mismo
+        valor que usa en móvil, de la escala cerrada del §2.4—, que a 960 px
+        deja dos columnas de 392 px. `grid-cols-2` es `minmax(0,1fr)` en
+        Tailwind, así que en esa banda el track ya no puede forzar el desborde.
+        `design/02` §A2, enmendado.
+      */}
+      <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_560px] gap-8 md:gap-16 px-[18px] md:px-lat-desktop pb-8 md:pb-14">
         <div className="flex flex-col justify-center gap-5 order-2 md:order-1">
-          <h1 className="font-display font-extrabold fs-hero text-46 md:text-64 leading-[1.05] m-0">
+          <h1 className="font-display font-extrabold fs-hero text-46 xl:text-64 leading-[1.05] m-0">
             {servicio.h1}
           </h1>
           <p className="text-16 md:text-20 text-tinta-media max-w-[52ch] m-0">{servicio.entradilla}</p>
@@ -163,15 +183,21 @@ export default function PaginaServicio({ servicio }: { servicio: Servicio }) {
           )}
         </div>
         <div className="order-1 md:order-2">
-          {/* En escritorio el hero cae en la pista fija de 560 px del grid de
-              arriba, no en media ventana: con `50vw` el navegador pedía w=1920
-              en 1920 a DPR 2, donde 1200 ya cubre los 560×2. El `100vw` de
-              móvil se queda, y con él el `PATRON_HERO` de las verificaciones. */}
+          {/* Tres tramos porque el grid tiene tres: la pista fija de 560 px
+              desde `xl` —con `50vw` el navegador pedía w=1920 en 1920 a DPR 2,
+              donde 1200 ya cubre los 560×2—, media ventana entre 768 y 1279, y
+              `100vw` apilado en móvil. ⚠️ Es el **segundo** punto de ruptura que
+              entra en un `sizes` del repo: `design/07` daba por hecho que 768
+              era el único, y ese análisis —el que justifica `deviceSizes: 1536`
+              como 768×2— iba del hero a sangre de `/proyectos/[slug]/`, que
+              sigue a `100vw` y no cambia. Aquí el tramo nuevo pide menos, no
+              más. El `100vw` se queda, y con él el `PATRON_HERO` de las
+              verificaciones. */}
           <Foto
             imagen={servicio.imagenHero}
             proporcion="4/3"
             prioridad
-            tamanos="(min-width: 768px) 560px, 100vw"
+            tamanos="(min-width: 1280px) 560px, (min-width: 768px) 50vw, 100vw"
             etiqueta={<EtiquetaTecnica lineas={servicio.etiquetaHero} />}
           />
         </div>
@@ -190,10 +216,15 @@ export default function PaginaServicio({ servicio }: { servicio: Servicio }) {
               <p className="text-16 text-tinta-media m-0">{servicio.aplicaciones.intro}</p>
             </div>
             <div className="flex flex-col">
+              {/* La pista de 300 px es fija igual que los 340 de la ficha
+                  técnica, y con el mismo efecto: la fila no medía menos de
+                  440 px, la sección es `380px 1fr` y 380 + 64 + 440 + 96 son
+                  980 px de ancho de contenido. Se apila hasta `xl`, que es
+                  donde el `380px 1fr` de la sección tiene sitio de verdad. */}
               {servicio.aplicaciones.lista.map((a) => (
                 <div
                   key={a.nombre}
-                  className="grid grid-cols-1 md:grid-cols-[300px_1fr] gap-2 md:gap-6 py-4 border-t border-fondo-alt first:border-t-0 md:first:border-t md:border-t-tinta-media"
+                  className="grid grid-cols-1 xl:grid-cols-[300px_minmax(0,1fr)] gap-2 xl:gap-6 py-4 border-t border-fondo-alt first:border-t-0 xl:first:border-t xl:border-t-tinta-media"
                 >
                   <h3 className="font-display font-bold fs-h3 text-20 md:text-26 m-0">{a.nombre}</h3>
                   {a.texto ? <p className="text-16 text-tinta-media m-0">{a.texto}</p> : null}
@@ -270,15 +301,6 @@ export default function PaginaServicio({ servicio }: { servicio: Servicio }) {
                 </Boton>
               ))}
             </div>
-          </div>
-        </Aparece>
-      ) : null}
-
-      {servicio.usosCalculadora && monta('seccion-precio') ? (
-        <Aparece as="section" id="seccion-precio" className="px-[18px] md:px-lat-desktop py-9 md:py-22">
-          <div className="flex flex-col gap-6">
-            <AntetituloSeccion numero={numero('seccion-precio')}>Precio</AntetituloSeccion>
-            <Calculadora reducida={false} usos={servicio.usosCalculadora} />
           </div>
         </Aparece>
       ) : null}

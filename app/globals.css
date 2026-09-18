@@ -16,6 +16,16 @@
   --pendiente-oscuro: #9aa09b;
   --error: #8c3a2b;
 
+  /* Velo del titular sobre fotografía (design/01 §2.8). No es un color nuevo:
+     es `--tinta` con alfa. El 0,68 no es a ojo, está medido —ver el §2.8— para
+     que `--fondo` conserve 4,79 : 1 sobre un píxel BLANCO PURO, que es el peor
+     fondo posible. Así la garantía no depende de qué foto se ponga mañana. */
+  --velo: rgba(27, 30, 28, 0.68);
+
+  /* Vuelta completa del carrusel del hero (design/01 §3.15), repartida entre
+     sus cuatro diapositivas: 6 s de foto cada una. */
+  --carrusel-ciclo: 24s;
+
   --cabecera: 84px;
   --ancla-offset: 150px;
   /* Espeja el `h-[70px] md:h-cabecera` de `components/layout/Cabecera.tsx`. La
@@ -153,8 +163,128 @@ a {
   }
 }
 
+/* Velo sobre fotografía (§2.8). Su único trabajo es sostener el contraste del
+   titular del hero de móvil; no es un tratamiento estético reutilizable. */
+.velo {
+  background: var(--velo);
+}
+
+/* Carrusel de fotografía de obra (§3.15).
+   El estado BASE es lo que importa: una sola diapositiva visible, la primera.
+   Sin animación —movimiento reducido, o navegador que no la soporte— eso es lo
+   que queda, y es una portada correcta, no un apilamiento.
+
+   `visibility` viaja junto a `opacity` y NO es decorado: `opacity: 0` no retira
+   nada del árbol de accesibilidad, así que sin esta línea un lector de pantalla
+   recorría los cuatro textos alternativos y las cuatro etiquetas técnicas
+   seguidos. `visibility: hidden` sí las retira, y se hereda hasta la <img>.
+
+   ⚠️ Y el estado activo NO puede ser `:first-child`. El marco tiene dos capas
+   de pasadas —las fotos y, por encima del velo, sus etiquetas— más el propio
+   velo entre medias: la primera etiqueta es el sexto hijo, no el primero. El
+   componente marca la activa con su clase, igual que ya pasaba el índice por
+   propiedad personalizada en vez de por `:nth-child`. */
+.carrusel__paso {
+  opacity: 0;
+  visibility: hidden;
+}
+.carrusel__paso--primera {
+  opacity: 1;
+  visibility: visible;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Cuatro diapositivas: cada una ocupa una cuarta parte del ciclo, con el
+     cruce en los tres puntos porcentuales que separan 22 de 25 y 97 de 100.
+     La que entra sube mientras la anterior baja: el fondo nunca asoma.
+
+     `visibility` se interpola a saltos, y con la regla de CSS de que basta un
+     extremo `visible` para que lo sea todo el tramo: la diapositiva entra en el
+     árbol de accesibilidad en el 97 %, cuando empieza a verse, y sale en el
+     25 %, cuando ya no se ve. Durante los 0,72 s del cruce hay dos, que es
+     exactamente lo que hay en pantalla. */
+  @keyframes carrusel {
+    0%,
+    22% {
+      opacity: 1;
+      visibility: visible;
+    }
+    25%,
+    97% {
+      opacity: 0;
+      visibility: hidden;
+    }
+    100% {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+
+  .carrusel__paso {
+    /* La forma abreviada reinicia `animation-delay`, así que el escalonado va
+       DESPUÉS. Mismo cuidado que en `.aparece` con `animation-timeline`. */
+    animation: carrusel var(--carrusel-ciclo) linear infinite;
+    /* 🔴 El retardo es NEGATIVO, y esa resta de una vuelta es el arreglo.
+       Con el retardo positivo que había, las tres diapositivas que esperan no
+       tenían animación viva durante su espera: se quedaban en su `opacity` base
+       —0— mientras la anterior se fundía a nada, y aparecían de golpe al
+       arrancar su ciclo. Medido pausando `document.getAnimations()`: tres huecos
+       en la primera vuelta —5,30-5,95 s, 11,30-11,95 s y 17,30-17,95 s— con la
+       suma de opacidades cayendo a 0,069. Solo en la primera vuelta, porque a
+       partir de la segunda el fotograma del 97 % ya está trayendo a la
+       siguiente.
+       Restando una vuelta entera, la animación de las cuatro arranca en marcha
+       en t=0, cada una en la fase que le toca: la 1 entra en el 75 % del ciclo,
+       la 2 en el 50 % y la 3 en el 25 %, todas con `opacity: 0`, y cada una
+       llega a su fotograma del 97 % justo cuando la anterior empieza a bajar.
+       La primera vuelta pasa a ser idéntica a las siguientes. */
+    animation-delay: calc(
+      var(--carrusel-i) * var(--carrusel-ciclo) / 4 - var(--carrusel-ciclo)
+    );
+    /* Sin relleno: ya no hay tramo de espera que rellenar, y `backwards` sobre
+       un retardo negativo no pinta nada distinto. Se deja declarado porque la
+       forma abreviada de arriba lo reinicia. */
+    animation-fill-mode: none;
+  }
+
+  /* WCAG 2.2.2, nivel A: el pase se puede parar. El botón escribe el atributo
+     en el marco y la regla alcanza a las DOS capas de pasadas, fotos y
+     etiquetas, porque las dos cuelgan de él. */
+  .carrusel[data-pausa='true'] .carrusel__paso {
+    animation-play-state: paused;
+  }
+}
+
+/* Con movimiento reducido no hay pase que parar: el carrusel es una foto fija.
+   El control se retira entero —`display: none` también lo saca del orden de
+   tabulación— en vez de quedarse mintiendo sobre un movimiento que no existe. */
+@media (prefers-reduced-motion: reduce) {
+  .carrusel__pausa {
+    display: none;
+  }
+}
+
 input[type='range'] {
   accent-color: var(--pigmento);
+}
+
+/* §2.4 dice «si un titular no cabe, se acorta el titular», y hay un caso en que
+   no se puede: el titular es el nombre del servicio y el copy viene del
+   documento maestro. «Microcemento» a 46 px mide 404 px de palabra indivisible y
+   el H1 de `/microcemento/` dispone de 354 px en un teléfono de 390: 47 px de
+   scroll horizontal del documento, medidos, sin que ninguna caja se salga —lo
+   que se sale es la tinta de una línea—. La escala está cerrada y no hay un
+   valor entre 34 y 46 al que bajar.
+
+   Se resuelve partiendo la palabra por sílabas, no achicando el tipo.
+   `hyphens: auto` con el `lang="es"` del `<html>` da «Microce-mento», que es
+   una partición correcta en español; `overflow-wrap` es la red por si el
+   navegador no trae patrones y evita que el titular vuelva a pintar fuera.
+   Solo en el H1: es el único tamaño de la escala que llega a no caber, y es
+   uno por página. → `design/01` §2.4, enmendado el 2026-09-17. */
+h1 {
+  hyphens: auto;
+  overflow-wrap: break-word;
 }
 
 /* Eje de anchura de Archivo (§2.3). Solo estos tres valores, nunca otros.

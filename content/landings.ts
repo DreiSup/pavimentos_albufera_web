@@ -31,9 +31,13 @@ import type { ServicioId } from '@/lib/tipos'
  * propio sitio pide no indexar. Si algún día molesta, la salida limpia es un
  * cuarto campo opcional `sinSchema` en la misma línea que `ocultarSecciones`.
  *
- * 🔴 **`fratasado` y `desactivado` no tienen landing, y no es un olvido**: son
- * los dos únicos servicios sin `usosCalculadora`, o sea sin rango de precio
- * aprobado. Sin precio no hay landing de Ads. Es dato del dueño.
+ * 🔴 **`fratasado` y `desactivado` no tienen landing, y no es un olvido.** La
+ * lista de abajo es la de los cuatro servicios que el dueño quiere llevar a
+ * campaña, y sigue siendo la misma después del 2026-09-18. Lo que cambia ese
+ * día es que ya **no se deriva de un campo del catálogo**: hasta entonces se
+ * leía «los que declaran `usosCalculadora`», y ese campo se ha retirado con la
+ * calculadora. Añadir o quitar una landing es decisión del dueño y se escribe
+ * aquí a mano.
  */
 const DE_CAMPANA: ServicioId[] = ['impreso', 'pulido', 'lavado', 'microcemento']
 

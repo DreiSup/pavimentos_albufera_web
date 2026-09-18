@@ -6,7 +6,7 @@ import TarjetaArticulo from '@/components/contenido/TarjetaArticulo'
 import { articulos } from '@/lib/datos'
 
 export const metadata: Metadata = {
-  title: 'Blog | Pavimentos Albufera',
+  title: 'Blog',
   description: 'Artículos sobre técnicas de pavimentación: hormigón desactivado, fratasado y pulido.',
   alternates: { canonical: '/blog/' },
 }
