@@ -725,18 +725,57 @@ capa incumple la WCAG 2.2.2 igual que si el botón no existiera.
   texto sobre otro. En escritorio los botones son de ancho automático y el suelo lo pone el
   control de pausa, 44 px.
 
-Medido en el build de producción, con el aviso en pantalla: control alcanzable con el puntero
-y con el tabulador, etiqueta entera visible y asomo de **66,5 px a 390×844**, 30,6 a 768×1024,
-67,4 a 1024×768 y 50,0 a 1366×768. Con la decisión tomada, el asomo es 142,2 · 162,1 · **131,4**
-· 82,1 px —a 1024×768 no existía—.
+- **Un tercer escalón por debajo de 600 px de alto** —titular 26, entradilla 14, `pt` 16,
+  `gap` 12—, que es el que hace existir el asomo en un teléfono de 320×568. Se aplica en los
+  **dos** estados, no solo con el aviso decidido, por la misma razón que el titular de 64 px no
+  pasa de 1179: un titular que salta de tamaño al tocar «Aceptar» es peor que un asomo de menos.
+  Especificidad 0,4,0 —un `:root` más que el escalón del aviso— para que gane por peso y no por
+  orden, porque el bloque vive al final del archivo y el final del archivo es donde otra rama
+  puede añadir.
+- **El foco del control de pausa lleva `scroll-margin-bottom`** con esas mismas dos variables,
+  `--banda-consentimiento` + `--barra-movil`. El «llévalo a la vista» del navegador solo conoce
+  el viewport y no las dos capas que se le montan encima, así que dejaba el control tapado tras
+  tabular hasta él: eso pasa la WCAG 2.2.2 —el pase se puede parar— y **falla la 2.4.11, «Focus
+  Not Obscured», que es AA en WCAG 2.2**. Medido a 360×640 en primera visita, donde ocurría.
 
-🔴 **Dos tamaños no caben, y no es CSS, es aritmética.** A 320×568 y 360×640 el aviso mide
-181,6 px, la barra 56 y la cabecera 70: quedan 260 y 332 px de ventana. El suelo de este hero
-—titular, entradilla, dos CTA, los 70 px de etiqueta y los 44 del control— son ~427 px con el
-texto más pequeño de la escala que no lo recorta. Ahí el control sigue alcanzable por scroll y
-por tabulador, que es lo que la WCAG 2.2.2 pide. A 320×568 tampoco hay asomo sin el aviso:
-514,7 px de contenido contra 442 de ventana útil. Se deja dicho en vez de maquillarlo quitando
-la entradilla.
+**El asomo se mide contra lo que tapa la ventana, no contra la ventana.** Abajo hay siempre una
+capa opaca fuera del flujo: el aviso mientras nadie decide, y `BarraMovil` —56 px, `sticky
+bottom-0`— hasta 1180 px de ancho. Restar solo el aviso y olvidar la barra es el mismo error a
+menor escala, y era el de la primera redacción de este apartado: daba 142,2 · 162,1 · 131,4 px
+de asomo con la decisión tomada, que son los 56 px de la barra de más en los tres tamaños en que
+la barra existe.
+
+Medido en el build de producción, los seis tamaños × dos estados. Control alcanzable con el
+puntero y con el tabulador —y **sin tapar** tras tabular—, clic y barra espaciadora marcando el
+interruptor, etiqueta entera visible, ni texto recortado ni scroll horizontal nuevo:
+
+    tamaño     primera visita        decidido
+    320×568    no cabe (−161,4)      asomo  20,2   ← lo arregla el escalón de 600 px
+    360×640    no cabe (−146,6)      asomo  35,0
+    390×844    asomo  66,5           asomo  86,2
+    768×1024   asomo  30,6           asomo 106,1
+    1024×768   asomo  67,4           asomo  75,4   ← no existía
+    1366×768   asomo  50,0           asomo  82,1
+
+🔴 **Lo que no cabe es la PRIMERA VISITA de los dos teléfonos pequeños, y solo eso.** La primera
+redacción dio 320×568 por imposible entero; era media verdad, y la otra media se perdió dentro
+de ella. A 320×568 y 360×640 el aviso mide 181,6 px, la barra 56 y la cabecera 70: quedan 260 y
+332 px de ventana, y el suelo de este hero son ~427 px con el texto más pequeño de la escala que
+no lo recorta. Ahí no cabe por aritmética —ni bajando el titular a 20 px: −121,5— y el control
+sigue alcanzable por scroll y por tabulador, que es lo que la WCAG 2.2.2 pide.
+
+Con la decisión tomada sí cabía, y lo que faltaba era bajar un peldaño más. Medido a 320×568,
+ventana útil de 442 px:
+
+    titular   entradilla   otros            columna    asomo
+    34 px     16 px        —                514,7 px   −72,7   ← no había corte que ver
+    26 px     16 px        —                453,9 px   −11,9
+    26 px     14 px        —                437,8 px    +4,2
+    26 px     14 px        pt 16 · gap 12   421,8 px   +20,2   ← el escalón
+
+⚠️ El umbral son 600 px de alto y no los 660 que también cogerían un 360×640: ahí el titular ya
+cabe en tres líneas y el asomo existe —35 px medidos—, así que compactar sería cobrar un titular
+más pequeño por un problema que ese tamaño no tiene.
 
 #### Control de pausa
 

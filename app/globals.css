@@ -685,3 +685,70 @@ h1 {
 .hero-parrafo {
   font-size: var(--hero-parrafo);
 }
+
+/* ────────────────────────────────────────────────────────────────────────────
+   Paso 3 — el teléfono pequeño, que sí tenía arreglo
+   ────────────────────────────────────────────────────────────────────────────
+   La pasada anterior dio 320×568 por imposible «por aritmética». Media verdad:
+   lo es EN LA PRIMERA VISITA, y no lo es después. Los dos casos se habían
+   sumado en un solo veredicto y el segundo se perdió dentro del primero.
+
+   Medido en el build, con el aviso ya decidido, ventana útil de 442 px:
+
+       titular   párrafo        columna    asomo
+       34 px     16 px          514,7 px   −72,7   ← no hay corte que ver
+       26 px     16 px          453,9 px   −11,9
+       26 px     14 px          437,8 px    +4,2
+       26 px     14 px + pt 16 + gap 12   421,8 px   +20,2   ← esto
+
+   Y con el aviso en pantalla, que se lleva 181,6 px de una ventana de 568,
+   sigue sin haber corte ni bajando el titular a 20 px: −121,5. Ahí no cabe, y
+   eso es lo único que la pasada anterior tenía bien.
+
+   ⚠️ El escalón se aplica en los DOS estados, no solo con el aviso decidido.
+   Es la misma razón por la que el titular de 64 px no pasa de 1179 px: un
+   titular que se pinta a 26 y salta a 34 en cuanto tocas «Aceptar» es peor
+   que un asomo de menos. En primera visita no arregla el corte —no se puede—,
+   pero deja el hero 92,9 px más corto, que es menos deuda que devolver.
+
+   El umbral son 600 px de alto y no los 660 que también cogerían un 360×640:
+   ahí el titular ya cabe en tres líneas y el asomo existe (35 px medidos), así
+   que compactar sería cobrar un titular más pequeño por un problema que ese
+   tamaño no tiene.
+
+   0,4,0 de especificidad —un `:root` más que el escalón del aviso, que tiene
+   0,3,0— para que gane por peso y no por orden: este bloque va al final del
+   archivo, y el final del archivo es justo donde otra rama puede añadir. */
+@media (max-width: 767px) and (max-height: 600px) {
+  :root:root:root .hero-pantalla {
+    --hero-titular: 26px;
+    --hero-titular-interletra: normal;
+    --hero-parrafo: 14px;
+    --hero-pt: 16px;
+    --hero-gap: 12px;
+  }
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   El foco del control de pausa, por debajo de lo que tape la ventana
+   ────────────────────────────────────────────────────────────────────────────
+   El que recibe el foco es `.carrusel__interruptor` y por eso está anclado a la
+   misma esquina que su caja: el «llévalo a la vista» del navegador apunta al
+   input. Pero ese «a la vista» solo conoce el viewport, y abajo hay dos capas
+   `fixed`/`sticky` que no están en el flujo —la barra de contacto y, en la
+   primera visita, el aviso de cookies—, así que el navegador daba por hecho un
+   control que quedaba debajo de ellas.
+
+   Medido, primera visita, tabulando hasta el control: a 360×640 el foco llegaba
+   y el espacio lo activaba, pero la caja quedaba TAPADA por el aviso. Eso pasa
+   la WCAG 2.2.2 —el pase se puede parar— y falla la 2.4.11, «Focus Not
+   Obscured», que es AA en WCAG 2.2. A 320×568 salía bien por casualidad, porque
+   allí la página tiene más scroll que dar.
+
+   `scroll-margin-bottom` es exactamente el hueco que el navegador tiene que
+   respetar por debajo, y se calcula con las mismas dos variables que ya miden
+   esas dos capas, así que no puede desajustarse si una de ellas cambia. Los
+   8 px son el aire del anillo de foco, que se pinta hacia dentro. */
+.carrusel__interruptor {
+  scroll-margin-bottom: calc(var(--banda-consentimiento) + var(--barra-movil) + 8px);
+}
