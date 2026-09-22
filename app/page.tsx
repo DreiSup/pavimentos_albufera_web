@@ -315,11 +315,27 @@ export default function Home() {
           - **Sobre el velo no queda ni un texto en `--tinta-media`.** Ese gris da 1,4 : 1
             contra el velo. El párrafo pasa a `--fondo` (4,79 : 1) y el botón de contorno
             a `sobreOscuro`, que es la variante que §3.2 ya tenía para fondo oscuro.
-          - **La columna de texto es `self-start`.** Estirarla dejaría su caja cubriendo
-            los 44×44 del control de pausa del carrusel, que está abajo a la izquierda:
-            el `pb` reserva su banda y el `z-20` del propio control cierra el caso cuando
-            el contenido crece hasta el fondo. Un pase automático que no se puede parar
-            es lo que prohíbe la WCAG 2.2.2. */}
+          - **La columna de texto es `self-center`, no `self-start` (cambiado el
+            2026-09-22: el dueño pedía el bloque centrado, no pegado arriba con hueco
+            debajo) — pero `self-center` por sí solo NO centraba el texto.** Solo
+            reparte el sobrante de la CELDA (sección menos caja), y en la mitad de
+            los anchos del encargo ese sobrante ya es 0 —el contenido llena la
+            sección—, así que no movía nada. Quien de verdad centra el texto DENTRO
+            de su caja es `--hero-pt` = `--hero-pb` en `globals.css`: con el `pb`
+            fijo por la banda WCAG, igualarlos es la única forma de que el centro
+            del contenido caiga en el centro de la caja. → `globals.css`,
+            comentario sobre `.hero-pantalla`.
+            Sigue sin poder estirarse: eso dejaría la caja cubriendo los 44×44 del
+            control de pausa del carrusel, abajo a la izquierda. Esa garantía NO
+            depende de dónde queda la caja ni de cuánto mida `pt`: `--hero-pb` —
+            SIEMPRE ≥56 px (44 del control + 12 de aire) y en móvil SIEMPRE 80
+            (69,8 de la etiqueta técnica + 10 de aire)— vive dentro de la caja, en
+            su borde inferior, y subir `pt` no le resta nada. Medido en los 6 anchos
+            del encargo, con y sin aviso de cookies, tras subir `pt`: el hueco hasta
+            el control nunca baja de 12 px. El `z-20` del propio control sigue
+            siendo el cierre para cuando, aun así, el contenido llegue hasta el
+            fondo: un pase automático que no se puede parar es lo que prohíbe la
+            WCAG 2.2.2. */}
       <section className="hero-pantalla relative grid grid-cols-1">
         <CarruselFotos
           diapositivas={diapositivasHero}
@@ -335,10 +351,13 @@ export default function Home() {
           <div className="velo absolute inset-0" aria-hidden="true" />
         </CarruselFotos>
 
-        {/* `self-start` para que la caja acabe donde acaba el texto; `pb-20` reserva
-            la banda inferior del carrusel —control de pausa a la izquierda, etiqueta
-            técnica a la derecha— para cuando el contenido llegue hasta abajo. */}
-        <div className="hero-columna col-start-1 row-start-1 relative z-10 self-start flex flex-col px-[18px] md:px-lat-desktop">
+        {/* `self-center` reparte el sobrante de la celda; `--hero-pt` = `--hero-pb`
+            (`globals.css`) centra el texto DENTRO de la caja, que es lo que de
+            verdad se ve. `--hero-pb` sigue reservando la banda inferior del
+            carrusel —control de pausa a la izquierda, etiqueta técnica a la
+            derecha—, y esa reserva vive DENTRO de la caja, así que ni centrar la
+            celda ni subir `pt` le quitan nada. → comentario de arriba. */}
+        <div className="hero-columna col-start-1 row-start-1 relative z-10 self-center flex flex-col px-[18px] md:px-lat-desktop">
           {/* El tamaño, la interlínea, el ancho máximo y los tres espacios de esta
               columna salen de variables de `.hero-pantalla` en vez de utilidades,
               y no es un capricho de implementación: en una ventana baja el
