@@ -665,10 +665,12 @@ h1 {
    —el contenido llena la sección de borde a borde—, así que `self-center` no
    movía nada ahí. Lo que decide dónde queda el CENTRO DEL TEXTO dentro de su
    propia caja es `(pt − pb) / 2`: con `pb` fijo por la banda WCAG del carrusel,
-   iguales es lo único que lo pone a 0. La prueba, medida en el build: a
-   390×844 con la cookie decidida el centro del bloque de texto pasa de 34 px
-   por encima del centro de la sección a 4 px, y a 320×568 —Paso 3, más abajo—
-   se queda en 32 px porque ahí NO se iguala. → comentario de Paso 3. */
+   igualarlos es lo único que lo pone a 0. Medido tras el cambio, en los 6 anchos
+   del encargo y los dos estados de cookie: el centro del bloque de texto queda
+   a 0 px del centro de la sección en los once escalones que se igualan —antes,
+   por fórmula, iba de −12 px (1024×768 y 1366×768) a −28 (360×640 y 390×844 en
+   primera visita)—, y se queda en 32 px por encima a 320×568 —Paso 3, más
+   abajo— porque ahí NO se iguala. → comentario de Paso 3. */
 .hero-pantalla {
   --hero-titular: 46px;
   --hero-titular-interlinea: 1.05;
