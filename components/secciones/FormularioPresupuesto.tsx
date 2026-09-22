@@ -370,9 +370,27 @@ export default function FormularioPresupuesto({
           aria-invalid={Boolean(estado.errores.privacidad)}
           aria-describedby={estado.errores.privacidad ? 'privacidad-error' : undefined}
         />
+        {/* «He leído y **acepto**» decía lo que esta casilla no hace. Marcarla no
+            es lo que legitima el tratamiento: atender tu solicitud va por el
+            art. 6.1.b del RGPD —medidas precontractuales a petición del
+            interesado—, y así lo explica ya `/politica-de-privacidad/`. La
+            casilla es cumplimiento del deber de información del art. 13. La
+            diferencia no es de estilo: si se documenta como consentimiento,
+            quien lo retira deja a la empresa sin amparo para contestar el
+            presupuesto que él mismo pidió.
+
+            ⚠️ **Solo cambia el texto.** El `required`, el `name` y la validación
+            de `app/presupuesto/actions.ts` siguen exactamente igual: la casilla
+            es obligatoria en cliente y en servidor, porque sin ella no consta que
+            la información se haya ofrecido. */}
         <span>
-          He leído y acepto la{' '}
-          <Link href="/politica-de-privacidad/" className="text-tinta">
+          He leído la{' '}
+          {/* `enlace-prosa` y no `text-tinta`: este enlace tenía exactamente el
+              mismo defecto que los 22 de las tres páginas legales —del color del
+              texto y sin subrayado, invisible— y es el peor sitio donde tenerlo.
+              La casilla afirma haber leído la política; esa afirmación solo es
+              verdad si la política se alcanza desde aquí. → `design/01` §3.16 */}
+          <Link href="/politica-de-privacidad/" className="enlace-prosa">
             política de privacidad
           </Link>
           . *

@@ -411,7 +411,7 @@ La pantalla que cierra el embudo. Copy del §7.4.
 | Municipio | texto | sí |
 | Cuéntanos algo más | textarea | no |
 | Sube una foto del espacio | archivo | no |
-| Acepto la política de privacidad | casilla | sí |
+| He leído la política de privacidad | casilla | sí |
 
 Nombre y teléfono comparten fila; el resto ocupa el ancho.
 Botón de envío ocre a ancho completo: `Enviar y que me llamen`.
@@ -440,7 +440,7 @@ pueda pintar está aquí, y lo que no está aquí no se pinta.**
 - Error de correo: *Escribe un correo electrónico válido para que podamos escribirte, o deja el
   campo vacío.*
 - Error del desplegable: *Selecciona qué quieres pavimentar.*
-- Error de la casilla de privacidad: *Tienes que aceptar la política de privacidad.*
+- Error de la casilla de privacidad: *Tienes que confirmar que has leído la política de privacidad.*
 - Error de tipo de la foto: *La foto tiene que ser una imagen.*
 - Error de tamaño de la foto, en servidor: *La foto no puede pasar de 4 MB.*
 - Error de tamaño de la foto, en cliente: *Esta foto pasa de 4 MB. Elige otra o redúcela antes
@@ -457,6 +457,17 @@ ninguno estaba escrito aquí: la lista se declaraba autoritativa siendo falsa so
 que el formulario dice. El **error de correo** es el que trajo la revisión, y describe el estado
 real desde que el campo es opcional en las dos variantes —se rechaza el formato inválido, nunca
 el campo vacío—.
+
+⚠️ **Enmienda del 2026-09-18: la casilla dice «He leído», no «Acepto», y su error va con ella.**
+Decían «Acepto la política de privacidad» y *Tienes que aceptar la política de privacidad.*, y
+las dos frases afirmaban lo que esa casilla no hace. **Marcarla no es lo que legitima el
+tratamiento:** atender la solicitud va por el art. 6.1.b del RGPD —medidas precontractuales a
+petición del interesado—, y la política de privacidad rehecha ya lo explica así. La casilla es
+cumplimiento del deber de información del art. 13. La diferencia no es de estilo: documentada
+como consentimiento, quien lo retira deja a la empresa sin amparo para contestar el presupuesto
+que él mismo pidió. **Solo cambia el texto**: la casilla sigue siendo obligatoria en cliente
+(`required`) y en servidor (el esquema de `app/presupuesto/actions.ts`), porque sin ella no
+consta que la información se haya ofrecido.
 
 ⚠️ **`[teléfono]` del error de envío es microcopy, no un dato pendiente.** Sale literal del
 Server Action y lo sustituye `FormularioPresupuesto` por el número de configuración al pintarlo.
