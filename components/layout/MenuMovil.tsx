@@ -120,8 +120,15 @@ export default function MenuMovil({
          proyecto para marcar secciones de fondo oscuro (`Pie`, `FichaObra`,
          `PaginaServicio`…) y hoy solo reescribe `.pendiente`; se le añade la
          regla de foco del botón primario en vez de inventar un selector
-         nuevo. → `app/globals.css`, regla `.sobre-oscuro .btn-primario`. */
-      className="sobre-oscuro fixed inset-0 z-[60] bg-tinta text-fondo px-[18px] pb-[18px] flex flex-col overflow-y-auto"
+         nuevo. → `app/globals.css`, regla `.sobre-oscuro .btn-primario`.
+
+         🔴 **`md:px-lat-desktop`, no solo `px-[18px]`.** `Cabecera` cambia de
+         18 a 48 px de hueco lateral en `md` (768); este panel se quedaba fijo
+         en 18. El logotipo de la barra arranca en x=48 desde 768 y el de
+         aquí seguía en x=18: 30 px de salto horizontal al abrir el menú en
+         toda la banda 768-1179, medido con `getBoundingClientRect().left` en
+         los dos estados. */
+      className="sobre-oscuro fixed inset-0 z-[60] bg-tinta text-fondo px-[18px] md:px-lat-desktop pb-[18px] flex flex-col overflow-y-auto"
     >
       {/* `h-[69px] md:h-[83px]` y no el `p-[18px]` de antes: esta fila es la
           misma fila que la cabecera, así que mide lo mismo que ella por
