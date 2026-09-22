@@ -37,11 +37,32 @@
      ras del borde inferior de la cabecera; 14 px de desajuste dejan una franja
      por la que corre el contenido. */
   --cabecera-actual: 70px;
+
+  /* Alto de la barra fija de contacto (§4.3). Espeja el `min-h-boton` de
+     `components/layout/BarraMovil.tsx`: 56 px. Es `sticky bottom-0`, así que se
+     apoya sobre el contenido y le roba al visitante esos 56 px de alto visible
+     sin que ninguna caja lo sepa. El hero a pantalla completa (§3.15) sí tiene
+     que saberlo: es lo único del sitio que se mide contra el alto de la ventana.
+     ⚠️ Se apaga en `cabecera-ancha` (1180 px), NO en `md`, porque ese es el
+     punto en el que la barra deja de existir. Si se mueve allí, se mueve aquí. */
+  --barra-movil: 56px;
+
+  /* Cuánto del alto útil ocupa el hero a pantalla completa.
+     No es 1: un hero que llena la pantalla exacta esconde que existe el resto de
+     la página. Decisión del dueño del 2026-09-18, «casi todo el alto, dejando
+     ver el corte»; con 0,88 asoma el borde de la sección siguiente. */
+  --hero-asomo: 0.88;
 }
 
 @media (min-width: 768px) {
   :root {
     --cabecera-actual: 84px;
+  }
+}
+
+@media (min-width: 1180px) {
+  :root {
+    --barra-movil: 0px;
   }
 }
 
@@ -180,6 +201,52 @@ a {
          igual para una sección corta que para una larga. */
       animation-range: entry 80px entry 380px;
     }
+  }
+}
+
+/* Hero a pantalla completa (§3.15, enmendado el 2026-09-18). La foto ocupa la
+   sección entera y el texto va encima; lo que define la sección es su ALTO, no
+   una proporción, así que el carrusel del hero es el único del sitio que no
+   lleva `proporcion`.
+
+   🔴 `min-height` y no `height`, y no es una preferencia. El titular a 46 px, el
+   párrafo y los dos botones de ancho completo miden más que el alto útil de un
+   teléfono pequeño: medido a 360×640, el contenido pide 636 px y el alto útil
+   son 514. Con `height` el corte se lo llevaría el segundo botón. Con
+   `min-height` la sección crece, se pierde el asomo —que es un adorno— y no se
+   pierde un CTA, que no lo es.
+
+   🔴 Y `svh`, no `vh` ni `dvh`. `100vh` en un móvil es el viewport CON las
+   barras del navegador retraídas, así que se pasa de largo justo al cargar, que
+   es cuando se mira el hero. `dvh` acierta pero cambia de valor al hacer scroll:
+   el elemento que decide el LCP se redimensionaría en cuanto el visitante mueve
+   el dedo. `svh` es el viewport con las barras a la vista —el estado inicial—,
+   de modo que el asomo es real desde el primer pintado y la caja no se mueve
+   nunca.
+
+   ⚠️ El respaldo va en `@supports`, y NO en dos declaraciones seguidas. El
+   truco de repetir la propiedad solo funciona cuando la unidad desconocida se
+   escribe literal: aquí la declaración lleva `var()`, así que el analizador la
+   da por válida, gana la cascada y falla DESPUÉS, al calcular el valor, con lo
+   que el navegador cae en el valor inicial —`min-height: auto`— y no en la
+   línea anterior. Preguntando por la unidad, el respaldo es de verdad un
+   respaldo.
+
+   Al alto de la ventana hay que restarle las dos barras que se le montan encima:
+   la cabecera `sticky top-0` y la barra de contacto `sticky bottom-0`. Ninguna
+   de las dos está en el flujo por debajo del hero, así que sin restarlas el
+   «alto útil» sería 126 px mayor que el que el visitante ve de verdad. */
+.hero-pantalla {
+  min-height: calc(
+    (100vh - var(--cabecera-actual) - var(--barra-movil)) * var(--hero-asomo)
+  );
+}
+
+@supports (height: 100svh) {
+  .hero-pantalla {
+    min-height: calc(
+      (100svh - var(--cabecera-actual) - var(--barra-movil)) * var(--hero-asomo)
+    );
   }
 }
 
@@ -488,4 +555,260 @@ h1 {
 .enlace-prosa:hover {
   text-decoration-color: currentColor;
   text-decoration-thickness: 2px;
+
+/* ════════════════════════════════════════════════════════════════════════════
+   HERO A PANTALLA COMPLETA — SEGUNDA PASADA, 2026-09-18
+   ════════════════════════════════════════════════════════════════════════════
+   Va al final del archivo, y no junto al bloque `.hero-pantalla` de §3.15, por
+   una razón de coordinación, no de estilo: otra rama está editando aquel tramo
+   en paralelo. Lo que sigue SUSTITUYE la declaración de `min-height` de aquel
+   bloque —misma especificidad, gana la última— y por eso la reescribe entera,
+   incluida su rama `@supports`. Si algún día se fusionan los dos tramos, es este
+   el que manda.
+
+   Lo que arregla: los tres fallos que solo se ven EN LA PRIMERA VISITA, con el
+   aviso de cookies en pantalla. Medir con la cookie ya aceptada es medir otra
+   web, y así se midió la primera vez.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* Lo que el aviso de cookies le quita a la ventana mientras nadie ha decidido.
+   Es 0 en cuanto hay decisión, que es el caso de toda visita posterior.
+
+   🔴 No es un adorno defensivo: `Consentimiento.tsx` es `fixed bottom-0` y
+   `z-50`, así que se monta sobre el hero justo donde viven el control de pausa
+   del carrusel (44×44, esquina inferior izquierda) y la etiqueta técnica. Sin
+   restarlo, en una primera visita a 390×844 el borde inferior del hero caía en
+   701,8 px con el aviso empezando en 606,4: el control no se podía ni tocar
+   —WCAG 2.2.2 incumplido igual que si no existiera el botón— y no se veía ni el
+   corte de la sección siguiente ni la etiqueta.
+
+   Los valores ESPEJAN la altura medida del aviso, como `--barra-movil` espeja el
+   alto de `BarraMovil`. Medidos en Chrome a 21 anchos, sin cookie:
+       320–499 px → 181,6      500–599 → 159,2     600–767 → 136,8
+       768–899  → 142,4        900–1023 → 116,8    ≥1024   →  96,0
+   Se reservan tres escalones y no seis, redondeando SIEMPRE hacia arriba: pasarse
+   solo agranda el asomo, quedarse corto vuelve a enterrar el control. Si se toca
+   el texto del aviso o su tipografía, se vuelve a medir. */
+:root {
+  --banda-consentimiento: 0px;
+}
+:root[data-consentimiento='pendiente'] {
+  --banda-consentimiento: 184px;
+}
+@media (min-width: 768px) {
+  :root[data-consentimiento='pendiente'] {
+    --banda-consentimiento: 148px;
+  }
+}
+@media (min-width: 1024px) {
+  :root[data-consentimiento='pendiente'] {
+    --banda-consentimiento: 104px;
+  }
+}
+
+/* El alto útil, en un solo sitio. La rama `svh` sigue en `@supports` por lo que
+   ya explica §3.15 —con `var()` dentro, repetir la propiedad no es un respaldo—,
+   pero ahora lo que se duplica es la VARIABLE y no la regla del hero: así
+   `.hero-pantalla` tiene una sola declaración de `min-height` viva en todo el
+   archivo y no puede volver a taparse a sí misma. */
+:root {
+  --hero-util: calc(
+    100vh - var(--cabecera-actual) - var(--barra-movil) - var(--banda-consentimiento)
+  );
+}
+@supports (height: 100svh) {
+  :root {
+    --hero-util: calc(
+      100svh - var(--cabecera-actual) - var(--barra-movil) - var(--banda-consentimiento)
+    );
+  }
+}
+.hero-pantalla {
+  min-height: calc(var(--hero-util) * var(--hero-asomo));
+}
+
+/* ───────────────────────────────────────────────────────────────────────────
+   El asomo es del CONTENIDO, no del `min-height`
+   ───────────────────────────────────────────────────────────────────────────
+   `--hero-asomo` fija un mínimo, así que nunca es él quien se come el corte: lo
+   que se lo come es un contenido más alto que el mínimo. Medido en la rama base:
+   a 1024×768 el contenido pedía 621,3 px contra 552,6 de mínimo, y a 320×568
+   pedía 637,5 contra 389. En esos tamaños no había corte que ver.
+
+   El único remedio posible es que el contenido ocupe menos cuando la ventana es
+   baja, porque el hero no puede achicarse por debajo de lo que mide su texto sin
+   recortarlo. Aquí se hace por VARIABLES y no repitiendo utilidades: cada
+   escalón solo reasigna tamaños, y todos salen de la escala cerrada del §2.4
+   —12 / 14 / 16 / 20 / 26 / 34 / 46 / 64 / 88—, sin valores intermedios.
+
+   ⚠️ `--hero-pb` no baja de 80 px en móvil, y no es holgura: la etiqueta técnica
+   mide 69,8 px de alto y va a sangre en el borde inferior, donde los botones son
+   de ancho completo. Recortar ese hueco no ahorra alto, encima un texto sobre
+   otro. En escritorio los botones son de ancho automático y quedan a la
+   izquierda, así que ahí el suelo lo pone el control de pausa: 44 px. */
+.hero-pantalla {
+  --hero-titular: 46px;
+  --hero-titular-interlinea: 1.05;
+  --hero-titular-interletra: -0.02em;
+  --hero-titular-ancho: none;
+  --hero-parrafo: 16px;
+  --hero-pt: 32px;
+  --hero-pb: 80px;
+  --hero-gap: 24px;
+}
+@media (min-width: 768px) {
+  .hero-pantalla {
+    --hero-titular: 88px;
+    --hero-titular-interlinea: 1.02;
+    --hero-titular-interletra: -0.03em;
+    --hero-titular-ancho: 12ch;
+    --hero-parrafo: 20px;
+    --hero-pt: 56px;
+    --hero-gap: 32px;
+  }
+}
+
+/* Paso 1 — ventana baja. Los umbrales son el alto de ventana por debajo del cual
+   el contenido a tamaño normal ya no cabe dentro del mínimo.
+   `:root .hero-pantalla` sube la especificidad a 0,2,0 a propósito, para ganarle
+   al bloque de `min-width: 768px` de aquí arriba sin depender del orden. */
+@media (max-width: 767px) and (max-height: 725px) {
+  :root .hero-pantalla {
+    --hero-titular: 34px;
+    --hero-titular-interletra: normal;
+    --hero-pt: 24px;
+    --hero-gap: 16px;
+  }
+}
+@media (min-width: 768px) and (max-height: 859px) {
+  :root .hero-pantalla {
+    --hero-parrafo: 16px;
+    --hero-pt: 32px;
+    --hero-pb: 56px;
+    --hero-gap: 24px;
+  }
+}
+
+/* Los mismos dos escalones, con el aviso de cookies en pantalla: la ventana útil
+   es 104–184 px más corta, así que el umbral sube otro tanto. 0,3,0 de
+   especificidad, que es lo que hace que estos ganen a los de arriba cuando los
+   dos coinciden. */
+@media (max-width: 767px) and (max-height: 909px) {
+  :root[data-consentimiento='pendiente'] .hero-pantalla {
+    --hero-titular: 34px;
+    --hero-titular-interletra: normal;
+    --hero-pt: 24px;
+    --hero-gap: 16px;
+  }
+}
+@media (min-width: 768px) and (max-height: 1007px) {
+  :root[data-consentimiento='pendiente'] .hero-pantalla {
+    --hero-parrafo: 16px;
+    --hero-pt: 32px;
+    --hero-pb: 56px;
+    --hero-gap: 24px;
+  }
+}
+
+/* Paso 2, y solo aquí: ventana baja, aviso en pantalla y ANCHO DE TABLETA, donde
+   los 56 px de `BarraMovil` siguen puestos. Es el único tamaño en el que el paso
+   1 no basta. Deliberadamente NO llega a 1180 px: a partir de ahí la barra
+   desaparece, sobra alto y el titular se queda en 88 px. Un titular que se pinta
+   a 64 en la primera visita y salta a 88 al aceptar es peor que un asomo de
+   menos. */
+@media (min-width: 768px) and (max-width: 1179px) and (max-height: 820px) {
+  :root[data-consentimiento='pendiente'] .hero-pantalla {
+    --hero-titular: 64px;
+    --hero-titular-interletra: -0.025em;
+    --hero-titular-ancho: 16ch;
+  }
+}
+
+/* Las tres piezas que leen las variables. Fuera de `.hero-pantalla` no existen. */
+.hero-columna {
+  padding-top: var(--hero-pt);
+  padding-bottom: var(--hero-pb);
+  gap: var(--hero-gap);
+}
+.hero-titular {
+  font-size: var(--hero-titular);
+  line-height: var(--hero-titular-interlinea);
+  /* ⚠️ El interletraje NO es decorado y por eso viaja con el tamaño: la escala de
+     `tailwind.config.ts` lo lleva dentro de cada peldaño —46 px a −0,02em, 64 a
+     −0,025em, 88 a −0,03em, y 26 y 34 sin tocar—, de modo que al pasar de
+     `text-88` a esta variable se perdía y el titular ganaba una línea entera:
+     medido a 768×1024, de 359 a 448,8 px de alto. Reproducirlo aquí es lo que
+     mantiene el tipo idéntico al de la rama base cuando no hay compactación. */
+  letter-spacing: var(--hero-titular-interletra);
+  max-width: var(--hero-titular-ancho);
+}
+.hero-parrafo {
+  font-size: var(--hero-parrafo);
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   Paso 3 — el teléfono pequeño, que sí tenía arreglo
+   ────────────────────────────────────────────────────────────────────────────
+   La pasada anterior dio 320×568 por imposible «por aritmética». Media verdad:
+   lo es EN LA PRIMERA VISITA, y no lo es después. Los dos casos se habían
+   sumado en un solo veredicto y el segundo se perdió dentro del primero.
+
+   Medido en el build, con el aviso ya decidido, ventana útil de 442 px:
+
+       titular   párrafo        columna    asomo
+       34 px     16 px          514,7 px   −72,7   ← no hay corte que ver
+       26 px     16 px          453,9 px   −11,9
+       26 px     14 px          437,8 px    +4,2
+       26 px     14 px + pt 16 + gap 12   421,8 px   +20,2   ← esto
+
+   Y con el aviso en pantalla, que se lleva 181,6 px de una ventana de 568,
+   sigue sin haber corte ni bajando el titular a 20 px: −121,5. Ahí no cabe, y
+   eso es lo único que la pasada anterior tenía bien.
+
+   ⚠️ El escalón se aplica en los DOS estados, no solo con el aviso decidido.
+   Es la misma razón por la que el titular de 64 px no pasa de 1179 px: un
+   titular que se pinta a 26 y salta a 34 en cuanto tocas «Aceptar» es peor
+   que un asomo de menos. En primera visita no arregla el corte —no se puede—,
+   pero deja el hero 92,9 px más corto, que es menos deuda que devolver.
+
+   El umbral son 600 px de alto y no los 660 que también cogerían un 360×640:
+   ahí el titular ya cabe en tres líneas y el asomo existe (35 px medidos), así
+   que compactar sería cobrar un titular más pequeño por un problema que ese
+   tamaño no tiene.
+
+   0,4,0 de especificidad —un `:root` más que el escalón del aviso, que tiene
+   0,3,0— para que gane por peso y no por orden: este bloque va al final del
+   archivo, y el final del archivo es justo donde otra rama puede añadir. */
+@media (max-width: 767px) and (max-height: 600px) {
+  :root:root:root .hero-pantalla {
+    --hero-titular: 26px;
+    --hero-titular-interletra: normal;
+    --hero-parrafo: 14px;
+    --hero-pt: 16px;
+    --hero-gap: 12px;
+  }
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   El foco del control de pausa, por debajo de lo que tape la ventana
+   ────────────────────────────────────────────────────────────────────────────
+   El que recibe el foco es `.carrusel__interruptor` y por eso está anclado a la
+   misma esquina que su caja: el «llévalo a la vista» del navegador apunta al
+   input. Pero ese «a la vista» solo conoce el viewport, y abajo hay dos capas
+   `fixed`/`sticky` que no están en el flujo —la barra de contacto y, en la
+   primera visita, el aviso de cookies—, así que el navegador daba por hecho un
+   control que quedaba debajo de ellas.
+
+   Medido, primera visita, tabulando hasta el control: a 360×640 el foco llegaba
+   y el espacio lo activaba, pero la caja quedaba TAPADA por el aviso. Eso pasa
+   la WCAG 2.2.2 —el pase se puede parar— y falla la 2.4.11, «Focus Not
+   Obscured», que es AA en WCAG 2.2. A 320×568 salía bien por casualidad, porque
+   allí la página tiene más scroll que dar.
+
+   `scroll-margin-bottom` es exactamente el hueco que el navegador tiene que
+   respetar por debajo, y se calcula con las mismas dos variables que ya miden
+   esas dos capas, así que no puede desajustarse si una de ellas cambia. Los
+   8 px son el aire del anillo de foco, que se pinta hacia dentro. */
+.carrusel__interruptor {
+  scroll-margin-bottom: calc(var(--banda-consentimiento) + var(--barra-movil) + 8px);
 }

@@ -20,7 +20,7 @@ literal del §7.1 del documento maestro.
 
 | # | Sección | Escritorio | Móvil |
 |---|---|---|---|
-| 01 | Hero | `1fr 1fr`. Titular 88 px a la izquierda, **carrusel** a sangre a la derecha con etiqueta técnica abajo. Alto mínimo del bloque: 660 px. Sin velo: el titular no pisa la foto | **Carrusel** `3/4` con el titular a 46 px **dentro, sobre el velo** (`01 §2.8`), y la etiqueta técnica abajo a la derecha. Debajo, entradilla y 2 botones a ancho completo |
+| 01 | Hero | **A pantalla completa.** El **carrusel** ocupa la sección entera y encima van, en una columna, titular 88 px, entradilla y 2 botones, todo sobre el velo (`01 §2.8`). Etiqueta técnica abajo a la derecha, control de pausa abajo a la izquierda. Alto: `min-height` del 88 % del alto útil (`01 §3.15`) | Lo mismo, con el titular a 46 px y los 2 botones a ancho completo. El alto útil descuenta también la barra fija de contacto |
 | 02 | Barra de confianza | Anclada, una línea, 4 datos | No anclada, 4 filas numeradas |
 | 03 | Por dónde empezar | `380px 1fr` + rejilla de 3×2 con imagen `4/3` | Rejilla de **2 columnas** con imagen `4/3` a ancho de celda y el texto debajo |
 | 04 | Servicios | Fondo `--fondo-alt`. Rejilla de 3×2, imagen `16/10`, título 26 px | Columna, imagen `16/10`, título 20 px |
@@ -31,6 +31,17 @@ literal del §7.1 del documento maestro.
 | 09 | Zonas | `380px 1fr` + 3 anillos en columnas. El tercero cierra con un enlace-etiqueta `CONSÚLTANOS →` a `/presupuesto/` | 3 anillos en filas con `border-top` |
 | 10 | FAQ | `380px 1fr` + acordeón de 5 | Acordeón de 5, filas de 56 px |
 | 11 | Cierre | `1fr 1fr`: titular 64 px + 2 botones a la izquierda, formulario corto a la derecha | Titular 34 px, 2 botones, formulario corto |
+
+🔴 **El hero cambió el 2026-09-18 y esta fila ya no describe dos maquetas, sino una.** Decía
+`1fr 1fr` en escritorio —titular 88 px a la izquierda, carrusel a la derecha, sin velo porque el
+titular no pisaba la foto— y un `3/4` con el titular dentro en móvil. Decisión del dueño: la foto
+ocupa la sección entera y el texto va encima, a los dos anchos, con lo que la diferencia entre
+ellos pasa a ser de tamaño y no de estructura. El velo, por tanto, deja de ser solo de móvil.
+El porqué, las cifras de contraste y las de peso están en `01 §2.8` y `01 §3.15`.
+
+**La etiqueta técnica del hero dice hoy municipio y acabado, y nada más** —«MONCADA · VALENCIA /
+HORMIGÓN IMPRESO»—. Decía también el modelo, el color y el año. Misma decisión y misma fecha:
+el muestrario ya enseña modelo y color con su código, y la ficha de obra ya la fecha.
 
 **El fondo alterno lo da la posición, no la sección.** Al retirar Precios e intercambiar
 Servicios y Muestrario quedaban tres bloques base seguidos, así que el alterno se reparte otra

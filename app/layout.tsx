@@ -65,6 +65,37 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="es" className={`${archivo.variable} ${instrumentSans.variable} ${martianMono.variable}`}>
       <body className="font-sans text-tinta bg-fondo min-h-dvh flex flex-col">
         {/*
+          El aviso de cookies es lo primero que ocupa la parte baja de la ventana
+          en una primera visita, y el hero de la portada es lo único del sitio que
+          se mide contra el alto de la ventana. Este script marca el `<html>`
+          ANTES DEL PRIMER PINTADO para que el hero nazca ya con su tamaño de
+          primera visita. → `app/globals.css`, `--banda-consentimiento`
+
+          🔴 Por qué en línea y no en el efecto de `Consentimiento.tsx`, que ya lee
+          esta misma cookie: ese efecto corre al hidratar, y el hero encogiendo
+          después del primer pintado es exactamente el redimensionado del elemento
+          que decide el LCP que `.hero-pantalla` rechazó `dvh` para evitar.
+
+          Medido, primera visita, con este script desactivado y dejando la marca
+          solo en el efecto: **CLS 0,156 a 390×844** y 0,009 a 1366×768, de un
+          único desplazamiento. Con el script: **0,000 en los seis tamaños**. Son
+          ~150 bytes de HTML y cero bytes de JavaScript de cliente.
+
+          ⚠️ Va SUELTO y no dentro del bloque de Consent Mode de más abajo, que
+          solo se renderiza cuando hay IDs de etiqueta. El aviso sale siempre —lo
+          pide el consentimiento, no la analítica—, así que su marca también.
+
+          Con JavaScript desactivado no corre este script ni monta el aviso: no
+          hay banda que reservar y el hero sale a su alto completo. Las dos cosas
+          fallan juntas, que es la única forma de que no se contradigan.
+        */}
+        <script
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{
+            __html: `if(!/(^|; )${COOKIE_CONSENTIMIENTO}=(aceptado|rechazado)/.test(document.cookie))document.documentElement.setAttribute('data-consentimiento','pendiente');`,
+          }}
+        />
+        {/*
           Consent Mode v2: los cuatro permisos arrancan DENEGADOS —salvo para
           quien ya aceptó, que se detecta leyendo la cookie aquí mismo.
 

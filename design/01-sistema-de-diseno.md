@@ -251,6 +251,26 @@ de `--fondo` (`#E9EAE6`) **más bajo**, sobre el recorte `3/4` real de un teléf
 | Corbera, fratasado arena | `rgb(255,247,220)` | 4,98 : 1 |
 | Negro puro | — | 15,26 : 1 |
 
+**Vuelta a medir el 2026-09-18, con el hero a pantalla completa** (§3.15). El recorte manda, y
+el recorte ha cambiado: ya no hay un `3/4` de 354 × 472, hay una sección que ocupa casi todo el
+alto útil a cualquier ancho. Mismo método, mismo peor píxel, tres recortes reales medidos:
+
+| Recorte | Moncada | Denia | Alzira | Corbera |
+|---|---|---|---|---|
+| **354 × 472** — el `3/4` de móvil que midió la tabla de arriba | 4,79 | 4,79 | 4,79 | 4,98 |
+| **390 × 632** — teléfono de 390, sección a pantalla completa | 4,79 | 4,79 | 4,79 | **4,93** |
+| **768 × 778** — tableta | 4,79 | 4,79 | 4,79 | **5,01** |
+| **1366 × 602** — portátil | 4,79 | 4,79 | 4,79 | **4,94** |
+
+La primera fila reproduce exacta la tabla de arriba, y eso es lo que prueba que el método no ha
+derivado. **`--velo` se queda en 0,68**: las tres fotos con cielo quemado siguen tocando el peor
+caso absoluto lo recorte quien lo recorte, y Corbera, que no lo toca, solo puede mejorar.
+
+⚠️ **Sobre el velo no puede ir `--sobre-tinta`.** Medido en los mismos recortes, ese gris da
+**4,19 : 1**, por debajo del 4,5 que AA pide a texto normal, aunque sea el token del texto sobre
+`--tinta` opaco en el resto del sitio. Lo que va encima del velo es `--fondo` y solo `--fondo`;
+el botón de contorno usa por eso su variante `sobreOscuro`, que ya lo trae.
+
 El número que manda es el primero, y las tres filas siguientes explican por qué: **tres de las
 cuatro fotos del carrusel tienen cielo quemado a blanco puro**, así que su peor caso real *es*
 el peor caso absoluto. Diseñar el velo contra `#FFFFFF` no es pesimismo de laboratorio, es
@@ -267,10 +287,16 @@ WCAG 2.1; lo que no se puede cambiar sin rehacer la tabla es el recorte —`3/4`
 `object-cover` decide qué parte de la foto se ve y, con ella, cuál es el píxel más claro.
 
 **Dónde se usa, y dónde no.** Solo donde un texto del sitio se pinta encima de una fotografía.
-Hoy eso es un sitio: el hero de la home **por debajo de 768 px**. En escritorio el titular
-tiene su propia columna, no pisa nada, y el velo se retira —`md:hidden`— para que las fotos se
-vean como son. No es un tratamiento estético reutilizable: un velo que aparece donde no hace
-falta es una foto oscurecida sin motivo.
+Hoy eso es un sitio: **el hero de la home, a todos los anchos** desde el 2026-09-18.
+
+🔴 **Hasta esa fecha este § decía «por debajo de 768 px» y que en escritorio el velo se retiraba
+con `md:hidden`.** Era cierto mientras el titular tuvo su propia columna al lado de la foto. Con
+el hero a pantalla completa (§3.15) el titular, la entradilla y los dos botones se pintan encima
+de la foto también en escritorio, así que el velo va con ellos. No es una excepción nueva: es la
+misma regla —velo donde hay texto sobre foto— aplicada a una pantalla que cambió.
+
+Sigue sin ser un tratamiento estético reutilizable: un velo que aparece donde no hace falta es
+una foto oscurecida sin motivo.
 
 La etiqueta técnica (§3.8) **no necesita velo y no cuenta como excepción**: trae su propio fondo
 `--tinta` opaco, y el velo compuesto sobre `--tinta` da exactamente `--tinta`.
@@ -524,15 +550,16 @@ La numeración es continua dentro de la página y sirve al lector como índice i
 que cambian solas, sin gesto táctil. `components/contenido/CarruselFotos.tsx`.
 
 ```
-marco       relative · overflow: hidden · fondo --fondo-alt · la proporción del hueco
-            (3/4 en móvil, altura de la celda en escritorio). radius 0, sin sombra
+marco       relative · overflow: hidden · fondo --fondo-alt · la proporción del hueco, SI
+            la tiene: el hero de la home no la pasa y llena la celda. radius 0, sin sombra
 capa 1      las 4 fotos · absolute inset-0 · una <Image fill object-cover> por diapositiva
-velo        lo que le pase el hero como `children` (§2.8, solo móvil)
+velo        lo que le pase el hero como `children` (§2.8, a todos los anchos)
 capa 2      las 4 etiquetas técnicas (§3.8) · inset-x-0 bottom-0, alineadas a la derecha,
             44 px reservados a su izquierda · pointer-events: none · cada una se funde CON
             su foto, no con el carrusel
 control     pausa · 44×44 · abajo a la izquierda, en la banda reservada. <input> el PRIMER
-            hijo del marco (lo exige el `~`), <label> el ÚLTIMO (lo pinta encima sin z-index)
+            hijo del marco (lo exige el `~`), <label> el ÚLTIMO y con z-index: 20 —ser el
+            último lo pinta encima DENTRO del marco, y el hero apila texto por fuera—
 pase        ciclo 24 s · 4 diapositivas · 6 s cada una · animation-delay NEGATIVO: el turno
             de cada una, menos una vuelta entera. DOS @keyframes de opacidad + visibility,
             uno por capa, con el mismo reparto y distinta forma de relevarse:
@@ -567,7 +594,9 @@ Lo que define el componente, y nada de ello es decorativo:
 - **Dos capas de pasadas, con el velo en medio.** El velo tiene que oscurecer la FOTO, no el
   texto que va sobre ella. Con la etiqueta dentro de la misma pasada que su foto, el velo —que
   llega como `children` y por tanto después— le caía encima y la dejaba en **2,64 : 1** en
-  móvil, contra los 4,5 que pide AA y los 13,9 que tenía en escritorio, donde no hay velo.
+  móvil, contra los 4,5 que pide AA y los 13,9 que marcaba entonces en escritorio, donde
+  todavía no había velo. Desde el 2026-09-18 lo hay a los dos anchos, y por eso el orden de
+  pintado dejó de ser un detalle de móvil.
   Sacándola a una capa propia por encima del velo, las cuatro miden **13,91 : 1**: la etiqueta
   es `bg-tinta` opaco, así que el píxel de debajo es el mismo pase quien pase.
 - **El índice va en `--carrusel-i` y el estado activo en una clase, nunca en `:nth-child`.**
@@ -596,9 +625,157 @@ Lo que define el componente, y nada de ello es decorativo:
   **238,1 kB a 156,8 kB (−81,3 kB, −34,2 %)** y la portada entera de 429,8 a 349,2 kB, con el
   mismo ancho servido en las cuatro. ⚠️ Toda calidad nueva hay que declararla en
   `images.qualities` de `next.config.ts`.
+- 🔴 **El control lleva `z-index: 20`, y desde el 2026-09-18 no es prescindible.** Ser el último
+  hijo lo pinta por encima de las dos capas de pasadas, pero solo dentro del marco. El hero a
+  pantalla completa apila su columna de texto ENCIMA del carrusel, con `z-10`, y esa columna
+  llega hasta el fondo de la sección en cuanto el contenido crece —a 360×640 basta—: sin el
+  `z-20` su caja tapaba los 44×44 del control y el toque no llegaba. Medido con
+  `elementFromPoint` sobre el centro del control: con `z-20` responde el control, sin él
+  responde la columna de texto. Un pase automático que no se puede parar es literalmente lo que
+  prohíbe la WCAG 2.2.2, que es lo que este § se reescribió para poder cumplir.
 - **El `@keyframes` está escrito para cuatro diapositivas.** CSS no sabe repartir «1/n» sin
   JavaScript. Con otro número se escribe el `@keyframes` de ese número; fingir que el
   componente es genérico sería mentir sobre lo que hace.
+
+#### El hero a pantalla completa
+
+**Enmienda del 2026-09-18, decisión del dueño.** El carrusel del hero deja de ser un hueco con
+proporción dentro de una rejilla y pasa a ser **la sección entera, con el texto encima**, a los
+dos anchos. `app/page.tsx` + `.hero-pantalla` de `app/globals.css`.
+
+```
+alto      min-height: calc(--hero-util * --hero-asomo)
+--hero-util  100svh − --cabecera-actual − --barra-movil − --banda-consentimiento
+          --hero-asomo 0,88 · --barra-movil 56px, y 0 a partir de cabecera-ancha (1180 px)
+          --banda-consentimiento 0, y 184/148/104 px mientras el aviso de cookies está puesto
+capas     carrusel y columna de texto en la MISMA celda de rejilla, el texto con z-10
+texto     titular 46/88 px, entradilla y 2 botones, todo en --fondo sobre el velo
+          self-start y pb-20: la caja acaba donde acaba el texto y reserva la banda de abajo
+          tamaños y espacios por VARIABLE, no por utilidad: se compactan en ventana baja
+```
+
+- **«Casi todo el alto, dejando ver el corte», contestado expresamente por el dueño.** No el
+  100 %: un hero que llena la pantalla exacta esconde que existe el resto de la página. Medido a
+  390×844: sección de 632 px y **86 px de asomo** hasta la barra fija, de los que los últimos 46
+  ya son la barra de confianza en tinta.
+- 🔴 **`min-height`, no `height`.** A 360×640 el contenido del hero mide 637 px y el alto útil son
+  514: con `height` el recorte se lo llevaba el segundo botón. Así la sección crece, se pierde
+  el asomo —que es un adorno— y no un CTA, que no lo es.
+- 🔴 **`svh`, no `vh` ni `dvh`.** `vh` es el viewport con las barras del navegador retraídas y se
+  pasa de largo justo al cargar, que es cuando se mira el hero; `dvh` acierta pero cambia de
+  valor al hacer scroll y redimensionaría el elemento que decide el LCP. El respaldo va en
+  `@supports (height: 100svh)` y **no en dos declaraciones seguidas**: la declaración lleva
+  `var()`, así que un navegador que no conozca la unidad la da por válida, gana la cascada y
+  falla al calcular el valor, cayendo en `min-height: auto` y no en la línea anterior.
+- **El alto útil no es el de la ventana.** Hay dos barras montadas encima y ninguna está en el
+  flujo por debajo del hero: la cabecera `sticky top-0` y la barra de contacto `sticky bottom-0`.
+  Son 126 px en móvil.
+- **Sin `proporcion`.** Es lo que la hace opcional en el componente: con una `aspect-ratio` viva
+  y la anchura en `auto`, el navegador deduce la anchura de la altura —el cálculo que ya devolvió
+  scroll horizontal dos veces—. Comprobado `scrollWidth === clientWidth` a 390, 768 y 1366.
+- **`sizes` es `(min-width: 1200px) 1200px, 100vw`.** Hasta 1200 px de ventana es `100vw` y a
+  390 no cambia nada (ya lo era, y `fill` elige el candidato por la anchura). El tope de 1200
+  se añade el 2026-09-18 porque ahí se acaban los originales: las cuatro fotos del pase miden
+  1200, 2048, 1200 y 898 px.
+  🔴 **Y el tope NO abarata el LCP, que es lo que parecía.** `sharp` no amplía: para el original
+  de Moncada, 1200×900, `w=1200`, `w=1536` y `w=2048` devuelven el MISMO archivo de 222.109 B
+  (216,9 kB). Los 216,9 kB no son un candidato inflado, son el original entero, y el salto desde
+  los 101,6 kB de `50vw` es el precio real de un hueco que pasó de media pantalla a pantalla
+  completa —con 750 px se estaba ampliando 1,82×—. Lo que el tope sí ahorra son **40,8 kB, el
+  7,6 % del pase**, todos en la diapositiva de Denia, la única con 2048 px de origen. Medido con
+  `curl` contra `next start`, `Accept: image/avif`, a 1366×768 y DPR 1.
+  **La calidad de la primera se queda en 75.** A 60 serían 147.159 B, −73,2 kB, pero el peldaño
+  de 1200 solo lo pide un escritorio: en móvil sigue siendo `w=640`, 73.585 B, q75, sin un byte
+  de diferencia. → `design/05` §C #14
+
+#### El hero en la primera visita, con el aviso de cookies puesto
+
+**Cierre del 2026-09-18.** El apartado de arriba se midió con la cookie de consentimiento ya
+aceptada, y esa es otra web. Mientras nadie ha decidido, `Consentimiento.tsx` ocupa la parte
+baja de la ventana con un bloque `fixed bottom-0 z-50` —181,6 px hasta 500 px de ancho, 96 a
+partir de 1024—, y ahí es justo donde el hero a pantalla completa pone **el control de pausa,
+la etiqueta técnica y el corte**. Medido a 390×844 antes de esto: borde inferior del hero en
+701,8 px, aviso empezando en 606,4. Un pase automático cuyo botón de pausa queda debajo de una
+capa incumple la WCAG 2.2.2 igual que si el botón no existiera.
+
+- **`--banda-consentimiento` se resta al alto útil**, y vale 0 en cuanto hay decisión. Tres
+  escalones —**184 / 148 / 104 px** en `<768`, `768–1023` y `≥1024`— que **espejan la altura
+  medida del aviso** a 21 anchos, redondeando siempre hacia arriba: pasarse solo agranda el
+  asomo, quedarse corto vuelve a enterrar el control. Es la misma clase de espejo que
+  `--barra-movil`, y se vuelve a medir si se toca el texto del aviso o su tipografía.
+- 🔴 **La marca la pone un `<script>` en línea de `app/layout.tsx`, antes del primer pintado.**
+  Dejársela al efecto de `Consentimiento.tsx` encoge el hero DESPUÉS de pintarlo, que es el
+  mismo redimensionado del elemento del LCP por el que este § rechazó `dvh`. Medido sin el
+  script: **CLS 0,156 a 390×844**. Con él, **0,000 en los seis tamaños**. El efecto sigue
+  existiendo solo para mantener la marca al día cuando el visitante decide.
+- **El alto útil pasa a `--hero-util`, con la rama `@supports` del `svh` dentro.** Así
+  `.hero-pantalla` tiene UNA sola declaración de `min-height` viva: una segunda regla plana en
+  cualquier parte del archivo anulaba en silencio el `@supports` y devolvía el sitio a `vh`.
+- **El contenido se compacta en ventana baja**, porque `--hero-asomo` es un mínimo y nunca es
+  él quien se come el corte: se lo come un contenido más alto que el mínimo. Dos escalones por
+  alto de ventana, con sus gemelos para cuando el aviso está puesto, todos dentro de la escala
+  cerrada del §2.4. El titular de 64 px solo llega hasta 1179 px de ancho: de ahí en adelante
+  sobra alto y se queda en 88, porque un titular que se pinta a 64 en la primera visita y salta
+  a 88 al aceptar es peor que un asomo de menos.
+- ⚠️ **El interletraje viaja con el tamaño.** La escala de `tailwind.config.ts` lo lleva dentro
+  de cada peldaño —46 a −0,02em, 64 a −0,025, 88 a −0,03—; al pasar de `text-88` a una
+  variable se perdía y el titular ganaba una línea entera, de 359 a 448,8 px a 768×1024.
+- ⚠️ **`--hero-pb` no baja de 80 px en móvil.** La etiqueta técnica mide 69,8 px y va a sangre
+  abajo, donde los botones son de ancho completo: recortar ese hueco no ahorra alto, encima un
+  texto sobre otro. En escritorio los botones son de ancho automático y el suelo lo pone el
+  control de pausa, 44 px.
+
+- **Un tercer escalón por debajo de 600 px de alto** —titular 26, entradilla 14, `pt` 16,
+  `gap` 12—, que es el que hace existir el asomo en un teléfono de 320×568. Se aplica en los
+  **dos** estados, no solo con el aviso decidido, por la misma razón que el titular de 64 px no
+  pasa de 1179: un titular que salta de tamaño al tocar «Aceptar» es peor que un asomo de menos.
+  Especificidad 0,4,0 —un `:root` más que el escalón del aviso— para que gane por peso y no por
+  orden, porque el bloque vive al final del archivo y el final del archivo es donde otra rama
+  puede añadir.
+- **El foco del control de pausa lleva `scroll-margin-bottom`** con esas mismas dos variables,
+  `--banda-consentimiento` + `--barra-movil`. El «llévalo a la vista» del navegador solo conoce
+  el viewport y no las dos capas que se le montan encima, así que dejaba el control tapado tras
+  tabular hasta él: eso pasa la WCAG 2.2.2 —el pase se puede parar— y **falla la 2.4.11, «Focus
+  Not Obscured», que es AA en WCAG 2.2**. Medido a 360×640 en primera visita, donde ocurría.
+
+**El asomo se mide contra lo que tapa la ventana, no contra la ventana.** Abajo hay siempre una
+capa opaca fuera del flujo: el aviso mientras nadie decide, y `BarraMovil` —56 px, `sticky
+bottom-0`— hasta 1180 px de ancho. Restar solo el aviso y olvidar la barra es el mismo error a
+menor escala, y era el de la primera redacción de este apartado: daba 142,2 · 162,1 · 131,4 px
+de asomo con la decisión tomada, que son los 56 px de la barra de más en los tres tamaños en que
+la barra existe.
+
+Medido en el build de producción, los seis tamaños × dos estados. Control alcanzable con el
+puntero y con el tabulador —y **sin tapar** tras tabular—, clic y barra espaciadora marcando el
+interruptor, etiqueta entera visible, ni texto recortado ni scroll horizontal nuevo:
+
+    tamaño     primera visita        decidido
+    320×568    no cabe (−161,4)      asomo  20,2   ← lo arregla el escalón de 600 px
+    360×640    no cabe (−146,6)      asomo  35,0
+    390×844    asomo  66,5           asomo  86,2
+    768×1024   asomo  30,6           asomo 106,1
+    1024×768   asomo  67,4           asomo  75,4   ← no existía
+    1366×768   asomo  50,0           asomo  82,1
+
+🔴 **Lo que no cabe es la PRIMERA VISITA de los dos teléfonos pequeños, y solo eso.** La primera
+redacción dio 320×568 por imposible entero; era media verdad, y la otra media se perdió dentro
+de ella. A 320×568 y 360×640 el aviso mide 181,6 px, la barra 56 y la cabecera 70: quedan 260 y
+332 px de ventana, y el suelo de este hero son ~427 px con el texto más pequeño de la escala que
+no lo recorta. Ahí no cabe por aritmética —ni bajando el titular a 20 px: −121,5— y el control
+sigue alcanzable por scroll y por tabulador, que es lo que la WCAG 2.2.2 pide.
+
+Con la decisión tomada sí cabía, y lo que faltaba era bajar un peldaño más. Medido a 320×568,
+ventana útil de 442 px:
+
+    titular   entradilla   otros            columna    asomo
+    34 px     16 px        —                514,7 px   −72,7   ← no había corte que ver
+    26 px     16 px        —                453,9 px   −11,9
+    26 px     14 px        —                437,8 px    +4,2
+    26 px     14 px        pt 16 · gap 12   421,8 px   +20,2   ← el escalón
+
+⚠️ El umbral son 600 px de alto y no los 660 que también cogerían un 360×640: ahí el titular ya
+cabe en tres líneas y el asomo existe —35 px medidos—, así que compactar sería cobrar un titular
+más pequeño por un problema que ese tamaño no tiene.
 
 #### Control de pausa
 

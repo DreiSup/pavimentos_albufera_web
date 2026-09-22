@@ -52,6 +52,21 @@ export default function Consentimiento() {
     setEstado(guardado === 'aceptado' || guardado === 'rechazado' ? guardado : 'pendiente')
   }, [])
 
+  /**
+   * `data-consentimiento="pendiente"` en el `<html>`: el único sitio del que el
+   * CSS puede enterarse de que este aviso está ocupando la parte baja de la
+   * ventana. Lo pone ya el script en línea de `app/layout.tsx` —antes del primer
+   * pintado, para que el hero no se redimensione al hidratar—, y aquí se
+   * mantiene al día: quien decide lo pierde en el mismo gesto y el hero recupera
+   * su alto completo. → `app/globals.css`, `--banda-consentimiento`
+   */
+  useEffect(() => {
+    if (estado === null) return
+    const raiz = document.documentElement
+    if (estado === 'pendiente') raiz.setAttribute('data-consentimiento', 'pendiente')
+    else raiz.removeAttribute('data-consentimiento')
+  }, [estado])
+
   useEffect(() => {
     if (estado === null || estado === 'pendiente') return
     const concedido = estado === 'aceptado' ? 'granted' : 'denied'
@@ -111,7 +126,14 @@ export default function Consentimiento() {
       ) : null}
 
       {estado === 'pendiente' ? (
-        <div className="fixed bottom-0 md:bottom-0 left-0 right-0 z-50 bg-tinta text-fondo px-[18px] py-4 md:px-lat-desktop md:py-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 md:mb-0 mb-[56px]">
+        /* 🔴 `cabecera-ancha:mb-0`, NO `md:mb-0`. El margen inferior de 56 px es
+           el hueco de `BarraMovil`, y esa barra se apaga en 1180 px, no en 768:
+           con `md:mb-0` el aviso se montaba ENCIMA de «Llamar» y «WhatsApp» en
+           toda la banda de 768 a 1179 px —medido a 768, 900 y 1024—, tapando en
+           la primera visita los dos únicos CTA fijos del sitio. Es el mismo
+           punto de ruptura mal espejado que `--barra-movil` ya documenta en
+           `globals.css`: las tres cosas se mueven juntas o no se mueven. */
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-tinta text-fondo px-[18px] py-4 md:px-lat-desktop md:py-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 mb-[56px] cabecera-ancha:mb-0">
           {/* 🔴 **Esta frase es la primera capa del art. 22.2 de la LSSI**, y hasta
               el 2026-09-18 decía «hasta que aceptes no se guarda ninguna cookie de
               analítica ni de publicidad». El código la desmentía por dos sitios,
