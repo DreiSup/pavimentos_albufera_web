@@ -99,6 +99,16 @@ a {
   outline: 2px solid var(--tinta);
   outline-offset: 3px;
 }
+/* `.btn-primario` (ocre) asume un fondo claro detrás de su anillo de foco: el
+   anillo es `--tinta`, y sobre `--fondo` da contraste de sobra. Dentro de
+   `.sobre-oscuro` el fondo YA es `--tinta` —`MenuMovil`, por ejemplo—, así que
+   ese mismo anillo se funde con el fondo: medido, 1,00:1. `:where()` no aporta
+   especificidad, así que la regla de arriba vale (0,1,0) entera por
+   `:focus-visible`; esta añade la clase `.sobre-oscuro` sin `:where`, así que
+   suma (0,2,0) y ya gana sola, sin `!important`. */
+.sobre-oscuro .btn-primario:focus-visible {
+  outline-color: var(--fondo);
+}
 
 /* Radio 0 en todo el sitio: decisión de identidad */
 :where(button, input, select, textarea, img, video, figure, article, aside) {

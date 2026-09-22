@@ -784,13 +784,31 @@ Enmendado el 2026-08-31; deroga las tres cláusulas que animaban la altura:
   150 px: el peor caso es escritorio con submenú, 84 + 56 = 140.
 
 **Menú desplegado en móvil.** Panel a pantalla completa, no deslizante lateral:
-- Fondo `--tinta` a pantalla completa, `padding: 18px`.
-- Cabecera del panel con el logo —`/marca/logo-texto-claro.png`, 20 px de alto— y una `×` de
-  44 px a la derecha.
+- Fondo `--tinta` a pantalla completa, `padding: 18px` a los lados y abajo. La fila de arriba
+  mide **69 px** —los 70 de la barra menos su `border-bottom`—, no 18 de relleno.
+- Cabecera del panel con **el mismo logotipo que la barra, en variante clara**
+  —`/marca/logo-marca-fila-claro.png`, 38 px de alto, 239,94 de ancho— y una `×` de 44 px a la
+  derecha. ~~`/marca/logo-texto-claro.png`, 20 px de alto~~: **enmendado el 2026-09-18.** En móvil
+  este panel no es una pantalla aparte, es el único estado expandido de la barra de navegación, y
+  el wordmark solo la convertía en otra marca: al abrirla desaparecía la senda, el alto caía de 38
+  a 20 px y el bloque bajaba 14,5. Ahora el logotipo **no se mueve ni un píxel** al abrir el menú
+  —medido con el menú abierto: `x=18, y=15,5, 239,94 × 38` en los dos estados—, y **es un enlace a
+  `/`**, que antes no lo era: el de la cabecera es el único enlace a la portada de todo el sitio y
+  al desplegar el menú se perdía.
+- **El panel se pinta en `document.body`, no dentro del `<header>`.** La cabecera es
+  `sticky z-30`, o sea un contexto de apilamiento, y desde dentro de él ningún `z-index` gana al
+  `z-50` del aviso de cookies. Medido en primera visita a 390 px: el aviso ocupaba 606,4 → 788 y
+  el `Llamar` del panel 729 → 777, con `elementFromPoint` devolviendo el botón `Aceptar`. El panel
+  va en el `<body>` con `z-60`, por encima del aviso. Un diálogo modal está arriba del todo o no
+  es modal.
 - Enlaces principales en Archivo 700 / 115 % a 34 px, uno por línea, `min-height: 56px`,
   separados por `border-top: 1px solid #41535C`.
 - Debajo, en mono 11 color `#DADCD6`: el NAP completo y los enlaces legales.
 - Al pie del panel, los dos botones de contacto a ancho completo (`Llamar` ocre + `WhatsApp`
   contorno claro).
 - Atrapa el foco, se cierra con `Esc`, `body` con `overflow: hidden`, y devuelve el foco al
-  botón de hamburguesa. Sin animación de deslizamiento: aparece y desaparece.
+  botón de hamburguesa — ⚠️ **eso último lo decía este párrafo desde el principio y no lo hacía
+  nadie**: medido con teclado, al pulsar `Esc` el foco caía al `<body>`. Implementado el
+  2026-09-18. Sin animación de deslizamiento: aparece y desaparece. **El foco entra por
+  la `×`**, no por el primer elemento: desde que el logotipo es un enlace, el primero sería «irse
+  a la portada», y un menú no se abre con el foco puesto en salir de la página.
