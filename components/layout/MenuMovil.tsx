@@ -109,17 +109,33 @@ export default function MenuMovil({
       aria-modal="true"
       aria-label="Menú"
       /* ⚠️ `z-[60]` **y el portal de arriba**: los dos juntos, y ninguno sirve
-         solo. → ver el bloque del `createPortal`. */
-      className="fixed inset-0 z-[60] bg-tinta text-fondo px-[18px] pb-[18px] flex flex-col overflow-y-auto"
+         solo. → ver el bloque del `createPortal`.
+
+         🔴 **`sobre-oscuro` no es decorativo aquí, arregla el foco.** `Boton`
+         primario lleva `outline: 2px solid var(--tinta)`
+         (`app/globals.css` §focus), pensado para un fondo `--fondo` claro. En
+         este panel el fondo ES `--tinta`: medido con `getComputedStyle` tras
+         tabular hasta «Llamar», el anillo pintaba `rgb(27,30,28)` sobre un
+         panel `rgb(27,30,28)`, 1,00:1 de contraste. La clase ya existe en el
+         proyecto para marcar secciones de fondo oscuro (`Pie`, `FichaObra`,
+         `PaginaServicio`…) y hoy solo reescribe `.pendiente`; se le añade la
+         regla de foco del botón primario en vez de inventar un selector
+         nuevo. → `app/globals.css`, regla `.sobre-oscuro .btn-primario`. */
+      className="sobre-oscuro fixed inset-0 z-[60] bg-tinta text-fondo px-[18px] pb-[18px] flex flex-col overflow-y-auto"
     >
-      {/* `h-[69px]` y no el `p-[18px]` de antes: esta fila es la misma fila que
-          la cabecera de móvil, así que mide lo mismo que ella por dentro. La
-          barra son 70 px (`design/02` §B9) **menos el `border-b` de 1 px** que
-          lleva, o sea 69 px de caja de contenido: medido, su fila interior
-          arranca en y=12,5 y no en 13. Poner aquí 70 dejaba el logotipo medio
-          píxel más abajo que el de la barra, que es justo el movimiento que
-          este cambio viene a quitar. */}
-      <div className="h-[69px] shrink-0 flex items-center justify-between">
+      {/* `h-[69px] md:h-[83px]` y no el `p-[18px]` de antes: esta fila es la
+          misma fila que la cabecera, así que mide lo mismo que ella por
+          dentro, **en los dos estados que cruza**. Este panel existe en toda
+          la banda de hamburguesa —320 a 1179 px, `cabecera-ancha`—, y la
+          cabecera cambia de 70 a 84 px en `md` (768), a media banda. Un solo
+          alto fijo aquí solo puede coincidir con uno de los dos.
+
+          La barra son 70/84 px (`design/02` §B9) **menos el `border-b` de
+          1 px** que lleva, o sea 69/83 px de caja de contenido: medido, su
+          fila interior arranca en y=12,5 y no en 13. Poner 70/84 dejaba el
+          logotipo medio píxel más abajo que el de la barra, que es justo el
+          movimiento que este cambio viene a quitar. */}
+      <div className="h-[69px] md:h-[83px] shrink-0 flex items-center justify-between">
         {/* **La misma marca que la barra, 2026-09-18.** Aquí se pintaba
             `logo-texto-claro.png`: solo el wordmark, 230 × 20. Y la cabecera,
             desde que compone en fila, pinta senda + wordmark a 239,94 × 38. En
@@ -128,6 +144,14 @@ export default function MenuMovil({
             marca cambiaba de dibujo: la senda desaparecía, el alto caía de 38 a
             20 px y el bloque bajaba 14,5 px. Una barra que se abre no cambia de
             logotipo.
+
+            🔴 **El arreglo del 2026-09-18 solo cubría 320-767 px.** El menú de
+            hamburguesa sigue vivo hasta `cabecera-ancha` (1180), pero la
+            cabecera real sube a 84 px y el logotipo a 53 px ya en `md` (768):
+            medido, entre 768 y 1179 la barra pintaba el logotipo a 334,7 × 53
+            y este panel seguía en 239,9 × 38, la misma talla que a 390. Por
+            eso el `<img>` de aquí abajo lleva ahora el mismo `md:h-[53px]`
+            que el de `Cabecera`, no solo la altura de 320-767.
 
             Lo que se ve ahora es **el mismo archivo en variante clara**,
             `logo-marca-fila-claro.png`, a la misma altura y en la misma
@@ -153,12 +177,14 @@ export default function MenuMovil({
             width={1004}
             height={159}
             decoding="async"
-            /* Mismas reglas que en `Cabecera`: manda la altura y el ancho es
+            /* Mismas reglas que en `Cabecera`, con la misma clase de altura
+               —`h-[38px] md:h-[53px]`—, no solo el tramo estrecho: este panel
+               sigue vivo hasta `cabecera-ancha` (1180) y la cabecera ya está a
+               84 px de barra y 53 de logotipo desde `md` (768). El ancho es
                `auto`, con `width`/`height` declarados para que el hueco se
                reserve por la proporción del archivo. Salen los mismos
-               239,94 × 38 px. Aquí no hay `md:h-[53px]`: este panel solo existe
-               por debajo de `cabecera-ancha`. */
-            className="h-[38px] w-auto shrink-0"
+               239,94 × 38 px hasta 767, y 334,66 × 53 de 768 a 1179. */
+            className="h-[38px] w-auto shrink-0 md:h-[53px]"
           />
         </Link>
         <button
