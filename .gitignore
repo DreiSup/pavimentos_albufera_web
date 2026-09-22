@@ -44,3 +44,6 @@ next-env.d.ts
 # logotipo original que suelta el usuario, no es activo del repo:
 # las variantes derivadas viven en public/marca/
 /img/
+
+# worktrees de agentes de Claude Code (sesiones y subagentes)
+/.claude/

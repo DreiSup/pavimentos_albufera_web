@@ -66,6 +66,17 @@ Cuatro decisiones, y su porqué:
   así que la caja de recorte queda apuntada aquí: es lo único que hace falta para rehacerlo.
 - **PNG, no SVG.** `public/README.md` ya cierra esta puerta —la senda son degradados por elipse y
   vectorizarla la redibuja—, y sigue cerrada en miniatura. **No existe ningún SVG en el repo.**
+  ✅ **Reevaluado el 2026-09-18 contra un vectorial real**, `img/logo.svg`, que el dueño aportó
+  ese día. La puerta se queda cerrada, y ahora con cifras: el archivo son 97 trazados en **un solo
+  `<linearGradient>` compartido**, no un degradado por elipse. Medido sobre el original compuesto
+  y sobre el SVG rasterizado al mismo tamaño, tinta media por zona en RGB:
+  **«Pavimentos» (8,7 · 21,2 · 48,5) y «Albufera» (7,6 · 80,0 · 164,5) en el original** —o sea los
+  dos azules de este §2.1— **contra (2,5 · 88,1 · 163,0) y (2,7 · 80,9 · 156,9) en el SVG**: el
+  mismo azul dos veces. La senda pierde igual su profundidad —losa cercana y lejana pasan de
+  (5,7 · 41,6 · 90,6) y (71,3 · 151,4 · 235,1) a (2,5 · 71,8 · 148,7) y (6,5 · 81,1 · 164,9)— y el
+  degradado introduce `#00D9FF`, un cian que no es ninguno de los tres valores que este párrafo
+  autoriza. El detalle, con el peso y la nitidez, en `public/README.md`.
+  ✅ Precisión del mismo día: la frase de arriba habla del logotipo — sigue sin haber un `.svg` de la marca. Sí hay SVG en línea dentro de un `.tsx`, los dos iconos de §3.17: no son archivos, no son la marca de la casa y no tocan esta decisión.
 - **Teja opaca en `--fondo`.** Es lo único que resuelve el modo oscuro sin duplicar archivo: la
   pestaña clara y la oscura ven el mismo cuadrado. Probada la alternativa —teja `#000D2A` con la
   senda de la variante clara— y a 16 px la senda pierde el azul y se lee gris: el color, que es lo
@@ -75,6 +86,44 @@ Cuatro decisiones, y su porqué:
   dos resuelve las elipses. **A 16 px se ve una loma azul con la base oscura**, que es la
   perspectiva de la senda, no sus losas. Se leen a partir de 24-32 px. Es el techo del motivo, no
   del archivo.
+
+**El verde de WhatsApp, 2026-09-18. Segunda excepción, y la última.** El dueño pidió que los
+botones de WhatsApp salgan «del verde de WhatsApp», y contestó expresamente que en **todos** los
+del sitio, no solo en el flotante de móvil. Es un color que este sistema no tiene, así que se
+trata igual que el logotipo: se nombra, se acota y se dice dónde no va.
+
+| Token | Hex | Contraste | Uso |
+|---|---|---|---|
+| `verde-whatsapp` | `#25D366` | **8,48 : 1** con `--tinta` | Fondo del botón cuyo `href` abre WhatsApp |
+| `verde-whatsapp-hover` | `#20B859` | **6,45 : 1** con `--tinta` | Su `:hover`. Cada canal del anterior al 87 % |
+
+- **El rótulo va en `--tinta`, no en blanco, y no es una licencia estética.** `#25D366` con texto
+  blanco mide **1,98 : 1**: no llega ni a la mitad del 4,5 : 1 que pide AA, y el botón lleva texto
+  normal de 16 px, así que no le vale el 3 : 1 de texto grande. Se midieron las dos salidas
+  posibles sin inventar un verde intermedio. La otra era el verde oscuro de marca `#075E54` con
+  blanco (7,67 : 1), que cumple pero **ya no se lee como «el verde de WhatsApp»**, que es
+  literalmente lo que se pidió. Gana el verde vivo con la tinta del sistema, que además es el
+  mismo par que el botón primario: fondo saturado, rótulo en tinta.
+- **Dónde va:** solo como `background` del botón de WhatsApp, y solo cuando el `href` de verdad
+  abre WhatsApp. Lo decide `esEnlaceWhatsApp()` en `lib/config.ts`, que es el mismo predicado con
+  el que `EventosGlobales` decide contar un `whatsapp_click`. → §3.16
+- **Dónde NO va, y esto es la mitad de la excepción:** ningún texto, ningún borde que no sea el
+  del propio botón, ningún fondo de sección, ningún estado activo, ningún anillo de foco, ningún
+  separador, ninguna marca de validación de formulario, ninguna barra de progreso. No es «el
+  verde del sistema»: el sistema no tiene verde. Es la marca de un tercero puesta encima de su
+  propio botón, igual que los azules del logotipo son la marca de la casa puesta en su archivo.
+- **El ocre no se toca.** Sigue siendo el único color de acción del sistema y la regla del §2.2 se
+  aplica igual. → §2.2, apartado final.
+- **El borde del botón es del mismo verde, no de tinta**, igual que el primario lo lleva del mismo
+  ocre. Eso deja la silueta del botón a **1,64 : 1** contra `--fondo`, por debajo del 3 : 1 que
+  pide el contraste no textual — pero es exactamente la situación que el botón primario ya tiene
+  (**1,86 : 1**) y que el sistema aceptó al elegir rellenos planos sin borde ajeno. Lo que
+  identifica los dos botones es su rótulo, que sí cumple de sobra. Se deja consistente a
+  propósito: un borde oscuro solo alrededor del de WhatsApp lo haría el único botón del sitio con
+  contorno propio.
+- ⚠️ El hex está tomado del verde de marca de WhatsApp de uso corriente. **Sin confirmar contra
+  la guía de marca oficial de Meta**: si el dueño tiene el valor exacto, se cambia en el token y
+  se rehace la medida de contraste, que es lo único que hay que volver a comprobar.
 
 ### 2.2 La regla del ocre
 
@@ -102,6 +151,16 @@ variante `primario` de `Boton`.
 
 Los antetítulos de sección van siempre en `--acero` sobre fondo claro y en `--fondo-alt` sobre
 fondo oscuro. **Nunca en ocre**: no son acciones.
+
+**Y el verde de WhatsApp no cuenta como un tercer rol del ocre, pero sí le quita fuerza.**
+Medido (2026-09-18): la luminancia relativa de `#25D366` es **0,479** y la de `#D9A441`,
+**0,417**. El verde es más claro *y* mucho más saturado. En la barra fija de móvil los dos
+botones son rellenos al 50 % y lo único que separa al primario del secundario es el color, así
+que a 390 px **la mitad de WhatsApp se lee como la más fuerte de las dos**. La regla del §2.2 no
+se rompe —el ocre conserva un solo rol de acción— pero su intención sí queda debilitada en esa
+pantalla. Es el precio del encargo, está anotado, y arreglarlo es una decisión del dueño, no del
+sistema: o el ocre pasa a ser el ancho mayor de la barra, o el `Llamar` sube de peso, o se acepta
+que en móvil la acción más visible sea WhatsApp. → §4.3
 
 ### 2.3 Tipografía
 
@@ -192,7 +251,10 @@ de tarjetas usan `overflow-x: auto` con margen negativo lateral para sangrar a l
 
 ### 2.6 Bordes, radios y sombras
 
-- **`border-radius: 0` en todo el sitio.** Sin excepciones.
+- **`border-radius: 0` en todo el sitio.** Sin excepciones. Es una regla sobre las **superficies**
+  —cajas, campos, imágenes, tarjetas, botones—, no sobre lo que se dibuja dentro de ellas. La
+  senda del logotipo son elipses y los dos iconos de §3.16 llevan curvas: son dibujo, no
+  superficie, y ninguno de los dos tiene `border-radius` que poner a cero.
 - Separadores: `1px solid #1B1E1C` para abrir y cerrar un grupo, `1px solid #DADCD6` o
   `#5C625E` entre filas del grupo. Sobre fondo oscuro, `1px solid #41535C`.
 - Rejillas con retícula visible (la paleta de la lámina): contenedor `background: #1B1E1C`
@@ -210,9 +272,14 @@ cumple entero. Los azules existen únicamente dentro de los archivos de
 escapen a un botón, un enlace, un borde o un estado. El único color de acción sigue siendo
 el ocre, y la regla del §2.2 no cambia.
 
-Consecuencia práctica: **el logotipo no se recolorea desde CSS.** Cada fondo tiene su
-archivo —`logo-texto.png` sobre fondo claro, `logo-texto-claro.png` y `logo-marca-claro.png`
+Consecuencia práctica: **el logotipo no se recolorea desde CSS.** Cada fondo tiene su archivo
+—`logo-marca-fila.png` sobre fondo claro; `logo-marca-fila-claro.png` y `logo-marca-claro.png`
 sobre tinta— y variar el color de la marca es sustituir el archivo, no tocar una clase.
+
+*(Decía `logo-texto.png` sobre fondo claro y `logo-texto-claro.png` sobre tinta. **Corregido el
+2026-09-18**: la cabecera pasó al archivo en fila el mismo día que se compuso, y el menú de móvil
+lo siguió. Los dos de wordmark solo siguen en `public/marca/` y ya no los pinta nadie; el
+inventario completo, con qué archivo se usa dónde, está en `public/README.md`.)*
 
 Hubo hasta el 2026-09-17 una recreación vectorial del dibujo (`MarcaSvg.tsx`, `lib/marca.ts`
 y una escala de ocho azules expuesta como `text-marca-*`), hecha cuando en el repositorio no
@@ -251,6 +318,26 @@ de `--fondo` (`#E9EAE6`) **más bajo**, sobre el recorte `3/4` real de un teléf
 | Corbera, fratasado arena | `rgb(255,247,220)` | 4,98 : 1 |
 | Negro puro | — | 15,26 : 1 |
 
+**Vuelta a medir el 2026-09-18, con el hero a pantalla completa** (§3.15). El recorte manda, y
+el recorte ha cambiado: ya no hay un `3/4` de 354 × 472, hay una sección que ocupa casi todo el
+alto útil a cualquier ancho. Mismo método, mismo peor píxel, tres recortes reales medidos:
+
+| Recorte | Moncada | Denia | Alzira | Corbera |
+|---|---|---|---|---|
+| **354 × 472** — el `3/4` de móvil que midió la tabla de arriba | 4,79 | 4,79 | 4,79 | 4,98 |
+| **390 × 632** — teléfono de 390, sección a pantalla completa | 4,79 | 4,79 | 4,79 | **4,93** |
+| **768 × 778** — tableta | 4,79 | 4,79 | 4,79 | **5,01** |
+| **1366 × 602** — portátil | 4,79 | 4,79 | 4,79 | **4,94** |
+
+La primera fila reproduce exacta la tabla de arriba, y eso es lo que prueba que el método no ha
+derivado. **`--velo` se queda en 0,68**: las tres fotos con cielo quemado siguen tocando el peor
+caso absoluto lo recorte quien lo recorte, y Corbera, que no lo toca, solo puede mejorar.
+
+⚠️ **Sobre el velo no puede ir `--sobre-tinta`.** Medido en los mismos recortes, ese gris da
+**4,19 : 1**, por debajo del 4,5 que AA pide a texto normal, aunque sea el token del texto sobre
+`--tinta` opaco en el resto del sitio. Lo que va encima del velo es `--fondo` y solo `--fondo`;
+el botón de contorno usa por eso su variante `sobreOscuro`, que ya lo trae.
+
 El número que manda es el primero, y las tres filas siguientes explican por qué: **tres de las
 cuatro fotos del carrusel tienen cielo quemado a blanco puro**, así que su peor caso real *es*
 el peor caso absoluto. Diseñar el velo contra `#FFFFFF` no es pesimismo de laboratorio, es
@@ -267,17 +354,23 @@ WCAG 2.1; lo que no se puede cambiar sin rehacer la tabla es el recorte —`3/4`
 `object-cover` decide qué parte de la foto se ve y, con ella, cuál es el píxel más claro.
 
 **Dónde se usa, y dónde no.** Solo donde un texto del sitio se pinta encima de una fotografía.
-Hoy eso es un sitio: el hero de la home **por debajo de 768 px**. En escritorio el titular
-tiene su propia columna, no pisa nada, y el velo se retira —`md:hidden`— para que las fotos se
-vean como son. No es un tratamiento estético reutilizable: un velo que aparece donde no hace
-falta es una foto oscurecida sin motivo.
+Hoy eso es un sitio: **el hero de la home, a todos los anchos** desde el 2026-09-18.
+
+🔴 **Hasta esa fecha este § decía «por debajo de 768 px» y que en escritorio el velo se retiraba
+con `md:hidden`.** Era cierto mientras el titular tuvo su propia columna al lado de la foto. Con
+el hero a pantalla completa (§3.15) el titular, la entradilla y los dos botones se pintan encima
+de la foto también en escritorio, así que el velo va con ellos. No es una excepción nueva: es la
+misma regla —velo donde hay texto sobre foto— aplicada a una pantalla que cambió.
+
+Sigue sin ser un tratamiento estético reutilizable: un velo que aparece donde no hace falta es
+una foto oscurecida sin motivo.
 
 La etiqueta técnica (§3.8) **no necesita velo y no cuenta como excepción**: trae su propio fondo
 `--tinta` opaco, y el velo compuesto sobre `--tinta` da exactamente `--tinta`.
 
 ## 3. Componentes base
 
-Los 15 componentes con los que se compone todo el sitio. Cualquier pantalla nueva se construye
+Los 16 componentes con los que se compone todo el sitio. Cualquier pantalla nueva se construye
 con estos; si hace falta uno nuevo, se crea en este mismo lenguaje y se añade aquí.
 
 ### 3.1 Botón primario (ocre)
@@ -524,25 +617,41 @@ La numeración es continua dentro de la página y sirve al lector como índice i
 que cambian solas, sin gesto táctil. `components/contenido/CarruselFotos.tsx`.
 
 ```
-marco       relative · overflow: hidden · fondo --fondo-alt · la proporción del hueco
-            (3/4 en móvil, altura de la celda en escritorio). radius 0, sin sombra
+marco       relative · overflow: hidden · fondo --fondo-alt · la proporción del hueco, SI
+            la tiene: el hero de la home no la pasa y llena la celda. radius 0, sin sombra
 capa 1      las 4 fotos · absolute inset-0 · una <Image fill object-cover> por diapositiva
-velo        lo que le pase el hero como `children` (§2.8, solo móvil)
+velo        lo que le pase el hero como `children` (§2.8, a todos los anchos)
 capa 2      las 4 etiquetas técnicas (§3.8) · inset-x-0 bottom-0, alineadas a la derecha,
             44 px reservados a su izquierda · pointer-events: none · cada una se funde CON
             su foto, no con el carrusel
-botón       pausa · 44×44 · abajo a la izquierda, en la banda reservada
-pase        @keyframes de opacidad + visibility · ciclo 24 s · 4 diapositivas · 6 s cada una
-            cruce de 3 puntos porcentuales (≈0,7 s) entre una y la siguiente
-            animation-delay NEGATIVO: el turno de cada una, menos una vuelta entera
+control     pausa · 44×44 · abajo a la izquierda, en la banda reservada. <input> el PRIMER
+            hijo del marco (lo exige el `~`), <label> el ÚLTIMO y con z-index: 20 —ser el
+            último lo pinta encima DENTRO del marco, y el hero apila texto por fuera—
+pase        ciclo 24 s · 4 diapositivas · 6 s cada una · animation-delay NEGATIVO: el turno
+            de cada una, menos una vuelta entera. DOS @keyframes de opacidad + visibility,
+            uno por capa, con el mismo reparto y distinta forma de relevarse:
+              `carrusel`           fotos     · CRUZAN · 3 puntos porcentuales (≈0,72 s)
+              `carrusel-etiqueta`  etiquetas · RELEVAN · 1,5 + 1,5 puntos, sin solaparse
 estado base opacity: 0 + visibility: hidden · la PRIMERA, `.carrusel__paso--primera`, visible
 ```
 
-Siete cosas que definen el componente, y ninguna es decorativa:
+Lo que define el componente, y nada de ello es decorativo:
 
-- **El pase es de servidor y cuesta cero bytes de JavaScript.** El proyecto no admite librerías
-  de animación y aquí no hace falta ninguna: todo el pase es CSS. Lo único que hidrata es el
-  botón de pausa, que es un control, no el pase.
+- **Todo el componente es de servidor y cuesta cero bytes de JavaScript.** El proyecto no
+  admite librerías de animación y aquí no hace falta ninguna: el pase es CSS, y desde el
+  2026-09-18 el control de pausa también. Nada del hero hidrata.
+- **Las fotos cruzan; las etiquetas se relevan.** El mismo `@keyframes` para las dos capas
+  pintaba **dos etiquetas monoespaciadas superpuestas** durante el cruce —medido en el build de
+  producción a 390 px: opacidades 0,83 y 0,17, y en pantalla se leía «C‑117SA · GRIS», dos obras
+  distintas encima—. Una foto sobre otra es un fundido; un dato sobre otro es un dato falso. La
+  capa de etiquetas baja a 0 en el 23,5 % del ciclo y la siguiente no empieza a subir hasta el
+  98,5 %, que es **ese mismo instante**: 0,36 s de bajada, 0,36 s de subida, dentro de la misma
+  ventana que el cruce de las fotos, así que la etiqueta sigue pegada a su foto.
+  Verificado barriendo un ciclo entero sobre el build de producción, **1.201 muestras
+  deterministas cada 20 ms** (fijando `currentTime` de las ocho animaciones) más **1.501 en vivo
+  con `requestAnimationFrame`**: **cero muestras con dos etiquetas por encima de 0,05**, cero por
+  encima de 0 siquiera, y como máximo **una** con `visibility: visible`. Las fotos siguen
+  cruzando: la suma de sus cuatro opacidades no baja de **0,9999996**.
 - **El estado base es la portada correcta, no un apilamiento.** Con `prefers-reduced-motion:
   reduce`, o en un navegador que no anime, lo que queda es una sola foto fija. La animación
   entera vive dentro de un `@media (prefers-reduced-motion: no-preference)`; **no se delega en
@@ -552,13 +661,16 @@ Siete cosas que definen el componente, y ninguna es decorativa:
 - **Dos capas de pasadas, con el velo en medio.** El velo tiene que oscurecer la FOTO, no el
   texto que va sobre ella. Con la etiqueta dentro de la misma pasada que su foto, el velo —que
   llega como `children` y por tanto después— le caía encima y la dejaba en **2,64 : 1** en
-  móvil, contra los 4,5 que pide AA y los 13,9 que tenía en escritorio, donde no hay velo.
+  móvil, contra los 4,5 que pide AA y los 13,9 que marcaba entonces en escritorio, donde
+  todavía no había velo. Desde el 2026-09-18 lo hay a los dos anchos, y por eso el orden de
+  pintado dejó de ser un detalle de móvil.
   Sacándola a una capa propia por encima del velo, las cuatro miden **13,91 : 1**: la etiqueta
   es `bg-tinta` opaco, así que el píxel de debajo es el mismo pase quien pase.
 - **El índice va en `--carrusel-i` y el estado activo en una clase, nunca en `:nth-child`.**
-  Del marco cuelgan seis clases de hijo —fotos, velo, etiquetas y botón—, y cualquier selector
-  posicional cuenta lo que no debe. Por eso la diapositiva activa por defecto es
-  `.carrusel__paso--primera` y no `:first-child`: la primera etiqueta es el sexto hijo.
+  Del marco cuelgan cinco clases de hijo —interruptor, fotos, velo, etiquetas y la caja del
+  control—, y cualquier selector posicional cuenta lo que no debe. Por eso la diapositiva activa
+  por defecto es `.carrusel__paso--primera` y no `:first-child`: la primera etiqueta es el
+  séptimo hijo, y desde que el interruptor abre la lista ni la primera foto es la primera.
 - **El retardo es negativo, y por eso la primera vuelta cruza.** Con el retardo positivo, las
   tres que esperaban no tenían animación viva durante su espera y aparecían de golpe: medidos
   pausando `document.getAnimations()`, **tres huecos en los primeros 24 s** —5,30-5,95 s,
@@ -569,7 +681,9 @@ Siete cosas que definen el componente, y ninguna es decorativa:
   retira nada: un lector de pantalla recorría los cuatro textos alternativos y las cuatro
   etiquetas técnicas seguidos, con o sin movimiento reducido. Con `visibility` en el estado base
   y en el `@keyframes`, el árbol del hero pasa de **101 nodos y 4 imágenes a 30 nodos y 1**.
-  Durante los 0,72 s del cruce hay dos, que es exactamente lo que hay en pantalla.
+  Durante los 0,72 s del cruce hay dos FOTOS, que es exactamente lo que hay en pantalla. En la
+  capa de etiquetas nunca hay dos: su ventana es más estrecha y entra la siguiente en el mismo
+  instante en que sale la anterior. Medido: máximo **una** con `visibility: visible`.
 - **Solo la primera foto es prioritaria, y las otras tres pesan menos.** La primera es la
   candidata a LCP, la única precargada y la única a calidad 75. Las tres que esperan salen
   perezosas —para no disputarle la cola— y a `quality={60}`: están dentro del viewport inicial,
@@ -578,40 +692,236 @@ Siete cosas que definen el componente, y ninguna es decorativa:
   **238,1 kB a 156,8 kB (−81,3 kB, −34,2 %)** y la portada entera de 429,8 a 349,2 kB, con el
   mismo ancho servido en las cuatro. ⚠️ Toda calidad nueva hay que declararla en
   `images.qualities` de `next.config.ts`.
+- 🔴 **El control lleva `z-index: 20`, y desde el 2026-09-18 no es prescindible.** Ser el último
+  hijo lo pinta por encima de las dos capas de pasadas, pero solo dentro del marco. El hero a
+  pantalla completa apila su columna de texto ENCIMA del carrusel, con `z-10`, y esa columna
+  llega hasta el fondo de la sección en cuanto el contenido crece —a 360×640 basta—: sin el
+  `z-20` su caja tapaba los 44×44 del control y el toque no llegaba. Medido con
+  `elementFromPoint` sobre el centro del control: con `z-20` responde el control, sin él
+  responde la columna de texto. Un pase automático que no se puede parar es literalmente lo que
+  prohíbe la WCAG 2.2.2, que es lo que este § se reescribió para poder cumplir.
 - **El `@keyframes` está escrito para cuatro diapositivas.** CSS no sabe repartir «1/n» sin
   JavaScript. Con otro número se escribe el `@keyframes` de ese número; fingir que el
   componente es genérico sería mentir sobre lo que hace.
 
-#### Botón de pausa
+#### El hero a pantalla completa
 
-**Pieza nueva, 2026-09-18.** `components/contenido/BotonPausaCarrusel.tsx`. La WCAG 2.2.2, nivel
-A, exige poder parar todo contenido que se mueva solo durante más de cinco segundos, y un pase
-de 24 s en bucle infinito lo es; `prefers-reduced-motion` cubre a quien lo lleva activado, que
-no es lo mismo. **Decisión del dueño, contestada expresamente: el pase sigue siendo automático y
-se añade un control pequeño y discreto sobre la foto.**
+**Enmienda del 2026-09-18, decisión del dueño.** El carrusel del hero deja de ser un hueco con
+proporción dentro de una rejilla y pasa a ser **la sección entera, con el texto encima**, a los
+dos anchos. `app/page.tsx` + `.hero-pantalla` de `app/globals.css`.
 
 ```
+alto      min-height: calc(--hero-util * --hero-asomo)
+--hero-util  100svh − --cabecera-actual − --barra-movil − --banda-consentimiento
+          --hero-asomo 0,88 · --barra-movil 56px, y 0 a partir de cabecera-ancha (1180 px)
+          --banda-consentimiento 0, y 184/148/104 px mientras el aviso de cookies está puesto
+capas     carrusel y columna de texto en la MISMA celda de rejilla, el texto con z-10
+texto     titular 46/88 px, entradilla y 2 botones, todo en --fondo sobre el velo
+          self-start y pb-20: la caja acaba donde acaba el texto y reserva la banda de abajo
+          tamaños y espacios por VARIABLE, no por utilidad: se compactan en ventana baja
+```
+
+- **«Casi todo el alto, dejando ver el corte», contestado expresamente por el dueño.** No el
+  100 %: un hero que llena la pantalla exacta esconde que existe el resto de la página. Medido a
+  390×844: sección de 632 px y **86 px de asomo** hasta la barra fija, de los que los últimos 46
+  ya son la barra de confianza en tinta.
+- 🔴 **`min-height`, no `height`.** A 360×640 el contenido del hero mide 637 px y el alto útil son
+  514: con `height` el recorte se lo llevaba el segundo botón. Así la sección crece, se pierde
+  el asomo —que es un adorno— y no un CTA, que no lo es.
+- 🔴 **`svh`, no `vh` ni `dvh`.** `vh` es el viewport con las barras del navegador retraídas y se
+  pasa de largo justo al cargar, que es cuando se mira el hero; `dvh` acierta pero cambia de
+  valor al hacer scroll y redimensionaría el elemento que decide el LCP. El respaldo va en
+  `@supports (height: 100svh)` y **no en dos declaraciones seguidas**: la declaración lleva
+  `var()`, así que un navegador que no conozca la unidad la da por válida, gana la cascada y
+  falla al calcular el valor, cayendo en `min-height: auto` y no en la línea anterior.
+- **El alto útil no es el de la ventana.** Hay dos barras montadas encima y ninguna está en el
+  flujo por debajo del hero: la cabecera `sticky top-0` y la barra de contacto `sticky bottom-0`.
+  Son 126 px en móvil.
+- **Sin `proporcion`.** Es lo que la hace opcional en el componente: con una `aspect-ratio` viva
+  y la anchura en `auto`, el navegador deduce la anchura de la altura —el cálculo que ya devolvió
+  scroll horizontal dos veces—. Comprobado `scrollWidth === clientWidth` a 390, 768 y 1366.
+- **`sizes` es `(min-width: 1200px) 1200px, 100vw`.** Hasta 1200 px de ventana es `100vw` y a
+  390 no cambia nada (ya lo era, y `fill` elige el candidato por la anchura). El tope de 1200
+  se añade el 2026-09-18 porque ahí se acaban los originales: las cuatro fotos del pase miden
+  1200, 2048, 1200 y 898 px.
+  🔴 **Y el tope NO abarata el LCP, que es lo que parecía.** `sharp` no amplía: para el original
+  de Moncada, 1200×900, `w=1200`, `w=1536` y `w=2048` devuelven el MISMO archivo de 222.109 B
+  (216,9 kB). Los 216,9 kB no son un candidato inflado, son el original entero, y el salto desde
+  los 101,6 kB de `50vw` es el precio real de un hueco que pasó de media pantalla a pantalla
+  completa —con 750 px se estaba ampliando 1,82×—. Lo que el tope sí ahorra son **40,8 kB, el
+  7,6 % del pase**, todos en la diapositiva de Denia, la única con 2048 px de origen. Medido con
+  `curl` contra `next start`, `Accept: image/avif`, a 1366×768 y DPR 1.
+  **La calidad de la primera se queda en 75.** A 60 serían 147.159 B, −73,2 kB, pero el peldaño
+  de 1200 solo lo pide un escritorio: en móvil sigue siendo `w=640`, 73.585 B, q75, sin un byte
+  de diferencia. → `design/05` §C #14
+
+#### El hero en la primera visita, con el aviso de cookies puesto
+
+**Cierre del 2026-09-18.** El apartado de arriba se midió con la cookie de consentimiento ya
+aceptada, y esa es otra web. Mientras nadie ha decidido, `Consentimiento.tsx` ocupa la parte
+baja de la ventana con un bloque `fixed bottom-0 z-50` —181,6 px hasta 500 px de ancho, 96 a
+partir de 1024—, y ahí es justo donde el hero a pantalla completa pone **el control de pausa,
+la etiqueta técnica y el corte**. Medido a 390×844 antes de esto: borde inferior del hero en
+701,8 px, aviso empezando en 606,4. Un pase automático cuyo botón de pausa queda debajo de una
+capa incumple la WCAG 2.2.2 igual que si el botón no existiera.
+
+- **`--banda-consentimiento` se resta al alto útil**, y vale 0 en cuanto hay decisión. Tres
+  escalones —**184 / 148 / 104 px** en `<768`, `768–1023` y `≥1024`— que **espejan la altura
+  medida del aviso** a 21 anchos, redondeando siempre hacia arriba: pasarse solo agranda el
+  asomo, quedarse corto vuelve a enterrar el control. Es la misma clase de espejo que
+  `--barra-movil`, y se vuelve a medir si se toca el texto del aviso o su tipografía.
+- 🔴 **La marca la pone un `<script>` en línea de `app/layout.tsx`, antes del primer pintado.**
+  Dejársela al efecto de `Consentimiento.tsx` encoge el hero DESPUÉS de pintarlo, que es el
+  mismo redimensionado del elemento del LCP por el que este § rechazó `dvh`. Medido sin el
+  script: **CLS 0,156 a 390×844**. Con él, **0,000 en los seis tamaños**. El efecto sigue
+  existiendo solo para mantener la marca al día cuando el visitante decide.
+- **El alto útil pasa a `--hero-util`, con la rama `@supports` del `svh` dentro.** Así
+  `.hero-pantalla` tiene UNA sola declaración de `min-height` viva: una segunda regla plana en
+  cualquier parte del archivo anulaba en silencio el `@supports` y devolvía el sitio a `vh`.
+- **El contenido se compacta en ventana baja**, porque `--hero-asomo` es un mínimo y nunca es
+  él quien se come el corte: se lo come un contenido más alto que el mínimo. Dos escalones por
+  alto de ventana, con sus gemelos para cuando el aviso está puesto, todos dentro de la escala
+  cerrada del §2.4. El titular de 64 px solo llega hasta 1179 px de ancho: de ahí en adelante
+  sobra alto y se queda en 88, porque un titular que se pinta a 64 en la primera visita y salta
+  a 88 al aceptar es peor que un asomo de menos.
+- ⚠️ **El interletraje viaja con el tamaño.** La escala de `tailwind.config.ts` lo lleva dentro
+  de cada peldaño —46 a −0,02em, 64 a −0,025, 88 a −0,03—; al pasar de `text-88` a una
+  variable se perdía y el titular ganaba una línea entera, de 359 a 448,8 px a 768×1024.
+- ⚠️ **`--hero-pb` no baja de 80 px en móvil.** La etiqueta técnica mide 69,8 px y va a sangre
+  abajo, donde los botones son de ancho completo: recortar ese hueco no ahorra alto, encima un
+  texto sobre otro. En escritorio los botones son de ancho automático y el suelo lo pone el
+  control de pausa, 44 px.
+
+- **Un tercer escalón por debajo de 600 px de alto** —titular 26, entradilla 14, `pt` 16,
+  `gap` 12—, que es el que hace existir el asomo en un teléfono de 320×568. Se aplica en los
+  **dos** estados, no solo con el aviso decidido, por la misma razón que el titular de 64 px no
+  pasa de 1179: un titular que salta de tamaño al tocar «Aceptar» es peor que un asomo de menos.
+  Especificidad 0,4,0 —un `:root` más que el escalón del aviso— para que gane por peso y no por
+  orden, porque el bloque vive al final del archivo y el final del archivo es donde otra rama
+  puede añadir.
+- **El foco del control de pausa lleva `scroll-margin-bottom`** con esas mismas dos variables,
+  `--banda-consentimiento` + `--barra-movil`. El «llévalo a la vista» del navegador solo conoce
+  el viewport y no las dos capas que se le montan encima, así que dejaba el control tapado tras
+  tabular hasta él: eso pasa la WCAG 2.2.2 —el pase se puede parar— y **falla la 2.4.11, «Focus
+  Not Obscured», que es AA en WCAG 2.2**. Medido a 360×640 en primera visita, donde ocurría.
+
+**El asomo se mide contra lo que tapa la ventana, no contra la ventana.** Abajo hay siempre una
+capa opaca fuera del flujo: el aviso mientras nadie decide, y `BarraMovil` —56 px, `sticky
+bottom-0`— hasta 1180 px de ancho. Restar solo el aviso y olvidar la barra es el mismo error a
+menor escala, y era el de la primera redacción de este apartado: daba 142,2 · 162,1 · 131,4 px
+de asomo con la decisión tomada, que son los 56 px de la barra de más en los tres tamaños en que
+la barra existe.
+
+Medido en el build de producción, los seis tamaños × dos estados. Control alcanzable con el
+puntero y con el tabulador —y **sin tapar** tras tabular—, clic y barra espaciadora marcando el
+interruptor, etiqueta entera visible, ni texto recortado ni scroll horizontal nuevo:
+
+    tamaño     primera visita        decidido
+    320×568    no cabe (−161,4)      asomo  20,2   ← lo arregla el escalón de 600 px
+    360×640    no cabe (−146,6)      asomo  35,0
+    390×844    asomo  66,5           asomo  86,2
+    768×1024   asomo  30,6           asomo 106,1
+    1024×768   asomo  67,4           asomo  75,4   ← no existía
+    1366×768   asomo  50,0           asomo  82,1
+
+🔴 **Lo que no cabe es la PRIMERA VISITA de los dos teléfonos pequeños, y solo eso.** La primera
+redacción dio 320×568 por imposible entero; era media verdad, y la otra media se perdió dentro
+de ella. A 320×568 y 360×640 el aviso mide 181,6 px, la barra 56 y la cabecera 70: quedan 260 y
+332 px de ventana, y el suelo de este hero son ~427 px con el texto más pequeño de la escala que
+no lo recorta. Ahí no cabe por aritmética —ni bajando el titular a 20 px: −121,5— y el control
+sigue alcanzable por scroll y por tabulador, que es lo que la WCAG 2.2.2 pide.
+
+Con la decisión tomada sí cabía, y lo que faltaba era bajar un peldaño más. Medido a 320×568,
+ventana útil de 442 px:
+
+    titular   entradilla   otros            columna    asomo
+    34 px     16 px        —                514,7 px   −72,7   ← no había corte que ver
+    26 px     16 px        —                453,9 px   −11,9
+    26 px     14 px        —                437,8 px    +4,2
+    26 px     14 px        pt 16 · gap 12   421,8 px   +20,2   ← el escalón
+
+⚠️ El umbral son 600 px de alto y no los 660 que también cogerían un 360×640: ahí el titular ya
+cabe en tres líneas y el asomo existe —35 px medidos—, así que compactar sería cobrar un titular
+más pequeño por un problema que ese tamaño no tiene.
+
+#### Control de pausa
+
+**Pieza nueva, 2026-09-18.** La WCAG 2.2.2, nivel A, exige poder parar todo contenido que se
+mueva solo durante más de cinco segundos, y un pase de 24 s en bucle infinito lo es;
+`prefers-reduced-motion` cubre a quien lo lleva activado, que no es lo mismo. **Decisión del
+dueño, contestada expresamente: el pase sigue siendo automático y se añade un control pequeño y
+discreto sobre la foto.**
+
+🔴 **Enmendado el mismo 2026-09-18: era un botón de cliente y ahora no es JavaScript.** Vive
+dentro de `components/contenido/CarruselFotos.tsx`; `BotonPausaCarrusel.tsx` se retira.
+
+```
+control  <input type="checkbox" role="switch"> recortado a 1×1, PRIMER hijo del marco
+         + <label for> de 44×44, ÚLTIMO hijo. Lo que se ve y se toca es el <label>
 caja     44×44 (min-w-tactil/min-h-tactil) · absolute bottom-0 left-0 dentro del marco
 color    sobre-oscuro bg-tinta text-fondo — el mismo recuadro opaco de la etiqueta §3.8
-glifo    SVG en línea, currentColor: ‖ mientras pasa, ▶ en pausa. Sin librería de iconos
-foco     el outline ocre global de `globals.css`, 2 px, offset 2
-estado   aria-pressed + aria-label que cambia · data-pausa en el marco → animation-play-state
+glifo    SVG en línea, currentColor: ‖ mientras pasa, ▶ en pausa. Los DOS van en el HTML
+         y los alterna `:checked`. Sin librería de iconos
+foco     outline ocre de 2 px con offset −2, hacia DENTRO, sobre el <label>
+estado   `:checked` del input → `~ .carrusel__paso { animation-play-state: paused }`
+nombre   fijo: «Pausa del pase de fotos». El estado lo pone `checked`, no el nombre
 ```
 
-- **El estado se entiende sin color:** lo dice la forma del glifo, no el pigmento. El botón es
+- **El estado se entiende sin color:** lo dice la forma del glifo, no el pigmento. El control es
   siempre tinta sobre foto, y el glifo mide **13,91 : 1** contra su propio fondo, así que el
   contraste no depende de qué foto haya debajo ni de que exista el velo.
-- **No es un `<input type="checkbox">`.** Esa era la salida sin JavaScript que este mismo §
-  apuntaba, y se descarta: un interruptor no admite `aria-pressed`, que es el estado que pide un
-  control de dos posiciones sobre algo que ya está corriendo. Un botón que alterna es estado
-  real, el único motivo que admite CLAUDE.md para cruzar la frontera de cliente.
-- **Escribe `data-pausa` en el marco en vez de resolverse con `:has()`.** `:has()` no es
-  universal, y un botón de pausa que en algún navegador no pare nada es peor promesa que no
-  tenerlo. Verificado: con el botón pulsado el reloj de la animación avanza 17 ms en 900, y al
-  soltarlo vuelve a 900 de 900.
-- **Con movimiento reducido el botón se retira entero** (`display: none` sobre
-  `.carrusel__pausa`). No hay pase que parar, y así sale también del orden de tabulación en vez
-  de dejar un foco que no hace nada.
+- 🔴 **Sí es un `<input type="checkbox">`, y la versión anterior de este § decía lo contrario.**
+  Se rechazaba porque «un interruptor no admite `aria-pressed`». Esa razón pesaba la restricción
+  equivocada: un interruptor lleva su estado en `aria-checked`, que es exactamente lo mismo, y a
+  cambio el botón de cliente costaba algo que no se puede pagar. **El pase arranca en el primer
+  pintado, porque es CSS; el botón no existía hasta hidratar, y con el JavaScript desactivado no
+  existía nunca.** En esa ventana había movimiento automático que no se podía parar, que es
+  literalmente lo que prohíbe la 2.2.2. Verificado con la ejecución de scripts desactivada por
+  CDP: el pase corre —dos capturas a 6,5 s de distancia son distintas— y **el clic en el control
+  lo para** —las dos siguientes son idénticas byte a byte—. Cero JavaScript en el hero entero.
+- 🔴 **El nombre es un sustantivo, no un verbo, y no cambia.** Antes combinaba `aria-pressed` con
+  un `aria-label` que se reescribía, y un lector llegaba a decir «pausar el pase de fotos,
+  pulsado». Los dos patrones válidos eran nombre fijo con estado, o nombre que describe la acción
+  siguiente sin estado; se toma el primero, porque un interruptor nativo trae el estado puesto.
+  «Pausar/Reanudar el pase de fotos» habría repetido la contradicción en otra forma
+  —«pausar…, desactivado»—, así que se reordenan las mismas palabras a **«Pausa del pase de
+  fotos»**. Comprobado en el árbol de accesibilidad, no leyendo el JSX:
+  `{role: switch, name: "Pausa del pase de fotos", checked: false}` → `{… checked: true}`.
+- **El `~` en vez de `:has()`.** `:has()` no es universal, y un control de pausa que en algún
+  navegador no pare nada es peor promesa que no tenerlo. Eso es lo que obliga a que el `<input>`
+  sea el primer hijo del marco: el combinador solo mira hacia delante. Verificado: con el
+  interruptor marcado el reloj de la animación avanza **17 ms en 2.000**, y al desmarcarlo
+  vuelve a 2.000 de 2.000. Con ratón y con la barra espaciadora.
+- 🔴 **El anillo de foco va hacia dentro.** El marco es `overflow: hidden` y el control se apoya
+  en su esquina inferior izquierda: con el `outline-offset: 2` global se recortaban **dos de sus
+  cuatro lados**, y al llegar con el tabulador se veía media escuadra. Con `outline-offset: -2px`
+  el anillo se dibuja dentro de los 44 px. No se mueve el control adentro porque su esquina es
+  la banda que la capa de etiquetas ya le reserva. Verificado tabulando —cuatro pulsaciones desde
+  el principio del documento— y midiendo los cuatro lados contra el rectángulo del marco.
+- **El interruptor se recorta, no se oculta.** `clip-path: inset(50%)` sobre 1×1: `display: none`
+  y `visibility: hidden` lo sacarían del orden de tabulación, y es el elemento que recibe el
+  foco. El recorte se lleva por delante su propio anillo, que es lo que se quiere.
+- 🔴 **Y va anclado a la MISMA esquina que su caja** (`bottom: 0; left: 0`), aunque no se vea.
+  Separar «el que recibe el foco» de «el que pinta el anillo» rompe la garantía que traía de
+  serie el `<button>`: el navegador lleva a la vista el elemento enfocado, y si el interruptor se
+  queda en su posición estática —la esquina SUPERIOR izquierda del marco—, que ya está a la
+  vista, no hay scroll y el anillo se pinta fuera de la pantalla. **A 768 px el marco mide
+  1.184 px de alto en un viewport de 1.024**: medido con la misma tabulación, la caja arrancaba
+  en y=1.280 —**256 px por debajo del pliegue, anillo invisible**— y con el anclaje el navegador
+  deja `scrollY` en 811 y la caja en y=469. A 390 y 1366 px salía bien por casualidad, porque
+  ahí el marco cabe entero en la pantalla; eso es exactamente lo que hace peligrosa la
+  comprobación a un solo ancho.
+- **Con movimiento reducido el control se retira entero** (`display: none` sobre `.carrusel__pausa`
+  **y sobre `.carrusel__interruptor`**, que son dos piezas y la tabulable es la segunda). No hay
+  pase que parar, y así sale también del orden de tabulación en vez de dejar un foco que no hace
+  nada. Verificado emulando la media feature: 0 animaciones, una foto y una etiqueta visibles, y
+  el tabulador no alcanza el control.
+- ⚠️ **Un `id` es único por documento, así que el componente es de uno por página.** Hoy lo es:
+  solo lo usa el hero de la home. Si algún día hacen falta dos en la misma página, el `id` pasa a
+  ser una prop obligatoria; se deja como constante documentada en vez de fingir una generalidad
+  que nadie usa, igual que el `@keyframes` de cuatro diapositivas.
+- ⚠️ **Ya no se puede medir el uso de la pausa** sin volver a cruzar la frontera de cliente.
+  Nadie lo había pedido; queda dicho porque era gratis con el botón anterior y ahora no lo es.
 - **La etiqueta técnica le reserva su banda.** `pl-11` sobre la capa de etiquetas: a 768 px, la
   única anchura del sitio en que pasaba, la columna del carrusel mide 304 px y la etiqueta los
   llenaba enteros, así que el botón se le montaba encima. Se le quita sitio a la etiqueta, que
@@ -626,41 +936,252 @@ por otro motivo, así que no se ha tapado con un número inventado: si algún d�
 320, la pieza que falta es reservar la banda de la etiqueta, no encoger el titular —la escala
 está cerrada y entre 34 y 46 no hay nada.
 
+### 3.16 Enlace en prosa
+
+Nuevo el **2026-09-18**. Es la pieza número dieciséis: un enlace **dentro de un párrafo**.
+
+El sistema tenía §3.5 para navegar y los botones para los CTA, y no le hacía falta nada más
+mientras ninguna pantalla tuvo prosa larga. Las tres páginas legales la tienen, y sus 22 enlaces
+se escribieron con la utilidad `text-tinta` sobre el `a { color: inherit }` de `globals.css`:
+**medido a 390 px, `rgb(27, 30, 28)` y `text-decoration: none` en los 22.** Del color exacto del
+texto que los rodea, sin subrayado. Invisibles.
+
+No es una minucia. Lo invisible eran el `mailto:` para ejercer los derechos, la reclamación ante
+la AEPD, los saltos entre las tres páginas, la decisión de adecuación en EUR-Lex y la lista del
+Data Privacy Framework: **las vías que la ley obliga a ofrecer.** Y fallaba el criterio 1.4.1 de
+las WCAG, que prohíbe que el color sea el único indicador de un enlace — aquí no había ni eso.
+
+```
+color: hereda el del texto (#1B1E1C sobre #E9EAE6 → 14,5 : 1)
+text-decoration: underline
+text-decoration-color: #41535C · text-decoration-thickness: 1px
+text-underline-offset: 3px
+:hover   text-decoration-color: currentColor · text-decoration-thickness: 2px
+:focus   el de §8 global, outline: 2px solid #D9A441; offset 2px. No se redeclara
+```
+
+**El arreglo es el subrayado, no el color.** La paleta está cerrada y el ocre no puede ser texto
+pequeño sobre fondo claro (§2.2), así que el color se queda donde está y lo que entra es la
+línea: cumple 1.4.1 sin depender de la vista de colores de nadie, y conserva el contraste máximo.
+
+Se distingue del dato pendiente de §3.9, que también lleva línea inferior, por la línea misma:
+**punteada y atenuada = dato que falta; continua = sitio al que ir.**
+
+**Se aplica por dos vías, y las dos comparten el mismo declarado:**
+
+- `.texto-legal a` — los tres documentos de golpe. Esa clase la pone `PlantillaLegal` sobre la
+  entradilla y sobre el cuerpo de cada sección, así que alcanza también las fichas de cookies que
+  se montan dentro, y **deja fuera el índice de la propia plantilla**, que es §3.5.
+- `.enlace-prosa` — el enlace suelto que vive fuera de esa clase. **Un solo consumidor hoy**, y no
+  es decorativo: el enlace a la política de privacidad de la casilla del formulario, que tenía el
+  mismo defecto que los 22 y es el peor sitio donde tenerlo. La casilla dice «He leído la política
+  de privacidad», y esa frase solo es verdad si la política se alcanza desde donde se afirma
+  haberla leído.
+
+⚠️ La regla se generaliza **añadiendo la clase, nunca copiando el declarado.**
+
+### 3.17 Botón de WhatsApp, y los dos iconos del sitio
+
+**Pieza nueva del sistema, 2026-09-18.** Encargo del dueño: los botones de WhatsApp en verde de
+WhatsApp y con su icono, y un icono de teléfono en el botón de llamar de la barra fija.
+
+```
+igual métrica que 3.1  ·  min-height 56/48 px  ·  radius 0  ·  gap: 8px entre icono y rótulo
+background: #25D366 · color: #1B1E1C · border: 1px solid #25D366
+:hover  background: #20B859
+:focus  outline: 2px solid #D9A441; outline-offset: 2px   (el global; ver abajo)
+icono   20px dentro de Boton · 24px en la barra fija de móvil (dos tamaños, medidos: ver abajo)
+```
+
+**Se pide por destino, no por prop.** `Boton` mira su propio `href` con `esEnlaceWhatsApp()`
+(`lib/config.ts`) y, si abre WhatsApp, cambia de variante y antepone el icono. Los siete puntos
+de llamada están repartidos por cinco archivos y ninguno pasa nada nuevo:
+
+| Dónde | `data-ubicacion` | Archivo |
+|---|---|---|
+| Barra fija de móvil, en las 50 rutas | `sticky_mobile` | `components/layout/BarraMovil.tsx` (ancla cruda, no `Boton`) |
+| Menú de móvil | `mobile_menu` | `components/layout/MenuMovil.tsx` |
+| Cierre de la portada | `home_close` | `app/page.tsx` |
+| Aside y pie de formulario de `/presupuesto/` | `quote_aside`, `quote_below_form` | `app/presupuesto/page.tsx` |
+| Hero y cierre de las 4 landings | `lp_hero`, `lp_close` | `components/secciones/PaginaServicio.tsx` |
+
+**Las seis páginas de servicio no llevan ninguno** y no es un olvido de esta sesión: `CtaContacto`
+solo se pinta con `servicio.ctaContacto`, que únicamente declara la recomposición de campaña de
+`content/landings.ts`. En `/hormigon-impreso/` y sus cinco hermanas el único WhatsApp es el de la
+barra fija.
+
+Comprobado ruta a ruta contra el HTML servido, y en las dos direcciones: **cero anclas a `wa.me`
+sin el verde, cero botones verdes que no vayan a `wa.me`.**
+
+#### Lo que cuesta el icono, medido de nuevo el 2026-09-18
+
+La versión anterior de este párrafo daba una cifra que no reproduce, y en el sitio equivocado.
+Decía que a 768 px el icono llevaba el cierre de la portada de tres líneas a cuatro y la fila de
+79 a 104 px. **A 768 px el icono no cuesta nada:** con `<svg>` y sin él —quitándolo del DOM en el
+navegador, con el aviso de cookies en pantalla y el teléfono real puesto— esa fila mide **78,8 px
+en los dos casos**. A 768 ya partía sola.
+
+Donde sí cuesta es en una banda estrecha y concreta, **776–847 px**:
+
+| Ancho de ventana | Columna | Con icono | Sin icono |
+|---|---|---|---|
+| 390 | 354 (apilados) | 108 px | 108 px |
+| 768 | 304 | 78,8 px | 78,8 px |
+| 800 | 320 | **78,8 px** (3 líneas) | **56 px** |
+| 824 | 332 | **78,8 px** (3 líneas) | **56 px** |
+| 848 | 344 | 56 px | 56 px |
+| 1180 y más | 510 | 56 px | 56 px |
+
+Los 28 px —20 del dibujo más 8 de `gap`— se los come el botón de WhatsApp, y el flex se los quita
+al de al lado: el que parte en tres líneas es **el de llamar**, que es el que lleva el número.
+
+**Arreglado en las landings, no en la portada.** `CtaContacto`
+(`components/secciones/PaginaServicio.tsx`) pasa de `md:flex-row` a **`cabecera-ancha:flex-row`**:
+apilado y a ancho completo hasta 1180 px, en fila desde ahí. A 1180 los dos rótulos caben enteros
+—222,7 + 260,6 + 12 de `gap` = **495,3 px sobre los 510** de la columna, o sobre ~502,5 si el
+navegador pinta barra de scroll clásica de 15 px, que sigue cabiendo—, así que ya no hay ni una
+anchura en la que un rótulo se parta: o van los dos al lado, o van uno encima de otro. Es el mismo
+punto en el que la cabecera despliega su fila y se apaga la barra fija, y por la misma razón.
+
+🔴 **El cierre de la portada conserva el defecto**, idéntico y medido: en `app/page.tsx`, la fila
+`md:flex-row` que envuelve los dos CTA con `data-ubicacion="home_close"` —hacia la línea 604, pero
+búsquese por la ubicación, que el archivo lo está tocando otra sesión— da las mismas cifras de la
+tabla. Un cambio de una palabra, `md:` por `cabecera-ancha:`, lo cierra.
+
+La razón de resolverlo así y no con `variante="whatsapp"`: un sitio de llamada nuevo que se
+olvide del prop **no falla ningún build**, se queda gris y no lo ve nadie. Y hay un segundo
+efecto que es el que de verdad lo justifica: el predicado es **el mismo** con el que
+`EventosGlobales` decide si ese clic es un `whatsapp_click`, así que la regla queda cerrada en
+una sola definición — *si se cuenta como WhatsApp, se ve como WhatsApp*. Con
+`NEXT_PUBLIC_WHATSAPP` vacía el `href` cae a `/presupuesto/`, el predicado dice que no y el botón
+vuelve solo a su variante normal: sin número no hay WhatsApp que anunciar.
+
+**El foco se deja en el global** (`outline: 2px solid var(--pigmento); offset: 2px`), no se le
+pone uno propio, y el verde **no empeora nada**: el `offset` de 2 px deja el anillo fuera del
+botón, así que su color adyacente sigue siendo el fondo de la página por los dos lados, no el
+relleno. Medido dónde cae cada uno: el del menú de móvil sobre `--tinta` (ocre a **7,47 : 1**) y
+los otros cinco sobre `--fondo` (**1,86 : 1**). Ese 1,86 es exactamente el que ya tenían de
+`contorno` y el que tiene hoy **cualquier** botón del sitio sobre fondo claro; es una debilidad
+anterior y general del anillo global, no de esta pieza, y arreglarla es tocar `app/globals.css`
+para las 50 rutas a la vez. Queda anotado, no parcheado aquí. Un anillo propio en `--tinta`
+—que es lo que hace `btn-primario`— se descartó por lo mismo: dejaría al botón de WhatsApp con
+un foco distinto del `Llamar` que tiene al lado.
+
+**Los iconos** — `components/ui/Iconos.tsx`, `IconoTelefono` y `IconoWhatsApp`.
+
+- **SVG en línea escrito a mano, sin librería y sin archivo `.svg`.** CLAUDE.md prohíbe las
+  librerías de iconos y §2.1 dice que no hay ningún `.svg` en el repo: las dos cosas siguen
+  siendo verdad. Esto es JSX dentro del HTML que ya se servía — cero peticiones, cero
+  dependencias, y no entra en el presupuesto de JS salvo los bytes del propio `Boton`.
+- **Son la misma pieza.** `viewBox` de 24, silueta maciza en `currentColor`, sin trazo. El
+  auricular del icono de WhatsApp **es el mismo auricular** del icono de teléfono, al 72 %,
+  calado dentro de la burbuja con `fill-rule="evenodd"`. Se ven juntos en la barra fija, y la
+  coherencia de familia no está aproximada: es literal.
+- **El de WhatsApp sale en negativo** respecto al logotipo oficial —burbuja oscura sobre verde,
+  auricular verde— porque el rótulo va en `--tinta` por contraste (§2.1) y el icono hereda el
+  `currentColor` del botón. Es reconocible igual: lo que identifica la marca a 24 px es la
+  silueta de burbuja con rabito más el verde del fondo, y las dos cosas están.
+- `aria-hidden="true"` y `focusable="false"` en los dos, siempre. El botón ya dice «Llamar» o
+  «WhatsApp» en texto, y el icono no sustituye nunca al rótulo. Un clic sobre el `<svg>` resuelve
+  al `<a>` por `closest()`, que es como `EventosGlobales` lo mide.
+
+**Dos tamaños, y es una decisión, no un descuido.** 20 px por defecto; 24 px **solo** en la barra
+fija de móvil. Se probó a dejar uno solo, en las dos direcciones, y las dos se caen con la cifra
+delante (2026-09-18, medido en el navegador):
+
+- **24 en todas partes no lo paga el cierre de la portada.** Con el icono a 24 esa fila pasa a
+  **cuatro líneas y 104,4 px a 768 px**, y a 848 sube de 56 a 78,8. Es decir: subir el icono
+  convertía en verdad la frase falsa que este mismo apartado arrastraba. Son 32 px en la única
+  fila del sitio donde no sobra ninguno.
+- **Bajar la barra fija a 20 tampoco**, porque el motivo para agrandar era que a 20 px «se cierra
+  el calado del auricular», y **no se cierra**. Capturado a 1× y ampliado con vecino más próximo,
+  la ranura que separa el auricular del borde de la burbuja mide **1 px a 20 px y 2 px a 24**.
+  Estrecha, pero continua, y el icono se lee.
+
+Así que el tamaño lo decide **el ancho de la columna**: 24 donde el rótulo es una palabra y el
+botón ocupa media pantalla —la barra fija—, y 20 dentro de `Boton`, que es el que aparece en filas
+de dos con rótulos largos.
+
+**Los dos CTA del menú de móvil llevan icono, los dos a 20 px.** Estaban desparejados —WhatsApp con
+icono, «Llamar» sin él, apilados a 1 px uno del otro— y así se leen como piezas de sistemas
+distintos. El auricular se escribe a mano en `MenuMovil.tsx`, con su `gap-2`, y **no se deduce de
+`tel:`** como se hace con `wa.me`: si `Boton` antepusiera el icono a todo `href` que empieza por
+`tel:`, los 28 px caerían también en los botones que dicen `Llamar al 627 663 146`, que son justo
+los que ya encogen. Van a 20 y no a los 24 de la barra fija porque la barra no está en pantalla con
+el menú abierto —el panel es `fixed inset-0`— y quien sí está al lado es el `Boton` de WhatsApp.
+
 ## 4. Elementos transversales
 
 ### 4.1 Cabecera de escritorio
 
 ```
 height: 84px · padding: 0 48px · border-bottom: 1px solid #1B1E1C · background: #E9EAE6
-logo     imagen /marca/logo-texto.png · 24px de alto (20 en móvil) · sin cambio con el scroll
+logo     imagen /marca/logo-marca-fila.png · 53px de alto (38 en móvil) · ancho automático,
+         334,7px (239,9 en móvil) · senda + wordmark EN FILA · sin cambio con el scroll
 nav      Instrument Sans 500 16px · gap: 28px · cada enlace min-height: 44px
 activo   font-weight: 600 + border-bottom: 2px solid #1B1E1C
 derecha  teléfono en Martian Mono 12px color #5C625E  +  botón de contorno «Pedir presupuesto»
 ```
 
-**El logotipo es una imagen desde el 2026-09-01, y va el wordmark solo.** El bloque completo
-apila la senda de losas encima y el claim debajo: en una barra de 70-84 px eso deja las palabras
-a 6-8 px de altura de mayúscula y el claim en 3-4 px. El bloque completo se pinta en el pie
-(§4.4), que es el único sitio del sitio con alto para él.
+**El logotipo es una imagen desde el 2026-09-01. Lleva la senda de losas desde el 2026-09-18, y
+la lleva en fila.** Lo pidió el dueño —«el logo completo, no solo el texto»—, y la forma de dárselo
+sin encoger el nombre hasta lo ilegible es **componer en horizontal**: senda a la izquierda,
+wordmark a la derecha, alineados por la base. Es un archivo propio, `logo-marca-fila.png`, no un
+recorte del bloque del pie. La receta exacta —recortes, proporciones y el relleno que lo centra—
+está en `public/README.md`.
+
+**Lo que sigue descartado es apilar.** El bloque del pie mete la senda encima del wordmark y, con
+el claim, otra línea más debajo. Medido en la caja que deja la barra —64 px de bloque en los 84 de
+escritorio, 54 en los 70 de móvil—, apilar sin el claim deja la mayúscula en **13,9 px en
+escritorio y 11,8 en móvil**, y con el claim en 12,3 y 10,4, con el claim mismo en 4. Las dos
+cifras están por debajo de lo que ya había, que es justo lo que se quería evitar. El bloque
+apilado se pinta en el pie (§4.4), que es el único sitio del sitio con alto para él.
+
+**Lo que cuesta, medido.** En fila el wordmark es el 73 % del ancho del conjunto, así que para que
+la senda entre, el texto encoge:
+
+| | Antes (wordmark solo) | Ahora (senda + wordmark) |
+|---|---|---|
+| Caja del logotipo, escritorio | 276 × 24 px | **334,7 × 53 px** |
+| Caja del logotipo, móvil | 230 × 20 px | **239,9 × 38 px** |
+| Altura de mayúscula, escritorio | 22,8 px | **20,2 px** |
+| Altura de mayúscula, móvil | 19,0 px | **14,5 px** |
+
+Las dos alturas de mayúscula siguen por encima de los 11 px que mide la del texto corrido de
+16 px, y más del doble de los 6-8 px con que se descartó el bloque apilado en 2026-09-01. **La
+altura de la barra no se toca**: 38 px de logotipo en 70 y 53 en 84, con su centro óptico —el
+centroide de tinta, no la caja— en el centro de la barra.
+
+**Los 38 px de móvil son el techo, no una preferencia.** La fila de móvil es logotipo +
+hamburguesa de 44 px dentro de un gutter de 18: quedan **70,1 px de hueco a 390 px de viewport y
+40,1 a 360**, y a 320 la fila entra por **0,06 px**. Un punto más de altura y a 320 deja de
+caber. 320 está por debajo del ancho normativo de `02-pantallas.md` (390), pero sí cabía antes, y
+ese es el número que fija la altura.
 
 **Esta cabecera empieza en `cabecera-ancha` = 1180 px, no en 768. Enmienda del 2026-09-17,
 medida sobre el DOM.** Es un punto de ruptura **propio del proyecto**, declarado en
 `tailwind.config.ts` (`extend.screens`), porque ninguno de los de serie cae donde esta fila cabe:
 `lg` (1024) se queda corto y `xl` (1280) deja fuera al iPad en horizontal, que es tráfico real.
 
-Las cifras, con el nav ya sin `/precios/` (4 enlaces):
+Las cifras, con el nav ya sin `/precios/` (4 enlaces) y **medidas de nuevo sobre el DOM el
+2026-09-18**, con el logotipo ya en fila:
 
 | Ancho de ventana | Contenido útil | Hijos | Hueco a cada lado | Veredicto |
 |---|---|---|---|---|
-| 1024 | 913 px | 928,4 px | **0 px** | ❌ Los tres bloques pegados, y 15,4 px robados al gutter derecho |
-| **1180** | **1069 px** | 928,4 px | **70,3 px** | ✅ Logotipo a 276 px, teléfono y botón en una línea, gutter intacto |
-| 1280 | 1169 px | 928,4 px | 120,3 px | ✅ |
+| 1024 | 913 px | 987,1 px | **−37 px** | ❌ No cabe: 74,1 px de desbordamiento |
+| **1180** | **1069 px** | 987,1 px | **41,0 px** | ✅ Logotipo a 334,7 px, teléfono y botón en una línea, gutter intacto |
+| 1280 | 1169 px | 987,1 px | 91,0 px | ✅ |
 
-Los **928,4 px de hijos** son logotipo 276 + nav 333,3 + (teléfono 99 + hueco 20 + botón 200,1);
+Los **987,1 px de hijos** son logotipo 334,7 + nav 333,3 + (teléfono 99 + hueco 20 + botón 200,1);
 el contenido útil descuenta los 96 px de gutter y los 15 de la barra de scroll de escritorio. El
-suelo aritmético —hueco cero— son 1039,4 px de ventana, y **caber al byte no es caber**: a 1024
-nada se rompe visiblemente, porque el logotipo lleva `shrink-0` y el teléfono `white-space:
+suelo aritmético —hueco cero— son **1098,1 px de ventana**, y **caber al byte no es caber**: a
+1024 nada se rompe visiblemente, porque el logotipo lleva `shrink-0` y el teléfono `white-space:
 nowrap`, así que el fallo no se ve roto, se ve apretado.
+
+⚠️ **El logotipo en fila se come 58,7 de los 70,3 px de hueco que había.** `cabecera-ancha` se
+queda en **1180**: los 41 px por hueco que deja siguen siendo holgura de verdad, y el suelo
+aritmético sube a 1098,1, todavía por debajo. Pero el margen ya no da para otro elemento en esta
+fila: **el siguiente que entre obliga a recalcular el punto de ruptura**, no a apretar.
 
 Por debajo de 1180 vale **la cabecera de móvil**: logotipo + hamburguesa, con `MenuMovil` y la
 barra fija de §4.3, que se esconde en el mismo punto. No es una banda sin navegación: es el
@@ -701,12 +1222,24 @@ numeral en `#41535C`. Solo un elemento fijo en móvil, y es la barra de contacto
 position: sticky; bottom: 0 · z-index: 20
 grid-template-columns: 1fr 1fr · gap: 1px · background: #1B1E1C   (la línea entre botones)
 box-shadow: 0 -6px 18px rgba(27,30,28,0.18)
-[Llamar]    min-height: 56px · background: #D9A441 · color: #1B1E1C · 16px/600
-[WhatsApp]  min-height: 56px · background: #1B1E1C · color: #E9EAE6 · 16px/600
+[Llamar]    min-height: 56px · background: #D9A441 · color: #1B1E1C · 16px/600 · icono 24px + gap 8px
+[WhatsApp]  min-height: 56px · background: #25D366 · color: #1B1E1C · 16px/600 · icono 24px + gap 8px
 ```
 
 Siempre visible en móvil, en todas las páginas. **Es el CTA primario de móvil**, y por eso
 consume el único ocre de acción de la pantalla.
+
+**Enmienda del 2026-09-18: verde y los dos iconos.** La mitad de WhatsApp deja de ser tinta y
+pasa a `#25D366` con el rótulo en `--tinta` (§2.1, §3.16); la de llamar conserva su ocre y solo
+gana el icono de auricular. Los dos iconos miden 24 px **aquí y solo aquí** —en `Boton` van a 20,
+y §3.16 dice con qué medición se decidió cada uno— y son la misma pieza dibujada una vez (§3.16). **Los dos siguen siendo anclas crudas, no `Boton`**, y eso no es descuido: `Boton` monta
+un `next/link` y estos dos CTA tienen que funcionar sin que hidrate nada, que es lo que `design/06`
+exige de los dos enlaces de más intención del sitio. Lo compartido es el token de color, no la
+clase.
+
+⚠️ **La jerarquía queda debilitada y el dueño tiene que verlo.** Son dos rellenos al 50 % y el
+verde es más luminoso y más saturado que el ocre (0,479 frente a 0,417): a 390 px la mitad de
+WhatsApp se lee como la acción principal aunque el ocre siga siendo quien la señala. → §2.2
 
 **Se esconde en `cabecera-ancha` = 1180 px, no en 768** (enmienda del 2026-09-17): sigue a la
 cabecera de §4.1, que empieza donde de verdad cabe. Las dos se mueven juntas, siempre: mover

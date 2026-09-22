@@ -9,7 +9,7 @@ import { nap } from '@/lib/config'
 export const metadata: Metadata = {
   title: 'Pide presupuesto sin compromiso',
   description:
-    'Cuéntanos qué quieres pavimentar. Vamos a verlo sin coste y te damos un precio cerrado en 48 horas.',
+    'Cuéntanos qué quieres pavimentar. Vamos a verlo sin coste y te damos un precio cerrado. Te responderemos lo antes posible.',
   alternates: { canonical: '/presupuesto/' },
 }
 
@@ -26,7 +26,7 @@ export default function Presupuesto() {
             </h1>
             <p className="text-16 md:text-20 text-tinta-media m-0">
               Cuéntanos qué quieres pavimentar. Vamos a verlo sin coste y te damos un precio
-              cerrado en <DatoPendiente>48 horas</DatoPendiente>.
+              cerrado. Te responderemos lo antes posible.
             </p>
             <EtiquetaTecnica
               lineas={[

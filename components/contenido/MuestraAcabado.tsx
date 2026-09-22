@@ -2,7 +2,6 @@ import Link from 'next/link'
 import { estaDocumentado, proyectoPorSlug } from '@/lib/datos'
 import type { Acabado } from '@/lib/tipos'
 import Foto from './Foto'
-import DatoPendiente from '../datos/DatoPendiente'
 
 /**
  * El `sizes` de la rejilla de cuatro columnas del muestrario. Igual que en
@@ -46,9 +45,12 @@ export default function MuestraAcabado({
           {acabado.nombre}
         </span>
         <span className="font-mono text-d-10 md:text-d-11 text-acero">{acabado.codigo}</span>
-        <span className="font-mono text-d-10 md:text-d-11 text-tinta">
-          {proyecto?.municipio ?? <DatoPendiente>municipio</DatoPendiente>}
-        </span>
+        {/* Sin municipio no hay línea: se va el `<span>` entero y no solo su
+            contenido, que dentro de un `flex flex-col gap-[2px]` seguiría
+            comiendo un hueco y desalineando la rejilla del muestrario. */}
+        {proyecto?.municipio ? (
+          <span className="font-mono text-d-10 md:text-d-11 text-tinta">{proyecto.municipio}</span>
+        ) : null}
       </div>
     </Link>
   )

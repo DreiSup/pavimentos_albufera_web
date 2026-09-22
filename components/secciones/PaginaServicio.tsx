@@ -37,6 +37,69 @@ import type { SeccionServicio, Servicio } from '@/content/servicios'
 
 type Seccion = { id: SeccionServicio; texto: string }
 
+/** Fondo de una banda del cuerpo. `tinta` es el de `Cuándo NO`, a página completa. */
+type Fondo = 'base' | 'alt' | 'tinta'
+
+/**
+ * Las bandas del cuerpo, en el orden en que se pintan. Son las secciones
+ * numeradas más las dos que no llevan número ni ancla: la FAQ y el cierre.
+ */
+type Banda = SeccionServicio | 'faq' | 'cierre'
+
+/**
+ * Literales enteros, nunca compuestos: Tailwind solo ve las clases que estén
+ * escritas tal cual en el archivo. Un `bg-${x}` compila limpio, pasa los cinco
+ * gates y llega a producción con la banda sin fondo ninguno.
+ */
+const CLASE_FONDO: Record<Fondo, string> = {
+  base: '',
+  alt: 'bg-fondo-alt',
+  tinta: 'sobre-oscuro bg-tinta text-fondo',
+}
+
+/** El reparto de partida, el mismo que la plantilla tenía escrito a mano. */
+const FONDO_DE_BANDA: Record<Banda, Fondo> = {
+  'seccion-aplicaciones': 'base',
+  'seccion-muestrario': 'alt',
+  'seccion-ficha': 'base',
+  'seccion-cuando-no': 'tinta',
+  'seccion-como': 'alt',
+  'seccion-obra': 'base',
+  faq: 'alt',
+  cierre: 'base',
+}
+
+/**
+ * **El fondo alterno lo da la posición, no la sección** — `design/02` §A1, que
+ * lo dejó escrito el 2026-09-17 cuando retirar Precios de la home dejó tres
+ * bloques base seguidos: «el alterno se reparte otra vez».
+ *
+ * Aquí lo mismo lo abre la retirada de la calculadora del 2026-09-18.
+ * `seccion-precio` iba en fondo base entre `Muestrario` y `Cómo trabajamos`,
+ * que son las dos alternas, y al irse quedan pegadas en la única página donde
+ * nada más las separa: `/lp/hormigon-lavado/`, que esconde la ficha técnica por
+ * `ocultarSecciones` y no tiene `Cuándo NO`. Medido a 390 px, 1029 px seguidos
+ * de `#DADCD6` sin costura.
+ *
+ * La regla es local: **ninguna banda comparte fondo con la que tiene encima.**
+ * `Cuándo NO` va en `--tinta` y separa por sí misma, así que no colisiona nunca
+ * y `Muestrario · tinta · Cómo trabajamos` se queda tal cual — es lo que pintan
+ * hoy `/lp/hormigon-impreso/` y `/lp/hormigon-pulido/`, y no se toca.
+ *
+ * Se recorre **de abajo arriba y cede el alterno la banda de arriba**, no la de
+ * abajo. No es indiferente: hacia abajo el reparto arrastraría a `Obra
+ * ejecutada`, cuyas tarjetas van en `--fondo-alt` (`01` §3.12) y desaparecerían
+ * sobre una banda alterna, y acabaría moviendo también el cierre.
+ */
+function repartirFondos(bandas: Banda[]): (b: Banda) => Fondo {
+  const fondos = bandas.map((b) => FONDO_DE_BANDA[b])
+  for (let i = fondos.length - 1; i > 0; i--) {
+    if (fondos[i] === fondos[i - 1]) fondos[i - 1] = fondos[i - 1] === 'alt' ? 'base' : 'alt'
+  }
+  const mapa = new Map<Banda, Fondo>(bandas.map((b, i) => [b, fondos[i]]))
+  return (b) => mapa.get(b) ?? 'base'
+}
+
 /**
  * Llamada y WhatsApp, en `tinta`/`contorno` — nunca en ocre. Es el mismo par
  * que cierra la home, recompuesto: aquí no se escribe copy nuevo.
@@ -54,7 +117,32 @@ type Seccion = { id: SeccionServicio; texto: string }
  */
 function CtaContacto({ ubicacion }: { ubicacion: Ubicacion }) {
   return (
-    <div className="flex flex-col md:flex-row gap-3">
+    /**
+     * ⚠️ **El par pasa a fila en `cabecera-ancha` (1180 px), no en `md` (768).**
+     *
+     * Medido en `/lp/hormigon-impreso/`, con el aviso de cookies en pantalla y
+     * el teléfono real puesto. En `md:flex-row` los dos botones se reparten una
+     * columna que a 800 px mide 320 px, y como ninguno puede encoger por debajo
+     * de su palabra más larga, el que encoge el rótulo es el de llamar:
+     * `Llamar al 627 663 146` se partía en **tres líneas** y la fila pasaba de
+     * 56 a **78,8 px** en toda la banda 776–847. Contrastado quitando el
+     * `<svg>` del DOM: sin icono, a 800 y a 824 la misma fila mide 56 px, así
+     * que el coste es del icono y no de la fila. Desde 848 px ya cabía con
+     * icono, y a 768–775 falla con icono y sin él.
+     *
+     * A 1180 los dos rótulos caben **enteros**, sin partir ninguna línea:
+     * 222,7 + 260,6 de botón más 12 de `gap` son 495,3 sobre los 510 px de
+     * columna —o sobre ~502,5 si el navegador pinta barra de scroll clásica de
+     * 15 px, que sigue cabiendo. Por debajo el par va apilado y cada botón ocupa el ancho
+     * completo, que es exactamente lo que ya hacía en móvil. Así no hay ni una
+     * anchura en la que un rótulo se parta: o caben los dos al lado, o van uno
+     * encima de otro.
+     *
+     * Es el mismo punto en el que la cabecera despliega su fila completa y se
+     * apaga la barra fija (`design/01` §4.1 y §4.3), y por la misma razón: es
+     * donde deja de haber que estrechar nada para que quepa.
+     */
+    <div className="flex flex-col cabecera-ancha:flex-row gap-3">
       <Boton
         variante="tinta"
         href={nap.telefonoHref ?? '/presupuesto/'}
@@ -80,12 +168,19 @@ function CtaContacto({ ubicacion }: { ubicacion: Ubicacion }) {
  * `IntersectionObserver` para verse. El hero no entra en la cuenta —ya es un
  * `<section>` normal—, así que ahí no había nada que desactivar.
  */
-function Cierre({ sinAparece, children }: { sinAparece?: boolean; children: ReactNode }) {
-  const clases = 'px-[18px] md:px-lat-desktop py-9 md:py-22'
+function Cierre({
+  sinAparece,
+  clase,
+  children,
+}: {
+  sinAparece?: boolean
+  clase: string
+  children: ReactNode
+}) {
   return sinAparece ? (
-    <section className={clases}>{children}</section>
+    <section className={clase}>{children}</section>
   ) : (
-    <Aparece as="section" className={clases}>
+    <Aparece as="section" className={clase}>
       {children}
     </Aparece>
   )
@@ -131,6 +226,16 @@ export default function PaginaServicio({ servicio }: { servicio: Servicio }) {
   const numero = (id: SeccionServicio) =>
     String(secciones.findIndex((s) => s.id === id) + 1).padStart(2, '0')
   const anclas = secciones.map((s) => ({ id: s.id, texto: `${numero(s.id)} · ${s.texto}` }))
+
+  // El reparto del fondo alterno se hace sobre las bandas que esta página pinta
+  // de verdad, FAQ y cierre incluidos: son bandas del mismo ritmo aunque no
+  // lleven número ni ancla. El hero no entra —es la cabeza de la página, no una
+  // banda: §A2 lo lista sin número, igual que las migas—.
+  const llevaFaq = Boolean(servicio.faq && servicio.faq.length > 0)
+  const bandas: Banda[] = [...secciones.map((s) => s.id), ...(llevaFaq ? (['faq'] as const) : []), 'cierre']
+  const fondo = repartirFondos(bandas)
+  const claseBanda = (b: Banda) =>
+    `${CLASE_FONDO[fondo(b)]} px-[18px] md:px-lat-desktop py-9 md:py-22`.trim()
 
   // `ctaContacto` solo lo declara la recomposición de campaña, así que es
   // también lo que separa el tráfico de pago del orgánico en los informes: sin
@@ -206,7 +311,7 @@ export default function PaginaServicio({ servicio }: { servicio: Servicio }) {
       <SubmenuServicio anclas={anclas} />
 
       {servicio.aplicaciones && monta('seccion-aplicaciones') ? (
-        <Aparece as="section" id="seccion-aplicaciones" className="px-[18px] md:px-lat-desktop py-9 md:py-22">
+        <Aparece as="section" id="seccion-aplicaciones" className={claseBanda('seccion-aplicaciones')}>
           <div className="grid grid-cols-1 md:grid-cols-[380px_1fr] gap-8 md:gap-16">
             <div className="flex flex-col gap-4">
               <AntetituloSeccion numero={numero('seccion-aplicaciones')}>Aplicaciones</AntetituloSeccion>
@@ -221,10 +326,16 @@ export default function PaginaServicio({ servicio }: { servicio: Servicio }) {
                   440 px, la sección es `380px 1fr` y 380 + 64 + 440 + 96 son
                   980 px de ancho de contenido. Se apila hasta `xl`, que es
                   donde el `380px 1fr` de la sección tiene sitio de verdad. */}
+              {/* El filete que separa las filas por debajo de `xl` es el fondo
+                  alterno sobre banda base; si el reparto le da a esta sección
+                  la banda alterna, se invierte —`01` §3.12 hace lo mismo con la
+                  tarjeta de proyecto— o desaparecería sobre su propio fondo. */}
               {servicio.aplicaciones.lista.map((a) => (
                 <div
                   key={a.nombre}
-                  className="grid grid-cols-1 xl:grid-cols-[300px_minmax(0,1fr)] gap-2 xl:gap-6 py-4 border-t border-fondo-alt first:border-t-0 xl:first:border-t xl:border-t-tinta-media"
+                  className={`grid grid-cols-1 xl:grid-cols-[300px_minmax(0,1fr)] gap-2 xl:gap-6 py-4 border-t ${
+                    fondo('seccion-aplicaciones') === 'alt' ? 'border-fondo' : 'border-fondo-alt'
+                  } first:border-t-0 xl:first:border-t xl:border-t-tinta-media`}
                 >
                   <h3 className="font-display font-bold fs-h3 text-20 md:text-26 m-0">{a.nombre}</h3>
                   {a.texto ? <p className="text-16 text-tinta-media m-0">{a.texto}</p> : null}
@@ -237,7 +348,7 @@ export default function PaginaServicio({ servicio }: { servicio: Servicio }) {
 
       {/* Muestrario del servicio */}
       {monta('seccion-muestrario') ? (
-        <Aparece as="section" id="seccion-muestrario" className="bg-fondo-alt px-[18px] md:px-lat-desktop py-9 md:py-22">
+        <Aparece as="section" id="seccion-muestrario" className={claseBanda('seccion-muestrario')}>
           <div className="flex flex-col gap-6">
             <div className="flex flex-wrap items-end justify-between gap-4">
               <AntetituloSeccion numero={numero('seccion-muestrario')}>Muestrario del servicio</AntetituloSeccion>
@@ -273,7 +384,7 @@ export default function PaginaServicio({ servicio }: { servicio: Servicio }) {
 
       {/* Ficha técnica */}
       {monta('seccion-ficha') ? (
-        <Aparece as="section" id="seccion-ficha" className="px-[18px] md:px-lat-desktop py-9 md:py-22">
+        <Aparece as="section" id="seccion-ficha" className={claseBanda('seccion-ficha')}>
           <div className="grid grid-cols-1 md:grid-cols-[380px_1fr] gap-8 md:gap-16">
             <AntetituloSeccion numero={numero('seccion-ficha')}>Ficha técnica</AntetituloSeccion>
             <TablaFichaTecnica filas={servicio.fichaTecnica} />
@@ -285,7 +396,7 @@ export default function PaginaServicio({ servicio }: { servicio: Servicio }) {
         <Aparece
           as="section"
           id="seccion-cuando-no"
-          className="sobre-oscuro bg-tinta text-fondo px-[18px] md:px-lat-desktop py-9 md:py-22"
+          className={claseBanda('seccion-cuando-no')}
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16">
             <div className="flex flex-col gap-4">
@@ -307,7 +418,7 @@ export default function PaginaServicio({ servicio }: { servicio: Servicio }) {
 
       {/* Cómo trabajamos */}
       {monta('seccion-como') ? (
-        <Aparece as="section" id="seccion-como" className="bg-fondo-alt px-[18px] md:px-lat-desktop py-9 md:py-22">
+        <Aparece as="section" id="seccion-como" className={claseBanda('seccion-como')}>
           <div className="flex flex-col gap-8">
             <AntetituloSeccion numero={numero('seccion-como')}>Cómo trabajamos</AntetituloSeccion>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-8">
@@ -329,13 +440,20 @@ export default function PaginaServicio({ servicio }: { servicio: Servicio }) {
 
       {/* Obra ejecutada */}
       {monta('seccion-obra') ? (
-        <Aparece as="section" id="seccion-obra" className="px-[18px] md:px-lat-desktop py-9 md:py-22">
+        <Aparece as="section" id="seccion-obra" className={claseBanda('seccion-obra')}>
           <div className="flex flex-col gap-6">
             <AntetituloSeccion numero={numero('seccion-obra')}>Obra ejecutada</AntetituloSeccion>
             {proyectos.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* La tarjeta invierte su fondo respecto a la banda, `01` §3.12:
+                    si el reparto le da a `Obra ejecutada` la alterna, las nueve
+                    tarjetas se fundirían con ella. */}
                 {proyectos.map((p) => (
-                  <TarjetaProyecto key={p.slug} proyecto={p} />
+                  <TarjetaProyecto
+                    key={p.slug}
+                    proyecto={p}
+                    fondo={fondo('seccion-obra') === 'alt' ? 'base' : 'alt'}
+                  />
                 ))}
               </div>
             ) : (
@@ -350,8 +468,8 @@ export default function PaginaServicio({ servicio }: { servicio: Servicio }) {
 
       {/* FAQ — solo las preguntas que aplican a ESTE servicio. Si no hay
           ninguna, no se renderiza sección vacía ni marcado `FAQPage` de más. */}
-      {servicio.faq && servicio.faq.length > 0 ? (
-        <Aparece as="section" className="bg-fondo-alt px-[18px] md:px-lat-desktop py-9 md:py-22">
+      {llevaFaq && servicio.faq ? (
+        <Aparece as="section" className={claseBanda('faq')}>
           <JsonLd data={schemaFAQ(servicio.faq)} />
           <div className="grid grid-cols-1 md:grid-cols-[380px_1fr] gap-8 md:gap-16">
             <AntetituloSeccion numero={String(secciones.length + 1).padStart(2, '0')}>
@@ -363,7 +481,7 @@ export default function PaginaServicio({ servicio }: { servicio: Servicio }) {
       ) : null}
 
       {/* Cierre */}
-      <Cierre sinAparece={servicio.sinAparece}>
+      <Cierre sinAparece={servicio.sinAparece} clase={claseBanda('cierre')}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16">
           <div className="flex flex-col gap-6">
             <h2 className="font-display font-bold fs-hero text-34 md:text-64 m-0">

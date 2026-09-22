@@ -4,7 +4,7 @@ Rediseño y migración de pavimentos-albufera.com de WordPress a Next.js 15.
 La especificación completa está en `design/`. **Léela antes de escribir código.**
 
 - `design/README.md` — panorama, stack, orden de trabajo
-- `design/01-sistema-de-diseno.md` — tokens y los 14 componentes base, con valores exactos
+- `design/01-sistema-de-diseno.md` — tokens y los 17 componentes base, con valores exactos
 - `design/02-pantallas.md` — pantalla por pantalla, móvil y escritorio
 - `design/03-modelo-de-contenido.md` — tipos, catálogo real, datos de obra
 - `design/04-desarrollo-y-deploy.md` — rutas, redirecciones 301, schema, despliegue
@@ -23,7 +23,14 @@ La especificación completa está en `design/`. **Léela antes de escribir códi
   archivo del dueño con dos azules propios (`#000D2A` y `#014BA2`), más `#8FB4D6` derivado para
   la variante clara. Empieza y acaba en `public/marca/`: ningún texto, borde, fondo ni estado
   del sitio usa esos valores. → `design/01` §2.1
-- `border-radius: 0` en todo. Una sola sombra en toda la web: la de la barra fija de móvil.
+- **Segunda y última excepción: el verde de WhatsApp.** Desde el 2026-09-18, `#25D366` (y su
+  `:hover` `#20B859`) son el fondo de los botones cuyo `href` abre WhatsApp, con el rótulo en
+  `--tinta` — **8,48 : 1**, porque con blanco mide 1,98 y no pasa AA. Empieza y acaba ahí: ni
+  texto, ni borde ajeno al botón, ni fondo, ni estado, ni foco. Lo decide `esEnlaceWhatsApp()`
+  en `lib/config.ts`, el mismo predicado con el que se cuenta un `whatsapp_click`.
+  → `design/01` §2.1 y §3.16
+- `border-radius: 0` en todo (regla sobre superficies; el dibujo de un icono o del logotipo
+  puede llevar curvas). Una sola sombra en toda la web: la de la barra fija de móvil.
 - Escala tipográfica cerrada: 12 / 14 / 16 / 20 / 26 / 34 / 46 / 64 / 88. Nada intermedio.
 - Tres familias: Archivo Expanded (display), Instrument Sans (texto), Martian Mono (datos).
   Todo dato del oficio va en monoespaciada, en versalitas, con formato de etiqueta de
@@ -64,7 +71,8 @@ La especificación completa está en `design/`. **Léela antes de escribir códi
     sobre los bytes que entrega el CDN: Vercel no documenta su calidad de brotli. Con un preview
     desplegado se contrasta el `content-length` de
     `curl -sI -H 'Accept-Encoding: br' <preview>/_next/static/chunks/4bd1b696-*.js` contra 46.749.
-- Sin librerías de animación, de iconos ni de formularios.
+- Sin librerías de animación, de iconos ni de formularios. Los dos iconos del sitio son SVG en
+  línea, escritos a mano, en `components/ui/Iconos.tsx`. → `design/01` §3.16
 - `trailingSlash: true` fijo.
 - Sin `AggregateRating` mientras no haya reseñas verificables.
 - 44 px de objetivo táctil, foco de teclado visible siempre, contraste AA,

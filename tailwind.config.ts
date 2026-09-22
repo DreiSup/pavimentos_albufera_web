@@ -25,6 +25,20 @@ const config: Config = {
       'sobre-tinta': '#DADCD6',
       'pendiente-oscuro': '#9AA09B',
       error: '#8C3A2B',
+      /**
+       * ⚠️ NO ES UN COLOR DEL SISTEMA. Es el verde de marca de WhatsApp, y el
+       * nombre lo dice a propósito para que nadie lo tome mañana por un acento
+       * propio. Segunda y última excepción a la paleta de seis, autorizada por
+       * el dueño el 2026-09-18, después de la del logotipo.
+       *
+       * Empieza y acaba en los botones cuyo `href` es un enlace de WhatsApp
+       * —`esEnlaceWhatsApp`, en `lib/config.ts`—. Ningún texto, borde, fondo,
+       * estado, foco ni separador del sitio puede usarlo para nada más.
+       * → `design/01` §2.1
+       */
+      'verde-whatsapp': '#25D366',
+      /** Su `:hover`, cada canal al 87 %. Mismo gesto que `pigmento-hover`. */
+      'verde-whatsapp-hover': '#20B859',
     },
     borderRadius: { none: '0', DEFAULT: '0' },
     boxShadow: {
@@ -56,9 +70,15 @@ const config: Config = {
     },
     extend: {
       screens: {
-        // Punto de ruptura propio de la cabecera de escritorio, y solo de ella:
-        // la barra completa —logotipo + nav + teléfono + botón— y la barra fija
-        // de contacto de móvil, que es su pareja y se apaga en el mismo punto.
+        // Punto de ruptura de «aquí ya cabe la fila entera y no hay que
+        // estrechar nada». Tres usos, y los tres son eso mismo: la cabecera de
+        // escritorio —logotipo + nav + teléfono + botón—, la barra fija de
+        // contacto de móvil, que es su pareja y se apaga en el mismo punto, y
+        // desde el 2026-09-18 el par de CTA de las landings (`CtaContacto` en
+        // `PaginaServicio.tsx`), que a 1180 es donde `Llamar al 627 663 146` y
+        // `Escribir por WhatsApp` caben enteros uno al lado del otro: 222,7 +
+        // 260,6 + 12 de `gap` = **495,3 px sobre los 510** de su columna —o
+        // sobre ~502,5 contando los 15 px de barra de scroll de aquí abajo.
         //
         // La cifra sale del DOM, con el nav ya sin `/precios/`: logotipo 276 +
         // nav 333,3 + teléfono y botón 319,1 = **928,4 px de hijos**, más los
@@ -71,7 +91,8 @@ const config: Config = {
         //
         // ⚠️ No es «el escritorio» del proyecto: el resto de la maqueta usa
         // `md` (768) para pasar a dos columnas y `xl` (1280) donde una pista de
-        // rejilla concreta lo exige. Esta clave nombra una cosa y solo una.
+        // rejilla concreta lo exige. Esta clave nombra un criterio, no un
+        // dispositivo, y no se usa para nada que no sea ese criterio.
         'cabecera-ancha': '1180px',
       },
       minHeight: { tactil: '44px', campo: '48px', boton: '56px' },

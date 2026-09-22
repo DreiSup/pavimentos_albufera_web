@@ -34,7 +34,7 @@ export default function Pie() {
         </div>
 
         <div className="font-mono text-d-11 leading-[2.2] text-sobre-tinta flex flex-col">
-          <span>{nap.direccionMostrada}</span>
+          <span>{nap.direccion ?? `[${nap.direccionMostrada}]`}</span>
           <a href={nap.telefonoHref ?? '#'} data-ubicacion="footer" className="text-sobre-tinta no-underline">
             {nap.telefono ?? `[${nap.telefonoMostrado}]`}
           </a>

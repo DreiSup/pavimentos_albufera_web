@@ -3,7 +3,6 @@ import Aparece from '@/components/ui/Aparece'
 import Boton from '@/components/ui/Boton'
 import { EnlaceEtiqueta } from '@/components/ui/EnlaceEtiqueta'
 import Foto from '@/components/contenido/Foto'
-import DatoPendiente from '@/components/datos/DatoPendiente'
 import Migas from '@/components/layout/Migas'
 
 export const metadata: Metadata = {
@@ -24,8 +23,8 @@ export default function Empresa() {
             17 años poniendo hormigón en la Comunidad Valenciana
           </h1>
           <p className="text-16 md:text-20 text-tinta-media m-0">
-            Empezamos en Sollana en <DatoPendiente>2009</DatoPendiente>. Desde entonces hemos
-            ejecutado <DatoPendiente>X.000</DatoPendiente> metros cuadrados de pavimento entre
+            Empezamos en Sollana en 2009. Desde entonces hemos ejecutado 100.000 metros cuadrados
+            de pavimento entre
             Valencia, Castellón y Alicante: entradas de casas, porches, contornos de piscina,
             naves, parkings y urbanizaciones enteras.
           </p>
@@ -37,7 +36,7 @@ export default function Empresa() {
           <div className="flex flex-col gap-4">
             <h2 className="font-display font-bold fs-h2 text-34 md:text-46 m-0">Cómo trabajamos</h2>
             <p className="text-20 font-semibold text-tinta m-0">
-              <DatoPendiente>Equipo propio.</DatoPendiente> El que va a verte es el que mide, y el
+              Equipo propio. El que va a verte es el que mide, y el
               que mide es del equipo que ejecuta. No subcontratamos la obra a terceros, y por eso
               podemos dar 10 años de garantía sin letra pequeña.
             </p>

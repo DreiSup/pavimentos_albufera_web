@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import { esEnlaceWhatsApp } from '@/lib/config'
 import { EVENTOS, registrarEvento, type Ubicacion } from '@/lib/eventos'
 
 /**
@@ -26,7 +27,9 @@ export default function EventosGlobales() {
           metaEstandar: 'Contact',
           params: { click_location: ubicacion },
         })
-      } else if (href.includes('wa.me')) {
+        // El mismo predicado con el que `Boton` decide pintarlo de verde: si se
+        // cuenta como WhatsApp, se ve como WhatsApp. → `lib/config.ts`
+      } else if (esEnlaceWhatsApp(href)) {
         registrarEvento(EVENTOS.whatsappClick, {
           metaEstandar: 'Contact',
           params: {

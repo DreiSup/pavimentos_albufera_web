@@ -7,10 +7,52 @@ import { enviarEventoCAPI } from '@/lib/meta-capi'
 import { sitio } from '@/lib/config'
 import { COOKIE_ATRIBUCION, COOKIE_CONSENTIMIENTO, COOKIE_REFERENCIA } from '@/lib/cookies'
 
+/**
+ * Lo que el visitante escribió, tal y como lo escribió.
+ *
+ * `design/02` §B1, estado 2: «el resto de campos conserva lo escrito». React
+ * resetea el formulario después de ejecutar una acción, así que un rechazo del
+ * servidor devolvía los siete campos en blanco: en móvil, quien acaba de
+ * teclear nombre, teléfono, superficie y municipio no lo vuelve a escribir. La
+ * única forma de repoblarlos es que el estado los traiga de vuelta y que cada
+ * control los declare como `defaultValue`.
+ *
+ * Son los valores **crudos** del `FormData`, no los de `analizado.data`: el
+ * `.transform()` del teléfono quita espacios y el `34` de cabecera, así que
+ * devolver el valor analizado le cambiaría `+34 961 000 000` por `961000000` a
+ * quien lo escribió bien. Y en el rechazo del esquema —el camino más frecuente—
+ * `analizado.data` ni siquiera existe.
+ */
+export type ValoresFormulario = {
+  nombre: string
+  telefono: string
+  email: string
+  espacio: string
+  superficie: string
+  municipio: string
+  mensaje: string
+  privacidad: boolean
+  /**
+   * Había foto adjunta y se ha perdido. Un `<input type="file">` no se puede
+   * repoblar por programa —ninguna página puede colocar un archivo en el disco
+   * de quien la visita—, así que esto no repuebla nada: avisa. Fingir que sigue
+   * ahí es perder el adjunto en silencio, que es lo que este formulario ya hacía
+   * antes de que el archivo llegara a viajar.
+   */
+  foto: boolean
+}
+
 export type EstadoEnvio = {
   estado: 'inicial' | 'error' | 'enviando' | 'enviado'
   errores: Record<string, string>
   resumen?: { espacio: string; superficie: string; municipio: string }
+  /** Solo en `'error'`. En `'enviado'` el formulario desaparece y no hay nada que repoblar. */
+  valores?: ValoresFormulario
+}
+
+/** El `FormData` devuelve `File` además de `string`; aquí solo interesa el texto. */
+function texto(valor: FormDataEntryValue | null): string {
+  return typeof valor === 'string' ? valor : ''
 }
 
 // 4 MB, no los 10 que pedía `design/04` §6. El tope real no lo pone el
@@ -52,7 +94,13 @@ const esquema = z.object({
   mensaje: z.string().optional().default(''),
   // El `required` del navegador no es validación: un envío sin JS o manipulado
   // se la salta. Aquí es obligatorio de verdad.
-  privacidad: z.string().min(1, 'Tienes que aceptar la política de privacidad.'),
+  //
+  // El mensaje decía «Tienes que aceptar…», a juego con la etiqueta vieja de la
+  // casilla. La casilla ya no dice «acepto» —no es la base jurídica, ver
+  // `FormularioPresupuesto.tsx`—, y este texto va con ella: si no, la
+  // contradicción sobrevivía a un error de validación de distancia. La regla no
+  // se toca, solo la cadena.
+  privacidad: z.string().min(1, 'Tienes que confirmar que has leído la política de privacidad.'),
   evento_id: z.string().optional().default(''),
   origen: z.string().optional().default('unmarked'),
 })
@@ -138,6 +186,20 @@ export async function enviarPresupuesto(
   const foto = formData.get('foto')
   formData.delete('foto')
 
+  // Se captura antes de analizar y se devuelve en TODOS los caminos de error,
+  // incluido el del esquema, que es el único donde no hay datos analizados.
+  const valores: ValoresFormulario = {
+    nombre: texto(formData.get('nombre')),
+    telefono: texto(formData.get('telefono')),
+    email: texto(formData.get('email')),
+    espacio: texto(formData.get('espacio')),
+    superficie: texto(formData.get('superficie')),
+    municipio: texto(formData.get('municipio')),
+    mensaje: texto(formData.get('mensaje')),
+    privacidad: texto(formData.get('privacidad')).length > 0,
+    foto: foto instanceof File && foto.size > 0,
+  }
+
   const datos = Object.fromEntries(formData.entries())
   const analizado = esquema.safeParse(datos)
 
@@ -146,7 +208,7 @@ export async function enviarPresupuesto(
     for (const issue of analizado.error.issues) {
       errores[String(issue.path[0])] = issue.message
     }
-    return { estado: 'error', errores }
+    return { estado: 'error', errores, valores }
   }
 
   // El límite va ANTES de convertir la foto a base64, no después: si no, se
@@ -159,6 +221,7 @@ export async function enviarPresupuesto(
     return {
       estado: 'error',
       errores: { form: 'Demasiados envíos seguidos. Llámanos o escríbenos por WhatsApp.' },
+      valores,
     }
   }
 
@@ -167,10 +230,10 @@ export async function enviarPresupuesto(
   let adjunto: { filename: string; content: string } | undefined
   if (foto instanceof File && foto.size > 0) {
     if (!foto.type.startsWith('image/')) {
-      return { estado: 'error', errores: { foto: 'La foto tiene que ser una imagen.' } }
+      return { estado: 'error', errores: { foto: 'La foto tiene que ser una imagen.' }, valores }
     }
     if (foto.size > MAX_FOTO) {
-      return { estado: 'error', errores: { foto: 'La foto no puede pasar de 4 MB.' } }
+      return { estado: 'error', errores: { foto: 'La foto no puede pasar de 4 MB.' }, valores }
     }
     adjunto = {
       filename: foto.name || 'foto.jpg',
@@ -357,14 +420,17 @@ export async function enviarPresupuesto(
       return {
         estado: 'error',
         errores: {
-          // El literal `[teléfono]` es el del microcopy de `design/02` §B1 y no
-          // un dato pendiente: `FormularioPresupuesto` lo sustituye por
-          // `nap.telefono` al pintarlo, porque el número vive en configuración y
-          // el Server Action no es quien lo compone. Sin él, ese `.replace()`
-          // era código muerto sobre un camino vivo y el mensaje perdía la única
-          // vía de contacto que ofrece.
+          // El literal `[teléfono]` es el del microcopy de `design/02` §B1:
+          // `FormularioPresupuesto` lo sustituye al pintarlo, porque el número
+          // vive en configuración y el Server Action no es quien lo compone.
+          // Sin él, esa sustitución era código muerto sobre un camino vivo y el
+          // mensaje perdía la única vía de contacto que ofrece. Con el número
+          // configurado se lee el número; sin él, el hueco sale en
+          // `<DatoPendiente>` como en el resto del sitio, y no como el
+          // `96X XXX XXX` de relleno que antes pasaba por teléfono real.
           form: 'No hemos podido enviarlo. Llámanos al [teléfono] o escríbenos por WhatsApp y lo resolvemos ahora.',
         },
+        valores,
       }
     }
   }

@@ -116,6 +116,43 @@ foto que no hay, escondería una que sí hay. El aviso mantiene la deuda a la vi
 ✅ **La puerta de a sangre sí muerde hoy y no bloquea:** los seis `imagenHero` miden 2048, 1600,
 2048, 2048, 1600 y 1600. Está verificada contra un hero estrecho: falla con código 1.
 
+### 14 · El hero de la portada, a pantalla completa, y su etiqueta recortada — 2026-09-18
+
+**Dos decisiones del dueño, contestadas expresamente.** Ninguna estaba abierta antes de hoy.
+
+**14.a — La foto ocupa la sección entera y el texto va encima**, en móvil y en escritorio.
+Sustituye a las dos maquetas de `design/02` §A1 fila 01. Preguntado si a pantalla completa o
+casi, el dueño contestó **«casi todo el alto, dejando ver el corte»**: no el 100 %, sino un
+88 % del alto útil, de forma que asome el borde de la sección siguiente y el visitante entienda
+que hay que bajar. Implementado en `.hero-pantalla` → `design/01` §3.15.
+
+Lo que arrastra, y hay que saberlo antes de revisarlo:
+
+- **El velo deja de ser solo de móvil** (`design/01` §2.8). Vuelto a medir en los tres recortes
+  reales: lo peor que queda es **4,93 : 1**, sobre el 4,5 de AA. `--velo` no se toca.
+- **Sobre el velo no cabe `--tinta-media`.** La entradilla del hero pasa a `--fondo` y el botón
+  de contorno a su variante `sobreOscuro`. No es una preferencia: es la única combinación de la
+  paleta cerrada que llega a AA ahí.
+- ⚠️ **En escritorio la portada se descarga más foto.** `sizes` pasa a `100vw`, y a 1366 px la
+  foto del LCP sube de 101,6 a **216,9 kB**. A 390 px no cambia nada. Es el precio de la
+  decisión, no un descuido, y se deja a la vista aquí: si alguna vez pesa más que el efecto, lo
+  que se revisa es el 88 %, no el velo.
+  🔴 **Corregido el 2026-09-18 con la respuesta real de `/_next/image`.** No son bytes de más:
+  son el original entero. `sharp` no amplía, así que `w=1200`, `w=1536` y `w=2048` devuelven el
+  MISMO archivo de 222.109 B para un original de 1200×900, y el peldaño 750 de antes se estaba
+  ampliando 1,82× sobre un hueco que hoy es de pantalla completa. `sizes` no puede recuperar
+  esos bytes. Lo único que sí se recupera, y se ha hecho, son **40,8 kB de la diapositiva de
+  Denia** acotando el `sizes` a 1200 px por encima de esa ventana. Las cuatro fotos del pase a
+  1366×768 y DPR 1 son hoy **506.093 B**, contra 547.870 antes del tope.
+
+**14.b — La etiqueta técnica del hero se recorta a municipio y acabado.** Decía «MONCADA ·
+VALENCIA / HORMIGÓN IMPRESO · ESPIGA · C-117 / 2025» y dice «MONCADA · VALENCIA / HORMIGÓN
+IMPRESO», en las cuatro diapositivas. El muestrario existe para enseñar modelo y color con su
+código y la ficha de obra para fecharla; encima de una foto que pasa sola cada seis segundos, lo
+que se retiene es dónde se hizo y de qué es. Se compone con el mismo patrón que
+`TarjetaProyecto` —lista, `filter(Boolean)`, `join(' · ')` y fuera la línea vacía—, así que una
+obra sin municipio no puede dejar un « · » suelto ni una línea en blanco.
+
 ---
 
 ## D. Riesgos

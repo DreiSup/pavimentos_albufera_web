@@ -5,7 +5,6 @@ import Boton from '@/components/ui/Boton'
 import { EnlaceEtiqueta } from '@/components/ui/EnlaceEtiqueta'
 import Foto from '@/components/contenido/Foto'
 import FichaObra from '@/components/datos/FichaObra'
-import DatoPendiente from '@/components/datos/DatoPendiente'
 import TarjetaProyecto from '@/components/contenido/TarjetaProyecto'
 import Migas from '@/components/layout/Migas'
 import { acabados, articuloQueExplica, proyectoPorSlug, proyectos, proyectosPorServicio } from '@/lib/datos'
@@ -25,9 +24,22 @@ export async function generateMetadata({
   if (!proyecto) return {}
   const modelo = proyecto.modelo ? NOMBRE_MODELO[proyecto.modelo] : null
   const color = proyecto.color ? CODIGO_COLOR[proyecto.color] : null
-  const detalle = [modelo, color].filter(Boolean).join(' · ')
+  // El título se compone filtrando, igual que la ficha y la tarjeta. Sin
+  // municipio decía «Hormigón impreso en obra sin municipio confirmado»: el
+  // mismo corchete que el dueño ha retirado de la página, anunciado en la
+  // pestaña del navegador y en el resultado de búsqueda, que es donde peor se
+  // lee. Sin municipio no hay cláusula de lugar, y ya está.
+  const titulo = [
+    proyecto.municipio
+      ? `${NOMBRE_SERVICIO[proyecto.servicio]} en ${proyecto.municipio}`
+      : NOMBRE_SERVICIO[proyecto.servicio],
+    modelo,
+    color,
+  ]
+    .filter(Boolean)
+    .join(' · ')
   return {
-    title: `${NOMBRE_SERVICIO[proyecto.servicio]} en ${proyecto.municipio ?? 'obra sin municipio confirmado'}${detalle ? ` · ${detalle}` : ''}`,
+    title: titulo,
     description: `${proyecto.titulo}. ${NOMBRE_SERVICIO[proyecto.servicio]} ejecutado por Pavimentos Albufera.`,
     alternates: { canonical: `/proyectos/${proyecto.slug}/` },
   }
@@ -51,7 +63,15 @@ export default async function FichaProyecto({ params }: { params: Promise<{ slug
       {/* Galería */}
       <section className="px-[18px] md:px-lat-desktop pb-3 flex flex-col gap-2">
         <Foto imagen={proyecto.imagenes[0]} proporcion="21/9" prioridad tamanos="100vw" />
-        <div className="grid grid-cols-4 gap-2">
+        {/* Tres miniaturas, no las cuatro de `design/02` §A4. La cuarta era el
+            hueco etiquetado ANTES, y se retira por la misma decisión del dueño
+            del 2026-09-18 que vacía la ficha: lo que no hay, no se enseña.
+            Ninguna de las 125 fotos de la mediateca es un ANTES y no hay
+            candidata, así que ese hueco no era una foto pendiente de llegar,
+            era una promesa de la maqueta. Los huecos de las miniaturas 1 y 2 sí
+            se quedan: esas fotos existen, faltan a 1600 px, y su bloque de
+            posición tiene destinatario —la sesión fotográfica. */}
+        <div className="grid grid-cols-3 gap-2">
           {[0, 1, 2].map((i) => (
             <Foto
               key={i}
@@ -63,20 +83,12 @@ export default async function FichaProyecto({ params }: { params: Promise<{ slug
               // elige un `w=` distinto. Con la cadena idéntica a la del hero elige
               // el mismo, así que la miniatura sale de la caché de una descarga que
               // ya se está haciendo —y encima con `priority`— y no cuesta un byte.
-              // Las miniaturas 1 y 2 son fotos distintas: esas sí piden su 25vw.
-              tamanos={i === 0 ? '100vw' : '25vw'}
+              // Las miniaturas 1 y 2 son fotos distintas: esas sí piden su ancho,
+              // que con tres columnas es 33vw y ya no el 25vw de cuatro.
+              tamanos={i === 0 ? '100vw' : '33vw'}
               className={i === 0 ? 'outline outline-2 outline-tinta -outline-offset-2' : ''}
             />
           ))}
-          {/* Ninguna de las 125 fotos de la mediateca de la web viva es un ANTES.
-              Mientras no la haya, este hueco se queda en bloque de posición: una
-              foto de proceso reetiquetada como ANTES sería un dato falso. */}
-          <Foto
-            imagen={proyecto.imagenes.find((img) => img.tipo === 'antes')}
-            proporcion="4/3"
-            tamanos="25vw"
-            etiqueta={<span className="absolute bottom-2 right-2 font-mono text-d-10 text-tinta-media bg-fondo px-1">ANTES</span>}
-          />
         </div>
       </section>
 
@@ -85,50 +97,38 @@ export default async function FichaProyecto({ params }: { params: Promise<{ slug
           hidrataba. Queda descartado también animation-timeline: view() como
           sustituto. Las demás secciones de la página sí siguen apareciendo. */}
       <section className="px-[18px] md:px-lat-desktop py-9 md:py-22">
-        <div className="grid grid-cols-1 md:grid-cols-[1fr_420px] gap-8 md:gap-16">
-          <div className="flex flex-col gap-8 order-2 md:order-1">
-            <h1 className="font-display font-extrabold fs-hero text-46 md:text-64 leading-[1.05] m-0">
-              {proyecto.titulo}
-            </h1>
+        {/* Rejilla con colocación explícita, y no dos columnas con `order`. El H1
+            vivía dentro de la columna izquierda junto a la narrativa, así que en
+            móvil caía DEBAJO de la ficha: `design/02` §A4 pide H1 → ficha →
+            encargo → ejecución. Mientras los dos apartados eran corchetes de
+            maqueta el desorden pasaba desapercibido; sin ellos, la columna
+            izquierda era un H1 solo. Ahora el H1 es hermano de la ficha y ocupa
+            su celda: en móvil va primero por orden de documento y en escritorio
+            sigue en la columna izquierda, sobre la narrativa. */}
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_420px] gap-8 md:gap-x-16">
+          <h1 className="font-display font-extrabold fs-hero text-46 md:text-64 leading-[1.05] m-0 md:col-start-1 md:row-start-1">
+            {proyecto.titulo}
+          </h1>
 
-            <div className="flex flex-col gap-2">
-              <h2 className="font-display font-bold fs-h3 text-20 md:text-26 m-0">El encargo</h2>
-              {proyecto.encargo ? (
-                <p className="text-16 md:text-20 text-tinta-media m-0">{proyecto.encargo}</p>
-              ) : (
-                <div className="border border-dashed border-tinta-media p-4">
-                  <p className="pendiente text-14 m-0">
-                    [Qué había antes, qué problema tenía y con qué condición llegó el cliente.]
-                  </p>
-                </div>
-              )}
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <h2 className="font-display font-bold fs-h3 text-20 md:text-26 m-0">La ejecución</h2>
-              {proyecto.ejecucion ? (
-                <p className="text-16 md:text-20 text-tinta-media m-0">{proyecto.ejecucion}</p>
-              ) : (
-                <div className="border border-dashed border-tinta-media p-4">
-                  <p className="pendiente text-14 m-0">[Qué se hizo y qué dificultad concreta tuvo esta obra.]</p>
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="order-1 md:order-2 flex flex-col gap-4">
+          <div className="flex flex-col gap-4 md:col-start-2 md:row-start-1 md:row-span-2">
             <FichaObra
               titulo="Ficha de obra"
               sticky
               filas={[
-                { etiqueta: 'MUNICIPIO', valor: proyecto.municipio ?? <DatoPendiente>municipio</DatoPendiente> },
-                { etiqueta: 'PROVINCIA', valor: proyecto.provincia ?? <DatoPendiente>provincia</DatoPendiente> },
+                // Sin `<DatoPendiente>`: el dueño decidió el 2026-09-18 que los
+                // datos de obra que no tiene no se ven, ni el valor ni el
+                // corchete. `FichaObra` omite la fila sin valor, así que aquí
+                // basta con pasar el dato tal cual está en el modelo: el día que
+                // llegue, la fila vuelve sola y no hay que tocar esta página.
+                { etiqueta: 'MUNICIPIO', valor: proyecto.municipio },
+                { etiqueta: 'PROVINCIA', valor: proyecto.provincia },
                 { etiqueta: 'SERVICIO', valor: NOMBRE_SERVICIO[proyecto.servicio] },
-                { etiqueta: 'MODELO', valor: proyecto.modelo ? NOMBRE_MODELO[proyecto.modelo] : '—' },
-                { etiqueta: 'COLOR', valor: proyecto.color ? CODIGO_COLOR[proyecto.color] : '—' },
-                { etiqueta: 'SUPERFICIE', valor: proyecto.superficie ? `${proyecto.superficie} m²` : <DatoPendiente>m²</DatoPendiente> },
-                { etiqueta: 'AÑO', valor: proyecto.anio ?? <DatoPendiente>año</DatoPendiente> },
-                { etiqueta: 'PLAZO', valor: proyecto.plazoDias ? `${proyecto.plazoDias} días` : <DatoPendiente>días</DatoPendiente> },
+                // El guion largo era la misma fila vacía con otro disfraz.
+                { etiqueta: 'MODELO', valor: proyecto.modelo ? NOMBRE_MODELO[proyecto.modelo] : null },
+                { etiqueta: 'COLOR', valor: proyecto.color ? CODIGO_COLOR[proyecto.color] : null },
+                { etiqueta: 'SUPERFICIE', valor: proyecto.superficie ? `${proyecto.superficie} m²` : null },
+                { etiqueta: 'AÑO', valor: proyecto.anio },
+                { etiqueta: 'PLAZO', valor: proyecto.plazoDias ? `${proyecto.plazoDias} días` : null },
               ]}
             />
             {acabado ? (
@@ -140,6 +140,30 @@ export default async function FichaProyecto({ params }: { params: Promise<{ slug
               <EnlaceEtiqueta href={`/blog/${articulo.slug}/`}>Cómo se hace →</EnlaceEtiqueta>
             ) : null}
           </div>
+
+          {/* «El encargo» y «La ejecución» se maquetaban con un recuadro
+              punteado y un corchete describiendo qué debía contar cada uno. Era
+              el hueco esperando copy; el dueño ha dicho el 2026-09-18 que no lo
+              tiene y que no quiere verlo. Un H2 encabezando un recuadro vacío no
+              informa de nada, así que sin texto se va el apartado entero, H2
+              incluido, y si no hay ninguno de los dos no se pinta ni la celda.
+              Hoy están en ese caso las nueve obras. */}
+          {proyecto.encargo || proyecto.ejecucion ? (
+            <div className="flex flex-col gap-8 md:col-start-1 md:row-start-2">
+              {proyecto.encargo ? (
+                <div className="flex flex-col gap-2">
+                  <h2 className="font-display font-bold fs-h3 text-20 md:text-26 m-0">El encargo</h2>
+                  <p className="text-16 md:text-20 text-tinta-media m-0">{proyecto.encargo}</p>
+                </div>
+              ) : null}
+              {proyecto.ejecucion ? (
+                <div className="flex flex-col gap-2">
+                  <h2 className="font-display font-bold fs-h3 text-20 md:text-26 m-0">La ejecución</h2>
+                  <p className="text-16 md:text-20 text-tinta-media m-0">{proyecto.ejecucion}</p>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
         </div>
       </section>
 

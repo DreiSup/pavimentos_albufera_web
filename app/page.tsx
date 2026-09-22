@@ -18,7 +18,7 @@ import { JsonLd, schemaFAQ } from '@/lib/schema'
 import { acabadosPublicados, proyectos, recuentoAcabadosPublicados } from '@/lib/datos'
 import { faqHome } from '@/content/faq'
 import { PASOS, SERVICIOS } from '@/content/servicios'
-import { CODIGO_COLOR, NOMBRE_MODELO, NOMBRE_SERVICIO, RUTA_SERVICIO } from '@/lib/tipos'
+import { NOMBRE_SERVICIO, RUTA_SERVICIO } from '@/lib/tipos'
 import type { Proyecto } from '@/lib/tipos'
 import { nap } from '@/lib/config'
 
@@ -105,19 +105,22 @@ const servicios = [
 /**
  * Las cuatro obras del carrusel del hero, en orden de pase.
  *
- * Todas tienen municipio confirmado y foto apaisada: en el hueco `3/4` de móvil
- * una foto de 900×500 se recortaría al 42 % de su ancho y dejaría de contar lo
- * que cuenta. Por eso no están ni Godella ni Ribarroja, y por eso tres de las
- * cuatro son de impreso: es lo que hay fotografiado en horizontal. La cuarta,
- * Corbera, entra para que el pase no enseñe una sola técnica.
+ * Todas tienen municipio confirmado y foto apaisada: el hueco de móvil recorta
+ * en vertical —hoy ~0,62 de proporción a 390 px, antes `3/4`— y una foto de
+ * 900×500 deja de contar lo que cuenta si se le quitan dos tercios del ancho.
+ * Por eso no están ni Godella ni Ribarroja, y por eso tres de las cuatro son de
+ * impreso: es lo que hay fotografiado en horizontal. La cuarta, Corbera, entra
+ * para que el pase no enseñe una sola técnica.
  *
- * `superficiePendiente` recoge el único m² que la portada afirmaba: los 180 de
- * Moncada, que `content/proyectos.json` guarda como «sin confirmar» y que ya se
- * pintaban entre corchetes. No se inventa ninguno para las otras tres; donde no
- * hay dato, se ve que no lo hay.
+ * 🔴 **Aquí ya no hay superficie, ni año, ni modelo, ni color.** Los 180 m² de
+ * Moncada vivían en un `superficiePendiente` de esta lista —el único m² que la
+ * portada afirmaba, y lo afirmaba entre corchetes—. El 2026-09-18 el dueño
+ * decidió primero que lo que no se sabe NO SE PUBLIQUE, ni siquiera atenuado, y
+ * después que la etiqueta se recorte a municipio y acabado. Lo que queda de
+ * aquella decisión está en `etiquetaDeObra`, que es quien arma las dos líneas.
  */
-const DIAPOSITIVAS_HERO: { slug: string; superficiePendiente?: string }[] = [
-  { slug: 'moncada-impreso-espiga-117', superficiePendiente: '180' },
+const DIAPOSITIVAS_HERO: { slug: string }[] = [
+  { slug: 'moncada-impreso-espiga-117' },
   { slug: 'denia-impreso-piedra-inglesa' },
   { slug: 'alzira-impreso-adoquin-irregular-107' },
   { slug: 'corbera-fratasado-arena' },
@@ -169,7 +172,50 @@ const proyectosHome = [...proyectos].sort((a, b) => Number(b.destacado) - Number
 // el `sizes` de un hero para hacerlo coincidir con una tarjeta serviría una
 // imagen corta sobre el LCP. Y la regla se aplica **solo a la foto que se
 // repite**: las otras cinco fotos de espacio siguen pidiendo su media columna.
-const TAMANOS_HERO_HOME = '(min-width: 768px) 50vw, 100vw'
+// 🔴 `100vw` a todos los anchos desde que el hero es a pantalla completa. Antes
+// eran 50vw por encima de 768, porque la foto ocupaba una de dos columnas; hoy
+// ocupa la sección entera y pedir media pantalla serviría un candidato corto
+// justo sobre el LCP. Por debajo de 768 no cambia nada: ya era 100vw, y
+// `fill` elige el candidato por la anchura, así que un hueco más ALTO no pide un
+// archivo más grande.
+//
+// 🔴 **Con TOPE EN 1200 px desde el 2026-09-18, y hay que leer para qué SÍ sirve
+// y para qué NO.** Las cuatro fotos del pase miden 1200, 2048, 1200 y 898 px de
+// origen, así que por encima de cierto ancho pedir más candidato no trae más
+// nitidez. Medido con `curl` contra `next start`, `Accept: image/avif`, la
+// respuesta real de `/_next/image`:
+//
+//     w=      moncada q75   denia q60   alzira q60   corbera q60      total
+//     1536      222.109     138.694      153.659       33.408      547.870 B
+//     1200      222.109      96.917      153.659       33.408      506.093 B
+//
+// ⚠️ **En la foto del LCP el tope no ahorra ni un byte, y creerlo era el error.**
+// `sharp` NO amplía: para un original de 1200 px, `w=1200`, `w=1536` y `w=2048`
+// devuelven el MISMO archivo de 222.109 B. Los 216,9 kB de la portada a 1366 px
+// no son un candidato inflado, son el original de Moncada entero: el hueco pasó
+// de media pantalla a pantalla completa y antes —`50vw`, peldaño 750, 101,6 kB—
+// se estaba ampliando 1,82× un archivo corto. `sizes` no puede recuperar eso.
+//
+// Lo que el tope sí ahorra son **40,8 kB (−7,6 % del pase) en la diapositiva de
+// Denia**, la única con 2048 px de origen, que se descarga en el mismo viewport
+// aunque no sea la primera. Y deja de pedir peldaños que ningún original puede
+// llenar.
+//
+// **Y la calidad de la primera NO se toca**, aunque bajarla a 60 la dejaría en
+// 147.159 B (−73,2 kB): el peldaño de 1200 solo lo pide una ventana de 1200 px
+// o más, es decir, un escritorio. En el móvil —la mitad del tráfico de este
+// negocio— no cambia absolutamente nada: sigue siendo `w=640`, 73.585 B, q75.
+// Degradar la foto del LCP justo en las pantallas donde se ve, para ahorrar
+// tiempo en las conexiones más rápidas, es cobrar la factura al revés.
+//
+// ⚠️ `sizes` acota el ANCHO DEL HUECO, no el DPR. En una pantalla retina de 1366
+// el navegador pide 1200 × 2 y se lleva el peldaño 2048; ahí el tope no ahorra
+// nada, y tampoco encarece nada, porque sin él pediría 2732 y el `deviceSizes`
+// más alto también es 2048.
+//
+// El valor viaja además —vía `tamanosCompartidos`— a las cuatro miniaturas de
+// obra de la sección 07, que comparten URL con el hero a propósito.
+const TAMANOS_HERO_HOME = '(min-width: 1200px) 1200px, 100vw'
 const TAMANOS_TARJETA_SERVICIO = '(min-width: 768px) 30vw, 100vw'
 const TAMANOS_ESPACIO = '(min-width: 768px) 30vw, 50vw'
 /**
@@ -194,39 +240,43 @@ function tamanosCompartidos(src?: string) {
 }
 
 /**
- * La etiqueta técnica de una diapositiva, con la MISMA regla que
- * `TarjetaProyecto`: municipio y provincia, luego técnica, modelo y color, y
- * por último superficie y año. Nada se escribe a mano, todo sale del modelo de
- * contenido, y lo que falta se ve faltar.
+ * La etiqueta técnica de una diapositiva: **municipio y acabado, y nada más**.
+ *
+ * 🔴 **Recortada el 2026-09-18 por decisión del dueño.** Decía «MONCADA ·
+ * VALENCIA / HORMIGÓN IMPRESO · ESPIGA · C-117 / 2025» y dice «MONCADA ·
+ * VALENCIA / HORMIGÓN IMPRESO». Fuera el modelo, fuera el color y fuera el año,
+ * en las cuatro diapositivas. El muestrario existe para enseñar modelo y color
+ * con su código —`/acabados/`, §3.9— y la ficha de obra para fecharla; esta
+ * etiqueta va sobre una foto que pasa sola cada seis segundos, y ahí el dato
+ * que se retiene es dónde se hizo y de qué es.
+ *
+ * ⚠️ **Se aparta a propósito de `TarjetaProyecto`**, y hay que saberlo antes de
+ * «unificarlas». La tarjeta enseña tres líneas —municipio, técnica con modelo y
+ * color, superficie y año— porque vive dentro de una ficha de obra que el
+ * visitante ha ido a buscar. Aquí son dos, fijas.
+ *
+ * Lo que sí se copia de la tarjeta es **cómo se arma cada línea**: lista,
+ * `filter(Boolean)` y `join(' · ')`, y fuera la línea que quede vacía. Hoy las
+ * cuatro obras tienen municipio y provincia, así que no cambia nada en pantalla;
+ * lo que cambia es que una obra sin municipio ya no puede dejar un « · » suelto
+ * ni una línea en blanco. El corchete de `<DatoPendiente>` tampoco vuelve: el
+ * 2026-09-18 el dueño decidió que en el hero lo que no se sabe no se publica, ni
+ * siquiera atenuado.
  */
-function etiquetaDeObra(proyecto: Proyecto, superficiePendiente?: string) {
-  const modelo = proyecto.modelo ? ` · ${NOMBRE_MODELO[proyecto.modelo].toUpperCase()}` : ''
-  const color = proyecto.color ? ` · ${CODIGO_COLOR[proyecto.color]}` : ''
+function etiquetaDeObra(proyecto: Proyecto) {
   return [
-    /* El municipio y la provincia son opcionales en el modelo de contenido, y
-       la interpolación a cadena vacía que había aquí pintaba un « · » suelto en
-       cuanto faltara uno: exactamente el maquillaje que prohíbe CLAUDE.md. El
-       patrón es el de `TarjetaProyecto`, el mismo corchete atenuado, en
-       versalitas porque toda la etiqueta lo está. */
-    <>
-      {proyecto.municipio?.toUpperCase() ?? <DatoPendiente>MUNICIPIO</DatoPendiente>}
-      {' · '}
-      {proyecto.provincia?.toUpperCase() ?? <DatoPendiente>PROVINCIA</DatoPendiente>}
-    </>,
-    `${NOMBRE_SERVICIO[proyecto.servicio].toUpperCase()}${modelo}${color}`,
-    <>
-      {proyecto.superficie ?? <DatoPendiente>{superficiePendiente ?? 'm²'}</DatoPendiente>}
-      {proyecto.superficie || superficiePendiente ? ' m²' : ''} ·{' '}
-      {proyecto.anio ?? <DatoPendiente>año</DatoPendiente>}
-    </>,
+    [proyecto.municipio, proyecto.provincia],
+    [NOMBRE_SERVICIO[proyecto.servicio]],
   ]
+    .map((linea) => linea.filter(Boolean).join(' · ').toUpperCase())
+    .filter(Boolean)
 }
 
-const diapositivasHero = DIAPOSITIVAS_HERO.map(({ slug, superficiePendiente }) => {
+const diapositivasHero = DIAPOSITIVAS_HERO.map(({ slug }) => {
   const proyecto = proyectos.find((p) => p.slug === slug)!
   return {
     imagen: proyecto.imagenes[0],
-    etiqueta: <EtiquetaTecnica lineas={etiquetaDeObra(proyecto, superficiePendiente)} />,
+    etiqueta: <EtiquetaTecnica lineas={etiquetaDeObra(proyecto)} />,
   }
 })
 /**
@@ -242,76 +292,89 @@ const { publicados: totalAcabados, documentados } = recuentoAcabadosPublicados()
 export default function Home() {
   return (
     <>
-      {/* 01 · Hero.
-          Las dos maquetas de `02-pantallas.md §A1` son distintas —en móvil el titular
-          va encima de la foto y el texto debajo; en escritorio el titular ocupa su
-          columna junto al `4/3`— pero el nodo es uno solo: la diferencia la resuelve la
-          rejilla. En móvil la columna única apila titular, foto y texto; en escritorio
-          la foto salta a la segunda columna y ocupa las cuatro filas.
-          Tres decisiones que no se pueden deshacer sin romper algo:
-          - **Un solo <h1>** (README §9). Duplicarlo con `md:hidden` no lo quita del
-            DOM: el rastreador y el lector de pantalla siguen viendo dos. Por eso el
-            titular no se copia para superponerlo: es la rejilla la que lo mete en la
-            misma celda que la foto por debajo de 768 px y lo saca a su columna por
-            encima. Un nodo, dos sitios.
-          - **El titular SÍ va sobre la foto en móvil**, que es lo que siempre dijo
-            `§A1`, y el sistema ya tiene con qué: el velo de `design/01 §2.8`, medido
-            para que `--fondo` aguante 4,79 : 1 sobre un píxel blanco puro. Decisión
-            del dueño del 2026-09-17. En escritorio el titular sigue en su columna y
-            no hay velo, porque no pisa ninguna foto.
-          - **La foto es un carrusel de cuatro obras** (`design/01 §3.15`), y pasa
-            solo. El pase es un `@keyframes` de opacidad, sin un byte de JavaScript;
-            lo único que hidrata es su botón de pausa, que exige la WCAG 2.2.2. Con
-            movimiento reducido no pasa nada, se ve la primera foto fija y el botón
-            se retira. */}
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-x-16 md:gap-y-6 md:grid-rows-[1fr_auto_auto_1fr] px-[18px] md:px-lat-desktop pt-8 md:pt-14">
-        {/* `relative z-10` porque en móvil comparte celda con el carrusel y va
-            detrás en el DOM; `self-start` para que se apoye en el borde superior de
-            la foto en vez de estirarse. El `p-[18px]` es el respiro DENTRO del marco
-            de la foto, no separación entre cajas: en escritorio desaparece. */}
-        <h1 className="col-start-1 row-start-1 md:row-start-2 relative z-10 self-start p-[18px] md:p-0 font-display font-extrabold fs-hero text-46 md:text-88 leading-[1.05] md:leading-[1.02] text-fondo md:text-tinta m-0">
-          Hormigón que se ve bien 20 años después
-        </h1>
-
-        {/* Un solo marco para los dos anchos: `display:none` no evita la descarga,
-            así que duplicarlo por punto de ruptura serían ocho descargas. La 4/3 de
-            escritorio es el hueco grande y las fotos apaisadas encajan sin recorte;
-            en móvil se recortan a 3/4.
-            `w-full h-full` es lo que deja que la celda mande: si el titular midiera
-            más que la foto —pasa a 320 px, donde el H1 ocupa 374 px y el `3/4` solo
-            359—, la fila crece y la foto crece con ella en vez de dejar el titular
-            fuera. Y las DOS dimensiones, no solo la altura: con `h-full` a secas la
-            `aspect-ratio` deducía la anchura de la altura —374 × 3/4 = 281 px en una
-            columna de 269— y devolvía a la portada los 19 px de scroll horizontal
-            que el mismo problema ya había causado en escritorio. */}
+      {/* 01 · Hero, A PANTALLA COMPLETA desde el 2026-09-18.
+          Decisión del dueño: la foto ocupa la sección entera y el texto va por encima,
+          en móvil y en escritorio. Sustituye a las dos maquetas de `02-pantallas.md §A1`
+          —titular sobre la foto en móvil, titular en su columna junto a un `4/3` en
+          escritorio—, que ya no existen: ahora hay una sola composición para los dos
+          anchos y la diferencia es de tamaño, no de estructura.
+          Cinco decisiones que no se pueden deshacer sin romper algo:
+          - **La sección se define por su ALTO, no por una proporción.** `.hero-pantalla`
+            (`globals.css`) da `min-height` en `svh` menos las dos barras fijas, por el
+            factor `--hero-asomo`. Es `min-height` para que un teléfono pequeño estire la
+            sección en vez de cortar el segundo botón, y es `svh` para que la caja no se
+            mueva al retraerse las barras del navegador. Por eso el carrusel ya no recibe
+            `proporcion`: con una `aspect-ratio` viva el navegador deduciría la anchura de
+            la altura y devolvería el scroll horizontal que esto ya causó dos veces.
+          - **Un solo <h1>** (README §9), y ahora sin rejilla que lo mueva: el titular, el
+            párrafo y los dos botones son una sola columna apilada sobre la foto.
+          - **El velo deja de ser solo de móvil.** Ahora hay texto sobre fotografía a
+            todos los anchos, así que el velo va a todos los anchos. Su 0,68 está medido
+            contra el peor píxel posible —blanco puro— y no contra una foto concreta, así
+            que el recorte nuevo no lo invalida. → `design/01` §2.8
+          - **Sobre el velo no queda ni un texto en `--tinta-media`.** Ese gris da 1,4 : 1
+            contra el velo. El párrafo pasa a `--fondo` (4,79 : 1) y el botón de contorno
+            a `sobreOscuro`, que es la variante que §3.2 ya tenía para fondo oscuro.
+          - **La columna de texto es `self-center`, no `self-start` (cambiado el
+            2026-09-22: el dueño pedía el bloque centrado, no pegado arriba con hueco
+            debajo) — pero `self-center` por sí solo NO centraba el texto.** Solo
+            reparte el sobrante de la CELDA (sección menos caja), y en la mitad de
+            los anchos del encargo ese sobrante ya es 0 —el contenido llena la
+            sección—, así que no movía nada. Quien de verdad centra el texto DENTRO
+            de su caja es `--hero-pt` = `--hero-pb` en `globals.css`: con el `pb`
+            fijo por la banda WCAG, igualarlos es la única forma de que el centro
+            del contenido caiga en el centro de la caja. → `globals.css`,
+            comentario sobre `.hero-pantalla`.
+            Sigue sin poder estirarse: eso dejaría la caja cubriendo los 44×44 del
+            control de pausa del carrusel, abajo a la izquierda. Esa garantía NO
+            depende de dónde queda la caja ni de cuánto mida `pt`: `--hero-pb` —
+            SIEMPRE ≥56 px (44 del control + 12 de aire) y en móvil SIEMPRE 80
+            (69,8 de la etiqueta técnica + 10 de aire)— vive dentro de la caja, en
+            su borde inferior, y subir `pt` no le resta nada. Medido en los 6 anchos
+            del encargo, con y sin aviso de cookies, tras subir `pt`: el hueco hasta
+            el control nunca baja de 12 px. El `z-20` del propio control sigue
+            siendo el cierre para cuando, aun así, el contenido llegue hasta el
+            fondo: un pase automático que no se puede parar es lo que prohíbe la
+            WCAG 2.2.2. */}
+      <section className="hero-pantalla relative grid grid-cols-1">
         <CarruselFotos
           diapositivas={diapositivasHero}
-          proporcion="3/4"
           tamanos={TAMANOS_HERO_HOME}
-          /* `md:aspect-auto` no es adorno: en escritorio esta caja abarca las cuatro
-             filas de la rejilla, así que su altura es definida y su anchura no. Con una
-             `aspect-ratio` viva, el navegador deduce la anchura de la altura —4/3 × 697 =
-             929 px— en vez de estirarla a su columna de 648, y la foto se salía 241 px
-             por la derecha con barra de scroll horizontal en toda la home. Fijando las
-             dos dimensiones la proporción deja de opinar y recorta `object-cover`. */
-          className="col-start-1 row-start-1 w-full h-full md:col-start-2 md:row-start-1 md:row-end-5 md:aspect-auto md:min-h-[660px]"
+          /* Misma celda que la columna de texto, y las DOS dimensiones al 100 %: la
+             celda manda, el marco la llena y `object-cover` recorta. */
+          className="col-start-1 row-start-1 w-full h-full"
         >
-          {/* El velo solo existe donde el titular pisa la foto. En escritorio el
-              titular tiene su columna, así que sobra y se retira: las fotos se ven
-              como son.
-              Va como `children` del carrusel, que lo pinta entre las fotos y las
-              etiquetas técnicas: oscurece la FOTO, no el texto que va encima de
-              ella. Cuando caía también sobre la etiqueta la dejaba en 2,64 : 1.
+          {/* El velo va como `children`, que el carrusel pinta entre las fotos y las
+              etiquetas técnicas: oscurece la FOTO, no el texto que va encima de ella.
+              Cuando caía también sobre la etiqueta la dejaba en 2,64 : 1.
               → `design/01` §3.15 */}
-          <div className="velo absolute inset-0 md:hidden" aria-hidden="true" />
+          <div className="velo absolute inset-0" aria-hidden="true" />
         </CarruselFotos>
 
-        <div className="col-start-1 row-start-2 md:row-start-3 flex flex-col gap-4 md:gap-6">
-          <p className="text-16 md:text-20 text-tinta-media md:max-w-[46ch] m-0">
+        {/* `self-center` reparte el sobrante de la celda; `--hero-pt` = `--hero-pb`
+            (`globals.css`) centra el texto DENTRO de la caja, que es lo que de
+            verdad se ve. `--hero-pb` sigue reservando la banda inferior del
+            carrusel —control de pausa a la izquierda, etiqueta técnica a la
+            derecha—, y esa reserva vive DENTRO de la caja, así que ni centrar la
+            celda ni subir `pt` le quitan nada. → comentario de arriba. */}
+        <div className="hero-columna col-start-1 row-start-1 relative z-10 self-center flex flex-col px-[18px] md:px-lat-desktop">
+          {/* El tamaño, la interlínea, el ancho máximo y los tres espacios de esta
+              columna salen de variables de `.hero-pantalla` en vez de utilidades,
+              y no es un capricho de implementación: en una ventana baja el
+              contenido tiene que ocupar menos para que quede corte que ver, y con
+              utilidades eso serían cuatro juegos de clases repetidos por cada
+              escalón. Los valores siguen saliendo de la escala cerrada del §2.4.
+              → `app/globals.css`, «el asomo es del CONTENIDO» */}
+          <h1 className="hero-titular font-display font-extrabold fs-hero text-fondo m-0">
+            Hormigón que se ve bien 20 años después
+          </h1>
+
+          <p className="hero-parrafo text-fondo max-w-[46ch] m-0">
             Pavimentos de hormigón impreso, pulido, lavado y microcemento en Valencia, Castellón y
             Alicante. 17 años ejecutando obra propia, con 10 años de garantía y mantenimiento
             incluido.
           </p>
+
           <div className="flex flex-col md:flex-row gap-3 md:gap-4">
             {/* Ocre TAMBIÉN en móvil. Excepción consciente a la regla del ocre de
                 `design/01 §2.2`, decidida por el dueño el 2026-09-17 y anotada allí:
@@ -324,7 +387,15 @@ export default function Home() {
             <Boton variante="primario" href="/acabados/" anchoCompleto className="md:w-auto">
               Ver acabados
             </Boton>
-            <Boton variante="contorno" href="/presupuesto/" anchoCompleto className="md:w-auto">
+            {/* `sobreOscuro` ya no es opcional aquí: el contorno claro sobre fondo
+                claro de la variante por defecto sería tinta sobre el velo. */}
+            <Boton
+              variante="contorno"
+              sobreOscuro
+              href="/presupuesto/"
+              anchoCompleto
+              className="md:w-auto"
+            >
               Pedir presupuesto
             </Boton>
           </div>
@@ -550,7 +621,7 @@ export default function Home() {
             <div className="flex flex-col gap-2 border-t border-tinta pt-4">
               <p className="font-mono text-d-11 text-acero uppercase m-0">Con desplazamiento</p>
               <p className="text-16 text-tinta-media m-0">
-                Murcia, Albacete, Almería, Tarragona y Teruel, a partir de <DatoPendiente>100</DatoPendiente> m².
+                Murcia, Albacete, Almería, Tarragona y Teruel, a partir de 100 m².
               </p>
             </div>
             {/* «Consúltanos» era la última palabra de la frase y no llevaba a ningún

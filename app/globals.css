@@ -37,11 +37,32 @@
      ras del borde inferior de la cabecera; 14 px de desajuste dejan una franja
      por la que corre el contenido. */
   --cabecera-actual: 70px;
+
+  /* Alto de la barra fija de contacto (§4.3). Espeja el `min-h-boton` de
+     `components/layout/BarraMovil.tsx`: 56 px. Es `sticky bottom-0`, así que se
+     apoya sobre el contenido y le roba al visitante esos 56 px de alto visible
+     sin que ninguna caja lo sepa. El hero a pantalla completa (§3.15) sí tiene
+     que saberlo: es lo único del sitio que se mide contra el alto de la ventana.
+     ⚠️ Se apaga en `cabecera-ancha` (1180 px), NO en `md`, porque ese es el
+     punto en el que la barra deja de existir. Si se mueve allí, se mueve aquí. */
+  --barra-movil: 56px;
+
+  /* Cuánto del alto útil ocupa el hero a pantalla completa.
+     No es 1: un hero que llena la pantalla exacta esconde que existe el resto de
+     la página. Decisión del dueño del 2026-09-18, «casi todo el alto, dejando
+     ver el corte»; con 0,88 asoma el borde de la sección siguiente. */
+  --hero-asomo: 0.88;
 }
 
 @media (min-width: 768px) {
   :root {
     --cabecera-actual: 84px;
+  }
+}
+
+@media (min-width: 1180px) {
+  :root {
+    --barra-movil: 0px;
   }
 }
 
@@ -78,6 +99,16 @@ a {
   outline: 2px solid var(--tinta);
   outline-offset: 3px;
 }
+/* `.btn-primario` (ocre) asume un fondo claro detrás de su anillo de foco: el
+   anillo es `--tinta`, y sobre `--fondo` da contraste de sobra. Dentro de
+   `.sobre-oscuro` el fondo YA es `--tinta` —`MenuMovil`, por ejemplo—, así que
+   ese mismo anillo se funde con el fondo: medido, 1,00:1. `:where()` no aporta
+   especificidad, así que la regla de arriba vale (0,1,0) entera por
+   `:focus-visible`; esta añade la clase `.sobre-oscuro` sin `:where`, así que
+   suma (0,2,0) y ya gana sola, sin `!important`. */
+.sobre-oscuro .btn-primario:focus-visible {
+  outline-color: var(--fondo);
+}
 
 /* Radio 0 en todo el sitio: decisión de identidad */
 :where(button, input, select, textarea, img, video, figure, article, aside) {
@@ -109,6 +140,26 @@ a {
 .sobre-oscuro .pendiente {
   color: var(--pendiente-oscuro);
   border-bottom-color: var(--pendiente-oscuro);
+}
+
+/* Cuerpo de las tres páginas legales (design/02 §B7). Son los únicos textos
+   largos y corridos del sitio, y el navegador les pone márgenes por elemento a
+   `p`, `ul` y `h3`. Se anulan: el ritmo vertical lo pone el `gap` del
+   contenedor, que es la regla del proyecto.
+
+   Las enumeraciones del texto del dueño van en `<ul>` por semántica —son
+   listas, y un lector de pantalla tiene que poder contarlas—, pero SIN viñeta:
+   el sistema de diseño no tiene una y una página legal no es el sitio donde
+   inventarla. Visualmente son las mismas líneas que ya había, con su hueco. */
+.texto-legal :where(p, h3, ul, ol, li, dl) {
+  margin: 0;
+}
+.texto-legal ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 /* Secciones destino del submenú/sumario anclado.
@@ -163,6 +214,52 @@ a {
   }
 }
 
+/* Hero a pantalla completa (§3.15, enmendado el 2026-09-18). La foto ocupa la
+   sección entera y el texto va encima; lo que define la sección es su ALTO, no
+   una proporción, así que el carrusel del hero es el único del sitio que no
+   lleva `proporcion`.
+
+   🔴 `min-height` y no `height`, y no es una preferencia. El titular a 46 px, el
+   párrafo y los dos botones de ancho completo miden más que el alto útil de un
+   teléfono pequeño: medido a 360×640, el contenido pide 636 px y el alto útil
+   son 514. Con `height` el corte se lo llevaría el segundo botón. Con
+   `min-height` la sección crece, se pierde el asomo —que es un adorno— y no se
+   pierde un CTA, que no lo es.
+
+   🔴 Y `svh`, no `vh` ni `dvh`. `100vh` en un móvil es el viewport CON las
+   barras del navegador retraídas, así que se pasa de largo justo al cargar, que
+   es cuando se mira el hero. `dvh` acierta pero cambia de valor al hacer scroll:
+   el elemento que decide el LCP se redimensionaría en cuanto el visitante mueve
+   el dedo. `svh` es el viewport con las barras a la vista —el estado inicial—,
+   de modo que el asomo es real desde el primer pintado y la caja no se mueve
+   nunca.
+
+   ⚠️ El respaldo va en `@supports`, y NO en dos declaraciones seguidas. El
+   truco de repetir la propiedad solo funciona cuando la unidad desconocida se
+   escribe literal: aquí la declaración lleva `var()`, así que el analizador la
+   da por válida, gana la cascada y falla DESPUÉS, al calcular el valor, con lo
+   que el navegador cae en el valor inicial —`min-height: auto`— y no en la
+   línea anterior. Preguntando por la unidad, el respaldo es de verdad un
+   respaldo.
+
+   Al alto de la ventana hay que restarle las dos barras que se le montan encima:
+   la cabecera `sticky top-0` y la barra de contacto `sticky bottom-0`. Ninguna
+   de las dos está en el flujo por debajo del hero, así que sin restarlas el
+   «alto útil» sería 126 px mayor que el que el visitante ve de verdad. */
+.hero-pantalla {
+  min-height: calc(
+    (100vh - var(--cabecera-actual) - var(--barra-movil)) * var(--hero-asomo)
+  );
+}
+
+@supports (height: 100svh) {
+  .hero-pantalla {
+    min-height: calc(
+      (100svh - var(--cabecera-actual) - var(--barra-movil)) * var(--hero-asomo)
+    );
+  }
+}
+
 /* Velo sobre fotografía (§2.8). Su único trabajo es sostener el contraste del
    titular del hero de móvil; no es un tratamiento estético reutilizable. */
 .velo {
@@ -180,10 +277,11 @@ a {
    seguidos. `visibility: hidden` sí las retira, y se hereda hasta la <img>.
 
    ⚠️ Y el estado activo NO puede ser `:first-child`. El marco tiene dos capas
-   de pasadas —las fotos y, por encima del velo, sus etiquetas— más el propio
-   velo entre medias: la primera etiqueta es el sexto hijo, no el primero. El
-   componente marca la activa con su clase, igual que ya pasaba el índice por
-   propiedad personalizada en vez de por `:nth-child`. */
+   de pasadas —las fotos y, por encima del velo, sus etiquetas—, el velo entre
+   medias y, desde que el control de pausa es CSS, un `<input>` ABRIENDO la
+   lista: la primera etiqueta es el séptimo hijo y ni la primera foto es la
+   primera. El componente marca la activa con su clase, igual que ya pasaba el
+   índice por propiedad personalizada en vez de por `:nth-child`. */
 .carrusel__paso {
   opacity: 0;
   visibility: hidden;
@@ -201,8 +299,9 @@ a {
      `visibility` se interpola a saltos, y con la regla de CSS de que basta un
      extremo `visible` para que lo sea todo el tramo: la diapositiva entra en el
      árbol de accesibilidad en el 97 %, cuando empieza a verse, y sale en el
-     25 %, cuando ya no se ve. Durante los 0,72 s del cruce hay dos, que es
-     exactamente lo que hay en pantalla. */
+     25 %, cuando ya no se ve. Durante los 0,72 s del cruce hay dos FOTOS, que es
+     exactamente lo que hay en pantalla; la capa de etiquetas tiene su propia
+     ventana, más estrecha, y ahí nunca hay dos. */
   @keyframes carrusel {
     0%,
     22% {
@@ -211,6 +310,38 @@ a {
     }
     25%,
     97% {
+      opacity: 0;
+      visibility: hidden;
+    }
+    100% {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+
+  /* 🔴 La misma pasada NO sirve para el texto. Con las etiquetas cruzándose como
+     las fotos se pintaban DOS a la vez sobre la esquina: medido en el build de
+     producción a 390 px, opacidades 0,83 y 0,17, y en pantalla se leía
+     «C-117SA · GRIS» de dos obras distintas superpuestas. Una foto encima de
+     otra es un fundido; un dato encima de otro es un dato falso.
+
+     Se releva en vez de cruzar, dentro de la MISMA ventana de 3 puntos: la que
+     sale cae a 0 en el 23,5 % y la que entra no arranca hasta el 98,5 %, que es
+     ese mismo instante —98,5 % + 25 % de escalonado = 123,5 %—. Así el reparto
+     de la etiqueta sigue pegado al de su foto, hay 0,36 s de bajada y 0,36 s de
+     subida, y en ningún momento del ciclo dos etiquetas pasan de 0.
+
+     Mismo trato para `visibility`, y con la misma regla del extremo `visible`:
+     la que entra aparece en el árbol de accesibilidad en el 98,5 % y la que sale
+     se va en el 23,5 %, el mismo punto. El relevo también es del lector. */
+  @keyframes carrusel-etiqueta {
+    0%,
+    22% {
+      opacity: 1;
+      visibility: visible;
+    }
+    23.5%,
+    98.5% {
       opacity: 0;
       visibility: hidden;
     }
@@ -247,18 +378,93 @@ a {
     animation-fill-mode: none;
   }
 
-  /* WCAG 2.2.2, nivel A: el pase se puede parar. El botón escribe el atributo
-     en el marco y la regla alcanza a las DOS capas de pasadas, fotos y
-     etiquetas, porque las dos cuelgan de él. */
-  .carrusel[data-pausa='true'] .carrusel__paso {
+  /* ⚠️ DESPUÉS de la abreviada, y por eso no está arriba: `animation:` reinicia
+     `animation-name`, así que puesta antes esta línea no sobreviviría. Las dos
+     capas comparten ciclo, retardo y escalonado; lo único que cambia es la
+     forma de relevarse. */
+  .carrusel__paso--etiqueta {
+    animation-name: carrusel-etiqueta;
+  }
+
+  /* WCAG 2.2.2, nivel A: el pase se puede parar, y desde el primer pintado.
+     El interruptor es el PRIMER hijo del marco y la regla alcanza a las DOS
+     capas de pasadas, fotos y etiquetas, porque las dos son hermanas suyas.
+     `~` y no `:has()` a propósito: `:has()` no es universal, y un control de
+     pausa que en algún navegador no pare nada es peor promesa que no tenerlo. */
+  .carrusel__interruptor:checked ~ .carrusel__paso {
     animation-play-state: paused;
   }
 }
 
+/* El control de pausa, que desde el 2026-09-18 no es JavaScript.
+   Era un botón de cliente, y el pase —que es CSS puro— arrancaba en el primer
+   pintado: entre ese instante y la hidratación, y para siempre con el JS
+   desactivado, había movimiento que no se podía parar. Eso es justo lo que
+   prohíbe la WCAG 2.2.2. Ahora el estado lo guarda un `<input type="checkbox">`
+   y lo lee el propio CSS, así que el control existe exactamente desde que
+   existe el movimiento. → `design/01` §3.15 */
+.carrusel__interruptor {
+  position: absolute;
+  /* 🔴 LA MISMA ESQUINA QUE SU CAJA, y no es cosmético: el que recibe el foco es
+     este `<input>` y el que pinta el anillo es el `<label>`, así que el
+     «llévalo a la vista» del navegador apunta aquí y el anillo aparece allí.
+     Sin estas dos líneas el input se queda en su posición estática —la esquina
+     SUPERIOR izquierda del marco—, que a 768 px ya está a la vista: el navegador
+     no hace scroll y el anillo se pinta abajo del todo de un marco de 1.184 px.
+     Medido: la caja arranca en y=1.280 con el viewport acabando en 1.024, o sea
+     256 px por debajo de lo que se ve. Con el anclaje, la misma tabulación deja
+     scrollY=811 y la caja en y=469: dentro. A 390 y 1366 px salía bien por
+     casualidad, porque ahí el marco cabe en la pantalla.
+     Con el `<button>` anterior no podía pasar, porque el que recibía el foco
+     era la caja; separarlos rompió esa garantía y esto la devuelve. */
+  bottom: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  /* Recortado, NO `display: none` ni `visibility: hidden`: los dos lo sacarían
+     del orden de tabulación, y este es el elemento que recibe el foco. El
+     recorte se lleva por delante su propio anillo, que es lo que se quiere: el
+     foco se pinta sobre la caja visible, tres reglas más abajo. */
+  clip-path: inset(50%);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* 🔴 El anillo va hacia DENTRO, y no es una preferencia estética. El marco del
+   carrusel es `overflow: hidden` y el control se apoya en su esquina inferior
+   izquierda: con el `outline-offset: 2` global se recortaban dos de sus cuatro
+   lados y al llegar con el tabulador se veía media escuadra. Con offset
+   negativo el anillo se dibuja dentro de los 44 px y se ve entero.
+   No se mueve el control adentro porque su esquina es la banda de 44 px que la
+   capa de etiquetas ya le reserva con `pl-11` (§3.15). */
+.carrusel__interruptor:focus-visible ~ .carrusel__pausa {
+  outline: 2px solid var(--pigmento);
+  outline-offset: -2px;
+}
+
+/* Los dos glifos viajan siempre en el HTML y es `:checked` quien elige. Sin
+   marcar: dos barras, el pase corre y el control lo para. Marcado: el
+   triángulo, el pase está parado y el control lo reanuda. */
+.carrusel__glifo--reanudar {
+  display: none;
+}
+.carrusel__interruptor:checked ~ .carrusel__pausa .carrusel__glifo--pausar {
+  display: none;
+}
+.carrusel__interruptor:checked ~ .carrusel__pausa .carrusel__glifo--reanudar {
+  display: inline;
+}
+
 /* Con movimiento reducido no hay pase que parar: el carrusel es una foto fija.
    El control se retira entero —`display: none` también lo saca del orden de
-   tabulación— en vez de quedarse mintiendo sobre un movimiento que no existe. */
+   tabulación— en vez de quedarse mintiendo sobre un movimiento que no existe.
+   Las DOS piezas, el interruptor y su caja: la que es tabulable es la primera,
+   así que dejársela fuera habría dejado un foco que no hace nada. */
 @media (prefers-reduced-motion: reduce) {
+  .carrusel__interruptor,
   .carrusel__pausa {
     display: none;
   }
@@ -298,4 +504,351 @@ h1 {
 }
 .fs-h3 {
   font-stretch: 115%;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Enlace en prosa — design/01 §3.16, nuevo el 2026-09-18.
+
+   El sistema tenía enlace-etiqueta (§3.5) para navegación y botones para los
+   CTA, pero **ningún estilo para un enlace dentro de un párrafo**, porque hasta
+   las tres páginas legales no había párrafos con enlaces dentro. Los 22 de esos
+   tres documentos se escribieron con `className="text-tinta"`, que sobre el
+   `a { color: inherit }` de este mismo archivo pinta el enlace del color exacto
+   del texto que lo rodea: medido a 390 px, `rgb(27, 30, 28)` y
+   `text-decoration: none` en los 22. Invisibles.
+
+   No es una minucia tipográfica. Lo que no se ve son el `mailto:` para ejercer
+   los derechos del art. 15 al 22 del RGPD, la reclamación ante la AEPD, las dos
+   páginas legales entre sí, la decisión de adecuación en EUR-Lex y la lista del
+   Data Privacy Framework: las vías que la ley obliga a ofrecer. Y falla el
+   criterio 1.4.1 de las WCAG, que prohíbe que el color sea el único indicador
+   de un enlace — aquí ni siquiera había color distinto.
+
+   **El arreglo es el subrayado, no el color.** Un token nuevo no existe (la
+   paleta está cerrada) y el ocre está prohibido como texto pequeño sobre fondo
+   claro. `--tinta` sobre `--fondo` da 14,5 : 1, muy por encima del AA, así que
+   el color se queda donde está y lo que entra es la línea: cumple 1.4.1 sin
+   depender de la vista de colores de nadie.
+
+   Se distingue del `<DatoPendiente>` vecino, que también lleva línea inferior,
+   porque la suya es `1px dotted` en `--tinta-media` y esta es continua en
+   `--acero`: punteada y atenuada = dato que falta; continua = sitio al que ir.
+
+   El foco no se declara aquí a propósito: el `:focus-visible` del principio de
+   este archivo ya pinta el contorno ocre de 2 px en todo `<a>`, y repetirlo
+   sería una segunda fuente de verdad. Este bloque nunca pone `outline: none`.
+
+   Alcance: `.texto-legal a` coge los tres documentos de golpe —la clase la pone
+   `PlantillaLegal` sobre la entradilla y sobre el cuerpo de cada sección, y las
+   fichas de cookies se montan dentro—, y deja fuera el índice de la propia
+   plantilla, que es `EnlaceEtiqueta` y tiene su especificación en §3.5.
+
+   `.enlace-prosa` es la misma regla para el enlace suelto que vive fuera de esa
+   clase. Hoy tiene **un** consumidor y no es decorativo: el enlace a la política
+   de privacidad de la casilla del formulario, que tenía el mismo defecto que los
+   22 y es el peor sitio donde tenerlo. Ahí la casilla dice «He leído la política
+   de privacidad» y esa frase solo es verdad si la política se puede alcanzar
+   desde donde se afirma haberla leído.
+   ────────────────────────────────────────────────────────────────────────── */
+.texto-legal a,
+.enlace-prosa {
+  text-decoration: underline;
+  text-decoration-color: var(--acero);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+/* Al pasar por encima engorda la línea y se tiñe del color del texto. Es el
+   único cambio: ni color de texto, ni fondo, ni desplazamiento. En táctil no
+   existe `:hover` y el enlace ya se veía sin él. */
+.texto-legal a:hover,
+.enlace-prosa:hover {
+  text-decoration-color: currentColor;
+  text-decoration-thickness: 2px;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   HERO A PANTALLA COMPLETA — SEGUNDA PASADA, 2026-09-18
+   ════════════════════════════════════════════════════════════════════════════
+   Va al final del archivo, y no junto al bloque `.hero-pantalla` de §3.15, por
+   una razón de coordinación, no de estilo: otra rama está editando aquel tramo
+   en paralelo. Lo que sigue SUSTITUYE la declaración de `min-height` de aquel
+   bloque —misma especificidad, gana la última— y por eso la reescribe entera,
+   incluida su rama `@supports`. Si algún día se fusionan los dos tramos, es este
+   el que manda.
+
+   Lo que arregla: los tres fallos que solo se ven EN LA PRIMERA VISITA, con el
+   aviso de cookies en pantalla. Medir con la cookie ya aceptada es medir otra
+   web, y así se midió la primera vez.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* Lo que el aviso de cookies le quita a la ventana mientras nadie ha decidido.
+   Es 0 en cuanto hay decisión, que es el caso de toda visita posterior.
+
+   🔴 No es un adorno defensivo: `Consentimiento.tsx` es `fixed bottom-0` y
+   `z-50`, así que se monta sobre el hero justo donde viven el control de pausa
+   del carrusel (44×44, esquina inferior izquierda) y la etiqueta técnica. Sin
+   restarlo, en una primera visita a 390×844 el borde inferior del hero caía en
+   701,8 px con el aviso empezando en 606,4: el control no se podía ni tocar
+   —WCAG 2.2.2 incumplido igual que si no existiera el botón— y no se veía ni el
+   corte de la sección siguiente ni la etiqueta.
+
+   Los valores ESPEJAN la altura medida del aviso, como `--barra-movil` espeja el
+   alto de `BarraMovil`. Medidos en Chrome a 21 anchos, sin cookie:
+       320–499 px → 181,6      500–599 → 159,2     600–767 → 136,8
+       768–899  → 142,4        900–1023 → 116,8    ≥1024   →  96,0
+   Se reservan tres escalones y no seis, redondeando SIEMPRE hacia arriba: pasarse
+   solo agranda el asomo, quedarse corto vuelve a enterrar el control. Si se toca
+   el texto del aviso o su tipografía, se vuelve a medir. */
+:root {
+  --banda-consentimiento: 0px;
+}
+:root[data-consentimiento='pendiente'] {
+  --banda-consentimiento: 184px;
+}
+@media (min-width: 768px) {
+  :root[data-consentimiento='pendiente'] {
+    --banda-consentimiento: 148px;
+  }
+}
+@media (min-width: 1024px) {
+  :root[data-consentimiento='pendiente'] {
+    --banda-consentimiento: 104px;
+  }
+}
+
+/* El alto útil, en un solo sitio. La rama `svh` sigue en `@supports` por lo que
+   ya explica §3.15 —con `var()` dentro, repetir la propiedad no es un respaldo—,
+   pero ahora lo que se duplica es la VARIABLE y no la regla del hero: así
+   `.hero-pantalla` tiene una sola declaración de `min-height` viva en todo el
+   archivo y no puede volver a taparse a sí misma. */
+:root {
+  --hero-util: calc(
+    100vh - var(--cabecera-actual) - var(--barra-movil) - var(--banda-consentimiento)
+  );
+}
+@supports (height: 100svh) {
+  :root {
+    --hero-util: calc(
+      100svh - var(--cabecera-actual) - var(--barra-movil) - var(--banda-consentimiento)
+    );
+  }
+}
+.hero-pantalla {
+  min-height: calc(var(--hero-util) * var(--hero-asomo));
+}
+
+/* ───────────────────────────────────────────────────────────────────────────
+   El asomo es del CONTENIDO, no del `min-height`
+   ───────────────────────────────────────────────────────────────────────────
+   `--hero-asomo` fija un mínimo, así que nunca es él quien se come el corte: lo
+   que se lo come es un contenido más alto que el mínimo. Medido en la rama base:
+   a 1024×768 el contenido pedía 621,3 px contra 552,6 de mínimo, y a 320×568
+   pedía 637,5 contra 389. En esos tamaños no había corte que ver.
+
+   El único remedio posible es que el contenido ocupe menos cuando la ventana es
+   baja, porque el hero no puede achicarse por debajo de lo que mide su texto sin
+   recortarlo. Aquí se hace por VARIABLES y no repitiendo utilidades: cada
+   escalón solo reasigna tamaños, y todos salen de la escala cerrada del §2.4
+   —12 / 14 / 16 / 20 / 26 / 34 / 46 / 64 / 88—, sin valores intermedios.
+
+   ⚠️ `--hero-pb` no baja de 80 px en móvil, y no es holgura: la etiqueta técnica
+   mide 69,8 px de alto y va a sangre en el borde inferior, donde los botones son
+   de ancho completo. Recortar ese hueco no ahorra alto, encima un texto sobre
+   otro. En escritorio los botones son de ancho automático y quedan a la
+   izquierda, así que ahí el suelo lo pone el control de pausa: 44 px.
+
+   🔴 **`--hero-pt` = `--hero-pb` en casi todos los escalones, y no es simetría
+   decorativa: es el mecanismo real de centrado, añadido el 2026-09-22.**
+   `self-center` en `.hero-columna` (`app/page.tsx`) solo reparte el sobrante de
+   la CELDA, y en la mitad de los anchos del encargo ese sobrante ya es CERO
+   —el contenido llena la sección de borde a borde—, así que `self-center` no
+   movía nada ahí. Lo que decide dónde queda el CENTRO DEL TEXTO dentro de su
+   propia caja es `(pt − pb) / 2`: con `pb` fijo por la banda WCAG del carrusel,
+   igualarlos es lo único que lo pone a 0. Medido tras el cambio, en los 6 anchos
+   del encargo y los dos estados de cookie: el centro del bloque de texto queda
+   a 0 px del centro de la sección en los once escalones que se igualan —antes,
+   por fórmula, iba de −12 px (1024×768 y 1366×768) a −28 (360×640 y 390×844 en
+   primera visita)—, y se queda en 32 px por encima a 320×568 —Paso 3, más
+   abajo— porque ahí NO se iguala. → comentario de Paso 3. */
+.hero-pantalla {
+  --hero-titular: 46px;
+  --hero-titular-interlinea: 1.05;
+  --hero-titular-interletra: -0.02em;
+  --hero-titular-ancho: none;
+  --hero-parrafo: 16px;
+  --hero-pt: 80px;
+  --hero-pb: 80px;
+  --hero-gap: 24px;
+}
+@media (min-width: 768px) {
+  .hero-pantalla {
+    --hero-titular: 88px;
+    --hero-titular-interlinea: 1.02;
+    --hero-titular-interletra: -0.03em;
+    --hero-titular-ancho: 12ch;
+    --hero-parrafo: 20px;
+    --hero-pt: 80px;
+    --hero-gap: 32px;
+  }
+}
+
+/* Paso 1 — ventana baja. Los umbrales son el alto de ventana por debajo del cual
+   el contenido a tamaño normal ya no cabe dentro del mínimo.
+   `:root .hero-pantalla` sube la especificidad a 0,2,0 a propósito, para ganarle
+   al bloque de `min-width: 768px` de aquí arriba sin depender del orden.
+   `--hero-pt` sigue igualado a `--hero-pb` en los dos escalones: 80 en móvil
+   —`--hero-pb` no baja de ahí— y 56 en escritorio, donde si baja. */
+@media (max-width: 767px) and (max-height: 725px) {
+  :root .hero-pantalla {
+    --hero-titular: 34px;
+    --hero-titular-interletra: normal;
+    --hero-pt: 80px;
+    --hero-gap: 16px;
+  }
+}
+@media (min-width: 768px) and (max-height: 859px) {
+  :root .hero-pantalla {
+    --hero-parrafo: 16px;
+    --hero-pt: 56px;
+    --hero-pb: 56px;
+    --hero-gap: 24px;
+  }
+}
+
+/* Los mismos dos escalones, con el aviso de cookies en pantalla: la ventana útil
+   es 104–184 px más corta, así que el umbral sube otro tanto. 0,3,0 de
+   especificidad, que es lo que hace que estos ganen a los de arriba cuando los
+   dos coinciden. */
+@media (max-width: 767px) and (max-height: 909px) {
+  :root[data-consentimiento='pendiente'] .hero-pantalla {
+    --hero-titular: 34px;
+    --hero-titular-interletra: normal;
+    --hero-pt: 80px;
+    --hero-gap: 16px;
+  }
+}
+@media (min-width: 768px) and (max-height: 1007px) {
+  :root[data-consentimiento='pendiente'] .hero-pantalla {
+    --hero-parrafo: 16px;
+    --hero-pt: 56px;
+    --hero-pb: 56px;
+    --hero-gap: 24px;
+  }
+}
+
+/* Paso 2, y solo aquí: ventana baja, aviso en pantalla y ANCHO DE TABLETA, donde
+   los 56 px de `BarraMovil` siguen puestos. Es el único tamaño en el que el paso
+   1 no basta. Deliberadamente NO llega a 1180 px: a partir de ahí la barra
+   desaparece, sobra alto y el titular se queda en 88 px. Un titular que se pinta
+   a 64 en la primera visita y salta a 88 al aceptar es peor que un asomo de
+   menos. */
+@media (min-width: 768px) and (max-width: 1179px) and (max-height: 820px) {
+  :root[data-consentimiento='pendiente'] .hero-pantalla {
+    --hero-titular: 64px;
+    --hero-titular-interletra: -0.025em;
+    --hero-titular-ancho: 16ch;
+  }
+}
+
+/* Las tres piezas que leen las variables. Fuera de `.hero-pantalla` no existen. */
+.hero-columna {
+  padding-top: var(--hero-pt);
+  padding-bottom: var(--hero-pb);
+  gap: var(--hero-gap);
+}
+.hero-titular {
+  font-size: var(--hero-titular);
+  line-height: var(--hero-titular-interlinea);
+  /* ⚠️ El interletraje NO es decorado y por eso viaja con el tamaño: la escala de
+     `tailwind.config.ts` lo lleva dentro de cada peldaño —46 px a −0,02em, 64 a
+     −0,025em, 88 a −0,03em, y 26 y 34 sin tocar—, de modo que al pasar de
+     `text-88` a esta variable se perdía y el titular ganaba una línea entera:
+     medido a 768×1024, de 359 a 448,8 px de alto. Reproducirlo aquí es lo que
+     mantiene el tipo idéntico al de la rama base cuando no hay compactación. */
+  letter-spacing: var(--hero-titular-interletra);
+  max-width: var(--hero-titular-ancho);
+}
+.hero-parrafo {
+  font-size: var(--hero-parrafo);
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   Paso 3 — el teléfono pequeño, que sí tenía arreglo
+   ────────────────────────────────────────────────────────────────────────────
+   La pasada anterior dio 320×568 por imposible «por aritmética». Media verdad:
+   lo es EN LA PRIMERA VISITA, y no lo es después. Los dos casos se habían
+   sumado en un solo veredicto y el segundo se perdió dentro del primero.
+
+   Medido en el build, con el aviso ya decidido, ventana útil de 442 px:
+
+       titular   párrafo        columna    asomo
+       34 px     16 px          514,7 px   −72,7   ← no hay corte que ver
+       26 px     16 px          453,9 px   −11,9
+       26 px     14 px          437,8 px    +4,2
+       26 px     14 px + pt 16 + gap 12   421,8 px   +20,2   ← esto
+
+   Y con el aviso en pantalla, que se lleva 181,6 px de una ventana de 568,
+   sigue sin haber corte ni bajando el titular a 20 px: −121,5. Ahí no cabe, y
+   eso es lo único que la pasada anterior tenía bien.
+
+   ⚠️ El escalón se aplica en los DOS estados, no solo con el aviso decidido.
+   Es la misma razón por la que el titular de 64 px no pasa de 1179 px: un
+   titular que se pinta a 26 y salta a 34 en cuanto tocas «Aceptar» es peor
+   que un asomo de menos. En primera visita no arregla el corte —no se puede—,
+   pero deja el hero 92,9 px más corto, que es menos deuda que devolver.
+
+   El umbral son 600 px de alto y no los 660 que también cogerían un 360×640:
+   ahí el titular ya cabe en tres líneas y el asomo existe (35 px medidos), así
+   que compactar sería cobrar un titular más pequeño por un problema que ese
+   tamaño no tiene.
+
+   0,4,0 de especificidad —un `:root` más que el escalón del aviso, que tiene
+   0,3,0— para que gane por peso y no por orden: este bloque va al final del
+   archivo, y el final del archivo es justo donde otra rama puede añadir.
+
+   🔴 **Único escalón donde `--hero-pt` NO se iguala a `--hero-pb` (2026-09-22).**
+   En todos los demás, igualarlos es lo que centra de verdad el texto dentro de
+   su caja —ver el comentario de arriba de `.hero-pantalla`—. Aquí no: con
+   `pb` fijo en 80, igualar habría sido `pt: 80px`, +64 sobre el actual. Medido
+   en el build, a 320×568 la sección hoy acaba en 491,8 px sobre una ventana de
+   568 —**76,2 px de asomo real de la sección siguiente**, con o sin aviso de
+   cookies, porque este escalón se aplica en los dos estados—. Sumar 64 lo deja
+   en 12,2: no llega a cortar ningún botón, pero el peek deja de ser un peek.
+   A este tamaño el texto se queda descentrado —32 px por encima del centro de
+   la sección, contra 0–4 px en el resto de anchos— y es a propósito: es el
+   único ancho del encargo (320×568) donde centrar del todo cuesta casi toda la
+   holgura que le queda a la sección. */
+@media (max-width: 767px) and (max-height: 600px) {
+  :root:root:root .hero-pantalla {
+    --hero-titular: 26px;
+    --hero-titular-interletra: normal;
+    --hero-parrafo: 14px;
+    --hero-pt: 16px;
+    --hero-gap: 12px;
+  }
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   El foco del control de pausa, por debajo de lo que tape la ventana
+   ────────────────────────────────────────────────────────────────────────────
+   El que recibe el foco es `.carrusel__interruptor` y por eso está anclado a la
+   misma esquina que su caja: el «llévalo a la vista» del navegador apunta al
+   input. Pero ese «a la vista» solo conoce el viewport, y abajo hay dos capas
+   `fixed`/`sticky` que no están en el flujo —la barra de contacto y, en la
+   primera visita, el aviso de cookies—, así que el navegador daba por hecho un
+   control que quedaba debajo de ellas.
+
+   Medido, primera visita, tabulando hasta el control: a 360×640 el foco llegaba
+   y el espacio lo activaba, pero la caja quedaba TAPADA por el aviso. Eso pasa
+   la WCAG 2.2.2 —el pase se puede parar— y falla la 2.4.11, «Focus Not
+   Obscured», que es AA en WCAG 2.2. A 320×568 salía bien por casualidad, porque
+   allí la página tiene más scroll que dar.
+
+   `scroll-margin-bottom` es exactamente el hueco que el navegador tiene que
+   respetar por debajo, y se calcula con las mismas dos variables que ya miden
+   esas dos capas, así que no puede desajustarse si una de ellas cambia. Los
+   8 px son el aire del anillo de foco, que se pinta hacia dentro. */
+.carrusel__interruptor {
+  scroll-margin-bottom: calc(var(--banda-consentimiento) + var(--barra-movil) + 8px);
 }

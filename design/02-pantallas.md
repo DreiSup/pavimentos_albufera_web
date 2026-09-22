@@ -20,7 +20,7 @@ literal del §7.1 del documento maestro.
 
 | # | Sección | Escritorio | Móvil |
 |---|---|---|---|
-| 01 | Hero | `1fr 1fr`. Titular 88 px a la izquierda, **carrusel** a sangre a la derecha con etiqueta técnica abajo. Alto mínimo del bloque: 660 px. Sin velo: el titular no pisa la foto | **Carrusel** `3/4` con el titular a 46 px **dentro, sobre el velo** (`01 §2.8`), y la etiqueta técnica abajo a la derecha. Debajo, entradilla y 2 botones a ancho completo |
+| 01 | Hero | **A pantalla completa.** El **carrusel** ocupa la sección entera y encima van, en una columna, titular 88 px, entradilla y 2 botones, todo sobre el velo (`01 §2.8`). Etiqueta técnica abajo a la derecha, control de pausa abajo a la izquierda. Alto: `min-height` del 88 % del alto útil (`01 §3.15`) | Lo mismo, con el titular a 46 px y los 2 botones a ancho completo. El alto útil descuenta también la barra fija de contacto |
 | 02 | Barra de confianza | Anclada, una línea, 4 datos | No anclada, 4 filas numeradas |
 | 03 | Por dónde empezar | `380px 1fr` + rejilla de 3×2 con imagen `4/3` | Rejilla de **2 columnas** con imagen `4/3` a ancho de celda y el texto debajo |
 | 04 | Servicios | Fondo `--fondo-alt`. Rejilla de 3×2, imagen `16/10`, título 26 px | Columna, imagen `16/10`, título 20 px |
@@ -29,8 +29,19 @@ literal del §7.1 del documento maestro.
 | 07 | Proyectos | Rejilla de 3×3, **las 9 obras documentadas** | Carrusel horizontal de tarjetas de 220 px, las 9 |
 | 08 | Garantía | Fondo `--tinta`, `1fr 1fr`: titular a la izquierda, 2 párrafos a la derecha separados por `border-top` | Apilado, mismo fondo |
 | 09 | Zonas | `380px 1fr` + 3 anillos en columnas. El tercero cierra con un enlace-etiqueta `CONSÚLTANOS →` a `/presupuesto/` | 3 anillos en filas con `border-top` |
-| 10 | FAQ | `380px 1fr` + acordeón de 6 | Acordeón de 6, filas de 56 px |
+| 10 | FAQ | `380px 1fr` + acordeón de 5 | Acordeón de 5, filas de 56 px |
 | 11 | Cierre | `1fr 1fr`: titular 64 px + 2 botones a la izquierda, formulario corto a la derecha | Titular 34 px, 2 botones, formulario corto |
+
+🔴 **El hero cambió el 2026-09-18 y esta fila ya no describe dos maquetas, sino una.** Decía
+`1fr 1fr` en escritorio —titular 88 px a la izquierda, carrusel a la derecha, sin velo porque el
+titular no pisaba la foto— y un `3/4` con el titular dentro en móvil. Decisión del dueño: la foto
+ocupa la sección entera y el texto va encima, a los dos anchos, con lo que la diferencia entre
+ellos pasa a ser de tamaño y no de estructura. El velo, por tanto, deja de ser solo de móvil.
+El porqué, las cifras de contraste y las de peso están en `01 §2.8` y `01 §3.15`.
+
+**La etiqueta técnica del hero dice hoy municipio y acabado, y nada más** —«MONCADA · VALENCIA /
+HORMIGÓN IMPRESO»—. Decía también el modelo, el color y el año. Misma decisión y misma fecha:
+el muestrario ya enseña modelo y color con su código, y la ficha de obra ya la fecha.
 
 **El fondo alterno lo da la posición, no la sección.** Al retirar Precios e intercambiar
 Servicios y Muestrario quedaban tres bloques base seguidos, así que el alterno se reparte otra
@@ -77,22 +88,96 @@ reutilizan literal el §7.1 filtrado a este servicio. Cero texto nuevo.
 | — | Submenú | Anclado a 80 px, **6 anclas como máximo**. Solo escritorio |
 | 01 | Aplicaciones | `380px 1fr`. Filas `300px 1fr`: nombre de aplicación en Archivo 26 px y matiz a la derecha |
 | 02 | Muestrario del servicio | Rejilla de 4 con los acabados de esta técnica, filtrados del inventario |
-| 03 | Ficha técnica | `380px 1fr` + tabla de 8 filas (`01 §3.8`, tercera variante) |
+| 03 | Ficha técnica | `380px 1fr` + tabla (`01 §3.8`, tercera variante). **Las 8 filas eran el máximo, no la cifra: hoy van de 7 a 2, ver abajo** |
 | 04 | Cuándo NO elegir impreso | **Fondo `--tinta` a página completa.** `1fr 1fr`. 2 botones de contorno claro a los otros servicios |
 | 05 | Cómo trabajamos | 4 columnas, idéntico a la home |
 | 06 | Obra ejecutada | 3 tarjetas de proyecto de esta técnica |
-| 07 | FAQ | Acordeón de 5, específicas del servicio |
+| 07 | FAQ | Acordeón de 4 en `/hormigon-impreso/`, de 5 en `/microcemento/` y de 3 en el resto. Específicas del servicio |
 | 08 | Cierre | `1fr 1fr` con formulario de 3 campos |
+
+⛔ **La FAQ de esta plantilla pierde una pregunta el 2026-09-18, y la cifra de la fila 07
+baja.** El dueño contesta expresamente que se retire «¿Qué pasa si el presupuesto que tengo es
+de 18 €/m²?»: es el último precio que quedaba en el sitio y viajaba además dentro del JSON-LD de
+`FAQPage`. El catálogo de `content/faq.ts` se queda en **5 preguntas**, así que las cifras de
+esta tabla y la de la fila 10 de §A1 **no se pueden volver a cumplir sin copy nuevo**, que según
+`design/05` §B7 lo escribe el cliente. Se bajan a lo que hay en vez de rellenar el acordeón con
+una pregunta inventada. Cuentas exactas: home 6 → 5, `/hormigon-impreso/` 5 → 4, y las cuatro
+que comparten `FAQ_SOLERA` 4 → 3 —**esas ya iban con 4 contra un 5 especificado antes de este
+cambio**—. `/zonas/[municipio]/` sigue con 3, que es lo suyo.
+
+✅ **Enmienda del mismo 2026-09-18, más tarde: `/microcemento/` ya tiene FAQ, y son 5.** El
+párrafo de arriba decía que seguía sin ella. El dueño autoriza expresamente copy nuevo para ese
+material —«escribe información verdadera sobre microcemento, si hace falta busca en otras
+webs»—, y con eso se escriben cinco preguntas suyas: soporte, espesor, juntas, humedad y
+limpieza. **La autorización es del material, no del negocio**: se puede afirmar a qué espesor va
+el microcemento, con fuente de fabricante citada en el commit, y no cuántas manos da esta
+empresa, en cuántos días ni con qué garantía. Cuentas de hoy: portada 5, `/hormigon-impreso/` 4,
+`/microcemento/` 5, las cuatro de `FAQ_SOLERA` 3 y `/zonas/[municipio]/` 3.
+
+🔴 **Y el hueco de la portada no se cierra con esto, a propósito.** Las cinco nuevas son de
+microcemento y no pueden entrar ni en `faqHome` ni en `FAQ_SOLERA` sin afirmar de otro material
+algo que no es cierto. La portada se queda en 5 contra las 6 de §A1 fila 10. Escribir una sexta
+pregunta genérica para cuadrar la tabla sería copy inventado, que es lo único que el dueño **no**
+ha autorizado.
 
 ⛔ **La sección de Precio, que era la 05, se retira el 2026-09-18.** Misma decisión del dueño
 que retiró `/precios/` el día antes —no quiere precios en la web—, extendida ahora a la
 calculadora, que era todo lo que esa sección contenía. Detalle en §A5. Las secciones ya eran
-condicionales y se renumeran solas, así que **no quedó hueco que recomponer**: medido a 390,
-768, 1024 y 1366 px en `/hormigon-impreso/`, la costura entre `04 · Cuándo NO` (fondo `--tinta`)
-y `05 · Cómo trabajamos` (fondo `--fondo-alt`) es de 0 px y ninguna de las cuatro tiene scroll
-horizontal. La numeración de esta tabla **no es fija**: un servicio sin `aplicaciones` o sin
-`cuandoNo` empieza y sigue con otros números, y `/hormigon-fratasado/` y
-`/hormigon-desactivado/` llevan cuatro secciones desde que existen.
+condicionales y se renumeran solas: el numerado, el submenú y el cuerpo siguen contando lo
+mismo, medido a 390, 768, 1024 y 1366 px en las seis páginas y en las cuatro landings, sin un
+número saltado, sin un ancla huérfana y sin scroll horizontal. La numeración de esta tabla **no
+es fija**: un servicio sin `aplicaciones` o sin `cuandoNo` empieza y sigue con otros números.
+
+✅ **Enmienda del mismo 2026-09-18: ya no hay ninguna página de servicio corta.** Esa última
+frase decía que `/hormigon-fratasado/` y `/hormigon-desactivado/` llevaban cuatro secciones desde
+que existen. Con la misma autorización de copy que le dio FAQ a `/microcemento/`, las dos reciben
+`aplicaciones` y `Cuándo NO`, y `/hormigon-lavado/` —que ya tenía `aplicaciones`— recibe su
+`Cuándo NO`. **Las seis páginas de servicio montan hoy las seis secciones**, que es también el
+tope de anclas del submenú, con el numerado corrido de 01 a 06 y sin ancla huérfana, medido a
+390, 768 y 1366 px.
+
+**Filas de la ficha técnica, servicio a servicio, después de retirar las que no tenían dato**
+(fila 03 de la tabla de arriba): impreso 7 · pulido 5 · lavado 5 · fratasado 4 · desactivado 4 ·
+**microcemento 2**. La de microcemento es el suelo del que no se puede bajar: con una sola fila
+la sección no es una ficha, y con cero `PaginaServicio` pintaría el título sobre una tabla vacía.
+
+⚠️ **Lo que sí quedó: el fondo alterno. Enmienda del 2026-09-18, medida.** Este párrafo decía
+«no quedó hueco que recomponer», y lo decía midiendo solo `/hormigon-impreso/`, donde la ficha
+técnica y el `Cuándo NO` separan las dos bandas alternas de la plantilla. `Precio` iba en fondo
+base **justo entre ellas**, y hay una página donde no queda nada en medio: `/lp/hormigon-lavado/`
+es la única que esconde la ficha técnica por `ocultarSecciones` y además no tiene `Cuándo NO`.
+Muestrario y `Cómo trabajamos` quedaban pegadas: **1029 px seguidos de `#DADCD6` sin costura a
+390 px** (410 + 619), y 482 + 573 a 768.
+
+⚠️ **Ese caso concreto deja de existir ese mismo día: `/hormigon-lavado/` ya tiene `Cuándo NO`,
+así que su landing también.** La banda `--tinta` vuelve a separar las dos alternas y no queda
+ninguna página con dos alternas seguidas. **La regla de abajo no se toca por eso**: es la que
+reparte el alterno por posición, y sigue siendo la que evita que la próxima sección que se caiga
+o se oculte repita el problema. Lo que caduca es el ejemplo, no el remedio.
+
+El remedio es el de §A1, del día anterior y por la misma causa: **el fondo alterno lo da la
+posición, no la sección**, y cuando se cae una banda el alterno se reparte otra vez. La regla es
+local —ninguna banda comparte fondo con la que tiene encima— y se recorre de abajo arriba:
+**cede el alterno la banda de arriba**, porque hacia abajo el reparto arrastraría a `Obra
+ejecutada`, cuyas tarjetas van en `--fondo-alt` (`01` §3.12), y al cierre. `Cuándo NO` va en
+`--tinta` y separa por sí misma, así que nunca colisiona: `alterna · tinta · alterna` es
+correcto y no se mueve.
+
+**Siete de las diez páginas salen idénticas.** Cambian tres:
+
+| Página | Qué cambia |
+|---|---|
+| `/lp/hormigon-lavado/` | Aplicaciones toma la alterna y Muestrario la base |
+| `/microcemento/` y `/lp/microcemento/` | `Cómo trabajamos` toma la base y `Obra ejecutada` la alterna |
+
+⚠️ **El par de microcemento no lo abrió la calculadora.** Son las dos únicas sin FAQ
+—`/microcemento/` no lleva porque ninguna pregunta del catálogo le aplica sin reescribirla—, así
+que `Obra ejecutada` y el cierre ya eran dos bandas base pegadas antes del 2026-09-18. Sale
+gratis de la misma regla y se arregla con ella.
+
+Dos hijos invierten ahora su fondo con su banda, que es lo que `01` §3.12 ya hacía con la
+tarjeta de proyecto: el filete que separa las filas de Aplicaciones por debajo de `xl` y las
+propias tarjetas de obra. Sin eso, en `/lp/hormigon-lavado/` desaparecían los tres filetes.
 
 La sección 04 es la que más vende de toda la web y **ninguna competencia la tiene**: decirle al
 cliente cuándo no contratar este servicio. Va en negro a página completa por eso.
@@ -219,25 +304,39 @@ servicio manda aquí (`PaginaServicio`, «Ver todos los acabados de…»). `?col
 
 Maquetada con la obra de Moncada. **Plantilla de las 11 obras.**
 
-- **Galería:** imagen principal `21/9` a ancho de contenido, y debajo 4 miniaturas `4/3` en
-  rejilla de 4 con `gap: 8px`. La seleccionada lleva `outline: 2px solid #1B1E1C` con
+- **Galería:** imagen principal `21/9` a ancho de contenido, y debajo 3 miniaturas `4/3` en
+  rejilla de 3 con `gap: 8px`. La seleccionada lleva `outline: 2px solid #1B1E1C` con
   `outline-offset: -2px` (contorno en tinta, **no ocre**: no sumamos un tercer ocre).
-  La última miniatura es el `ANTES [pendiente]`.
+  **Eran 4, y la cuarta era el `ANTES [pendiente]`: retirada el 2026-09-18.** Ninguna de las
+  125 fotos de la mediateca es un ANTES y no hay candidata, así que no era una foto pendiente
+  de llegar sino una promesa de la maqueta. Los huecos de las miniaturas 2 y 3 sí siguen: esas
+  fotos existen, faltan a 1600 px, y su bloque de posición tiene destinatario.
 - **Cuerpo:** `1fr 420px`.
   - Izquierda: H1 64 px y los dos bloques de narrativa, `EL ENCARGO` y `LA EJECUCIÓN`.
-  - Derecha: **ficha de obra anclada** (`position: sticky; top: 100px`) con 8 filas —
+  - Derecha: **ficha de obra anclada** (`position: sticky; top: 100px`) con hasta 8 filas —
     municipio, provincia, servicio, modelo, color, superficie, año, plazo — y debajo la tarjeta
     del acabado empleado, que enlaza a `/acabados/[modelo]/`.
+  - **Hasta 8, y no 8 fijas, desde el 2026-09-18.** El dueño no tiene los datos de obra y no
+    quiere que se vean, ni el valor ni el corchete: `FichaObra` omite la fila sin valor y, si se
+    le caen todas, no pinta ni el título ni la caja. Igual los dos bloques de narrativa: sin
+    copy no se pintan, H2 incluido. Hoy las nueve obras van sin narrativa y con entre 3 y 6
+    filas. Es presentación, no borrado: los campos siguen en `content/proyectos.json` y el día
+    que llegue el dato la fila vuelve sola.
 - **Proyectos similares:** 3 tarjetas de la misma técnica, fondo `--fondo-alt`.
 - **Cierre:** titular + 2 botones, con el CTA ocre.
 
 **En móvil la ficha sube por delante de la narrativa**: quien entra a una obra busca el dato
-—modelo, color, m²— antes que el relato. El orden es H1 → ficha → encargo → ejecución.
+—modelo, color, m²— antes que el relato. El orden es H1 → ficha → encargo → ejecución. La
+rejilla coloca cada celda por `col-start`/`row-start` y no con dos columnas y `order`: el H1
+vivía dentro de la columna izquierda y en móvil caía **debajo** de la ficha, al revés de lo que
+pide este párrafo. Con los corchetes de maqueta delante no se notaba; sin ellos, sí.
 
-Los dos bloques de narrativa no existen como copy. Se maquetan con su estructura y longitud
-reales dentro de un `border: 1px dashed #5C625E`, indicando qué debe contar cada uno:
-`EL ENCARGO` = qué había antes, qué problema tenía y con qué condición llegó el cliente;
-`LA EJECUCIÓN` = qué se hizo y qué dificultad concreta tuvo esta obra.
+Los dos bloques de narrativa no existen como copy. **Hasta el 2026-09-18 se maquetaban con su
+estructura y longitud reales dentro de un `border: 1px dashed #5C625E`, indicando qué debe
+contar cada uno** —`EL ENCARGO` = qué había antes, qué problema tenía y con qué condición llegó
+el cliente; `LA EJECUCIÓN` = qué se hizo y qué dificultad concreta tuvo esta obra—. Ese recuadro
+ya no se pinta: es el mismo dato que el dueño ha dicho que no quiere ver. El texto de arriba
+sigue siendo el encargo de copy, y en cuanto exista vuelve con su H2.
 
 ## A5 · Precios — `/precios/` · ⛔ RETIRADA EL 2026-09-17
 
@@ -323,7 +422,7 @@ La pantalla que cierra el embudo. Copy del §7.4.
 | Municipio | texto | sí |
 | Cuéntanos algo más | textarea | no |
 | Sube una foto del espacio | archivo | no |
-| Acepto la política de privacidad | casilla | sí |
+| He leído la política de privacidad | casilla | sí |
 
 Nombre y teléfono comparten fila; el resto ocupa el ancho.
 Botón de envío ocre a ancho completo: `Enviar y que me llamen`.
@@ -352,7 +451,7 @@ pueda pintar está aquí, y lo que no está aquí no se pinta.**
 - Error de correo: *Escribe un correo electrónico válido para que podamos escribirte, o deja el
   campo vacío.*
 - Error del desplegable: *Selecciona qué quieres pavimentar.*
-- Error de la casilla de privacidad: *Tienes que aceptar la política de privacidad.*
+- Error de la casilla de privacidad: *Tienes que confirmar que has leído la política de privacidad.*
 - Error de tipo de la foto: *La foto tiene que ser una imagen.*
 - Error de tamaño de la foto, en servidor: *La foto no puede pasar de 4 MB.*
 - Error de tamaño de la foto, en cliente: *Esta foto pasa de 4 MB. Elige otra o redúcela antes
@@ -360,6 +459,8 @@ pueda pintar está aquí, y lo que no está aquí no se pinta.**
 - Límite de envíos: *Demasiados envíos seguidos. Llámanos o escríbenos por WhatsApp.*
 - Error de envío: *No hemos podido enviarlo. Llámanos al `[teléfono]` o escríbenos por WhatsApp
   y lo resolvemos ahora.*
+- Aviso del adjunto perdido, tras un rechazo del servidor: *Vuelve a adjuntar la foto: por
+  seguridad, el navegador no conserva el archivo.*
 
 ⚠️ **Enmienda del 2026-09-18: los doce mensajes nuevos de esta lista son transcripción, no copy
 nuevo.** Ya se pintaban desde `app/presupuesto/actions.ts` y desde el propio componente, y
@@ -368,10 +469,39 @@ que el formulario dice. El **error de correo** es el que trajo la revisión, y d
 real desde que el campo es opcional en las dos variantes —se rechaza el formato inválido, nunca
 el campo vacío—.
 
+⚠️ **Enmienda del 2026-09-18: la casilla dice «He leído», no «Acepto», y su error va con ella.**
+Decían «Acepto la política de privacidad» y *Tienes que aceptar la política de privacidad.*, y
+las dos frases afirmaban lo que esa casilla no hace. **Marcarla no es lo que legitima el
+tratamiento:** atender la solicitud va por el art. 6.1.b del RGPD —medidas precontractuales a
+petición del interesado—, y la política de privacidad rehecha ya lo explica así. La casilla es
+cumplimiento del deber de información del art. 13. La diferencia no es de estilo: documentada
+como consentimiento, quien lo retira deja a la empresa sin amparo para contestar el presupuesto
+que él mismo pidió. **Solo cambia el texto**: la casilla sigue siendo obligatoria en cliente
+(`required`) y en servidor (el esquema de `app/presupuesto/actions.ts`), porque sin ella no
+consta que la información se haya ofrecido.
+
 ⚠️ **`[teléfono]` del error de envío es microcopy, no un dato pendiente.** Sale literal del
-Server Action y lo sustituye `FormularioPresupuesto` por el número de configuración al pintarlo;
-no lleva tratamiento de corchete. Se había perdido del mensaje en código y el `.replace()` del
-componente era código muerto sobre un camino vivo.
+Server Action y lo sustituye `FormularioPresupuesto` por el número de configuración al pintarlo.
+Se había perdido del mensaje en código y el `.replace()` del componente era código muerto sobre
+un camino vivo.
+
+✅ **Corrección del mismo día: el marcador sí lleva tratamiento de corchete cuando no hay número
+que poner, y esa era la mitad que faltaba.** El sustituto era
+`nap.telefono ?? nap.telefonoMostrado`, y `telefonoMostrado` **nunca** es indefinido —vale
+`96X XXX XXX` mientras `NEXT_PUBLIC_TELEFONO` esté sin rellenar—, así que la sustitución siempre
+encontraba algo y en ese entorno el visitante leía «Llámanos al 96X XXX XXX» **en un mensaje de
+error de verdad**: un número inventado presentado como real, que es peor que el hueco. Ahora es
+`nap.telefono ?? <DatoPendiente>{nap.telefonoMostrado}</DatoPendiente>`, exactamente como
+`app/page.tsx:603` y `app/presupuesto/page.tsx:48`. **El microcopy no cambia ni una letra**: con
+teléfono se lee «Llámanos al 961 000 000» y sin él «Llámanos al `[96X XXX XXX]`» con el punteado
+de `01 §3.9`. Los mensajes sin marcador —el del límite de envíos— pasan tal cual. Medido en
+`/presupuesto/` a 390 px con la variable puesta y vacía, forzando el fallo de envío con una clave
+de Resend inválida.
+
+⚠️ **Y el mismo defecto, una palabra más allá, sin arreglar:** la frase sigue diciendo «o
+escríbenos por WhatsApp» cuando `NEXT_PUBLIC_WHATSAPP` vacío no pinta un solo `wa.me` en toda la
+web. Arreglarlo es reescribir la frase, y eso es copy nuevo: **es del dueño**, que en producción
+tiene las dos variables.
 
 **Los cuatro estados:**
 
@@ -382,14 +512,33 @@ componente era código muerto sobre un camino vivo.
    ⚠️ **Enmienda del 2026-09-18:** faltaba el `aria-describedby`, y sin él mover el foco por
    programa anuncia «Teléfono, inválido» sin decir por qué. Lo pone `01 §3.7` para todos los
    campos a la vez, no esta pantalla.
-   🔴 **«El resto de campos conserva lo escrito» NO se cumple hoy, medido el 2026-09-18.** Tras
-   rechazar `juan@empresa` en `/presupuesto/` a 390 px, vuelven vacíos **los seis**: `nombre`,
-   `telefono`, `municipio`, `superficie`, `email` y la casilla de privacidad. No es el Server
-   Action: React reinicia los campos no controlados en cuanto la acción resuelve. Duele
-   justo aquí, porque el correo es el único campo donde `type="email"` acepta lo que zod
-   rechaza, así que es el rechazo más probable y se lleva por delante seis campos del
-   formulario largo. **Esta pasada no lo arregla:** exige que la acción devuelva lo enviado
-   como `defaultValue`, y el adjunto no sobrevive a ese viaje de ninguna manera.
+   ✅ **«El resto de campos conserva lo escrito» se cumple desde el 2026-09-18.** Antes no: tras
+   rechazar `juan@empresa` en `/presupuesto/` a 390 px volvían vacíos los siete campos y la
+   casilla. No era el Server Action —React resetea los campos no controlados en cuanto la acción
+   resuelve—, y dolía justo aquí, porque el correo es el único campo donde `type="email"` acepta
+   lo que zod rechaza: el rechazo más probable se llevaba por delante el formulario entero, y en
+   un móvil quien acaba de teclear nombre, teléfono, superficie y municipio no lo vuelve a
+   escribir. Ahora la acción devuelve lo enviado en `EstadoEnvio.valores` —**los valores crudos
+   del `FormData`**, no los analizados, o el `.transform()` del teléfono le devolvería
+   `961000000` a quien escribió `+34 961 000 000`— y cada control lo declara como `defaultValue`.
+   Siguen sin ser campos controlados: no hay `value` ni `onChange`, así que teclear no repinta
+   nada. **Se devuelve en los cinco caminos de error**, incluido el fallo de envío. Medido a 390,
+   768 y 1366 px, en la variante larga y en la corta de la portada.
+
+   ⚠️ **El desplegable necesita además un `key`, y es el único.** El reseteo de React 19.0.0 es
+   un `form.reset()` nativo, que devuelve cada control a su valor por defecto del DOM. En un
+   `<input>` y en un `<textarea>` React reescribe ese valor por defecto en cada repintado, así
+   que el reseteo ya encuentra el nuevo; en un `<select>`, `defaultValue` solo marca
+   `defaultSelected` **en el montaje**, y sin remontar el desplegable volvía a «Entrada de
+   garaje» con los otros seis campos intactos. `key={escrito?.espacio}` lo remonta, y el
+   remontaje ocurre antes del reseteo dentro del mismo *commit*.
+
+   🔴 **El adjunto no vuelve, y no hay forma de que vuelva:** ninguna página puede colocar un
+   archivo en el `<input type="file">` de quien la visita. Así que no se finge —el adjunto se
+   perdería en silencio y el correo diría «Foto adjunta: no»—: cuando el envío rechazado traía
+   foto, el campo pinta el aviso de la lista de microcopy por el hueco de `error` de `Campo`,
+   que es el único que `01 §3.7` anuncia y asocia con `aria-describedby`. Los dos errores de foto
+   rechazada mandan sobre él: describen un archivo que además no valía.
 3. **Enviando.** Botón en estado deshabilitado (`01 §3.4`) con el texto *Enviando…*; los campos
    en `readonly`. Sin *spinner*: la web no tiene animaciones de carga.
 4. **Confirmación.** El formulario se sustituye por un bloque en `--tinta` con el antetítulo
@@ -635,13 +784,31 @@ Enmendado el 2026-08-31; deroga las tres cláusulas que animaban la altura:
   150 px: el peor caso es escritorio con submenú, 84 + 56 = 140.
 
 **Menú desplegado en móvil.** Panel a pantalla completa, no deslizante lateral:
-- Fondo `--tinta` a pantalla completa, `padding: 18px`.
-- Cabecera del panel con el logo —`/marca/logo-texto-claro.png`, 20 px de alto— y una `×` de
-  44 px a la derecha.
+- Fondo `--tinta` a pantalla completa, `padding: 18px` a los lados y abajo. La fila de arriba
+  mide **69 px** —los 70 de la barra menos su `border-bottom`—, no 18 de relleno.
+- Cabecera del panel con **el mismo logotipo que la barra, en variante clara**
+  —`/marca/logo-marca-fila-claro.png`, 38 px de alto, 239,94 de ancho— y una `×` de 44 px a la
+  derecha. ~~`/marca/logo-texto-claro.png`, 20 px de alto~~: **enmendado el 2026-09-18.** En móvil
+  este panel no es una pantalla aparte, es el único estado expandido de la barra de navegación, y
+  el wordmark solo la convertía en otra marca: al abrirla desaparecía la senda, el alto caía de 38
+  a 20 px y el bloque bajaba 14,5. Ahora el logotipo **no se mueve ni un píxel** al abrir el menú
+  —medido con el menú abierto: `x=18, y=15,5, 239,94 × 38` en los dos estados—, y **es un enlace a
+  `/`**, que antes no lo era: el de la cabecera es el único enlace a la portada de todo el sitio y
+  al desplegar el menú se perdía.
+- **El panel se pinta en `document.body`, no dentro del `<header>`.** La cabecera es
+  `sticky z-30`, o sea un contexto de apilamiento, y desde dentro de él ningún `z-index` gana al
+  `z-50` del aviso de cookies. Medido en primera visita a 390 px: el aviso ocupaba 606,4 → 788 y
+  el `Llamar` del panel 729 → 777, con `elementFromPoint` devolviendo el botón `Aceptar`. El panel
+  va en el `<body>` con `z-60`, por encima del aviso. Un diálogo modal está arriba del todo o no
+  es modal.
 - Enlaces principales en Archivo 700 / 115 % a 34 px, uno por línea, `min-height: 56px`,
   separados por `border-top: 1px solid #41535C`.
 - Debajo, en mono 11 color `#DADCD6`: el NAP completo y los enlaces legales.
 - Al pie del panel, los dos botones de contacto a ancho completo (`Llamar` ocre + `WhatsApp`
   contorno claro).
 - Atrapa el foco, se cierra con `Esc`, `body` con `overflow: hidden`, y devuelve el foco al
-  botón de hamburguesa. Sin animación de deslizamiento: aparece y desaparece.
+  botón de hamburguesa — ⚠️ **eso último lo decía este párrafo desde el principio y no lo hacía
+  nadie**: medido con teclado, al pulsar `Esc` el foco caía al `<body>`. Implementado el
+  2026-09-18. Sin animación de deslizamiento: aparece y desaparece. **El foco entra por
+  la `×`**, no por el primer elemento: desde que el logotipo es un enlace, el primero sería «irse
+  a la portada», y un menú no se abre con el foco puesto en salir de la página.
