@@ -65,7 +65,10 @@ Cuatro decisiones, y su porqué:
   reescalar conviene el que conserva el degradado de cada elipse. `/img/` está en `.gitignore`,
   así que la caja de recorte queda apuntada aquí: es lo único que hace falta para rehacerlo.
 - **PNG, no SVG.** `public/README.md` ya cierra esta puerta —la senda son degradados por elipse y
-  vectorizarla la redibuja—, y sigue cerrada en miniatura. **No existe ningún SVG en el repo.**
+  vectorizarla la redibuja—, y sigue cerrada en miniatura. **No existe ningún archivo `.svg` en el
+  repo.** Enmienda de precisión del 2026-09-18: la frase decía «ningún SVG», y desde ese día hay
+  SVG en línea dentro de un `.tsx` —los dos iconos de §3.16—. No son archivos, no son la marca de
+  la casa y no tocan esta decisión, que va del logotipo.
 - **Teja opaca en `--fondo`.** Es lo único que resuelve el modo oscuro sin duplicar archivo: la
   pestaña clara y la oscura ven el mismo cuadrado. Probada la alternativa —teja `#000D2A` con la
   senda de la variante clara— y a 16 px la senda pierde el azul y se lee gris: el color, que es lo
@@ -75,6 +78,44 @@ Cuatro decisiones, y su porqué:
   dos resuelve las elipses. **A 16 px se ve una loma azul con la base oscura**, que es la
   perspectiva de la senda, no sus losas. Se leen a partir de 24-32 px. Es el techo del motivo, no
   del archivo.
+
+**El verde de WhatsApp, 2026-09-18. Segunda excepción, y la última.** El dueño pidió que los
+botones de WhatsApp salgan «del verde de WhatsApp», y contestó expresamente que en **todos** los
+del sitio, no solo en el flotante de móvil. Es un color que este sistema no tiene, así que se
+trata igual que el logotipo: se nombra, se acota y se dice dónde no va.
+
+| Token | Hex | Contraste | Uso |
+|---|---|---|---|
+| `verde-whatsapp` | `#25D366` | **8,48 : 1** con `--tinta` | Fondo del botón cuyo `href` abre WhatsApp |
+| `verde-whatsapp-hover` | `#20B859` | **6,45 : 1** con `--tinta` | Su `:hover`. Cada canal del anterior al 87 % |
+
+- **El rótulo va en `--tinta`, no en blanco, y no es una licencia estética.** `#25D366` con texto
+  blanco mide **1,98 : 1**: no llega ni a la mitad del 4,5 : 1 que pide AA, y el botón lleva texto
+  normal de 16 px, así que no le vale el 3 : 1 de texto grande. Se midieron las dos salidas
+  posibles sin inventar un verde intermedio. La otra era el verde oscuro de marca `#075E54` con
+  blanco (7,67 : 1), que cumple pero **ya no se lee como «el verde de WhatsApp»**, que es
+  literalmente lo que se pidió. Gana el verde vivo con la tinta del sistema, que además es el
+  mismo par que el botón primario: fondo saturado, rótulo en tinta.
+- **Dónde va:** solo como `background` del botón de WhatsApp, y solo cuando el `href` de verdad
+  abre WhatsApp. Lo decide `esEnlaceWhatsApp()` en `lib/config.ts`, que es el mismo predicado con
+  el que `EventosGlobales` decide contar un `whatsapp_click`. → §3.16
+- **Dónde NO va, y esto es la mitad de la excepción:** ningún texto, ningún borde que no sea el
+  del propio botón, ningún fondo de sección, ningún estado activo, ningún anillo de foco, ningún
+  separador, ninguna marca de validación de formulario, ninguna barra de progreso. No es «el
+  verde del sistema»: el sistema no tiene verde. Es la marca de un tercero puesta encima de su
+  propio botón, igual que los azules del logotipo son la marca de la casa puesta en su archivo.
+- **El ocre no se toca.** Sigue siendo el único color de acción del sistema y la regla del §2.2 se
+  aplica igual. → §2.2, apartado final.
+- **El borde del botón es del mismo verde, no de tinta**, igual que el primario lo lleva del mismo
+  ocre. Eso deja la silueta del botón a **1,64 : 1** contra `--fondo`, por debajo del 3 : 1 que
+  pide el contraste no textual — pero es exactamente la situación que el botón primario ya tiene
+  (**1,86 : 1**) y que el sistema aceptó al elegir rellenos planos sin borde ajeno. Lo que
+  identifica los dos botones es su rótulo, que sí cumple de sobra. Se deja consistente a
+  propósito: un borde oscuro solo alrededor del de WhatsApp lo haría el único botón del sitio con
+  contorno propio.
+- ⚠️ El hex está tomado del verde de marca de WhatsApp de uso corriente. **Sin confirmar contra
+  la guía de marca oficial de Meta**: si el dueño tiene el valor exacto, se cambia en el token y
+  se rehace la medida de contraste, que es lo único que hay que volver a comprobar.
 
 ### 2.2 La regla del ocre
 
@@ -102,6 +143,16 @@ variante `primario` de `Boton`.
 
 Los antetítulos de sección van siempre en `--acero` sobre fondo claro y en `--fondo-alt` sobre
 fondo oscuro. **Nunca en ocre**: no son acciones.
+
+**Y el verde de WhatsApp no cuenta como un tercer rol del ocre, pero sí le quita fuerza.**
+Medido (2026-09-18): la luminancia relativa de `#25D366` es **0,479** y la de `#D9A441`,
+**0,417**. El verde es más claro *y* mucho más saturado. En la barra fija de móvil los dos
+botones son rellenos al 50 % y lo único que separa al primario del secundario es el color, así
+que a 390 px **la mitad de WhatsApp se lee como la más fuerte de las dos**. La regla del §2.2 no
+se rompe —el ocre conserva un solo rol de acción— pero su intención sí queda debilitada en esa
+pantalla. Es el precio del encargo, está anotado, y arreglarlo es una decisión del dueño, no del
+sistema: o el ocre pasa a ser el ancho mayor de la barra, o el `Llamar` sube de peso, o se acepta
+que en móvil la acción más visible sea WhatsApp. → §4.3
 
 ### 2.3 Tipografía
 
@@ -192,7 +243,10 @@ de tarjetas usan `overflow-x: auto` con margen negativo lateral para sangrar a l
 
 ### 2.6 Bordes, radios y sombras
 
-- **`border-radius: 0` en todo el sitio.** Sin excepciones.
+- **`border-radius: 0` en todo el sitio.** Sin excepciones. Es una regla sobre las **superficies**
+  —cajas, campos, imágenes, tarjetas, botones—, no sobre lo que se dibuja dentro de ellas. La
+  senda del logotipo son elipses y los dos iconos de §3.16 llevan curvas: son dibujo, no
+  superficie, y ninguno de los dos tiene `border-radius` que poner a cero.
 - Separadores: `1px solid #1B1E1C` para abrir y cerrar un grupo, `1px solid #DADCD6` o
   `#5C625E` entre filas del grupo. Sobre fondo oscuro, `1px solid #41535C`.
 - Rejillas con retícula visible (la paleta de la lámina): contenedor `background: #1B1E1C`
@@ -303,7 +357,7 @@ La etiqueta técnica (§3.8) **no necesita velo y no cuenta como excepción**: t
 
 ## 3. Componentes base
 
-Los 15 componentes con los que se compone todo el sitio. Cualquier pantalla nueva se construye
+Los 16 componentes con los que se compone todo el sitio. Cualquier pantalla nueva se construye
 con estos; si hace falta uno nuevo, se crea en este mismo lenguaje y se añade aquí.
 
 ### 3.1 Botón primario (ocre)
@@ -913,6 +967,136 @@ Se distingue del dato pendiente de §3.9, que también lleva línea inferior, po
 
 ⚠️ La regla se generaliza **añadiendo la clase, nunca copiando el declarado.**
 
+### 3.17 Botón de WhatsApp, y los dos iconos del sitio
+
+**Pieza nueva del sistema, 2026-09-18.** Encargo del dueño: los botones de WhatsApp en verde de
+WhatsApp y con su icono, y un icono de teléfono en el botón de llamar de la barra fija.
+
+```
+igual métrica que 3.1  ·  min-height 56/48 px  ·  radius 0  ·  gap: 8px entre icono y rótulo
+background: #25D366 · color: #1B1E1C · border: 1px solid #25D366
+:hover  background: #20B859
+:focus  outline: 2px solid #D9A441; outline-offset: 2px   (el global; ver abajo)
+icono   20px dentro de Boton · 24px en la barra fija de móvil (dos tamaños, medidos: ver abajo)
+```
+
+**Se pide por destino, no por prop.** `Boton` mira su propio `href` con `esEnlaceWhatsApp()`
+(`lib/config.ts`) y, si abre WhatsApp, cambia de variante y antepone el icono. Los siete puntos
+de llamada están repartidos por cinco archivos y ninguno pasa nada nuevo:
+
+| Dónde | `data-ubicacion` | Archivo |
+|---|---|---|
+| Barra fija de móvil, en las 50 rutas | `sticky_mobile` | `components/layout/BarraMovil.tsx` (ancla cruda, no `Boton`) |
+| Menú de móvil | `mobile_menu` | `components/layout/MenuMovil.tsx` |
+| Cierre de la portada | `home_close` | `app/page.tsx` |
+| Aside y pie de formulario de `/presupuesto/` | `quote_aside`, `quote_below_form` | `app/presupuesto/page.tsx` |
+| Hero y cierre de las 4 landings | `lp_hero`, `lp_close` | `components/secciones/PaginaServicio.tsx` |
+
+**Las seis páginas de servicio no llevan ninguno** y no es un olvido de esta sesión: `CtaContacto`
+solo se pinta con `servicio.ctaContacto`, que únicamente declara la recomposición de campaña de
+`content/landings.ts`. En `/hormigon-impreso/` y sus cinco hermanas el único WhatsApp es el de la
+barra fija.
+
+Comprobado ruta a ruta contra el HTML servido, y en las dos direcciones: **cero anclas a `wa.me`
+sin el verde, cero botones verdes que no vayan a `wa.me`.**
+
+#### Lo que cuesta el icono, medido de nuevo el 2026-09-18
+
+La versión anterior de este párrafo daba una cifra que no reproduce, y en el sitio equivocado.
+Decía que a 768 px el icono llevaba el cierre de la portada de tres líneas a cuatro y la fila de
+79 a 104 px. **A 768 px el icono no cuesta nada:** con `<svg>` y sin él —quitándolo del DOM en el
+navegador, con el aviso de cookies en pantalla y el teléfono real puesto— esa fila mide **78,8 px
+en los dos casos**. A 768 ya partía sola.
+
+Donde sí cuesta es en una banda estrecha y concreta, **776–847 px**:
+
+| Ancho de ventana | Columna | Con icono | Sin icono |
+|---|---|---|---|
+| 390 | 354 (apilados) | 108 px | 108 px |
+| 768 | 304 | 78,8 px | 78,8 px |
+| 800 | 320 | **78,8 px** (3 líneas) | **56 px** |
+| 824 | 332 | **78,8 px** (3 líneas) | **56 px** |
+| 848 | 344 | 56 px | 56 px |
+| 1180 y más | 510 | 56 px | 56 px |
+
+Los 28 px —20 del dibujo más 8 de `gap`— se los come el botón de WhatsApp, y el flex se los quita
+al de al lado: el que parte en tres líneas es **el de llamar**, que es el que lleva el número.
+
+**Arreglado en las landings, no en la portada.** `CtaContacto`
+(`components/secciones/PaginaServicio.tsx`) pasa de `md:flex-row` a **`cabecera-ancha:flex-row`**:
+apilado y a ancho completo hasta 1180 px, en fila desde ahí. A 1180 los dos rótulos caben enteros
+—222,7 + 260,6 + 12 de `gap` = **495,3 px sobre los 510** de la columna, o sobre ~502,5 si el
+navegador pinta barra de scroll clásica de 15 px, que sigue cabiendo—, así que ya no hay ni una
+anchura en la que un rótulo se parta: o van los dos al lado, o van uno encima de otro. Es el mismo
+punto en el que la cabecera despliega su fila y se apaga la barra fija, y por la misma razón.
+
+🔴 **El cierre de la portada conserva el defecto**, idéntico y medido: en `app/page.tsx`, la fila
+`md:flex-row` que envuelve los dos CTA con `data-ubicacion="home_close"` —hacia la línea 604, pero
+búsquese por la ubicación, que el archivo lo está tocando otra sesión— da las mismas cifras de la
+tabla. Un cambio de una palabra, `md:` por `cabecera-ancha:`, lo cierra.
+
+La razón de resolverlo así y no con `variante="whatsapp"`: un sitio de llamada nuevo que se
+olvide del prop **no falla ningún build**, se queda gris y no lo ve nadie. Y hay un segundo
+efecto que es el que de verdad lo justifica: el predicado es **el mismo** con el que
+`EventosGlobales` decide si ese clic es un `whatsapp_click`, así que la regla queda cerrada en
+una sola definición — *si se cuenta como WhatsApp, se ve como WhatsApp*. Con
+`NEXT_PUBLIC_WHATSAPP` vacía el `href` cae a `/presupuesto/`, el predicado dice que no y el botón
+vuelve solo a su variante normal: sin número no hay WhatsApp que anunciar.
+
+**El foco se deja en el global** (`outline: 2px solid var(--pigmento); offset: 2px`), no se le
+pone uno propio, y el verde **no empeora nada**: el `offset` de 2 px deja el anillo fuera del
+botón, así que su color adyacente sigue siendo el fondo de la página por los dos lados, no el
+relleno. Medido dónde cae cada uno: el del menú de móvil sobre `--tinta` (ocre a **7,47 : 1**) y
+los otros cinco sobre `--fondo` (**1,86 : 1**). Ese 1,86 es exactamente el que ya tenían de
+`contorno` y el que tiene hoy **cualquier** botón del sitio sobre fondo claro; es una debilidad
+anterior y general del anillo global, no de esta pieza, y arreglarla es tocar `app/globals.css`
+para las 50 rutas a la vez. Queda anotado, no parcheado aquí. Un anillo propio en `--tinta`
+—que es lo que hace `btn-primario`— se descartó por lo mismo: dejaría al botón de WhatsApp con
+un foco distinto del `Llamar` que tiene al lado.
+
+**Los iconos** — `components/ui/Iconos.tsx`, `IconoTelefono` y `IconoWhatsApp`.
+
+- **SVG en línea escrito a mano, sin librería y sin archivo `.svg`.** CLAUDE.md prohíbe las
+  librerías de iconos y §2.1 dice que no hay ningún `.svg` en el repo: las dos cosas siguen
+  siendo verdad. Esto es JSX dentro del HTML que ya se servía — cero peticiones, cero
+  dependencias, y no entra en el presupuesto de JS salvo los bytes del propio `Boton`.
+- **Son la misma pieza.** `viewBox` de 24, silueta maciza en `currentColor`, sin trazo. El
+  auricular del icono de WhatsApp **es el mismo auricular** del icono de teléfono, al 72 %,
+  calado dentro de la burbuja con `fill-rule="evenodd"`. Se ven juntos en la barra fija, y la
+  coherencia de familia no está aproximada: es literal.
+- **El de WhatsApp sale en negativo** respecto al logotipo oficial —burbuja oscura sobre verde,
+  auricular verde— porque el rótulo va en `--tinta` por contraste (§2.1) y el icono hereda el
+  `currentColor` del botón. Es reconocible igual: lo que identifica la marca a 24 px es la
+  silueta de burbuja con rabito más el verde del fondo, y las dos cosas están.
+- `aria-hidden="true"` y `focusable="false"` en los dos, siempre. El botón ya dice «Llamar» o
+  «WhatsApp» en texto, y el icono no sustituye nunca al rótulo. Un clic sobre el `<svg>` resuelve
+  al `<a>` por `closest()`, que es como `EventosGlobales` lo mide.
+
+**Dos tamaños, y es una decisión, no un descuido.** 20 px por defecto; 24 px **solo** en la barra
+fija de móvil. Se probó a dejar uno solo, en las dos direcciones, y las dos se caen con la cifra
+delante (2026-09-18, medido en el navegador):
+
+- **24 en todas partes no lo paga el cierre de la portada.** Con el icono a 24 esa fila pasa a
+  **cuatro líneas y 104,4 px a 768 px**, y a 848 sube de 56 a 78,8. Es decir: subir el icono
+  convertía en verdad la frase falsa que este mismo apartado arrastraba. Son 32 px en la única
+  fila del sitio donde no sobra ninguno.
+- **Bajar la barra fija a 20 tampoco**, porque el motivo para agrandar era que a 20 px «se cierra
+  el calado del auricular», y **no se cierra**. Capturado a 1× y ampliado con vecino más próximo,
+  la ranura que separa el auricular del borde de la burbuja mide **1 px a 20 px y 2 px a 24**.
+  Estrecha, pero continua, y el icono se lee.
+
+Así que el tamaño lo decide **el ancho de la columna**: 24 donde el rótulo es una palabra y el
+botón ocupa media pantalla —la barra fija—, y 20 dentro de `Boton`, que es el que aparece en filas
+de dos con rótulos largos.
+
+**Los dos CTA del menú de móvil llevan icono, los dos a 20 px.** Estaban desparejados —WhatsApp con
+icono, «Llamar» sin él, apilados a 1 px uno del otro— y así se leen como piezas de sistemas
+distintos. El auricular se escribe a mano en `MenuMovil.tsx`, con su `gap-2`, y **no se deduce de
+`tel:`** como se hace con `wa.me`: si `Boton` antepusiera el icono a todo `href` que empieza por
+`tel:`, los 28 px caerían también en los botones que dicen `Llamar al 627 663 146`, que son justo
+los que ya encogen. Van a 20 y no a los 24 de la barra fija porque la barra no está en pantalla con
+el menú abierto —el panel es `fixed inset-0`— y quien sí está al lado es el `Boton` de WhatsApp.
+
 ## 4. Elementos transversales
 
 ### 4.1 Cabecera de escritorio
@@ -988,12 +1172,24 @@ numeral en `#41535C`. Solo un elemento fijo en móvil, y es la barra de contacto
 position: sticky; bottom: 0 · z-index: 20
 grid-template-columns: 1fr 1fr · gap: 1px · background: #1B1E1C   (la línea entre botones)
 box-shadow: 0 -6px 18px rgba(27,30,28,0.18)
-[Llamar]    min-height: 56px · background: #D9A441 · color: #1B1E1C · 16px/600
-[WhatsApp]  min-height: 56px · background: #1B1E1C · color: #E9EAE6 · 16px/600
+[Llamar]    min-height: 56px · background: #D9A441 · color: #1B1E1C · 16px/600 · icono 24px + gap 8px
+[WhatsApp]  min-height: 56px · background: #25D366 · color: #1B1E1C · 16px/600 · icono 24px + gap 8px
 ```
 
 Siempre visible en móvil, en todas las páginas. **Es el CTA primario de móvil**, y por eso
 consume el único ocre de acción de la pantalla.
+
+**Enmienda del 2026-09-18: verde y los dos iconos.** La mitad de WhatsApp deja de ser tinta y
+pasa a `#25D366` con el rótulo en `--tinta` (§2.1, §3.16); la de llamar conserva su ocre y solo
+gana el icono de auricular. Los dos iconos miden 24 px **aquí y solo aquí** —en `Boton` van a 20,
+y §3.16 dice con qué medición se decidió cada uno— y son la misma pieza dibujada una vez (§3.16). **Los dos siguen siendo anclas crudas, no `Boton`**, y eso no es descuido: `Boton` monta
+un `next/link` y estos dos CTA tienen que funcionar sin que hidrate nada, que es lo que `design/06`
+exige de los dos enlaces de más intención del sitio. Lo compartido es el token de color, no la
+clase.
+
+⚠️ **La jerarquía queda debilitada y el dueño tiene que verlo.** Son dos rellenos al 50 % y el
+verde es más luminoso y más saturado que el ocre (0,479 frente a 0,417): a 390 px la mitad de
+WhatsApp se lee como la acción principal aunque el ocre siga siendo quien la señala. → §2.2
 
 **Se esconde en `cabecera-ancha` = 1180 px, no en 768** (enmienda del 2026-09-17): sigue a la
 cabecera de §4.1, que empieza donde de verdad cabe. Las dos se mueven juntas, siempre: mover
