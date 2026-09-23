@@ -4,11 +4,11 @@ import type { Config } from 'tailwindcss'
  *  Escala cerrada a propósito: no hay valores intermedios. */
 const config: Config = {
   content: [
-    './app/**/*.{ts,tsx,mdx}',
-    './components/**/*.{ts,tsx}',
+    './src/app/**/*.{ts,tsx,mdx}',
+    './src/components/**/*.{ts,tsx}',
     // El catálogo vive en .tsx, no en .mdx: con el glob viejo no se escaneaba.
-    './content/**/*.{ts,tsx,mdx}',
-    './lib/**/*.{ts,tsx}',
+    './src/content/**/*.{ts,tsx,mdx}',
+    './src/lib/**/*.{ts,tsx}',
   ],
   theme: {
     // Se reemplaza la paleta por defecto: solo existen estos colores.

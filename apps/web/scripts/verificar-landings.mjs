@@ -29,9 +29,9 @@
  * `*.html`, que solo alcanza 17 de los 49 archivos.
  */
 import { readdirSync, statSync, readFileSync, existsSync } from 'node:fs'
-import { join } from 'node:path'
+import { join, resolve } from 'node:path'
 
-const APP = '.next/server/app'
+const APP = resolve(import.meta.dirname, '..', '.next/server/app')
 // Las mismas reservas que declara `lib/config.ts`. Si allí cambian, aquí también.
 const RESERVAS = ['96X XXX XXX']
 

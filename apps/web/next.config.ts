@@ -1,6 +1,9 @@
+import path from 'node:path'
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
+  // Monorepo: la raíz de rastreo de ficheros es la raíz del repo, no apps/web.
+  outputFileTracingRoot: path.join(__dirname, '../..'),
   trailingSlash: true,
   images: {
     formats: ['image/avif', 'image/webp'],

@@ -45,7 +45,7 @@ const PATRON = /["'](\/(?:obras|acabados|blog|marca)\/[^"'\s]+?\.(?:jpg|jpeg|png
 const PATRON_HERO = /imagenHero:\s*\{\s*src:\s*'([^']+)'/g
 
 /** La pantalla de obra, de la que sale el otro grupo de fotos a sangre. */
-const PANTALLA_OBRA = 'app/proyectos/[slug]/page.tsx'
+const PANTALLA_OBRA = 'src/app/proyectos/[slug]/page.tsx'
 
 /**
  * Excepción con fecha de caducidad. NO es un umbral relajado.
@@ -131,14 +131,14 @@ function anchoDe(buf) {
 }
 
 const fuentes = [
-  ...archivosDe(resolve(raiz, 'content'), ['.ts', '.tsx', '.json']),
-  ...archivosDe(resolve(raiz, 'app'), ['.ts', '.tsx']),
-  ...archivosDe(resolve(raiz, 'components'), ['.ts', '.tsx']),
+  ...archivosDe(resolve(raiz, 'src/content'), ['.ts', '.tsx', '.json']),
+  ...archivosDe(resolve(raiz, 'src/app'), ['.ts', '.tsx']),
+  ...archivosDe(resolve(raiz, 'src/components'), ['.ts', '.tsx']),
   // `lib/` faltaba, y no era inocuo: `lib/schema.tsx` nombra el logotipo que va
   // al campo `logo` del JSON-LD, o sea la imagen que Google enseña, y era la
   // única referencia a `public/` que ningún verificador miraba. Mismo agujero
   // que `tailwind.config.ts` ya había tapado en su glob de contenido.
-  ...archivosDe(resolve(raiz, 'lib'), ['.ts', '.tsx']),
+  ...archivosDe(resolve(raiz, 'src/lib'), ['.ts', '.tsx']),
 ]
 
 const referencias = new Map() // src -> [archivos que la nombran]
@@ -160,7 +160,7 @@ for (const archivo of fuentes) {
  * miniaturas 1 y 2 salen a 25vw—, así que la condición sale de la posición:
  * primer elemento de `imagenes`, proyecto por proyecto.
  */
-const proyectos = JSON.parse(readFileSync(resolve(raiz, 'content/proyectos.json'), 'utf8'))
+const proyectos = JSON.parse(readFileSync(resolve(raiz, 'src/content/proyectos.json'), 'utf8'))
 for (const proyecto of proyectos) {
   const hero = proyecto.imagenes?.[0]
   if (hero?.src) aSangre.add(hero.src)

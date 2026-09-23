@@ -2,31 +2,18 @@
   "name": "pavimentos-albufera",
   "version": "0.1.0",
   "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "postbuild": "node scripts/verificar-redirecciones.mjs && node scripts/verificar-imagenes.mjs && node scripts/verificar-presupuesto.mjs && node scripts/verificar-lcp-visible.mjs && node scripts/verificar-landings.mjs",
-    "start": "next start",
-    "lint": "next lint"
+  "packageManager": "pnpm@9.15.9",
+  "engines": {
+    "node": ">=22.6"
   },
-  "dependencies": {
-    "@vercel/speed-insights": "^2.0.0",
-    "class-variance-authority": "^0.7.1",
-    "next": "15.5.22",
-    "react": "19.0.0",
-    "react-dom": "19.0.0",
-    "zod": "^3.24.1"
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "content:validate": "turbo run content:validate"
   },
   "devDependencies": {
-    "@lhci/cli": "0.15.1",
-    "@types/node": "^22.10.7",
-    "@types/react": "^19.0.7",
-    "@types/react-dom": "^19.0.3",
-    "autoprefixer": "^10.4.20",
-    "eslint": "^9.18.0",
-    "eslint-config-next": "15.5.22",
-    "postcss": "^8.5.1",
-    "tailwindcss": "^3.4.17",
-    "typescript": "^5.7.3"
+    "turbo": "2.11.3"
   }
 }
