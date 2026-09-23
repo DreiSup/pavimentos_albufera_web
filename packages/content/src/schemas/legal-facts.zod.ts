@@ -11,6 +11,8 @@ export const legalFactsSchema = z.object({
   domain: z.string().min(1),
   activity: localizedText,
   lastLegalReview: localizedText,
+  identificationRows: z.array(legalFactRowSchema).min(1),
+  controllerRows: z.array(legalFactRowSchema).min(1),
   ownCookies: z.array(cookieFactSchema).min(1),
   thirdPartyCookies: z.array(cookieFactSchema).min(1),
   recipients: z.array(recipientFactSchema).min(1),

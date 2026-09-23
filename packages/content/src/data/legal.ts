@@ -15,6 +15,12 @@ import type { LegalFacts } from '../schemas/legal-facts.ts'
  * That's why `ownCookies`'s `_fbc` ficha has 5 rows here, not 6, and
  * `thirdPartyCookies`'s two fichas have 5 rows here, not 8 — the missing
  * rows (`NOMBRES`, `DURACIÓN`, `MÁS INFORMACIÓN`) are exactly the JSX ones.
+ * `identificationRows`/`controllerRows` carry ONLY the rows whose LABEL and
+ * VALUE are both plain strings (RAZÓN SOCIAL, NIF O CIF, ACTIVIDAD, DOMINIO,
+ * RESPONSABLE) — not the full `identificacion`/`responsable` tables, which
+ * also have TITULAR DEL SITIO WEB/CORREO ELECTRÓNICO/TELÉFONO (read `nap.*`
+ * live) and DOMICILIO SOCIAL/DATOS REGISTRALES/CÓDIGOS DE CONDUCTA/DELEGADO
+ * (JSX). Those stay adapter-only in this phase.
  */
 export const legal: LegalFacts = {
   companyName: 'Pavimentos Albufera Sociedad Limitada',
@@ -22,6 +28,19 @@ export const legal: LegalFacts = {
   domain: 'pavimentos-albufera.com',
   activity: { es: 'Pavimentos de hormigón: impreso, pulido, lavado, fratasado, desactivado y microcemento' },
   lastLegalReview: { es: '18 de septiembre de 2026' },
+  identificationRows: [
+    { label: { es: 'RAZÓN SOCIAL' }, value: { es: 'Pavimentos Albufera Sociedad Limitada' } },
+    { label: { es: 'NIF O CIF' }, value: { es: 'B02882090' } },
+    {
+      label: { es: 'ACTIVIDAD' },
+      value: { es: 'Pavimentos de hormigón: impreso, pulido, lavado, fratasado, desactivado y microcemento' },
+    },
+    { label: { es: 'DOMINIO' }, value: { es: 'pavimentos-albufera.com' } },
+  ],
+  controllerRows: [
+    { label: { es: 'RESPONSABLE' }, value: { es: 'Pavimentos Albufera Sociedad Limitada' } },
+    { label: { es: 'NIF O CIF' }, value: { es: 'B02882090' } },
+  ],
   ownCookies: [
     {
       name: 'pa_consent',

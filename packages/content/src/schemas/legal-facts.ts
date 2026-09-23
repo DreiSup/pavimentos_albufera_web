@@ -35,6 +35,18 @@ export type LegalFacts = {
   domain: string
   activity: Localized<string>
   lastLegalReview: Localized<string>
+  /**
+   * The plain-string rows of `content/legal.tsx`'s `identificacion` table
+   * (RAZÓN SOCIAL, NIF O CIF, ACTIVIDAD, DOMINIO), WITH their original
+   * labels — unlike `companyName`/`taxId`/`activity`/`domain` above (kept
+   * for query convenience), this preserves the row's label text too, since
+   * the label is as much a fact of this legal table as its value. The rows
+   * whose value is dynamic (`nap.nombre`, `nap.email`) or JSX are NOT here
+   * — see `data/legal.ts`'s comment.
+   */
+  identificationRows: LegalFactRow[]
+  /** The plain-string rows of the `responsable` table (RESPONSABLE, NIF O CIF) — same rule as `identificationRows`. */
+  controllerRows: LegalFactRow[]
   ownCookies: CookieFact[]
   thirdPartyCookies: CookieFact[]
   recipients: RecipientFact[]

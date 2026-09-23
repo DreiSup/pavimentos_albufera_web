@@ -13,6 +13,8 @@ export type ResolvedLegalFacts = {
   domain: string
   activity: string
   lastLegalReview: string
+  identificationRows: ResolvedLegalFactRow[]
+  controllerRows: ResolvedLegalFactRow[]
   ownCookies: ResolvedCookieFact[]
   thirdPartyCookies: ResolvedCookieFact[]
   recipients: ResolvedRecipientFact[]
@@ -50,6 +52,8 @@ export function getLegalFacts(locale: Locale): ResolvedLegalFacts {
     domain: legal.domain,
     activity: pickLocalized(legal.activity, locale) ?? '',
     lastLegalReview: pickLocalized(legal.lastLegalReview, locale) ?? '',
+    identificationRows: resolveRows(legal.identificationRows, locale),
+    controllerRows: resolveRows(legal.controllerRows, locale),
     ownCookies: legal.ownCookies.map((fact) => resolveCookieFact(fact, locale)),
     thirdPartyCookies: legal.thirdPartyCookies.map((fact) => resolveCookieFact(fact, locale)),
     recipients: legal.recipients.map((fact) => resolveRecipientFact(fact, locale)),
