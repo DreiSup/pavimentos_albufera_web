@@ -1,3 +1,20 @@
+/**
+ * legacy adapter, delete when a new design consumes @site/* directly
+ *
+ * Tipos sin cambios; los tres catálogos de nombre/ruta se construyen ahora
+ * sobre `@site/content` (locale 'es') en vez de estar escritos a mano dos
+ * veces (aquí y en `content/servicios.tsx`/`content/modelos.ts`). No
+ * client-reachable (solo lo importa `components/layout/Pie.tsx`, componente
+ * de servidor), así que una llamada de nivel superior al paquete no supone
+ * riesgo de bundle.
+ *
+ * `CODIGO_COLOR` se queda literal: es un lookup de identificadores internos
+ * (código de color impreso en la muestra) sin equivalente de primer nivel en
+ * `@site/content` hoy — cada `Finish.code` ya lo lleva por entrada, pero no
+ * hay un catálogo `ColorId -> code` publicado aparte. Ver "questions".
+ */
+import { getModels, getServiceCatalog } from '@site/content'
+
 export type ServicioId =
   | 'impreso'
   | 'pulido'
@@ -86,34 +103,19 @@ export type Articulo = {
   imagenApertura?: Imagen
 }
 
-export const NOMBRE_SERVICIO: Record<ServicioId, string> = {
-  impreso: 'Hormigón impreso',
-  pulido: 'Hormigón pulido',
-  microcemento: 'Microcemento',
-  lavado: 'Hormigón lavado',
-  fratasado: 'Hormigón fratasado',
-  desactivado: 'Hormigón desactivado',
-}
+const catalogoServicios = getServiceCatalog('es')
 
-export const RUTA_SERVICIO: Record<ServicioId, string> = {
-  impreso: '/hormigon-impreso/',
-  pulido: '/hormigon-pulido/',
-  microcemento: '/microcemento/',
-  lavado: '/hormigon-lavado/',
-  fratasado: '/hormigon-fratasado/',
-  desactivado: '/hormigon-desactivado/',
-}
+export const NOMBRE_SERVICIO: Record<ServicioId, string> = Object.fromEntries(
+  catalogoServicios.map((s) => [s.id, s.name]),
+) as Record<ServicioId, string>
 
-export const NOMBRE_MODELO: Record<ModeloId, string> = {
-  espiga: 'Espiga',
-  'adoquin-irregular': 'Adoquín irregular',
-  'adoquin-pequeno': 'Adoquín pequeño',
-  manta: 'Manta (imitación roca de montaña)',
-  'silleria-grande': 'Sillería grande',
-  'piedra-silleria': 'Piedra sillería',
-  'piedra-rodena': 'Piedra rodena',
-  'piedra-inglesa': 'Piedra inglesa',
-}
+export const RUTA_SERVICIO: Record<ServicioId, string> = Object.fromEntries(
+  catalogoServicios.map((s) => [s.id, s.path]),
+) as Record<ServicioId, string>
+
+export const NOMBRE_MODELO: Record<ModeloId, string> = Object.fromEntries(
+  getModels('es').map((m) => [m.id, m.name]),
+) as Record<ModeloId, string>
 
 export const CODIGO_COLOR: Record<ColorId, string> = {
   '117': 'C-117',

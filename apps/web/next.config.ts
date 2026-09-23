@@ -4,6 +4,10 @@ import type { NextConfig } from 'next'
 const nextConfig: NextConfig = {
   // Monorepo: la raíz de rastreo de ficheros es la raíz del repo, no apps/web.
   outputFileTracingRoot: path.join(__dirname, '../..'),
+  // @site/content y @site/config viven en su propio package.json/tsconfig.json
+  // (workspace:* de pnpm) y publican `.ts` sin transpilar (`exports: {".": "./src/index.ts"}`) —
+  // Next necesita compilarlos con su propio pipeline, igual que a apps/web.
+  transpilePackages: ['@site/content', '@site/config'],
   trailingSlash: true,
   images: {
     formats: ['image/avif', 'image/webp'],
@@ -48,8 +52,9 @@ const nextConfig: NextConfig = {
     // viendo la foto vieja hasta 31 días. Con los 60 s de defecto el problema
     // no existía. Regla que lo cierra, y hay que respetarla: **toda foto
     // sustituida cambia de nombre de archivo**. Eso obliga a tocar
-    // `content/*.json`, y ahí sí lo ve `scripts/verificar-imagenes.mjs`. Si no
-    // se quiere asumir esa regla, hay que bajar el TTL a días.
+    // `packages/content/src/data/*.ts`, y ahí sí lo ve
+    // `scripts/verificar-imagenes.mjs`. Si no se quiere asumir esa regla, hay
+    // que bajar el TTL a días.
     minimumCacheTTL: 2678400,
   },
   experimental: {

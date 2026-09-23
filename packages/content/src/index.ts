@@ -9,11 +9,9 @@
  * the README's "Client-bundle rule" for why a star export is avoided for
  * anything client-reachable.
  *
- * ⚠️ NOT YET WIRED INTO `apps/web` (phase 2a of the migration): this package
- * exists on its own, validated by `content:validate`, but nothing in
- * `apps/web` imports from it yet. That wiring — and the legacy adapters
- * that keep the old Spanish API frontend components already use — is
- * phase 2b.
+ * Wired into `apps/web` (phase 2b) via the legacy adapters under
+ * `apps/web/src/lib` and `apps/web/src/content` that keep the old Spanish
+ * API the frontend components already use.
  */
 
 export { resolveBusiness } from './queries/business.ts'
@@ -67,6 +65,7 @@ export { getLegalFacts } from './queries/legal.ts'
 export type { ResolvedLegalFacts, ResolvedLegalFactRow, ResolvedCookieFact, ResolvedRecipientFact } from './queries/legal.ts'
 
 export { homeFaqRefs } from './data/faq.ts'
+export { getQuestionsByRefs } from './queries/faq.ts'
 export type { ResolvedImage, ResolvedQuestion, Locale } from './queries/resolve.ts'
 
 export { pickLocalized, pickLocalizedList, LOCALES } from './schemas/localized.ts'

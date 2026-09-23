@@ -15,8 +15,9 @@
  *
  *   SUELO (800 px)     Nada por debajo se publica. Falla el build.
  *   A_SANGRE (1600 px) La imagen que ocupa el ancho de la ventana —los
- *                      `imagenHero` de `content/servicios.tsx` y el hero 21/9
- *                      de cada ficha de obra— no admite menos. Falla el build,
+ *                      `heroImage` de `@site/content`'s `data/services.ts`
+ *                      y el hero 21/9 de cada ficha de obra— no admite
+ *                      menos. Falla el build,
  *                      salvo las de `HEREDADAS_A_SANGRE`, que avisan.
  *   OBJETIVO (1600 px) Lo que se pide a toda foto nueva. NO falla: hoy no lo
  *                      cumple ni la mitad del material heredado, y convertirlo
@@ -27,6 +28,16 @@
  * de JS de este proyecto no admite una librería de imagen ni para un script.
  *
  * Uso: node scripts/verificar-imagenes.mjs   (se ejecuta solo en `postbuild`)
+ *
+ * ⚠️ **Fase 2b de la migración: el contenido ya no vive en `src/content/*.json`.**
+ * `content/proyectos.json`/`acabados.json`/`zonas.json`/`articulos.json`
+ * se han borrado — los datos viven ahora en `packages/content/src/data/*.ts`
+ * (paquete `@site/content`), y `src/content/*.ts(x)` son adaptadores que los
+ * recomponen en tiempo de ejecución, no literales. Este script sigue siendo
+ * puramente TEXTUAL (sin importar el paquete ni evaluar TypeScript): lee
+ * `packages/content/src/data/*.ts` como texto plano con los mismos patrones
+ * de siempre, porque ahí es donde cada `src`/`alt`/`heroImage` sigue estando
+ * escrito literalmente — igual que antes estaba en el JSON.
  */
 
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
@@ -41,11 +52,34 @@ const OBJETIVO = 1600
 /** Todo `src` que empieza por `/obras/`, `/acabados/`, `/blog/` o `/marca/`. */
 const PATRON = /["'](\/(?:obras|acabados|blog|marca)\/[^"'\s]+?\.(?:jpg|jpeg|png|svg|webp|avif))["']/gi
 
-/** Los `src` declarados como `imagenHero`, que se sirven a `sizes="100vw"`. */
-const PATRON_HERO = /imagenHero:\s*\{\s*src:\s*'([^']+)'/g
+/**
+ * Los `src` declarados como `heroImage` de un servicio, que se sirven a
+ * `sizes="100vw"`. Se aplica SOLO a `packages/content/src/data/services.ts`
+ * (ver más abajo, donde se lee ese archivo aparte): antes de la fase 2b el patrón buscaba
+ * el literal `imagenHero:` en cualquier archivo, y ese literal solo existía
+ * en `content/servicios.tsx` — nunca en `content/modelos.ts` (que usa el
+ * mismo campo `heroImage`/`src` pero SIN la palabra `imagenHero:` delante,
+ * y nunca contó como "a sangre"). Repetir la búsqueda sin acotar a
+ * `services.ts` habría sumado los 8 heroes de modelo al conjunto "a
+ * sangre" y cambiado qué falla el build — exactamente el acoplamiento que
+ * este script existe para no perder de vista.
+ */
+const PATRON_HERO_SERVICIO = /heroImage:\s*\{\s*src:\s*'([^']+)'/g
+
+/** Primera imagen de cada proyecto (`images: [{ src: '...' `), que `PANTALLA_OBRA` sirve a sangre. */
+const PATRON_HERO_PROYECTO = /images:\s*\[\s*\{\s*src:\s*'([^']+)'/g
+
+/** `src` seguido de cerca por un `alt: { es: '...' }` Localized, en los datos del paquete. */
+const PATRON_SRC_ALT = /src:\s*'([^']+)'\s*,\s*alt:\s*\{\s*es:\s*'((?:[^'\\]|\\.)*)'/g
 
 /** La pantalla de obra, de la que sale el otro grupo de fotos a sangre. */
 const PANTALLA_OBRA = 'src/app/proyectos/[slug]/page.tsx'
+
+/** Raíz del monorepo, para citar rutas legibles en los mensajes de error. */
+const REPO = resolve(raiz, '../..')
+
+/** `packages/content/src`, raíz de todo el contenido desde la fase 2b. */
+const CONTENIDO = resolve(REPO, 'packages/content/src')
 
 /**
  * Excepción con fecha de caducidad. NO es un umbral relajado.
@@ -131,7 +165,10 @@ function anchoDe(buf) {
 }
 
 const fuentes = [
-  ...archivosDe(resolve(raiz, 'src/content'), ['.ts', '.tsx', '.json']),
+  // `src/content` ya no lleva datos literales (fase 2b: son adaptadores
+  // construidos en tiempo de ejecución sobre `@site/content`) pero se sigue
+  // barriendo por si algún día vuelve a citar una ruta a mano.
+  ...archivosDe(resolve(raiz, 'src/content'), ['.ts', '.tsx']),
   ...archivosDe(resolve(raiz, 'src/app'), ['.ts', '.tsx']),
   ...archivosDe(resolve(raiz, 'src/components'), ['.ts', '.tsx']),
   // `lib/` faltaba, y no era inocuo: `lib/schema.tsx` nombra el logotipo que va
@@ -139,6 +176,8 @@ const fuentes = [
   // única referencia a `public/` que ningún verificador miraba. Mismo agujero
   // que `tailwind.config.ts` ya había tapado en su glob de contenido.
   ...archivosDe(resolve(raiz, 'src/lib'), ['.ts', '.tsx']),
+  // Fase 2b: el contenido real (todo `src`/`alt`) vive aquí.
+  ...archivosDe(resolve(CONTENIDO, 'data'), ['.ts']),
 ]
 
 const referencias = new Map() // src -> [archivos que la nombran]
@@ -146,25 +185,33 @@ const aSangre = new Set() // src servidos a 100vw
 
 for (const archivo of fuentes) {
   const texto = readFileSync(archivo, 'utf8')
-  const relativo = archivo.slice(raiz.length + 1)
+  const relativo = archivo.slice(REPO.length + 1)
   for (const [, src] of texto.matchAll(PATRON)) {
     referencias.set(src, [...(referencias.get(src) ?? []), relativo])
   }
-  for (const [, src] of texto.matchAll(PATRON_HERO)) aSangre.add(src)
 }
+
+/**
+ * Los heroes de servicio, servidos a `sizes="100vw"` — antes se buscaba el
+ * literal `imagenHero:` en cualquier archivo; ahora ese objeto se construye
+ * en tiempo de ejecución en el adaptador, así que la búsqueda se acota al
+ * ÚNICO sitio donde `heroImage: { src: … }` sigue siendo literal: los datos
+ * de servicios del paquete.
+ */
+const textoServicios = readFileSync(resolve(CONTENIDO, 'data/services.ts'), 'utf8')
+for (const [, src] of textoServicios.matchAll(PATRON_HERO_SERVICIO)) aSangre.add(src)
 
 /**
  * El otro grupo de fotos a sangre, que hasta ahora se colaba: `PANTALLA_OBRA`
  * renderiza `proyecto.imagenes[0]` en 21/9 con `prioridad` y `tamanos="100vw"`.
- * Nada en el JSON distingue esa foto de las demás del mismo array —las
+ * Nada en los datos distingue esa foto de las demás del mismo array —las
  * miniaturas 1 y 2 salen a 25vw—, así que la condición sale de la posición:
- * primer elemento de `imagenes`, proyecto por proyecto.
+ * primer elemento de `images`, proyecto por proyecto. Se lee textualmente de
+ * `packages/content/src/data/projects.ts` (antes, de `proyectos.json`): el
+ * primer `src` de cada `images: [...]` literal.
  */
-const proyectos = JSON.parse(readFileSync(resolve(raiz, 'src/content/proyectos.json'), 'utf8'))
-for (const proyecto of proyectos) {
-  const hero = proyecto.imagenes?.[0]
-  if (hero?.src) aSangre.add(hero.src)
-}
+const textoProyectos = readFileSync(resolve(CONTENIDO, 'data/projects.ts'), 'utf8')
+for (const [, src] of textoProyectos.matchAll(PATRON_HERO_PROYECTO)) aSangre.add(src)
 
 /**
  * Ese acoplamiento es invisible desde aquí: si la pantalla deja de servir
@@ -228,20 +275,22 @@ const heredadasCaducadas = [...HEREDADAS_A_SANGRE.keys()].filter(
   (src) => !heroHeredados.some(([heredada]) => heredada === src),
 )
 
-/** El `alt` es obligatorio: `public/README.md`. Vacío = imagen muda para lectores. */
+/**
+ * El `alt` es obligatorio: `public/README.md`. Vacío = imagen muda para
+ * lectores. Antes de la fase 2b se comprobaba recorriendo el JSON parseado
+ * de `src/content/*.json`; ahora ese contenido vive en
+ * `packages/content/src/data/*.ts` como literales `{ src: '...', alt: {
+ * es: '...' }, ... }` (forma `Localized<string>`), así que se localizan por
+ * texto con `PATRON_SRC_ALT` — mismo alcance que antes (solo las imágenes
+ * declaradas como contenido, no cualquier `src` suelto del repo).
+ */
 const sinAlt = []
-for (const archivo of fuentes.filter((f) => f.endsWith('.json'))) {
-  const datos = JSON.parse(readFileSync(archivo, 'utf8'))
-  const recorrer = (valor) => {
-    if (Array.isArray(valor)) return valor.forEach(recorrer)
-    if (valor && typeof valor === 'object') {
-      if (typeof valor.src === 'string' && !valor.alt?.trim()) {
-        sinAlt.push([valor.src, archivo.slice(raiz.length + 1)])
-      }
-      Object.values(valor).forEach(recorrer)
-    }
+for (const archivo of archivosDe(resolve(CONTENIDO, 'data'), ['.ts'])) {
+  const texto = readFileSync(archivo, 'utf8')
+  const relativo = archivo.slice(REPO.length + 1)
+  for (const [, src, alt] of texto.matchAll(PATRON_SRC_ALT)) {
+    if (!alt?.trim()) sinAlt.push([src, relativo])
   }
-  recorrer(datos)
 }
 
 if (rotas.length || sinAlt.length || estrechas.length || heroEstrechos.length) {

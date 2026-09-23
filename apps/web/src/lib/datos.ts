@@ -1,16 +1,125 @@
-import acabadosJson from '@/content/acabados.json'
-import articulosJson from '@/content/articulos.json'
-import proyectosJson from '@/content/proyectos.json'
-import zonasJson from '@/content/zonas.json'
-import type { Acabado, Articulo, ModeloId, Proyecto, ServicioId, Zona } from './tipos'
+/**
+ * legacy adapter, delete when a new design consumes @site/* directly
+ *
+ * Mismos exports, misma forma, mismos valores que antes de la migración —
+ * ahora construidos sobre `@site/content` (locale 'es') en vez de los JSON
+ * de `content/*.json`. No client-reachable (ninguna de las rutas
+ * `'use client'` importa este módulo — confirmado en el inventario), así que
+ * puede depender de todo `@site/content` sin riesgo de bundle.
+ *
+ * ⚠️ **`_pendiente`/`_nota` (metadatos editoriales) NO viajan aquí.** El
+ * `as unknown as Proyecto[]` de antes de la migración los dejaba colgando del
+ * objeto en tiempo de ejecución (el tipo `Proyecto` nunca los declaró, pero
+ * el valor SÍ los llevaba, por ser un cast sobre el JSON crudo). El paquete
+ * `@site/content` los preserva como datos tipados en `data/*.ts` (D5) pero
+ * deliberadamente NO los expone en su API pública — `content:validate`
+ * (check #13) impide que se cuelen en el esquema público precisamente para
+ * que ningún adaptador los reintroduzca por accidente. Ninguna pantalla los
+ * lee nunca (son metadatos de redacción, no contenido), así que esta es una
+ * diferencia de forma sin efecto en la salida — documentada en las
+ * "questions" del informe de esta fase, no decidida en silencio aquí.
+ */
+import {
+  getArticles,
+  getFinishes,
+  getProjects,
+  getServiceAreas,
+  type ResolvedArticle,
+  type ResolvedFinish,
+  type ResolvedProject,
+  type ResolvedServiceArea,
+} from '@site/content'
+import type { Acabado, Articulo, ModeloId, Proyecto, ServicioId, TipoImagen, Zona } from './tipos'
 
-export const proyectos = proyectosJson as unknown as Proyecto[]
-export const acabados = acabadosJson as unknown as Acabado[]
-export const articulos = articulosJson as unknown as Articulo[]
-// El último elemento de zonas.json es metadatos de municipios sin documentar, no una Zona.
-export const zonas = (zonasJson as unknown as Record<string, unknown>[]).filter(
-  (z): z is Zona => typeof z.slug === 'string' && typeof z.municipio === 'string',
-)
+function aProyecto(p: ResolvedProject): Proyecto {
+  return {
+    slug: p.slug,
+    titulo: p.title,
+    municipio: p.town ?? null,
+    provincia: p.province ? (p.province as Proyecto['provincia']) : null,
+    servicio: p.service as ServicioId,
+    ...(p.model !== undefined ? { modelo: p.model as ModeloId } : {}),
+    // `color` es SIEMPRE una clave presente en el origen (`null` cuando no se
+    // confirma, nunca omitida) — a diferencia de `modelo`, que sí se omite.
+    // `xabia-pulido` es el único proyecto sin color confirmado; el tipo
+    // heredado de `Proyecto.color` no declara `| null` (tampoco lo hacía
+    // antes de esta migración, con el mismo dato en tiempo de ejecución) así
+    // que se conserva el mismo cast permisivo que el `as unknown as` de antes.
+    color: (p.color ?? null) as Proyecto['color'],
+    superficie: p.surfaceArea ?? null,
+    anio: p.year ?? null,
+    plazoDias: p.executionDays ?? null,
+    encargo: p.brief ?? null,
+    ejecucion: p.execution ?? null,
+    imagenes: p.images.map((img) => ({ src: img.src, alt: img.alt, tipo: img.kind as TipoImagen })),
+    destacado: p.featured,
+    ...(p.executionSpecs
+      ? {
+          fichaTecnica: {
+            ...(p.executionSpecs.concrete !== undefined ? { hormigon: p.executionSpecs.concrete } : {}),
+            ...(p.executionSpecs.thickness !== undefined ? { espesor: p.executionSpecs.thickness } : {}),
+            ...(p.executionSpecs.aggregate !== undefined ? { arido: p.executionSpecs.aggregate } : {}),
+            ...(p.executionSpecs.mesh !== undefined ? { mallazo: p.executionSpecs.mesh } : {}),
+            ...(p.executionSpecs.fiber !== undefined ? { fibra: p.executionSpecs.fiber } : {}),
+            ...(p.executionSpecs.color !== undefined ? { color: p.executionSpecs.color } : {}),
+            ...(p.executionSpecs.finishes !== undefined ? { acabados: p.executionSpecs.finishes } : {}),
+          },
+        }
+      : {}),
+  }
+}
+
+function aAcabado(f: ResolvedFinish): Acabado {
+  return {
+    slug: f.slug,
+    nombre: f.name,
+    ...(f.model !== undefined ? { modelo: f.model as ModeloId } : {}),
+    color: f.color as Acabado['color'],
+    codigo: f.code,
+    servicio: f.service as ServicioId,
+    ...(f.sample ? { muestra: { src: f.sample.src, alt: f.sample.alt, tipo: f.sample.kind as TipoImagen } } : {}),
+    proyectos: f.projects,
+  }
+}
+
+function aZona(z: ResolvedServiceArea): Zona {
+  return {
+    slug: z.slug,
+    municipio: z.town,
+    provincia: z.province as Zona['provincia'],
+    // Leído por clave partida en dos trozos, nunca escrita entera: Tailwind
+    // escanea como texto plano todo archivo bajo `src/lib` en busca de
+    // nombres de clase candidatos, y el nombre de este campo (en inglés, sin
+    // acentos) coincide con el de una utilidad real de sombra de foco. Ni
+    // este comentario ni el código de abajo pueden deletrearla entera, o
+    // el build vuelve a generar una regla que la referencia no tiene.
+    anillo: (z as unknown as Record<string, 1 | 2 | 3>)['ri' + 'ng'],
+    proyectos: z.projects,
+    servicios: z.services as ServicioId[],
+  }
+}
+
+function aArticulo(a: ResolvedArticle): Articulo {
+  return {
+    slug: a.slug,
+    titulo: a.title,
+    entradilla: a.excerpt ?? null,
+    fecha: a.date ?? null,
+    servicio: a.service as ServicioId,
+    // El paquete no modela un `body` de texto plano hoy — las 3 entradas
+    // están íntegramente sin escribir (D5 / `data/articles.ts`), igual que
+    // antes de la migración (`cuerpo` era siempre `null` en `articulos.json`).
+    cuerpo: null,
+    ...(a.openingImage
+      ? { imagenApertura: { src: a.openingImage.src, alt: a.openingImage.alt, tipo: a.openingImage.kind as TipoImagen } }
+      : {}),
+  }
+}
+
+export const proyectos = getProjects('es').map(aProyecto)
+export const acabados = getFinishes('es').map(aAcabado)
+export const articulos = getArticles('es').map(aArticulo)
+export const zonas = getServiceAreas().map(aZona)
 
 export function proyectoPorSlug(slug: string): Proyecto | undefined {
   return proyectos.find((p) => p.slug === slug)
@@ -56,7 +165,8 @@ export function contarDocumentados(lista: Acabado[] = acabados): number {
  * ninguno hizo match. Sin foto, la tarjeta no se pinta.
  *
  * Es un filtro de presentación, **no un borrado**: las dieciséis entradas siguen
- * en `content/acabados.json` y el día que llegue la foto la muestra vuelve sola.
+ * en el catálogo (`@site/content`) y el día que llegue la foto la muestra vuelve
+ * sola.
  */
 export function estaPublicado(acabado: Acabado): boolean {
   return Boolean(acabado.muestra)

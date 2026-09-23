@@ -2,6 +2,7 @@
   "name": "web",
   "version": "0.1.0",
   "private": true,
+  "sideEffects": ["**/*.css"],
   "scripts": {
     "dev": "next dev",
     "build": "next build && node scripts/verificar-redirecciones.mjs && node scripts/verificar-imagenes.mjs && node scripts/verificar-presupuesto.mjs && node scripts/verificar-lcp-visible.mjs && node scripts/verificar-landings.mjs",
@@ -10,6 +11,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@site/config": "workspace:*",
+    "@site/content": "workspace:*",
     "@vercel/speed-insights": "2.0.0",
     "class-variance-authority": "0.7.1",
     "next": "15.5.22",

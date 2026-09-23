@@ -1,71 +1,32 @@
-import { SERVICIOS, type Servicio } from '@/content/servicios'
-import type { ServicioId } from '@/lib/tipos'
+import { getLandingService, getLandingServiceIds, getLandingSlug } from '@site/content'
+import { aServicioDeLanding, type Servicio } from '@/content/servicios'
 
 /**
- * Landings de campaña de `/lp/<slug>/`.
+ * legacy adapter, delete when a new design consumes @site/* directly
  *
- * No son páginas nuevas ni copy nuevo: son las de servicio recompuestas. Cada
- * una es el mismo `Servicio` del catálogo con tres campos opcionales puestos,
- * y `PaginaServicio.tsx` los respeta. Clonar la plantilla habría garantizado
- * que la landing y la página de servicio dijeran cosas distintas en un mes,
- * que es exactamente lo que `design/04` §2 prohíbe.
+ * Landings de campaña de `/lp/<slug>/`. Mismos exports, misma forma, mismos
+ * valores que antes de la migración — construidos ahora sobre
+ * `@site/content`'s `getLandingService`/`getLandingServiceIds` (locale
+ * 'es'), que reproduce exactamente la recomposición que antes hacía
+ * `recomponer()` aquí: el mismo `Servicio` del catálogo con
+ * `ocultarSecciones: ['seccion-ficha']`, `ctaContacto: true`,
+ * `sinAparece: true`. La lista de servicios de campaña
+ * (`impreso`/`pulido`/`lavado`/`microcemento`, sin `fratasado` ni
+ * `desactivado`) vive ahora en `@site/content`'s `data/campaign-landings.ts`
+ * en vez de escrita aquí a mano — mismo valor, misma fuente única.
  *
- * Lo que cambia respecto de la página de servicio, y por qué:
- *
- * - **Fuera la ficha técnica.** ⚠️ **El motivo original caducó el 2026-09-18 y
- *   el comportamiento se queda igual, a propósito.** Decía que los seis
- *   servicios llenaban la ficha de `<DatoPendiente>` —impreso 2 corchetes,
- *   pulido 4, microcemento 5, lavado 3— y que una landing de pago con un
- *   corchete es dinero quemado. Ya no queda ni un corchete en ninguna de las
- *   seis: el dueño mandó retirar las filas sin dato. Lo que queda es una ficha
- *   más corta —de 7 filas en impreso a 2 en microcemento—, y si vuelve o no a
- *   la landing es decisión suya, no una consecuencia de este cambio. Hasta que
- *   la tome, la landing sigue sin ficha: es la única sección que estas cuatro
- *   páginas han tenido oculta desde que existen, y quitarle a `/lp/` una
- *   sección que nadie ha pedido devolver no es trabajo de un `slice`.
- * - **CTA de llamada y WhatsApp** en el hero y en el cierre, en `tinta` y
- *   `contorno`. Nunca en ocre.
- * - **El cierre sin `<Aparece>`**: es el bloque de conversión y no debe depender
- *   de que hidrate un `IntersectionObserver`.
- *
- * **El JSON-LD viaja tal cual, y es una decisión tomada, no un descuido.** El
- * spread deja `servicio.ruta` apuntando a la página de servicio, así que la
- * landing emite un nodo `Service` con el `@id` y el `url` **canónicos**, más una
- * copia de la `FAQPage`. Se queda así: un `@id` identifica la entidad, no la
- * página, y que dos URLs afirmen la misma entidad es justo para lo que existe.
- * Además la landing es `noindex,follow`, o sea que ese marcado no compite en el
- * índice con nada. Lo que NO se puede hacer es lo contrario —apuntar `ruta` a
- * `/lp/…`—, porque entonces el `url` del `Service` señalaría una página que el
- * propio sitio pide no indexar. Si algún día molesta, la salida limpia es un
- * cuarto campo opcional `sinSchema` en la misma línea que `ocultarSecciones`.
- *
- * 🔴 **`fratasado` y `desactivado` no tienen landing, y no es un olvido.** La
- * lista de abajo es la de los cuatro servicios que el dueño quiere llevar a
- * campaña, y sigue siendo la misma después del 2026-09-18. Lo que cambia ese
- * día es que ya **no se deriva de un campo del catálogo**: hasta entonces se
- * leía «los que declaran `usosCalculadora`», y ese campo se ha retirado con la
- * calculadora. Añadir o quitar una landing es decisión del dueño y se escribe
- * aquí a mano.
- */
-const DE_CAMPANA: ServicioId[] = ['impreso', 'pulido', 'lavado', 'microcemento']
-
-function recomponer(id: ServicioId): Servicio {
-  return {
-    ...SERVICIOS[id],
-    ocultarSecciones: ['seccion-ficha'],
-    ctaContacto: true,
-    sinAparece: true,
-  }
-}
-
-/**
- * El slug de la landing es el de la página de servicio, sin barras:
- * `/hormigon-impreso/` → `hormigon-impreso` → `/lp/hormigon-impreso/`. Derivarlo
- * y no escribirlo evita que un día la landing viva en un slug que ya no existe
- * como servicio.
+ * El slug de la landing sigue derivándose de la ruta del servicio
+ * (`getLandingSlug`), nunca escrito a mano.
  */
 export const LANDINGS: Record<string, Servicio> = Object.fromEntries(
-  DE_CAMPANA.map((id) => [SERVICIOS[id].ruta.replace(/\//g, ''), recomponer(id)]),
+  getLandingServiceIds()
+    .map((id) => {
+      const landing = getLandingService(id, 'es')
+      const slug = getLandingSlug(id, 'es')
+      if (!landing || !slug) return undefined
+      return [slug, aServicioDeLanding(landing)] as const
+    })
+    .filter((entry): entry is readonly [string, Servicio] => entry !== undefined),
 )
 
 export const slugsLanding = Object.keys(LANDINGS)
