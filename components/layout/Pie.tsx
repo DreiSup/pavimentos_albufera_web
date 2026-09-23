@@ -71,6 +71,17 @@ export default function Pie() {
           >
             Política de cookies
           </Link>
+          {/* Reabre el aviso de `Consentimiento.tsx`, que delega el clic sobre
+              `document` —igual que `EventosGlobales.tsx`— leyendo este atributo.
+              Así este componente sigue siendo de servidor: no hace falta
+              convertirlo a 'use client' ni crear uno nuevo solo para el botón. */}
+          <button
+            type="button"
+            data-configurar-cookies
+            className="min-h-tactil flex items-center text-sobre-tinta no-underline"
+          >
+            Configurar cookies
+          </button>
         </nav>
       </div>
 

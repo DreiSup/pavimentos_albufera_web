@@ -47,13 +47,17 @@ function Cookie({ ficha }: { ficha: FichaCookie }) {
  * 4. **Google Analytics como «servicio prestado por Google, Inc.» de Mountain
  *    View.** El responsable para el EEE es Google Ireland Limited.
  *
- * 🔴 **Lo que esta página NO puede arreglar.** La guía exige que retirar el
- * consentimiento sea tan fácil como prestarlo, y da el criterio operativo:
- * acceso sencillo y permanente al panel de configuración. Hoy ese panel no
- * existe, y tampoco hay elección granular por finalidad. Esta página dice la
- * verdad —borrar la cookie en el navegador— porque es lo único que hoy
- * funciona; lo que falta es código, no texto. → `09-instrucciones-legales.md`
- * §6.1 y §6.4.
+ * ✅ **§6.1 cerrado, 2026-09-23.** La guía exige que retirar el consentimiento
+ * sea tan fácil como prestarlo, con acceso sencillo y permanente al panel de
+ * configuración: el botón «Configurar cookies» del pie (`Pie.tsx`) reabre
+ * este mismo aviso desde cualquier página, y `Consentimiento.tsx` borra las
+ * cookies de rastreo cuando la respuesta es una retirada —se rechaza después
+ * de haber aceptado—.
+ *
+ * 🔴 **§6.4 sigue sin arreglar: no hay elección granular por finalidad.** La
+ * respuesta sigue siendo conjunta —aceptar o rechazar cubre analítica y
+ * publicidad a la vez—, y así lo dice esta página. → `09-instrucciones-legales.md`
+ * §6.4.
  *
  * El inventario sigue levantado leyendo el código de este repositorio, y solo
  * el código. Lo que decide Google o Meta y no consta aquí —los nombres de sus
@@ -226,12 +230,12 @@ export default function PoliticaCookies() {
             <>
               <BloqueLegal titulo="Para volver a elegir">
                 <p>
-                  Esta web todavía no tiene un panel donde cambiar tu decisión después de haberla
-                  tomado, y lo decimos en lugar de dar un rodeo. Mientras no lo tenga, la forma de
-                  volver a elegir es borrar la cookie{' '}
-                  <span className="font-mono text-d-14">pa_consent</span> de este sitio en tu
-                  navegador: al hacerlo, el aviso vuelve a aparecer en la siguiente visita y puedes
-                  contestar otra cosa.
+                  Pulsa <strong>Configurar cookies</strong> en el pie de cualquier página: se abre
+                  este mismo aviso y puedes contestar otra cosa. Si rechazas después de haber
+                  aceptado, se borran también las cookies de analítica y publicidad que ya se
+                  hubieran guardado. La otra forma de volver a elegir sigue funcionando: borrar la
+                  cookie <span className="font-mono text-d-14">pa_consent</span> de este sitio en
+                  tu navegador hace que el aviso vuelva a aparecer en la siguiente visita.
                 </p>
                 <p>
                   Si borras todas las cookies de pavimentos-albufera.com se van también{' '}

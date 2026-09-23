@@ -4,6 +4,7 @@ import Script from 'next/script'
 import { useEffect, useState } from 'react'
 import { sitio } from '@/lib/config'
 import {
+  borrarCookiesRastreo,
   COOKIE_CONSENTIMIENTO,
   escribirCookie,
   leerCookie,
@@ -47,9 +48,33 @@ export default function Consentimiento() {
    */
   const [estado, setEstado] = useState<EstadoConsentimiento | 'pendiente' | null>(null)
 
+  /**
+   * Visibilidad del aviso, aparte de `estado`. En la primera visita coincide
+   * con `estado === 'pendiente'`, pero el botón «Configurar cookies» del pie
+   * (`Pie.tsx`) tiene que poder reabrirlo sin tocar la decisión ya guardada
+   * —si se reutilizara `estado` para eso, reabrir sin haber decidido nada
+   * todavía desmontaría el Pixel de Meta que ya estuviera cargado—.
+   */
+  const [bannerOpen, setBannerOpen] = useState(false)
+
   useEffect(() => {
     const guardado = leerCookie(COOKIE_CONSENTIMIENTO)
-    setEstado(guardado === 'aceptado' || guardado === 'rechazado' ? guardado : 'pendiente')
+    const valido = guardado === 'aceptado' || guardado === 'rechazado'
+    setEstado(valido ? guardado : 'pendiente')
+    if (!valido) setBannerOpen(true)
+  }, [])
+
+  /**
+   * Delegado en `document`, igual que `EventosGlobales.tsx`, para que
+   * `Pie.tsx` —un componente de servidor— solo tenga que escribir el
+   * atributo `data-configurar-cookies` sobre el botón del pie.
+   */
+  useEffect(() => {
+    function alClic(evento: MouseEvent) {
+      if ((evento.target as HTMLElement).closest('[data-configurar-cookies]')) setBannerOpen(true)
+    }
+    document.addEventListener('click', alClic)
+    return () => document.removeEventListener('click', alClic)
   }, [])
 
   /**
@@ -79,8 +104,29 @@ export default function Consentimiento() {
   }, [estado])
 
   function decidir(valor: EstadoConsentimiento) {
+    const eraAceptado = estado === 'aceptado'
     escribirCookie(COOKIE_CONSENTIMIENTO, valor, DIAS)
     setEstado(valor)
+    setBannerOpen(false)
+
+    // Retirada de un consentimiento ya concedido, no un rechazo de entrada.
+    // gtag.js y —si tocaba— el Pixel de Meta llevan corriendo en esta pestaña
+    // desde que se aceptó, y ninguno de los dos se puede "desinyectar". El
+    // `consent update` que manda el efecto de más arriba corre en el próximo
+    // repintado, y `location.reload()` no le da tiempo a llegar: se manda
+    // aquí, a mano, antes de borrar las cookies que esos scripts ya hubieran
+    // escrito y de recargar, para que la pestaña vuelva a nacer sin ellos.
+    if (valor === 'rechazado' && eraAceptado) {
+      window.gtag?.('consent', 'update', {
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        analytics_storage: 'denied',
+      })
+      window.fbq?.('consent', 'revoke')
+      borrarCookiesRastreo()
+      window.location.reload()
+    }
   }
 
   return (
@@ -125,7 +171,7 @@ export default function Consentimiento() {
         </Script>
       ) : null}
 
-      {estado === 'pendiente' ? (
+      {bannerOpen ? (
         /* 🔴 `cabecera-ancha:mb-0`, NO `md:mb-0`. El margen inferior de 56 px es
            el hueco de `BarraMovil`, y esa barra se apaga en 1180 px, no en 768:
            con `md:mb-0` el aviso se montaba ENCIMA de «Llamar» y «WhatsApp» en
