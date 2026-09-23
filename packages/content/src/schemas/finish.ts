@@ -36,6 +36,12 @@ export type Finish = {
    * yet: the entry stays in the catalog either way.
    */
   sample?: SiteImage
-  /** Project slugs this finish was executed on. */
+  /**
+   * Project slugs this finish was executed on — foreign keys, always
+   * `Project.slug.es` (the stable identifier a project was authored under),
+   * never locale-resolved. See the README's `Localized<T>` rule for why
+   * this array stays pinned to `es` while `Project.slug` itself is
+   * `Localized<T>`.
+   */
   projects: string[]
 }

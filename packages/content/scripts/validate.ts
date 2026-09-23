@@ -117,6 +117,9 @@ if (serviceCatalog.length !== services.length) fail(`service catalog has ${servi
 
 // ---- 3. Referential integrity ----------------------------------------------
 
+// `.es` here is FK identity: finish.projects/serviceArea.projects hold
+// Project.slug.es references (see schemas/finish.ts's `projects` field
+// comment), not locale-resolved text — this is not a locale fallback.
 const projectSlugs = new Set(projects.map((p) => p.slug.es))
 const modelIds = new Set(modelIdSchema.options)
 

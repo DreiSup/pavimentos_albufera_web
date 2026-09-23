@@ -106,10 +106,13 @@ export const PASOS: { numero: string; titulo: string; texto: ReactNode }[] = [
 
 /**
  * Convierte el `ResolvedService`/`ResolvedLandingService` de `@site/content`
- * a la forma `Servicio` heredada. Exportada para que `content/landings.ts`
- * la reutilice sobre `getLandingService` sin duplicar el mapeo campo a campo.
+ * a la forma `Servicio` heredada. Sin exportar — helper interno de este
+ * módulo; `content/landings.ts` reutiliza el mapeo vía `aServicioDeLanding`,
+ * no directamente esta función (D6: el adaptador conserva EXACTAMENTE los
+ * nombres/formas de export de antes; esta función es nueva, así que se
+ * mantiene privada en vez de sumarse a esa lista).
  */
-export function aServicio(s: ResolvedService): Servicio {
+function aServicio(s: ResolvedService): Servicio {
   return {
     id: s.id as ServicioId,
     ruta: s.path,

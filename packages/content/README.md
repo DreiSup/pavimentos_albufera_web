@@ -34,6 +34,14 @@ translations land. The only fields that stay **plain** (not `Localized`):
   `ColorId`, `ImageKind` — including its *values*, kept in their original
   Spanish spelling; see `schemas/image.ts`), a `projectCallout` block's
   `slug` reference, an `href`.
+- Foreign-key references to a project: `Finish.projects` and
+  `ServiceArea.projects` are `string[]` holding `Project.slug.es` — the
+  stable identifier a project was authored under, not resolved for the
+  caller's locale. They name WHICH project, they don't display it; nothing
+  reads them as visible text. `Project.slug` itself stays `Localized<T>`
+  (it's a URL path), so these two arrays are pinned to its `es` value on
+  purpose — see `schemas/finish.ts`/`schemas/service-area.ts`'s field
+  comments.
 - Proper nouns: town, province, the business name, a legal recipient's
   company name.
 - Numbers (`surfaceArea`, `year`, `ring`) and internal codes (`taxId`,

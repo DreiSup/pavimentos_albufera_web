@@ -17,7 +17,13 @@ export type ServiceArea = {
   province: Province
   /** Coverage-tier used only in the "zona de servicio" copy paragraph — internal prioritization, never shown as a raw number. */
   ring: 1 | 2 | 3
-  /** Project slugs in this area. */
+  /**
+   * Project slugs in this area — foreign keys, always `Project.slug.es`
+   * (the stable identifier a project was authored under), never
+   * locale-resolved. See the README's `Localized<T>` rule for why this
+   * array stays pinned to `es` while `Project.slug` itself is
+   * `Localized<T>`.
+   */
   projects: string[]
   services: ServiceId[]
 }

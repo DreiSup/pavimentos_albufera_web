@@ -68,7 +68,7 @@ export function getFinishesByModel(model: ModelId, locale: Locale): ResolvedFini
   return getPublishedFinishes(locale).filter((f) => f.model === model)
 }
 
-/** Published finishes that were executed on any of the given project slugs. */
+/** Published finishes that were executed on any of the given project slugs. `projectSlugs` are FK references (`Project.slug.es`), not locale-resolved text — see `schemas/finish.ts`'s `projects` field comment. */
 export function getFinishesByProjects(projectSlugs: readonly string[], locale: Locale): ResolvedFinish[] {
   return getPublishedFinishes(locale).filter((f) => f.projects.some((slug) => projectSlugs.includes(slug)))
 }
@@ -95,6 +95,9 @@ export function getServicesInUse(locale: Locale): ServiceId[] {
  * unconfirmed (e.g. `impreso-manta-gris`).
  */
 export function isFinishDocumented(finish: Finish): boolean {
+  // `.es` here is FK identity (finish.projects holds Project.slug.es
+  // references), not a locale fallback — see schemas/finish.ts's `projects`
+  // field comment.
   return finish.projects.some((slug) => Boolean(projects.find((p) => p.slug.es === slug)?.town))
 }
 
