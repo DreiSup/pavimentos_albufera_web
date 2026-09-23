@@ -52,9 +52,14 @@ const nextConfig: NextConfig = {
   experimental: {
     // El formulario admite una foto de hasta 4 MB. El límite por defecto de los
     // Server Actions es 1 MB, y al superarlo el envío falla con un error opaco.
-    // Se deja en 5 para dar margen al resto del formulario, por debajo de los
-    // 4,5 MB que Vercel corta a nivel de plataforma.
-    serverActions: { bodySizeLimit: '5mb' },
+    // 🔴 Hasta aquí esto decía "se deja en 5 para dar margen, por debajo de los
+    // 4,5 MB que Vercel corta a nivel de plataforma" — pero 5 MB está POR ENCIMA
+    // de esos 4,5, no por debajo: un envío de entre 4,5 y 5 MB pasaba este
+    // límite y lo cortaba Vercel con el mismo error opaco que este número existe
+    // para evitar. Se deja en 4300kb: por encima de los 4 MB que de verdad
+    // admite el formulario (`MAX_FOTO`, `app/presupuesto/actions.ts`) y por
+    // debajo de los 4,5 MB de Vercel, con margen para el resto de campos.
+    serverActions: { bodySizeLimit: '4300kb' },
   },
   async redirects() {
     // trailingSlash:true normaliza la URL entrante antes de evaluar los
