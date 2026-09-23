@@ -1,0 +1,8 @@
+Estos tres .md son material de origen que ha traido el dueño.
+
+🔴 NO BORRES ESTA CARPETA. El dueño ha dicho expresamente que se queda.
+   (Una instruccion anterior decia lo contrario: queda anulada.)
+
+Se leen para publicar su contenido en las tres paginas legales. No se
+redactan, no se resumen y no se inventan datos: lo que falte va con
+<DatoPendiente>, entre corchetes.
