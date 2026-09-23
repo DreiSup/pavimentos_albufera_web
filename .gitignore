@@ -1,9 +1,12 @@
 # dependencies
-/node_modules
+node_modules
 
 # next.js
-/.next/
-/out/
+.next/
+out/
+
+# turborepo
+.turbo
 
 # production
 /build
@@ -38,8 +41,8 @@ next-env.d.ts
 # pasa por CDN, con brotli del edge y caché de imagen distinta, así que los
 # números absolutos no se parecen. La línea base de verdad se toma desplegando
 # el commit anterior como preview y midiendo ahí.
-/.lighthouseci/
-/informes-lighthouse/
+.lighthouseci/
+informes-lighthouse/
 
 # logotipo original que suelta el usuario, no es activo del repo:
 # las variantes derivadas viven en public/marca/
