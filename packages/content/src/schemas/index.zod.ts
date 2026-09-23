@@ -1,0 +1,12 @@
+/** Runtime (zod) barrel — imported only by `scripts/validate.ts`. Never import this from `data/`, `queries/` or an app adapter. */
+export { localizedSchema, localizedText } from './localized.zod.ts'
+export { imageKindSchema, siteImageSchema } from './image.zod.ts'
+export { businessSchema } from './business.zod.ts'
+export { serviceIdSchema, serviceSectionSchema, serviceSchema } from './service.zod.ts'
+export { modelIdSchema, colorIdSchema, finishSchema } from './finish.zod.ts'
+export { modelSchema } from './model.zod.ts'
+export { provinceSchema, serviceAreaSchema, unconfirmedServiceAreaTownsSchema } from './service-area.zod.ts'
+export { projectSchema, projectRecordSchema } from './project.zod.ts'
+export { articleSchema, articleBlockSchema } from './article.zod.ts'
+export { questionSchema } from './faq.zod.ts'
+export { legalFactsSchema } from './legal-facts.zod.ts'
