@@ -63,6 +63,17 @@ import {
  * Lo que sí cambia es lo que se PINTA dentro: `resolver` compone las variantes
  * con `acabadosPorModelo`, que ya solo devuelve publicados.
  */
+
+/**
+ * Sin esto, un `[modelo]` inventado no da un 404 estático: invoca una función
+ * en Vercel para acabar devolviendo lo mismo. `rutasDeAcabado()` es el mismo
+ * origen que consume `resolver()` de más abajo —modelos del catálogo más los
+ * acabados sueltos sin modelo—, así que cubre exactamente los parámetros que
+ * hacen que la ficha exista. → `app/lp/[slug]/page.tsx`, que fue el primero en
+ * declararlo.
+ */
+export const dynamicParams = false
+
 export function generateStaticParams() {
   return rutasDeAcabado().map((modelo) => ({ modelo }))
 }

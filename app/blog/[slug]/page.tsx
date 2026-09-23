@@ -8,6 +8,15 @@ import TarjetaProyecto from '@/components/contenido/TarjetaProyecto'
 import { articuloPorSlug, articulos, proyectosPorServicio } from '@/lib/datos'
 import { NOMBRE_SERVICIO } from '@/lib/tipos'
 
+/**
+ * Sin esto, un slug inventado —enlace mal pegado, rastreador, alguien
+ * probando— no da un 404 estático: invoca una función en Vercel para acabar
+ * devolviendo lo mismo. `generateStaticParams` ya cubre los tres artículos de
+ * `articulos`, que es la misma fuente que usa `articuloPorSlug`.
+ * → `app/lp/[slug]/page.tsx`, que fue el primero en declararlo.
+ */
+export const dynamicParams = false
+
 export function generateStaticParams() {
   return articulos.map((a) => ({ slug: a.slug }))
 }

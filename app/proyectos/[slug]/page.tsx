@@ -10,6 +10,15 @@ import Migas from '@/components/layout/Migas'
 import { acabados, articuloQueExplica, proyectoPorSlug, proyectos, proyectosPorServicio } from '@/lib/datos'
 import { CODIGO_COLOR, NOMBRE_MODELO, NOMBRE_SERVICIO } from '@/lib/tipos'
 
+/**
+ * Sin esto, un slug inventado no da un 404 estático: invoca una función en
+ * Vercel para acabar devolviendo lo mismo. `generateStaticParams` ya cubre
+ * todos los proyectos de `proyectos`, que es la misma fuente que usa
+ * `proyectoPorSlug`. → `app/lp/[slug]/page.tsx`, que fue el primero en
+ * declararlo.
+ */
+export const dynamicParams = false
+
 export function generateStaticParams() {
   return proyectos.map((p) => ({ slug: p.slug }))
 }

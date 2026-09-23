@@ -14,6 +14,14 @@ import { acabadosPorProyectos, proyectosDe, zonaPorSlug, zonas } from '@/lib/dat
 import { faqZona } from '@/content/faq'
 import { NOMBRE_SERVICIO, RUTA_SERVICIO } from '@/lib/tipos'
 
+/**
+ * Sin esto, un municipio inventado no da un 404 estático: invoca una función
+ * en Vercel para acabar devolviendo lo mismo. `generateStaticParams` ya cubre
+ * todas las zonas de `zonas`, que es la misma fuente que usa `zonaPorSlug`.
+ * → `app/lp/[slug]/page.tsx`, que fue el primero en declararlo.
+ */
+export const dynamicParams = false
+
 export function generateStaticParams() {
   return zonas.map((z) => ({ municipio: z.slug }))
 }
