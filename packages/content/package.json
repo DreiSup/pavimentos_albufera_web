@@ -6,7 +6,9 @@
   "exports": {
     ".": "./src/index.ts",
     "./business-data": "./src/data/business.ts",
-    "./color-data": "./src/data/colors.ts"
+    "./color-data": "./src/data/colors.ts",
+    "./service-catalog-data": "./src/data/service-catalog.ts",
+    "./models-data": "./src/data/models.ts"
   },
   "sideEffects": false,
   "scripts": {

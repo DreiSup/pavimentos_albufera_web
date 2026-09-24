@@ -2,18 +2,26 @@
  * legacy adapter, delete when a new design consumes @site/* directly
  *
  * Tipos sin cambios; los tres catálogos de nombre/ruta se construyen ahora
- * sobre `@site/content` (locale 'es') en vez de estar escritos a mano dos
- * veces (aquí y en `content/servicios.tsx`/`content/modelos.ts`). No
- * client-reachable (solo lo importa `components/layout/Pie.tsx`, componente
- * de servidor), así que una llamada de nivel superior al paquete no supone
- * riesgo de bundle.
+ * sobre datos de `@site/content` (locale 'es', leído directamente: este
+ * sitio es solo `es`) en vez de estar escritos a mano dos veces (aquí y en
+ * `content/servicios.tsx`/`content/modelos.ts`).
  *
- * `CODIGO_COLOR` (D24) se construye ahora desde `@site/content`'s
+ * DECISIONS.md (D17 final) nombra este archivo explícitamente, junto con
+ * `lib/config.ts`, como adaptador client-reachable: importa solo hojas de
+ * datos por subpath (`service-catalog-data`, `models-data`, `color-data`),
+ * nunca el barrel principal ni sus funciones de `queries/` — aunque hoy solo
+ * lo importen componentes de servidor (14 sitios, no solo `Pie.tsx`), para
+ * que ese hecho no se rompa en silencio el día que un componente de cliente
+ * lo importe.
+ *
+ * `CODIGO_COLOR` (D24) se construye desde `@site/content/color-data`'s
  * `colorCatalog` — mismos valores que el literal que tenía antes de la
  * migración, ya no escritos a mano dos veces (aquí y en
  * `packages/content/src/data/colors.ts`).
  */
-import { colorCatalog, getModels, getServiceCatalog } from '@site/content'
+import { colorCatalog } from '@site/content/color-data'
+import { serviceCatalog } from '@site/content/service-catalog-data'
+import { models } from '@site/content/models-data'
 
 export type ServicioId =
   | 'impreso'
@@ -103,18 +111,16 @@ export type Articulo = {
   imagenApertura?: Imagen
 }
 
-const catalogoServicios = getServiceCatalog('es')
-
 export const NOMBRE_SERVICIO: Record<ServicioId, string> = Object.fromEntries(
-  catalogoServicios.map((s) => [s.id, s.name]),
+  serviceCatalog.map((s) => [s.id, s.name.es]),
 ) as Record<ServicioId, string>
 
 export const RUTA_SERVICIO: Record<ServicioId, string> = Object.fromEntries(
-  catalogoServicios.map((s) => [s.id, s.path]),
+  serviceCatalog.map((s) => [s.id, s.path.es]),
 ) as Record<ServicioId, string>
 
 export const NOMBRE_MODELO: Record<ModeloId, string> = Object.fromEntries(
-  getModels('es').map((m) => [m.id, m.name]),
+  models.map((m) => [m.id, m.name.es]),
 ) as Record<ModeloId, string>
 
 export const CODIGO_COLOR: Record<ColorId, string> = Object.fromEntries(
