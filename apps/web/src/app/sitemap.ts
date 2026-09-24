@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next'
+import { buildSitemapEntries } from '@site/seo'
 import { sitio } from '@/lib/config'
 import { articulos, proyectos, rutasDeAcabado, zonas } from '@/lib/datos'
 import { SERVICIOS } from '@/content/servicios'
@@ -33,11 +34,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Ningún gate del `postbuild` contrasta este archivo contra las rutas que el
   // build genera, así que una copia desfasada sería un 404 declarado en el
   // sitemap sin nadie mirando. → `lib/datos.ts`
-  return [
-    ...rutasEstaticas.map((ruta) => ({ url: `${sitio.url}${ruta}` })),
-    ...rutasDeAcabado().map((r) => ({ url: `${sitio.url}/acabados/${r}/` })),
-    ...proyectos.map((p) => ({ url: `${sitio.url}/proyectos/${p.slug}/` })),
-    ...zonas.map((z) => ({ url: `${sitio.url}/zonas/${z.slug}/` })),
-    ...articulos.map((a) => ({ url: `${sitio.url}/blog/${a.slug}/` })),
-  ]
+  return buildSitemapEntries({
+    siteUrl: sitio.url,
+    staticRoutes: rutasEstaticas,
+    finishRoutes: rutasDeAcabado(),
+    projectSlugs: proyectos.map((p) => p.slug),
+    zoneSlugs: zonas.map((z) => z.slug),
+    articleSlugs: articulos.map((a) => a.slug),
+  })
 }

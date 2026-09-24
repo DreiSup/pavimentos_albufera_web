@@ -1,11 +1,7 @@
 import type { MetadataRoute } from 'next'
+import { buildRobots } from '@site/seo'
 import { sitio } from '@/lib/config'
 
 export default function robots(): MetadataRoute.Robots {
-  return {
-    rules: [
-      { userAgent: '*', allow: '/', disallow: ['/author/'] },
-    ],
-    sitemap: `${sitio.url}/sitemap.xml`,
-  }
+  return buildRobots(sitio.url, ['/author/'])
 }

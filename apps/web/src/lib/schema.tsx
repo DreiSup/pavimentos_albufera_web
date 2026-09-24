@@ -1,22 +1,47 @@
+/**
+ * legacy adapter, delete when a new design consumes @site/* directly
+ *
+ * Same Spanish function names and same JSON-LD shapes/values as before this
+ * migration, now built via `@site/seo`'s builders from `./config` facts.
+ * `@site/seo` has no React/Next in it (§3 of `arquitectura-plantilla-
+ * monorepo.md`), so the `JsonLd` React component stays here — it's the one
+ * bit of actual React in this module.
+ *
+ * `@site/seo`'s builders are per-repo, not a byte-for-byte port of
+ * Pavivasa's own package — this site's live output differs from Pavivasa's
+ * shape in several places (see each builder's own comment), and this
+ * migration reproduces THAT output, not Pavivasa's:
+ *   - `schemaServicio` has no `description` key at all. The old call passed
+ *     the service *name* under an argument literally called `nombre` — a
+ *     pre-existing gap (no real `description` ever shipped), not fixed here.
+ *   - `schemaServicio`'s `areaServed` is plain province-name strings, not
+ *     `AdministrativeArea` nodes like the business node below.
+ *   - `schemaFAQ` always carries `publisher` and never filters/returns null.
+ *   - `schemaMigas` never drops an intermediate item with no route (unlike
+ *     Pavivasa's builder) — `zonas/[municipio]/page.tsx` relies on that.
+ */
+import {
+  businessJsonLdId,
+  buildLocalBusinessJsonLd,
+  buildServiceJsonLd,
+  buildFaqJsonLd,
+  buildBreadcrumbsJsonLd,
+} from '@site/seo'
 import { nap, sitio } from './config'
 import type { ServicioId } from './tipos'
 
 /**
- * Ancla del grafo. `app/layout.tsx` emite `schemaNegocioLocal()` en las 45
+ * Ancla del grafo. `app/layout.tsx` emite `schemaNegocioLocal()` en las 52
  * rutas, así que este `@id` está siempre resuelto y el resto de bloques puede
  * referenciarlo en lugar de repetir el nombre del negocio. Sin él, cada isla
  * de JSON-LD era una empresa distinta para quien lo lee.
- *
- * `sitio.url` no lleva barra final y el sitio sí (`trailingSlash: true`), así
- * que la barra va escrita aquí: el nodo cuelga de la home.
  */
-export const ID_NEGOCIO = `${sitio.url}/#negocio`
+export const ID_NEGOCIO = businessJsonLdId(sitio.url)
 
 /**
  * Perfiles oficiales del negocio para `sameAs`. Vacío a propósito: la URL del
- * Perfil de Empresa de Google es dato del dueño y entra por la tarea 2.9 de
- * `design/06-plan-rendimiento-y-medicion.md`. Mientras esté vacío, `sameAs` no
- * se emite; un perfil inventado es peor que ninguno.
+ * Perfil de Empresa de Google es dato del dueño y aún no ha llegado. Mientras
+ * esté vacío, `sameAs` no se emite; un perfil inventado es peor que ninguno.
  */
 const perfiles: string[] = []
 
@@ -31,63 +56,46 @@ const perfiles: string[] = []
  */
 const RUTA_LOGO = '/marca/logo.png'
 
+/** Provincias publicadas en `areaServed`: literal, no derivado de proyectos. Ver DECISIONS.md D10. */
+const PROVINCIAS_SERVIDAS = ['Valencia', 'Castellón', 'Alicante']
+
 export function schemaNegocioLocal() {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'HomeAndConstructionBusiness',
-    '@id': ID_NEGOCIO,
+  return buildLocalBusinessJsonLd({
+    siteUrl: sitio.url,
     name: nap.nombre,
-    url: sitio.url,
     logo: `${sitio.url}${RUTA_LOGO}`,
     email: nap.email,
-    ...(nap.telefonoHref ? { telephone: nap.telefonoHref.replace('tel:', '') } : {}),
-    ...(perfiles.length > 0 ? { sameAs: perfiles } : {}),
+    phoneHref: nap.telefonoHref,
     address: {
-      '@type': 'PostalAddress',
-      streetAddress: nap.direccion ?? undefined,
-      addressLocality: nap.municipio,
+      streetAddress: nap.direccion,
+      town: nap.municipio,
       postalCode: nap.codigoPostal,
-      addressRegion: nap.provincia,
-      addressCountry: nap.pais,
+      province: nap.provincia,
+      country: nap.pais,
     },
-    areaServed: [
-      { '@type': 'AdministrativeArea', name: 'Valencia' },
-      { '@type': 'AdministrativeArea', name: 'Castellón' },
-      { '@type': 'AdministrativeArea', name: 'Alicante' },
-    ],
-  }
+    areaServed: PROVINCIAS_SERVIDAS,
+    sameAs: perfiles,
+  })
 }
 
 export function schemaServicio(servicio: ServicioId, nombre: string, ruta: string) {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'Service',
-    '@id': `${sitio.url}${ruta}#servicio`,
-    serviceType: nombre,
+  return buildServiceJsonLd({
+    siteUrl: sitio.url,
+    route: ruta,
+    name: nombre,
     // Referencia al nodo del layout, no una copia. Antes esto era un
     // `HomeAndConstructionBusiness` inline con solo el nombre: un segundo
     // negocio, sin dirección ni teléfono, compitiendo con el de verdad.
-    provider: { '@id': ID_NEGOCIO },
-    areaServed: ['Valencia', 'Castellón', 'Alicante'],
-    url: `${sitio.url}${ruta}`,
-  }
+    businessId: ID_NEGOCIO,
+    areaServed: PROVINCIAS_SERVIDAS,
+  })
 }
 
 export function schemaFAQ(preguntas: { pregunta: string; respuesta: string }[]) {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    // Quién responde. Es el único enlace honesto de un `FAQPage` al negocio:
-    // `publisher` es propiedad de `CreativeWork` y el nodo del layout es una
-    // `Organization`. No lleva `@id` propio porque la función no recibe la
-    // ruta de la página y no hay de dónde derivarla.
-    publisher: { '@id': ID_NEGOCIO },
-    mainEntity: preguntas.map((p) => ({
-      '@type': 'Question',
-      name: p.pregunta,
-      acceptedAnswer: { '@type': 'Answer', text: p.respuesta },
-    })),
-  }
+  return buildFaqJsonLd(
+    ID_NEGOCIO,
+    preguntas.map((p) => ({ question: p.pregunta, answer: p.respuesta })),
+  )
 }
 
 /**
@@ -99,22 +107,14 @@ export function schemaFAQ(preguntas: { pregunta: string; respuesta: string }[]) 
  * `/lp/`, que recomponen un `Servicio` cuya `ruta` es la **canónica**: pasarle
  * esa ruta ancla el fragmento `#migas` a una URL que no es la de la página que
  * lo sirve, que es peor que no emitirlo. Google no exige `@id` en
- * `BreadcrumbList`. Antes había aquí un parámetro `ruta` opcional que ningún
- * punto de llamada pasaba: era código muerto que invitaba a creer que ya
- * funcionaba. Si algún día una pantalla necesita el `@id`, que lo emita quien
- * conozca su propia URL.
+ * `BreadcrumbList`. Si algún día una pantalla necesita el `@id`, que lo emita
+ * quien conozca su propia URL.
  */
 export function schemaMigas(items: { nombre: string; ruta?: string }[]) {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: items.map((item, i) => ({
-      '@type': 'ListItem',
-      position: i + 1,
-      name: item.nombre,
-      ...(item.ruta ? { item: `${sitio.url}${item.ruta}` } : {}),
-    })),
-  }
+  return buildBreadcrumbsJsonLd(
+    sitio.url,
+    items.map((item) => ({ name: item.nombre, route: item.ruta })),
+  )
 }
 
 export function JsonLd({ data }: { data: object }) {

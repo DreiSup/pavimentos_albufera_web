@@ -13,6 +13,7 @@
   "dependencies": {
     "@site/config": "workspace:*",
     "@site/content": "workspace:*",
+    "@site/seo": "workspace:*",
     "@vercel/speed-insights": "2.0.0",
     "class-variance-authority": "0.7.1",
     "next": "15.5.22",
