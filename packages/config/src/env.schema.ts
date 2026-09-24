@@ -6,8 +6,10 @@
  * `MenuMovil.tsx`, `Consentimiento.tsx`…), and a `z.object(...)` here would
  * pull the zod runtime into that bundle for no reason: `env.ts`'s plain
  * reads already express this shape at runtime. Nothing in the
- * client-reachable graph imports this file — it exists for its inferred
- * type only, this phase (no `check-env` script wired yet).
+ * client-reachable graph imports this file — the only place that imports
+ * it as a value is `scripts/check-env.ts` (the `check-env` task, wired as
+ * `apps/web`'s `prebuild`), which runs as its own `node` process and never
+ * ships to a route.
  *
  * Env var NAMES are this repo's own (D9 — not renamed to match Pavivasa):
  * `NEXT_PUBLIC_ADS_ID`/`NEXT_PUBLIC_ADS_ETIQUETA_LLAMADA`, not

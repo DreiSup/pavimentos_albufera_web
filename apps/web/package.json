@@ -5,6 +5,7 @@
   "sideEffects": ["**/*.css"],
   "scripts": {
     "dev": "next dev",
+    "prebuild": "pnpm --filter @site/config run check-env",
     "build": "next build && node scripts/verificar-redirecciones.mjs && node scripts/verificar-imagenes.mjs && node scripts/verificar-presupuesto.mjs && node scripts/verificar-lcp-visible.mjs && node scripts/verificar-landings.mjs",
     "start": "next start",
     "lint": "next lint",

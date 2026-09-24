@@ -12,7 +12,8 @@
   "sideEffects": false,
   "scripts": {
     "transit": "true",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "check-env": "node --experimental-strip-types scripts/check-env.ts"
   },
   "dependencies": {
     "zod": "3.25.76"
