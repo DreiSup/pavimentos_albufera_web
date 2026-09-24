@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+env:
+  NEXT_TELEMETRY_DISABLED: '1'
+  COREPACK_ENABLE_DOWNLOAD_PROMPT: '0'
+  NEXT_PUBLIC_SITE_URL: https://pavimentos-albufera.com
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      # No `version:` input on purpose — this reads the pinned version from
+      # this repo's own `packageManager` field (pnpm@9.15.9). Passing both
+      # and letting them disagree is a hard error on pnpm/action-setup.
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate content (Zod)
+        run: pnpm content:validate
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      # `apps/web`'s own `prebuild` (check-env) and `build` (`next build`
+      # chained with the 5 `verificar-*.mjs` postbuild verifiers — D3) run
+      # here, inside this one step: apps/web/.env.local does NOT exist in
+      # this clean checkout (it's a gitignored local dev symlink — see
+      # DECISIONS.md D2), and none of these gates depend on it. Contact-data
+      # checks (verificar-landings.mjs, and this port's CTA/JSON-LD checks
+      # below) all stay non-fatal without it — see scripts/verify/README.md.
+      - name: Build
+        run: pnpm --filter web build
+
+      # Postbuild verifiers — sitemap/links/redirects/JSON-LD/metadata/
+      # robots/images/CTAs/page-count against the build above. See
+      # scripts/verify/README.md, including its overlap table against the 5
+      # verifiers that already ran inside the build step above.
+      - name: Run postbuild verifiers
+        run: pnpm verify
+
+      # Secrets-leak check needs its OWN build made with fake, CI-only
+      # sentinel values for the server-only env vars (never real secrets —
+      # see scripts/verify/secrets-scan.mjs's own comment on why). This
+      # build is intentionally separate from the one `verify` just checked.
+      # `verify:secrets` (scripts/verify/build-and-scan-secrets.mjs) does
+      # both the build and the scan itself, reading the sentinel values
+      # from scripts/verify/sentinels.mjs — the single source of truth —
+      # so they're never hand-copied into this workflow at all.
+      - name: Build with sentinel secrets and check for leaks into public output (bundle + HTML/RSC)
+        run: pnpm run verify:secrets
+
+# No deploy step here on purpose — Vercel deploys itself from its own Git
+# integration. This workflow only REPORTS a pass/fail status on the commit;
+# by default Vercel's Git integration does not wait for that status before
+# deploying. To make a red run here actually block promotion, configure
+# that in the Vercel project's dashboard (a deployment-gating / "wait for
+# checks" style setting) or require this job as a GitHub branch-protection
+# check on the deploy branch — whichever the account's current Vercel
+# plan/UI offers.

@@ -1,0 +1,332 @@
+{
+  "$comment": "Baseline allowlist for scripts/verify. The matching key is (check, code, route, detail) — `detail` is optional (a free-text discriminator, e.g. the exact offending text/file) and an entry that omits it matches only an issue that itself has no `detail`, so a NEW, different collision on the same route is never silently hidden behind an old entry. Any issue whose key doesn't match an entry here still fails the build. Every entry needs a self-contained `reason` (don't reference other entries or files outside this repo). Remove an entry once the underlying issue is actually fixed — BOTH index.mjs (pnpm verify) and secrets-scan.mjs (pnpm verify:secrets) FAIL the run on a stale entry here (D29: 'CI is green today and a NEW issue fails' — a stale entry silently hiding a future, different issue on the same key is exactly the failure mode this guards against).",
+  "entries": [
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/acabados/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/acabados/adoquin-irregular/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/acabados/adoquin-pequeno/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/acabados/espiga/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/acabados/fratasado-arena/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/acabados/lavado-arido-visto/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/acabados/manta/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/acabados/microcemento-crema/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/acabados/piedra-inglesa/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/acabados/piedra-rodena/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/acabados/piedra-silleria/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/acabados/pulido-gris/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/acabados/silleria-grande/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/aviso-legal/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "duplicate-description",
+      "route": "/aviso-legal/",
+      "detail": "Hormigón impreso, pulido, lavado y microcemento en Valencia, Castellón y Alicante. 17 años de obra propia y 10 de garantía. Presupuesto sin compromiso.",
+      "reason": "Pre-existing content gap: the 3 legal pages (aviso-legal, politica-de-cookies, politica-de-privacidad) set no page-specific description in their own metadata, so Next falls back to the root layout.tsx description (the homepage's), producing an exact duplicate. Reported to the user as an SEO improvement (each legal page needs its own description), not fixed here: public output must stay byte-identical for this migration phase. detail pins this to that exact description text — a future, different duplicate on the same route is a new issue."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/blog/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/blog/guia-hormigon-pulido/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/blog/hormigon-desactivado-piedra-vista/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/blog/hormigon-fratasado-fino-en-viviendas/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/empresa/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/hormigon-desactivado/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/hormigon-fratasado/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/hormigon-impreso/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/hormigon-lavado/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/hormigon-pulido/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/lp/hormigon-impreso/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/lp/hormigon-lavado/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/lp/hormigon-pulido/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/lp/microcemento/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/microcemento/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/politica-de-cookies/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "duplicate-description",
+      "route": "/politica-de-cookies/",
+      "detail": "Hormigón impreso, pulido, lavado y microcemento en Valencia, Castellón y Alicante. 17 años de obra propia y 10 de garantía. Presupuesto sin compromiso.",
+      "reason": "Pre-existing content gap: the 3 legal pages (aviso-legal, politica-de-cookies, politica-de-privacidad) set no page-specific description in their own metadata, so Next falls back to the root layout.tsx description (the homepage's), producing an exact duplicate. Reported to the user as an SEO improvement (each legal page needs its own description), not fixed here: public output must stay byte-identical for this migration phase. detail pins this to that exact description text — a future, different duplicate on the same route is a new issue."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/politica-de-privacidad/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "duplicate-description",
+      "route": "/politica-de-privacidad/",
+      "detail": "Hormigón impreso, pulido, lavado y microcemento en Valencia, Castellón y Alicante. 17 años de obra propia y 10 de garantía. Presupuesto sin compromiso.",
+      "reason": "Pre-existing content gap: the 3 legal pages (aviso-legal, politica-de-cookies, politica-de-privacidad) set no page-specific description in their own metadata, so Next falls back to the root layout.tsx description (the homepage's), producing an exact duplicate. Reported to the user as an SEO improvement (each legal page needs its own description), not fixed here: public output must stay byte-identical for this migration phase. detail pins this to that exact description text — a future, different duplicate on the same route is a new issue."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/presupuesto/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/proyectos/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/proyectos/alzira-impreso-adoquin-irregular-107/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/proyectos/corbera-fratasado-arena/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/proyectos/denia-impreso-piedra-inglesa/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/proyectos/godella-lavado-arido-visto/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/proyectos/impreso-manta-gris/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/proyectos/moncada-impreso-espiga-117/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/proyectos/moraira-impreso-adoquin-arena/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/proyectos/ribarroja-pulido/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/proyectos/xabia-pulido/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/zonas/alzira/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/zonas/corbera/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/zonas/denia/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/zonas/godella/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/zonas/moncada/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/zonas/moraira/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/zonas/ribarroja/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    },
+    {
+      "check": "metadata",
+      "code": "missing-og-url",
+      "route": "/zonas/xabia/",
+      "reason": "Pre-existing gap in apps/web/src/app/layout.tsx: the shared openGraph metadata block deliberately sets only type/locale/siteName (see its own comment: Next inherits title/description per page and app/opengraph-image.png cascades the image), and never sets openGraph.url, so Next never emits a <meta property=\"og:url\"> tag on ANY page. Reported to the user as an SEO improvement (adding the per-page alternates.canonical value as openGraph.url would fix it), not fixed here: public output must stay byte-identical for this migration phase."
+    }
+  ]
+}
