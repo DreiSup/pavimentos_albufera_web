@@ -10,8 +10,8 @@
  *
  * The four dynamic collections' URL prefixes come from `routes` (see
  * `routes.ts`), defaulting to `DEFAULT_ROUTES` — this site's own values —
- * when the caller omits it, so `app/sitemap.ts` (frozen for this
- * migration, never passes `routes`) keeps building the exact same URLs.
+ * when the caller omits it, so `app/sitemap.ts` (doesn't pass `routes`)
+ * keeps building the exact same URLs.
  * `staticRoutes` stays fully composed by the caller: it mixes home, the
  * service catalog and section/legal pages in an order this package has no
  * business owning, unlike the four collections below, which are each a

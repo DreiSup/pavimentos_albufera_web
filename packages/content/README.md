@@ -9,11 +9,14 @@ exports — see "Client-bundle rule" below for which, and why.
 
 **Wired into `apps/web`** via the legacy adapters under `apps/web/src/lib`
 and `apps/web/src/content` that keep the old Spanish API the frontend
-components already use (`getServices`, `getFinishes`, `getProjects`… behind
-`lib/datos.ts`, `lib/tipos.ts`, `lib/config.ts`, `content/servicios.tsx`,
-`content/faq.ts`, `content/landings.ts`, `content/legal.tsx`).
-`apps/web/src/app/sitemap.ts` also reads from it, through `lib/datos.ts`
-and `content/servicios.tsx`. Run `pnpm turbo run
+components already use — most of them (`lib/datos.ts`,
+`content/servicios.tsx`, `content/faq.ts`, `content/landings.ts`,
+`content/legal.tsx`, `content/modelos.ts`) read `getServices`,
+`getFinishes`, `getProjects`… through the main barrel (`.`, i.e.
+`src/queries/`); the two that are client-reachable (`lib/tipos.ts`,
+`lib/config.ts`) read the data-only subpaths instead — see "Client-bundle
+rule" below. `apps/web/src/app/sitemap.ts` also reads from it, through
+`lib/datos.ts` and `content/servicios.tsx`. Run `pnpm turbo run
 content:validate` before any build that doesn't already depend on it;
 `turbo run build` does depend on it
 (`turbo.json`'s `build` task lists `content:validate`/`^content:validate`),
@@ -141,10 +144,12 @@ are real, non-dead code the moment any field is read, so webpack can't
 tree-shake them away, and importing them from a client-reachable module
 costs real bytes on every route that module reaches — measured and fixed
 during this migration by diffing compiled `.next` chunks byte-for-byte
-against a clean pre-migration build. Each of those four subpaths exports a
-single plain object/array literal — no zod, no locale resolution, no
-generic dispatch — so there is nothing left for a bundler to keep once the
-importing adapter re-derives just the fields it needs. Add a new such
+against the phase-1 build. Each of those four subpaths exports one runtime
+value — a plain object or array literal, no zod, no locale resolution, no
+generic dispatch (`service-catalog-data` also exports its type, erased at
+compile time, so nothing at runtime) — so there is nothing left for a
+bundler to keep once the importing adapter re-derives just the fields it
+needs. Add a new such
 subpath only for another data-only leaf a client adapter genuinely needs
 this way; everything else — including every server-only adapter — reads
 through `queries/` or the main barrel as usual.

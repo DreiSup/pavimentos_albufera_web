@@ -1,11 +1,13 @@
 /**
  * Public route prefixes for this site's four dynamic collections — one
- * listing page plus one detail page per item (finishes, projects, service
- * areas, articles) — this site's values since before the migration.
- * `buildSitemapEntries` takes these through an optional `routes` field and
- * falls back to `DEFAULT_ROUTES` when it's omitted, so a caller that
- * doesn't pass one (`apps/web/src/app/sitemap.ts`, frozen for this
- * migration) keeps building the exact same URLs. A different client passes
+ * detail page per item (finishes, projects, service areas, articles), plus
+ * a listing page for three of the four (finishes/`/acabados/`,
+ * projects/`/proyectos/`, articles/`/blog/`; service areas have no
+ * `/zonas/` index, only `/zonas/[municipio]/`) — this site's values since
+ * before the migration. `buildSitemapEntries` takes these through an
+ * optional `routes` field and falls back to `DEFAULT_ROUTES` when it's
+ * omitted, so a caller that doesn't pass one (`apps/web/src/app/sitemap.ts`
+ * doesn't) keeps building the exact same URLs. A different client passes
  * its own `routes` instead of forking the builder.
  *
  * Mirrors Pavivasa's `RoutePrefixes`/`DEFAULT_ROUTES` pattern
