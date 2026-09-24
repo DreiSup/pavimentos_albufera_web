@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { nap, sitio } from '@/lib/config'
 import { JsonLd, schemaNegocioLocal } from '@/lib/schema'
 import { COOKIE_CONSENTIMIENTO } from '@/lib/cookies'
+import { buildConsentDefaultScript } from '@site/tracking/consent-mode'
 import Cabecera from '@/components/layout/Cabecera'
 import Pie from '@/components/layout/Pie'
 import BarraMovil from '@/components/layout/BarraMovil'
@@ -124,14 +125,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <script
             // eslint-disable-next-line react/no-danger
             dangerouslySetInnerHTML={{
-              __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)};
-var paConsent=/(^|; )${COOKIE_CONSENTIMIENTO}=aceptado/.test(document.cookie)?'granted':'denied';
-gtag('consent','default',{ad_storage:paConsent,ad_user_data:paConsent,ad_personalization:paConsent,analytics_storage:paConsent,wait_for_update:500});
-gtag('set','ads_data_redaction',true);
-gtag('set','url_passthrough',true);
-gtag('js',new Date());
-${idsEtiqueta.map((id) => `gtag('config','${id}');`).join('\n')}
-(function(){var s=document.createElement('script');s.async=1;s.src='https://www.googletagmanager.com/gtag/js?id=${idsEtiqueta[0]}';document.head.appendChild(s)})();`,
+              __html: buildConsentDefaultScript(COOKIE_CONSENTIMIENTO, idsEtiqueta),
             }}
           />
         ) : null}
