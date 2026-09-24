@@ -139,7 +139,7 @@ Resumen:
 | `TELEGRAM_CHAT_ID` | servidor | Igual que arriba. | igual |
 | `META_CAPI_ACCESS_TOKEN` | servidor | Sin ella, `sendMetaConversionEvent` (`@site/tracking/server`) no hace nada aunque haya consentimiento y pixel id. | igual, marcar "sensitive" |
 | `META_CAPI_TEST_EVENT_CODE` | servidor | Código de evento de prueba de Meta CAPI (Test Events); opcional, solo para depurar en el panel de Meta. | igual |
-| `VERCEL_ENV` | la pone Vercel | La define Vercel automáticamente (`production`/`preview`/`development`); `check-env` (prebuild de `apps/web`) la lee para avisar si falta `NEXT_PUBLIC_SITE_URL` en producción. No configurar a mano. | no aplica |
+| `VERCEL_ENV` | la pone Vercel | La define Vercel automáticamente (`production`/`preview`/`development`). `check-env` (prebuild de `apps/web`) la lee para avisar si falta `NEXT_PUBLIC_SITE_URL` en producción; `verificar-landings.mjs` la lee para decidir si falla el build (producción) o solo avisa (cualquier otro valor) cuando el teléfono es el de reserva. No configurar a mano. | no aplica |
 
 "Pública" = `NEXT_PUBLIC_*`, leída también en el navegador (Next.js la
 inyecta en build solo si aparece como literal `process.env.NEXT_PUBLIC_X`,
@@ -347,23 +347,28 @@ Técnico, heredado de fases anteriores de esta migración:
   - `BreadcrumbList` no filtra los tramos intermedios sin ruta propia (ver
     `packages/seo/src/json-ld/breadcrumbs.ts` y el README de
     `scripts/verify`).
-  - `FAQPage` lleva `publisher` — no estaba en el sitio pre-migración de
-    Pavivasa, es un añadido de este sitio que se mantiene.
+  - `FAQPage` lleva `publisher`: este sitio lo emitía ya antes de migrar; el
+    `FAQPage` de Pavivasa no lo lleva.
   - `/zonas/xabia/` es `noindex` (sin foto todavía) pero sigue listada en
     `sitemap.xml` (`app/sitemap.ts` no filtra por `noindex`).
 - **Preguntas de texto legal sin resolver**: `packages/content/src/legal/09-instrucciones-legales.md`
-  deja varias filas de las tablas legales con `[PENDIENTE: confirmar...]`
-  — p. ej. si el dueño está adherido a algún código de conducta (§g) y si
-  aplica un delegado de protección de datos (§13.1.b, probablemente no,
-  pero sin confirmar). Ninguna de estas filas se ha escrito en
-  `apps/web/src/content/legal.tsx` todavía. El §6.3 de ese mismo documento
-  (mencionado en el comentario de `Consentimiento.tsx`) pide que `pa_ref`
-  no se escriba antes de que el visitante decida sobre las cookies —
-  arreglar eso es otro encargo, fuera de esta migración (comportamiento
-  idéntico al de antes de migrar). `data/legal.ts`'s `lastLegalReview`
-  (`18 de septiembre de 2026`) es un valor fijo, no derivado de ningún
-  control de versiones del texto legal: actualizarlo a mano cada vez que
-  el texto cambie de verdad.
+  deja varias respuestas pendientes de que el dueño confirme (art. 10.1.g
+  LSSI: código de conducta al que esté adherida la empresa, si a alguno;
+  art. 13.1.b RGPD: si hace falta delegado de protección de datos —
+  probablemente no, el documento apunta que ningún supuesto del art. 37
+  RGPD encaja, pero sin confirmar). Estas dos, más los datos registrales y
+  el domicilio social, ya se publican hoy como `<DatoPendiente>` en
+  `apps/web/src/content/legal.tsx` (filas CÓDIGOS DE CONDUCTA, DELEGADO DE
+  PROTECCIÓN DE DATOS, DATOS REGISTRALES, DOMICILIO SOCIAL/DOMICILIO) —
+  siguen entre corchetes hasta que el dueño responda, no hace falta ningún
+  cambio de código cuando lo haga. Por separado, el comentario de
+  `Consentimiento.tsx` señala que la sección 6, punto 3 de ese mismo
+  documento pide que `pa_ref` no se escriba antes de que el visitante
+  decida sobre las cookies — arreglar eso es otro encargo, fuera de esta
+  migración (comportamiento idéntico al de antes de migrar).
+  `data/legal.ts`'s `lastLegalReview` (`18 de septiembre de 2026`) es un
+  valor fijo, no derivado de ningún control de versiones del texto legal:
+  actualizarlo a mano cada vez que el texto cambie de verdad.
 - **Copy del banner de cookies al reabrir**: `Consentimiento.tsx` usa el
   mismo texto ("antes de que decidas...") tanto en la primera visita como
   al reabrir el panel desde "Configurar cookies" en el pie, aunque quien

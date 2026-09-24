@@ -268,11 +268,21 @@ pnpm verify                  # verificadores raíz (D29) sobre un build ya hecho
 Gates antes de cada commit: `content:validate` → `lint` → `typecheck` → `build` → `verify` (y
 `verify:secrets` si se tocó algo de tracking/env) — debe pasar sin warnings.
 
+Dos de los 5 verificadores de `apps/web` también se pueden correr sueltos (ambos resuelven sus
+rutas desde su propia ubicación, no desde el directorio de trabajo, así que valen desde la raíz
+del repo o desde `apps/web`):
+
+```bash
+node apps/web/scripts/verificar-redirecciones.mjs   # suelto, tras un build
+node apps/web/scripts/verificar-imagenes.mjs        # suelto, no necesita build
+```
+
 Para probar la medición en local hace falta `apps/web/.env.local` con `NEXT_PUBLIC_TELEFONO`,
 `NEXT_PUBLIC_WHATSAPP`, `NEXT_PUBLIC_GA_ID` y `NEXT_PUBLIC_META_PIXEL_ID` (ver "Desarrollo local"
 en el `README.md` de la raíz para cómo crearlo). **Con las variables vacías no se renderiza ni un
-solo `tel:` o `wa.me`** y `trackEvent` (`@site/tracking`, vía `apps/web/src/lib/eventos.ts`) es un no-op
-silencioso para lo que dependa de esos IDs: todo parece funcionar sin hacer nada.
+solo `tel:` o `wa.me`** y `registrarEvento` es un no-op silencioso: todo parece funcionar sin hacer
+nada (ahora por dentro llama a `trackEvent` de `@site/tracking`, vía
+`apps/web/src/lib/eventos.ts`, pero el no-op sigue siendo el mismo).
 
 ## Monorepo
 
