@@ -3,7 +3,8 @@ import { faq, serviceAreaFaqRefs } from '../data/faq.ts'
 import type { Question } from '../schemas/faq.ts'
 import type { ServiceArea } from '../schemas/service-area.ts'
 import type { ServiceId } from '../schemas/service.ts'
-import { resolveQuestions } from './resolve.ts'
+import type { ProjectId } from '../schemas/ids.ts'
+import { pickLocalized, resolveQuestions } from './resolve.ts'
 import type { Locale, ResolvedQuestion } from './resolve.ts'
 
 export type ResolvedServiceArea = {
@@ -11,13 +12,17 @@ export type ResolvedServiceArea = {
   town: string
   province: ServiceArea['province']
   ring: ServiceArea['ring']
-  projects: string[]
+  /** FK ids (D24: `ProjectId[]`), pinned to `es` — see `schemas/service-area.ts`'s `projects` field comment. Not locale-resolved: look each one up with `getProject(id, locale)` to get a linkable slug. */
+  projects: ProjectId[]
   services: ServiceId[]
 }
 
-function resolveServiceArea(area: ServiceArea): ResolvedServiceArea {
+/** `undefined` when the area has no translation for `locale` — same "no silent Spanish fallback" rule as every other `queries/` reader. */
+function resolveServiceArea(area: ServiceArea, locale: Locale): ResolvedServiceArea | undefined {
+  const slug = pickLocalized(area.slug, locale)
+  if (slug === undefined) return undefined
   return {
-    slug: area.slug,
+    slug,
     town: area.town,
     province: area.province,
     ring: area.ring,
@@ -26,14 +31,19 @@ function resolveServiceArea(area: ServiceArea): ResolvedServiceArea {
   }
 }
 
-/** All 8 documented service areas, in `data/service-areas.ts` order. */
-export function getServiceAreas(): ResolvedServiceArea[] {
-  return serviceAreas.map(resolveServiceArea)
+/** All 8 documented service areas, in `data/service-areas.ts` order, resolved for `locale`. */
+export function getServiceAreas(locale: Locale): ResolvedServiceArea[] {
+  const out: ResolvedServiceArea[] = []
+  for (const area of serviceAreas) {
+    const resolved = resolveServiceArea(area, locale)
+    if (resolved) out.push(resolved)
+  }
+  return out
 }
 
-export function getServiceArea(slug: string): ResolvedServiceArea | undefined {
-  const area = serviceAreas.find((a) => a.slug === slug)
-  return area ? resolveServiceArea(area) : undefined
+export function getServiceArea(slug: string, locale: Locale): ResolvedServiceArea | undefined {
+  const area = serviceAreas.find((a) => a.slug.es === slug)
+  return area ? resolveServiceArea(area, locale) : undefined
 }
 
 /** The shared FAQ subset every `/zonas/[municipio]/` page shows — `faqZona` in the source. */

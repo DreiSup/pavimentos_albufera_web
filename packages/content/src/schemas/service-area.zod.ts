@@ -1,10 +1,11 @@
 import { z } from 'zod'
 import { serviceIdSchema } from './service.zod.ts'
+import { localizedText } from './localized.zod.ts'
 
 export const provinceSchema = z.enum(['Valencia', 'Castellón', 'Alicante'])
 
 export const serviceAreaSchema = z.object({
-  slug: z.string().min(1),
+  slug: localizedText,
   town: z.string().min(1),
   province: provinceSchema,
   ring: z.union([z.literal(1), z.literal(2), z.literal(3)]),

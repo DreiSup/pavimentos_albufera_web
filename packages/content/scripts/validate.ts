@@ -17,7 +17,7 @@ import { z } from 'zod'
 
 import { businessSchema } from '../src/schemas/business.zod.ts'
 import { serviceSchema, serviceIdSchema } from '../src/schemas/service.zod.ts'
-import { finishSchema, modelIdSchema } from '../src/schemas/finish.zod.ts'
+import { finishSchema, modelIdSchema, colorIdSchema } from '../src/schemas/finish.zod.ts'
 import { modelSchema } from '../src/schemas/model.zod.ts'
 import { serviceAreaSchema, unconfirmedServiceAreaTownsSchema } from '../src/schemas/service-area.zod.ts'
 import { projectRecordSchema } from '../src/schemas/project.zod.ts'
@@ -25,6 +25,7 @@ import { articleSchema } from '../src/schemas/article.zod.ts'
 import { questionSchema } from '../src/schemas/faq.zod.ts'
 import { legalFactsSchema } from '../src/schemas/legal-facts.zod.ts'
 import { localizedText } from '../src/schemas/localized.zod.ts'
+import { colorCatalogEntrySchema } from '../src/schemas/color.zod.ts'
 
 import { business } from '../src/data/business.ts'
 import { services } from '../src/data/services.ts'
@@ -37,6 +38,7 @@ import { projects } from '../src/data/projects.ts'
 import { articles } from '../src/data/articles.ts'
 import { faq, homeFaqRefs, serviceAreaFaqRefs } from '../src/data/faq.ts'
 import { legal } from '../src/data/legal.ts'
+import { colorCatalog } from '../src/data/colors.ts'
 
 import { getProjects } from '../src/queries/projects.ts'
 import { getFinishes } from '../src/queries/finishes.ts'
@@ -78,7 +80,11 @@ for (const model of models) {
 }
 
 for (const area of serviceAreas) {
-  zodIssues(`service area "${area.slug}"`, serviceAreaSchema.safeParse(area))
+  zodIssues(`service area "${area.slug.es}"`, serviceAreaSchema.safeParse(area))
+}
+
+for (const entry of colorCatalog) {
+  zodIssues(`color catalog entry "${entry.id}"`, colorCatalogEntrySchema.safeParse(entry))
 }
 zodIssues('unconfirmedServiceAreaTowns', unconfirmedServiceAreaTownsSchema.safeParse(unconfirmedServiceAreaTowns))
 
@@ -115,6 +121,20 @@ for (const service of services) {
 }
 if (serviceCatalog.length !== services.length) fail(`service catalog has ${serviceCatalog.length} entries, services.ts has ${services.length}`)
 
+// ---- 2b. colorCatalog covers every ColorId exactly once (D24) --------------
+
+{
+  const catalogIds = colorCatalog.map((c) => c.id)
+  const catalogIdSet = new Set(catalogIds)
+  if (catalogIdSet.size !== catalogIds.length) fail(`color catalog: duplicate id(s) — ${catalogIds.join(', ')}`)
+  for (const id of colorIdSchema.options) {
+    if (!catalogIdSet.has(id)) fail(`color catalog: missing entry for color "${id}"`)
+  }
+  for (const id of catalogIds) {
+    if (!(colorIdSchema.options as readonly string[]).includes(id)) fail(`color catalog: "${id}" is not a known ColorId`)
+  }
+}
+
 // ---- 3. Referential integrity ----------------------------------------------
 
 // `.es` here is FK identity: finish.projects/serviceArea.projects hold
@@ -137,17 +157,17 @@ for (const project of projects) {
   }
 }
 
-// 3c. area -> project (every slug in ServiceArea.projects[] must exist)
+// 3c. area -> project (every id in ServiceArea.projects[] must exist — D24: ProjectId FK, pinned to `es`, see schemas/service-area.ts's `projects` field comment)
 for (const area of serviceAreas) {
-  for (const slug of area.projects) {
-    if (!projectSlugs.has(slug)) fail(`service area "${area.slug}": references unknown project "${slug}"`)
+  for (const id of area.projects) {
+    if (!projectSlugs.has(id)) fail(`service area "${area.slug.es}": references unknown project "${id}"`)
   }
 }
 
 // 3d. area -> service
 for (const area of serviceAreas) {
   for (const service of area.services) {
-    if (!serviceIds.has(service)) fail(`service area "${area.slug}": unknown service "${service}"`)
+    if (!serviceIds.has(service)) fail(`service area "${area.slug.es}": unknown service "${service}"`)
   }
 }
 
@@ -205,7 +225,7 @@ checkUniqueSlugs('services', services.map((s) => s.id))
 checkUniqueSlugs('finishes', finishes.map((f) => f.slug))
 checkUniqueSlugs('projects', projects.map((p) => p.slug.es))
 checkUniqueSlugs('articles', articles.map((a) => a.slug.es))
-checkUniqueSlugs('service areas', serviceAreas.map((a) => a.slug))
+checkUniqueSlugs('service areas', serviceAreas.map((a) => a.slug.es))
 // Landings derive their slug from a service path (see queries/services.ts's getLandingSlug): unique iff service paths are unique, which the service-path check below already implies for `es`.
 checkUniqueSlugs(
   'service paths (landings derive their slug from these)',
@@ -242,7 +262,7 @@ function checkNoEditorialKeys(label: string, value: unknown) {
 }
 for (const project of getProjects('es')) checkNoEditorialKeys(`resolved project "${project.slug}"`, project)
 for (const finish of getFinishes('es')) checkNoEditorialKeys(`resolved finish "${finish.slug}"`, finish)
-for (const area of getServiceAreas()) checkNoEditorialKeys(`resolved service area "${area.slug}"`, area)
+for (const area of getServiceAreas('es')) checkNoEditorialKeys(`resolved service area "${area.slug}"`, area)
 
 // ---- Report -----------------------------------------------------------------
 

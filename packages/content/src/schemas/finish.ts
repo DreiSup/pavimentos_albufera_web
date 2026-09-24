@@ -1,6 +1,7 @@
 import type { Localized } from './localized.ts'
 import type { SiteImage } from './image.ts'
 import type { ServiceId } from './service.ts'
+import type { ProjectId } from './ids.ts'
 
 /** A stamped-concrete pattern (mould), e.g. "espiga" (herringbone). Values kept as internal codes — not translated. */
 export type ModelId =
@@ -37,11 +38,11 @@ export type Finish = {
    */
   sample?: SiteImage
   /**
-   * Project slugs this finish was executed on — foreign keys, always
-   * `Project.slug.es` (the stable identifier a project was authored under),
-   * never locale-resolved. See the README's `Localized<T>` rule for why
-   * this array stays pinned to `es` while `Project.slug` itself is
-   * `Localized<T>`.
+   * Project ids this finish was executed on — foreign keys (D24:
+   * `ProjectId`), always `Project.slug.es` (the stable identifier a
+   * project was authored under), never locale-resolved. See the README's
+   * `Localized<T>` rule for why this array stays pinned to `es` while
+   * `Project.slug` itself is `Localized<T>`.
    */
-  projects: string[]
+  projects: ProjectId[]
 }

@@ -6,7 +6,7 @@ export type ServiceAreaRecord = ServiceArea & { _note?: string }
 /** The 8 documented `/zonas/[municipio]/` pages, from `content/zonas.json`. */
 export const serviceAreas: ServiceAreaRecord[] = [
   {
-    slug: 'moraira',
+    slug: { es: 'moraira' },
     town: 'Moraira',
     province: 'Alicante',
     ring: 1,
@@ -14,20 +14,20 @@ export const serviceAreas: ServiceAreaRecord[] = [
     services: ['impreso'],
     _note: 'Página de zona normativa. Perfil de cliente extranjero y segunda residencia, distinto al del área metropolitana de Valencia.',
   },
-  { slug: 'denia', town: 'Denia', province: 'Alicante', ring: 1, projects: ['denia-impreso-piedra-inglesa'], services: ['impreso'] },
-  { slug: 'ribarroja', town: 'Ribarroja', province: 'Valencia', ring: 1, projects: ['ribarroja-pulido'], services: ['pulido'] },
-  { slug: 'xabia', town: 'Xàbia', province: 'Alicante', ring: 1, projects: ['xabia-pulido'], services: ['pulido'] },
-  { slug: 'godella', town: 'Godella', province: 'Valencia', ring: 1, projects: ['godella-lavado-arido-visto'], services: ['lavado'] },
-  { slug: 'moncada', town: 'Moncada', province: 'Valencia', ring: 1, projects: ['moncada-impreso-espiga-117'], services: ['impreso'] },
+  { slug: { es: 'denia' }, town: 'Denia', province: 'Alicante', ring: 1, projects: ['denia-impreso-piedra-inglesa'], services: ['impreso'] },
+  { slug: { es: 'ribarroja' }, town: 'Ribarroja', province: 'Valencia', ring: 1, projects: ['ribarroja-pulido'], services: ['pulido'] },
+  { slug: { es: 'xabia' }, town: 'Xàbia', province: 'Alicante', ring: 1, projects: ['xabia-pulido'], services: ['pulido'] },
+  { slug: { es: 'godella' }, town: 'Godella', province: 'Valencia', ring: 1, projects: ['godella-lavado-arido-visto'], services: ['lavado'] },
+  { slug: { es: 'moncada' }, town: 'Moncada', province: 'Valencia', ring: 1, projects: ['moncada-impreso-espiga-117'], services: ['impreso'] },
   {
-    slug: 'alzira',
+    slug: { es: 'alzira' },
     town: 'Alzira',
     province: 'Valencia',
     ring: 1,
     projects: ['alzira-impreso-adoquin-irregular-107'],
     services: ['impreso'],
   },
-  { slug: 'corbera', town: 'Corbera', province: 'Valencia', ring: 1, projects: ['corbera-fratasado-arena'], services: ['fratasado'] },
+  { slug: { es: 'corbera' }, town: 'Corbera', province: 'Valencia', ring: 1, projects: ['corbera-fratasado-arena'], services: ['fratasado'] },
 ]
 
 /**

@@ -1,4 +1,6 @@
 import type { ServiceId } from './service.ts'
+import type { Localized } from './localized.ts'
+import type { ProjectId } from './ids.ts'
 
 /** Proper noun: plain, not translated. */
 export type Province = 'Valencia' | 'Castellón' | 'Alicante'
@@ -11,20 +13,26 @@ export type Province = 'Valencia' | 'Castellón' | 'Alicante'
  * override: `zona` → `ServiceArea`, `anillo` → `ring`, never `district`).
  */
 export type ServiceArea = {
-  slug: string
+  /**
+   * Public URL segment (D24: `Localized<string>`, `es` only published
+   * today — same shape as `Project.slug`/`Article.slug`, not a special
+   * case). Resolved to the current locale's slug by `queries/`, same as
+   * every other slug in this package.
+   */
+  slug: Localized<string>
   /** Town — proper noun: plain. */
   town: string
   province: Province
   /** Coverage-tier used only in the "zona de servicio" copy paragraph — internal prioritization, never shown as a raw number. */
   ring: 1 | 2 | 3
   /**
-   * Project slugs in this area — foreign keys, always `Project.slug.es`
-   * (the stable identifier a project was authored under), never
-   * locale-resolved. See the README's `Localized<T>` rule for why this
-   * array stays pinned to `es` while `Project.slug` itself is
+   * Project ids in this area — foreign keys (D24: `ProjectId`), always
+   * `Project.slug.es` (the stable identifier a project was authored
+   * under), never locale-resolved. See the README's `Localized<T>` rule
+   * for why this array stays pinned to `es` while `Project.slug` itself is
    * `Localized<T>`.
    */
-  projects: string[]
+  projects: ProjectId[]
   services: ServiceId[]
 }
 

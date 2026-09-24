@@ -49,6 +49,9 @@ export type { ResolvedModel } from './queries/models.ts'
 export { getServiceAreas, getServiceArea, getServiceAreaFaq } from './queries/service-areas.ts'
 export type { ResolvedServiceArea } from './queries/service-areas.ts'
 
+export { colorCatalog } from './data/colors.ts'
+export type { ColorCatalogEntry } from './schemas/color.ts'
+
 export {
   getProjects,
   getProject,
@@ -69,6 +72,7 @@ export { getQuestionsByRefs } from './queries/faq.ts'
 export type { ResolvedImage, ResolvedQuestion, Locale } from './queries/resolve.ts'
 
 export { pickLocalized, pickLocalizedList, LOCALES } from './schemas/localized.ts'
+export type { ProjectId } from './schemas/ids.ts'
 export type {
   Localized,
   SiteImage,

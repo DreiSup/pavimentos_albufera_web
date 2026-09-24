@@ -3,6 +3,9 @@ import type { SiteImage } from './image.ts'
 import type { ServiceId } from './service.ts'
 import type { ColorId, ModelId } from './finish.ts'
 import type { Province } from './service-area.ts'
+import type { ProjectId } from './ids.ts'
+
+export type { ProjectId }
 
 /**
  * Execution data for one job (concrete grade, thickness, aggregate…). Every

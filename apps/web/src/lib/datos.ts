@@ -119,7 +119,7 @@ function aArticulo(a: ResolvedArticle): Articulo {
 export const proyectos = getProjects('es').map(aProyecto)
 export const acabados = getFinishes('es').map(aAcabado)
 export const articulos = getArticles('es').map(aArticulo)
-export const zonas = getServiceAreas().map(aZona)
+export const zonas = getServiceAreas('es').map(aZona)
 
 export function proyectoPorSlug(slug: string): Proyecto | undefined {
   return proyectos.find((p) => p.slug === slug)

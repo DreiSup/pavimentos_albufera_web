@@ -8,12 +8,12 @@
  * de servidor), así que una llamada de nivel superior al paquete no supone
  * riesgo de bundle.
  *
- * `CODIGO_COLOR` se queda literal: es un lookup de identificadores internos
- * (código de color impreso en la muestra) sin equivalente de primer nivel en
- * `@site/content` hoy — cada `Finish.code` ya lo lleva por entrada, pero no
- * hay un catálogo `ColorId -> code` publicado aparte. Ver "questions".
+ * `CODIGO_COLOR` (D24) se construye ahora desde `@site/content`'s
+ * `colorCatalog` — mismos valores que el literal que tenía antes de la
+ * migración, ya no escritos a mano dos veces (aquí y en
+ * `packages/content/src/data/colors.ts`).
  */
-import { getModels, getServiceCatalog } from '@site/content'
+import { colorCatalog, getModels, getServiceCatalog } from '@site/content'
 
 export type ServicioId =
   | 'impreso'
@@ -117,12 +117,6 @@ export const NOMBRE_MODELO: Record<ModeloId, string> = Object.fromEntries(
   getModels('es').map((m) => [m.id, m.name]),
 ) as Record<ModeloId, string>
 
-export const CODIGO_COLOR: Record<ColorId, string> = {
-  '117': 'C-117',
-  '113': 'C-113',
-  '109': 'C-109',
-  '107': 'C-107',
-  gris: 'GRIS',
-  arena: 'ARENA',
-  crema: 'CREMA',
-}
+export const CODIGO_COLOR: Record<ColorId, string> = Object.fromEntries(
+  colorCatalog.map((c) => [c.id, c.code]),
+) as Record<ColorId, string>
