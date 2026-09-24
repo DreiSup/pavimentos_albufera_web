@@ -303,7 +303,7 @@ Server Action `enviarPresupuesto` (`app/presupuesto/actions.ts`), orden real:
 
 **Meta CAPI**: `sendMetaConversionEvent` no hace nada si falta `pixelId` o el token; el `pixelId` no es secreto (viaja como parámetro, no se lee dentro de `@site/config/server`). Sin segunda comprobación de consentimiento dentro de `@site/tracking/server` — el único filtro es el `if` del paso 7 de §8.2.
 
-**Piezas exportadas sin importador en `apps/web`** (documentadas para diseño futuro, no defecto): `consent-store.ts`, `attribution-client.ts`.
+**Piezas exportadas sin importador en `apps/web`** (documentadas para diseño futuro, no defecto): `consent-store.ts`, `attribution-client.ts`, `tracker-cookie-factory.ts` (borrado de cookies de rastreo al retirar el consentimiento, arriba — `apps/web/src/lib/cookies.ts` llama a `deleteTrackerCookies` directo en vez de a esta factory).
 
 ### 8.4 SEO (sitemap / robots / JSON-LD)
 
