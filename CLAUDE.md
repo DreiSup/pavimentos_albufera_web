@@ -1,7 +1,12 @@
 # CLAUDE.md — Pavimentos Albufera
 
-Rediseño y migración de pavimentos-albufera.com de WordPress a Next.js 15.
-La especificación completa está en `design/`. **Léela antes de escribir código.**
+**Lee primero `ARCHITECTURE.md`** para el contexto general del repo (mapa, capas, paquetes, rutas, flujos, contratos externos) antes de tocar nada aquí.
+
+Rediseño y migración de pavimentos-albufera.com de WordPress a Next.js 15,
+ahora en un monorepo pnpm + Turborepo (`apps/web` + paquetes `@site/*`) —
+ver la sección "Monorepo" más abajo. La especificación de diseño y
+contenido completa está en `design/` (sigue en la raíz, sin tocar por esta
+migración). **Léela antes de escribir código de diseño o contenido.**
 
 - `design/README.md` — panorama, stack, orden de trabajo
 - `design/01-sistema-de-diseno.md` — tokens y los 17 componentes base, con valores exactos
@@ -21,13 +26,13 @@ La especificación completa está en `design/`. **Léela antes de escribir códi
   `#D9A441` pigmento · `#41535C` acero. No añadir colores.
 - **Única excepción, y no se extiende: el logotipo.** Desde el 2026-09-01 la identidad es un
   archivo del dueño con dos azules propios (`#000D2A` y `#014BA2`), más `#8FB4D6` derivado para
-  la variante clara. Empieza y acaba en `public/marca/`: ningún texto, borde, fondo ni estado
+  la variante clara. Empieza y acaba en `apps/web/public/marca/`: ningún texto, borde, fondo ni estado
   del sitio usa esos valores. → `design/01` §2.1
 - **Segunda y última excepción: el verde de WhatsApp.** Desde el 2026-09-18, `#25D366` (y su
   `:hover` `#20B859`) son el fondo de los botones cuyo `href` abre WhatsApp, con el rótulo en
   `--tinta` — **8,48 : 1**, porque con blanco mide 1,98 y no pasa AA. Empieza y acaba ahí: ni
   texto, ni borde ajeno al botón, ni fondo, ni estado, ni foco. Lo decide `esEnlaceWhatsApp()`
-  en `lib/config.ts`, el mismo predicado con el que se cuenta un `whatsapp_click`.
+  en `apps/web/src/lib/config.ts`, el mismo predicado con el que se cuenta un `whatsapp_click`.
   → `design/01` §2.1 y §3.16
 - `border-radius: 0` en todo (regla sobre superficies; el dibujo de un icono o del logotipo
   puede llevar curvas). Una sola sombra en toda la web: la de la barra fija de móvil.
@@ -72,7 +77,7 @@ La especificación completa está en `design/`. **Léela antes de escribir códi
     desplegado se contrasta el `content-length` de
     `curl -sI -H 'Accept-Encoding: br' <preview>/_next/static/chunks/4bd1b696-*.js` contra 46.749.
 - Sin librerías de animación, de iconos ni de formularios. Los dos iconos del sitio son SVG en
-  línea, escritos a mano, en `components/ui/Iconos.tsx`. → `design/01` §3.16
+  línea, escritos a mano, en `apps/web/src/components/ui/Iconos.tsx`. → `design/01` §3.16
 - `trailingSlash: true` fijo.
 - Sin `AggregateRating` mientras no haya reseñas verificables.
 - 44 px de objetivo táctil, foco de teclado visible siempre, contraste AA,
@@ -124,18 +129,23 @@ cuatro landings `/lp/` y 1.19 el primer route handler del repo.
 
 **Las seis páginas de servicio existen ya.** `design/04` §1 especificaba seis y solo se había
 construido `/hormigon-impreso/`. Las otras cinco faltaban, y por eso **10 de las 33 redirecciones
-301 aterrizaban en un 404**. Ahora hay una plantilla única —`components/secciones/PaginaServicio.tsx`
-+ `content/servicios.tsx`— que consume impreso también: una plantilla, no seis copias.
+301 aterrizaban en un 404**. Ahora hay una plantilla única —`apps/web/src/components/secciones/PaginaServicio.tsx`
++ `apps/web/src/content/servicios.tsx`— que consume impreso también: una plantilla, no seis copias.
 
 🔴 **`next build` NO valida los destinos de `redirects()`.** Un build limpio convive perfectamente
 con treinta y tres redirecciones de las que diez son 404. Por eso existe
-`scripts/verificar-redirecciones.mjs`, que corre como `postbuild` y **falla el build** si un destino
-no está entre las rutas realmente generadas. Contrasta contra rutas concretas, no contra patrones
-dinámicos: es la diferencia entre saber que existe `/zonas/[municipio]` y saber que existe
-`/zonas/alicante` — que no existe, y no debe existir.
+`apps/web/scripts/verificar-redirecciones.mjs`, que corre encadenado en el `build` de `apps/web`
+(D3 de la migración a monorepo — antes corría como `postbuild`, ese hook se retiró para que no
+corriera dos veces) y **falla el build** si un destino no está entre las rutas realmente
+generadas. Contrasta contra rutas concretas, no contra patrones dinámicos: es la diferencia entre
+saber que existe `/zonas/[municipio]` y saber que existe `/zonas/alicante` — que no existe, y no
+debe existir.
 
-**Medición.** El contrato de eventos vive entero en `lib/eventos.ts`: nombres y parámetros en
-inglés `snake_case`, contenido en español. Si un nombre no está ahí, no se manda.
+**Medición.** El contrato de eventos vive entero en `apps/web/src/lib/eventos.ts`: nombres y
+parámetros en inglés `snake_case`, contenido en español. Si un nombre no está ahí, no se manda.
+Desde la migración a monorepo, el envío en sí (`gtag`/`fbq`) sale de `@site/tracking`'s
+`trackEvent`; este archivo sigue siendo el único punto de entrada de `apps/web`, con la
+deduplicación por sesión (`EVENTOS_UNA_VEZ_POR_SESION`, prefijo `pa_evt_`) igual que antes.
 
 - `phone_click` · `whatsapp_click` · `email_click` · `form_submit` · `calculator_use` ·
   `samples_filter` · `scroll_depth` · `faq_open`
@@ -147,10 +157,13 @@ inglés `snake_case`, contenido en español. Si un nombre no está ahí, no se m
 
 **Consent Mode v2 avanzado.** Los cuatro permisos arrancan `denied` y pasan a `granted` al aceptar.
 El estado vive en **cookie de primera parte**, no en `localStorage`, porque el Server Action tiene
-que leerlo. ⚠️ **El bloque `consent default` está en `app/layout.tsx` y carga `gtag.js` él mismo, en
-su última línea, a propósito**: al dejárselo a `next/script` Next colocaba gtag.js antes que el
-bloque, y un `consent default` que llega después de que gtag.js vacíe la cola de `dataLayer` no
-sirve de nada. El Pixel de Meta sigue con bloqueo duro: no tiene equivalente de Consent Mode.
+que leerlo. ⚠️ **El bloque `consent default` está en `apps/web/src/app/layout.tsx` y carga `gtag.js`
+él mismo, en su última línea, a propósito**: al dejárselo a `next/script` Next colocaba gtag.js
+antes que el bloque, y un `consent default` que llega después de que gtag.js vacíe la cola de
+`dataLayer` no sirve de nada. El Pixel de Meta sigue con bloqueo duro: no tiene equivalente de
+Consent Mode. Desde la migración a monorepo, la plantilla exacta del script sale de
+`buildConsentDefaultScript` (`@site/tracking/consent-mode`); `layout.tsx` solo la invoca — mismo
+byte a byte que antes, comprobado en la migración.
 
 **Atribución.** `Atribucion.tsx` guarda `gclid`/`gbraid`/`wbraid`/`utm_*` en cookie (primer toque
 gana) y genera un `reference_code` de 6 caracteres que inyecta en el mensaje prellenado de los
@@ -166,40 +179,48 @@ servidor, así que el href no puede llevar un código por visitante: se parchea 
 - La CAPI de Meta se disparaba sin comprobar el consentimiento. El email y el aviso de Telegram sí
   salen siempre: son la ejecución del servicio pedido, no publicidad.
 
-**FAQ.** Estaba copiada literalmente en tres archivos; ahora el catálogo está en `content/faq.ts` con
-`tema` obligatorio en el tipo. ⚠️ **Cada servicio compone su propia lista en `content/servicios.tsx`,
-y no hay una compartida**: `grietas` y `sobreExistente` nombran el hormigón impreso dentro del texto,
+**FAQ.** Estaba copiada literalmente en tres archivos; ahora el catálogo está en
+`apps/web/src/content/faq.ts` con `tema` obligatorio en el tipo (desde la migración a monorepo, el
+pool de preguntas en sí vive en `packages/content/src/data/faq.ts`, y este archivo es el adaptador
+legacy que lo recompone). ⚠️ **Cada servicio compone su propia lista en
+`apps/web/src/content/servicios.tsx`, y no hay una compartida**: `grietas` y `sobreExistente`
+nombran el hormigón impreso dentro del texto,
 y al ponerlas en las seis páginas `/microcemento/` acababa preguntando si se agrieta el hormigón
 impreso. `/microcemento/` no lleva FAQ porque ninguna pregunta del catálogo le aplica sin
 reescribirla, y reescribirla es copy nuevo.
 
-**Fotografía. La web ya se ve.** `components/contenido/Foto.tsx` envuelve `next/image` y **cae en
-`<BloquePosicion>` cuando no hay imagen**: ninguna pantalla decide entre foto y hueco, pide la foto
-y el componente resuelve. Por eso el tratamiento de pendiente sigue apareciendo solo donde falta el
-original de verdad —`xabia-pulido`, el hueco `ANTES`, seis de los dieciséis acabados— y no hay que
-acordarse de quitarlo.
+**Fotografía. La web ya se ve.** `apps/web/src/components/contenido/Foto.tsx` envuelve `next/image`
+y **cae en `<BloquePosicion>` cuando no hay imagen**: ninguna pantalla decide entre foto y hueco,
+pide la foto y el componente resuelve. Por eso el tratamiento de pendiente sigue apareciendo solo
+donde falta el original de verdad —`xabia-pulido`, el hueco `ANTES`, seis de los dieciséis
+acabados— y no hay que acordarse de quitarlo.
 
 Los datos viven en los campos que el modelo de contenido ya tenía: `Proyecto.imagenes[]`,
 `Acabado.muestra` (ampliado de `string` a `Imagen`, para que el `alt` no sea opcional),
-`Articulo.imagenApertura`, más `Servicio.imagenHero`/`imagenTarjeta` en `content/servicios.tsx` y
-`content/modelos.ts` para el hero de `/acabados/[modelo]/`. La zona deriva la suya del primer
-proyecto: no hay dato nuevo.
+`Articulo.imagenApertura`, más `Servicio.imagenHero`/`imagenTarjeta` en
+`apps/web/src/content/servicios.tsx` y `apps/web/src/content/modelos.ts` para el hero de
+`/acabados/[modelo]/`. La zona deriva la suya del primer proyecto: no hay dato nuevo. (Estos son
+los nombres de tipo/campo de cuando el contenido vivía en JSON, en la fecha de esta entrada; desde
+la migración a monorepo el contenido real vive en `packages/content/src/data/*.ts` en inglés —
+`Project.images`, `Finish.sample`, `Article.openingImage`… — y estos archivos de `apps/web/src/content/`
+son los adaptadores que conservan los nombres de aquí para el resto de `apps/web`.)
 
 - Las **125 fotos se han abierto una a una** y los 14 `alt` de la raíz están reescritos
   describiendo la foto, no el proyecto. **15 no se usan y no se borran**: 6 de stock, 8 de pistas
-  de pádel —otro negocio— y un collage. Todo anotado en `public/obras/INVENTARIO.md`.
+  de pádel —otro negocio— y un collage. Todo anotado en `apps/web/public/obras/INVENTARIO.md`.
 - Las de `_sin-atribuir/` se citan **con su nombre original**. Renombrarlas al patrón de la raíz
   afirmaría municipio y año que nadie ha confirmado; el nombre no se ve en pantalla.
 - 🔴 **`next build` tampoco valida el `src` de `next/image`.** Un `src` mal escrito compila limpio
-  y en producción es un hueco vacío. `scripts/verificar-imagenes.mjs` corre en `postbuild`, junto al
-  de las redirecciones, y falla el build.
+  y en producción es un hueco vacío. `apps/web/scripts/verificar-imagenes.mjs` corre encadenado en
+  el `build` de `apps/web`, junto al de las redirecciones (ver nota de D3 más arriba), y falla el
+  build.
 - ✅ **El umbral fotográfico ya no es una cifra inalcanzable.** `design/05` §C #13 (2026-08-29)
   retira los 2400 px —que **ninguna de las 164 originales cumple**— y pone tres, verificados
   midiendo el archivo: **suelo 800 px** y **1600 px a sangre** fallan el build; **objetivo 1600 px**
   solo informa. La etiqueta del bloque de posición dice ahora «ORIGINAL A 1600 PX».
 - 🔴 **Y el número que hay que mirar no es cuántas cumplen, sino cuáles no.** Las 19 de 35 que no
   llegan al objetivo son **las de obra documentada** —898 a 1200 px, salvo Denia a 2048— y son
-  justo las que `app/proyectos/[slug]/page.tsx:61` sirve **a sangre**, `sizes="100vw"` en 21/9.
+  justo las que `apps/web/src/app/proyectos/[slug]/page.tsx:61` sirve **a sangre**, `sizes="100vw"` en 21/9.
   Las de 1600+ son casi todas de `_sin-atribuir/`: **la foto que mejor se ve es la que menos se
   puede afirmar.** Eso, y no el umbral, es lo que justifica una sesión nueva.
 - El presupuesto de JS sube de **111 a 116 kB** en la home —de los que `next/image` pone ~5—, pero
@@ -229,20 +250,83 @@ proyecto: no hay dato nuevo.
 
 ## Comandos
 
+Desde la migración a monorepo (ver "Monorepo" más abajo), este repo usa pnpm + Turborepo, no
+`npm`. Ver el `README.md` de la raíz para la lista completa; el resumen para trabajar en `apps/web`:
+
 ```bash
-npm run dev
-npm run build       # debe pasar sin warnings antes de cada commit
-                    # incluye postbuild: verifica los destinos de las 301
-                    # y que toda foto citada exista en public/ con alt
-npm run lint
-node scripts/verificar-redirecciones.mjs   # suelto, tras un build
-node scripts/verificar-imagenes.mjs        # suelto, no necesita build
+pnpm dev                # turbo run dev
+pnpm build               # turbo run build — apps/web encadena next build con sus 5
+                          # verificadores (redirecciones, imágenes, presupuesto de JS,
+                          # LCP visible, landings) en su propio `build`, no en un `postbuild`
+pnpm lint
+pnpm typecheck
+pnpm content:validate      # Zod sobre packages/content — corre solo, o como parte de
+                            # `pnpm build`/`turbo run build` (no de `pnpm --filter web build` a secas)
+pnpm verify                  # verificadores raíz (D29) sobre un build ya hecho
 ```
 
-Para probar la medición en local hace falta un `.env.local` con `NEXT_PUBLIC_TELEFONO`,
-`NEXT_PUBLIC_WHATSAPP`, `NEXT_PUBLIC_GA_ID` y `NEXT_PUBLIC_META_PIXEL_ID`. **Con las variables
-vacías no se renderiza ni un solo `tel:` o `wa.me`** y `registrarEvento` es un no-op silencioso:
-todo parece funcionar sin hacer nada.
+Gates antes de cada commit: `content:validate` → `lint` → `typecheck` → `build` → `verify` (y
+`verify:secrets` si se tocó algo de tracking/env) — debe pasar sin warnings.
+
+Para probar la medición en local hace falta `apps/web/.env.local` con `NEXT_PUBLIC_TELEFONO`,
+`NEXT_PUBLIC_WHATSAPP`, `NEXT_PUBLIC_GA_ID` y `NEXT_PUBLIC_META_PIXEL_ID` (ver "Desarrollo local"
+en el `README.md` de la raíz para cómo crearlo). **Con las variables vacías no se renderiza ni un
+solo `tel:` o `wa.me`** y `trackEvent` (`@site/tracking`, vía `apps/web/src/lib/eventos.ts`) es un no-op
+silencioso para lo que dependa de esos IDs: todo parece funcionar sin hacer nada.
+
+## Monorepo
+
+Migración a pnpm + Turborepo (misma plantilla que `pavivasa`): la app pasó de la raíz a
+`apps/web`, y el contenido/SEO/tracking/entorno se extrajeron a paquetes `@site/*`
+(`packages/content`, `packages/seo`, `packages/tracking`, `packages/config`). Ver el
+`README.md` de la raíz para estructura, comandos y despliegue en Vercel, y
+`ARCHITECTURE.md` para el mapa completo. Reglas específicas de esta fase, además de todo
+lo de arriba (que sigue vigente sin cambios):
+
+- **Frontend congelado.** `apps/web/src/app/**` y `apps/web/src/components/**` no se tocan
+  mientras dure esta fase: la salida pública tiene que seguir siendo byte-idéntica a la de
+  antes de migrar. Un fix real ahí va a `scripts/verify/known-issues.json` con su motivo, no
+  al código.
+- **Los adaptadores legacy** de `apps/web/src/lib/` y `apps/web/src/content/` (comentario
+  `legacy adapter, delete when a new design consumes @site/* directly`) se borran cuando el
+  rediseño consuma `@site/*` directamente. Hasta entonces, mismas formas y valores en
+  español que antes de migrar — no renombrar ni "limpiar" su API aunque parezca redundante.
+  Ver "Adaptadores legacy" en el `README.md` de la raíz para la lista.
+- **Contenido solo por `@site/content`.** Todo dato del negocio (servicios, acabados,
+  modelos, zonas, proyectos, artículos, FAQ, landings, hechos legales) vive en
+  `packages/content/src/data/*.ts` y se lee a través de `packages/content/src/queries/*.ts`
+  — nunca `data/` directo desde `apps/web`, salvo los subpaths de datos-solo documentados en
+  el README de `@site/content` para los adaptadores alcanzables desde cliente. Después de
+  cualquier cambio de contenido: `pnpm content:validate`.
+- **Un export por archivo en todo módulo alcanzable desde cliente.** Un módulo que un
+  componente `'use client'` importa no se separa por *función* (dos funciones en el mismo
+  archivo siguen tirando del árbol entero) — se separa por **archivo**; un `index.ts`
+  reexporta cada pieza desde su propio módulo hermano. Encontrado y medido durante esta
+  migración (ver `packages/tracking/README.md`'s "Layout").
+- **Import por subpath de datos, nunca por el barrel, en un adaptador alcanzable desde
+  cliente.** `apps/web/src/lib/config.ts` y `apps/web/src/lib/tipos.ts` importan hojas de
+  datos concretas (`@site/content/business-data`, `@site/config/env`…), no `@site/content`
+  ni `@site/config` a secas: el barrel arrastra un resolver genérico (`pickLocalized`,
+  Zod…) que no se puede eliminar del bundle aunque no haga falta — coste medido durante la
+  migración (decenas de bytes por ruta, en las 52 rutas del sitio), no hipotético.
+- **`NEXT_PUBLIC_*` solo como literal exacto** (`process.env.NEXT_PUBLIC_X`), nunca dinámico
+  (`process.env[nombre]`) — es la única forma que Next.js sustituye en build para el bundle
+  cliente. Ver `packages/config/src/env.ts`.
+- **Secretos de servidor, solo a través de `@site/config/server`** — nunca `process.env`
+  directo fuera de ese paquete, y nunca desde un módulo que un componente `'use client'`
+  pueda alcanzar. `EMAIL_DESTINO` (destino del lead) se lee solo en
+  `apps/web/src/app/presupuesto/actions.ts`; el email público del NAP
+  (`apps/web/src/lib/config.ts`) sale solo de `@site/content`, sin override de entorno — son
+  dos cosas distintas a propósito.
+- **Identificadores, nombres de archivo y comentarios de `packages/*` y del código nuevo, en
+  inglés.** Contenido, copy y slugs de URL, en su idioma real (español hoy). Prosa de
+  documentación para humanos (READMEs, este archivo) puede ir en español; los identificadores
+  citados dentro se dejan tal cual están en el código.
+- **Gates antes de cada commit**, en este orden: `content:validate` → `lint` → `typecheck` →
+  `build` → `verify` (y `verify:secrets` si se tocó algo de tracking/env). Ver "Comandos"
+  arriba y el `README.md` de la raíz.
+- **Cualquier variable de entorno nueva que lea el código** va también a
+  `apps/web/.env.example` (con comentario) y a `globalEnv` en `turbo.json`.
 
 ## Si algo no encaja
 
