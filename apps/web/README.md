@@ -41,7 +41,9 @@ run build --filter=web`, o desde Vercel. Cada uno falla el build si
 encuentra un problema; ver la cabecera de cada `scripts/verificar-*.mjs`
 para el porqué de cada uno (destinos de las 301, `src`/`alt`/ancho de cada
 foto, presupuesto de JS por ruta, LCP no escondido tras `.aparece`, y
-`tel:`/`wa.me` reales cuando `VERCEL_ENV=production`).
+`tel:` real —no el marcador de reserva— cuando `VERCEL_ENV=production`;
+`verificar-landings.mjs` solo mira el teléfono, no WhatsApp — ver el
+README de la raíz).
 
 `content:validate` (Zod sobre `packages/content`) **no** es parte de este
 `build` — corre como dependencia de la tarea `build` de `turbo.json`

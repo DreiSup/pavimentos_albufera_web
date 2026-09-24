@@ -2,11 +2,11 @@
 
 **Lee primero `ARCHITECTURE.md`** para el contexto general del repo (mapa, capas, paquetes, rutas, flujos, contratos externos) antes de tocar nada aquí.
 
-Rediseño y migración de pavimentos-albufera.com de WordPress a Next.js 15,
-ahora en un monorepo pnpm + Turborepo (`apps/web` + paquetes `@site/*`) —
-ver la sección "Monorepo" más abajo. La especificación de diseño y
-contenido completa está en `design/` (sigue en la raíz, sin tocar por esta
-migración). **Léela antes de escribir código de diseño o contenido.**
+Rediseño y migración de pavimentos-albufera.com de WordPress a Next.js 15.
+La especificación completa está en `design/`. **Léela antes de escribir código.**
+
+Desde esta fase, además, el repo es un monorepo pnpm + Turborepo (`apps/web`
++ paquetes `@site/*`) — ver la sección "Monorepo" más abajo.
 
 - `design/README.md` — panorama, stack, orden de trabajo
 - `design/01-sistema-de-diseno.md` — tokens y los 17 componentes base, con valores exactos
@@ -308,7 +308,8 @@ lo de arriba (que sigue vigente sin cambios):
   datos concretas (`@site/content/business-data`, `@site/config/env`…), no `@site/content`
   ni `@site/config` a secas: el barrel arrastra un resolver genérico (`pickLocalized`,
   Zod…) que no se puede eliminar del bundle aunque no haga falta — coste medido durante la
-  migración (decenas de bytes por ruta, en las 52 rutas del sitio), no hipotético.
+  migración (~+320 B por ruta, en las 52 rutas del sitio, antes de este mismo ajuste), no
+  hipotético.
 - **`NEXT_PUBLIC_*` solo como literal exacto** (`process.env.NEXT_PUBLIC_X`), nunca dinámico
   (`process.env[nombre]`) — es la única forma que Next.js sustituye en build para el bundle
   cliente. Ver `packages/config/src/env.ts`.

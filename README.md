@@ -126,12 +126,12 @@ Resumen:
 | Variable | Ámbito | Qué hace si falta | Dónde se pone en Vercel |
 |---|---|---|---|
 | `NEXT_PUBLIC_SITE_URL` | pública | Cae al fijo `https://pavimentos-albufera.com` (`@site/config/site.ts`) para canonical, sitemap, JSON-LD, `og:url`. | Project → Settings → Environment Variables, entorno Production (y Preview si se quiere probar otro dominio ahí) |
-| `NEXT_PUBLIC_TELEFONO` | pública | Sin ella, todo `tel:` del sitio cae al marcador `<DatoPendiente>` (entre corchetes) y el JSON-LD del negocio omite `telephone` — build entero, no por página. `verificar-landings.mjs` (postbuild) hace fallar el build si esto ocurre con `VERCEL_ENV=production`. | igual |
-| `NEXT_PUBLIC_WHATSAPP` | pública | Sin ella, ningún botón de WhatsApp se pinta (no hay `wa.me` que enlazar); mismo gate de `verificar-landings.mjs` en producción. | igual |
+| `NEXT_PUBLIC_TELEFONO` | pública | Sin ella, todo `tel:` del sitio cae al marcador `<DatoPendiente>` (entre corchetes) y el JSON-LD del negocio omite `telephone` — build entero, no por página. `verificar-landings.mjs` (encadenado en el `build` de `apps/web`) hace fallar el build si esto ocurre con `VERCEL_ENV=production`. | igual |
+| `NEXT_PUBLIC_WHATSAPP` | pública | Sin ella, ningún botón de WhatsApp se pinta (no hay `wa.me` que enlazar). A diferencia del teléfono, ningún verificador falla el build en producción por esto hoy — `verificar-landings.mjs` solo mira el teléfono de reserva (`RESERVAS`); `scripts/verify`'s `whatsappConfigured` es más flojo y no bloquea (ver su propio comentario en `scripts/verify/README.md`, "`<DatoPendiente>` y las comprobaciones de CTA/JSON-LD"). | igual |
 | `NEXT_PUBLIC_DIRECCION` | pública | Cae al marcador `<DatoPendiente>` de dirección. | igual |
 | `NEXT_PUBLIC_GA_ID` | pública | Sin ella (y sin `NEXT_PUBLIC_ADS_ID`), no se carga `gtag.js`: sin GA4 ni Consent Mode. | igual |
 | `NEXT_PUBLIC_ADS_ID` | pública | ID de conversión de Google Ads (`AW-…`). Sin ella (y sin `NEXT_PUBLIC_GA_ID`), tampoco se carga `gtag.js`. | igual |
-| `NEXT_PUBLIC_ADS_ETIQUETA_LLAMADA` | pública | Etiqueta de conversión de Google Ads, sin el prefijo `AW-`. Sin ella, no hay conversión de llamada que registrar. | igual |
+| `NEXT_PUBLIC_ADS_ETIQUETA_LLAMADA` | pública | Etiqueta de conversión de Google Ads, sin el prefijo `AW-`. Se expone en `sitio.adsEtiquetaLlamada` (`apps/web/src/lib/config.ts`) pero hoy ningún sitio del código la lee más allá de esa asignación — no hay ninguna llamada de conversión de Google Ads en este repo (`@site/tracking`'s `trackEvent` no tiene parámetro `adsConversion`, ver su README). Puesta o no, no cambia nada todavía. | igual |
 | `NEXT_PUBLIC_META_PIXEL_ID` | pública | Sin ella, no se carga el Pixel de Meta (ni el evento `PageView`). | igual |
 | `EMAIL_DESTINO` | servidor | Destino real del email del formulario de presupuesto (`app/presupuesto/actions.ts`). Sin ella, cae al fijo `comercial@pavimentos-albufera.com` (D28a) — no al email público del NAP. | igual, marcar "sensitive" |
 | `RESEND_API_KEY` | servidor | Sin ella, el formulario no intenta enviar el email (el Server Action sigue el resto del flujo: aviso de Telegram, evento a Meta CAPI si hay consentimiento, pantalla de "recibido"). | igual, marcar "sensitive" |
@@ -144,9 +144,10 @@ Resumen:
 "Pública" = `NEXT_PUBLIC_*`, leída también en el navegador (Next.js la
 inyecta en build solo si aparece como literal `process.env.NEXT_PUBLIC_X`,
 nunca dinámico). "Servidor" = solo se lee en Server Actions/route handlers
-vía `@site/config/server`, nunca llega al bundle cliente; `check-env`
-recorta espacios en cada secreto (un secreto con espacios alrededor es una
-mala configuración, no un valor válido).
+vía `@site/config/server`, nunca llega al bundle cliente; `@site/config/server`
+recorta espacios en cada secreto al leerlo (un secreto con espacios
+alrededor es una mala configuración, no un valor válido) — `check-env`
+valida el resultado ya recortado, no hace el recorte él mismo.
 
 **`NEXT_PUBLIC_SITE_URL` en producción**: hoy, si falta en un deploy con
 `VERCEL_ENV=production`, `check-env` (el `prebuild` de `apps/web`, en
@@ -165,7 +166,7 @@ saber si un valor real es válido).
 
 ## Verificadores
 
-Dos capas, las dos permanentes, las dos corren en cada build/CI:
+Dos capas permanentes, con alcance distinto:
 
 1. **Los 5 verificadores de `apps/web`** (`apps/web/scripts/verificar-*.mjs`),
    encadenados en el `build` de esa app (`next build && node
@@ -173,17 +174,31 @@ Dos capas, las dos permanentes, las dos corren en cada build/CI:
    verificar-presupuesto.mjs && verificar-lcp-visible.mjs &&
    verificar-landings.mjs`): destinos de las 301, `src`/`alt`/ancho de cada
    foto citada, presupuesto de JS por ruta (brotli q11, techo duro 112 kB),
-   ningún candidato a LCP escondido tras `.aparece`, y que `tel:`/`wa.me` no
-   salgan con el marcador de reserva en `VERCEL_ENV=production`. Corren
-   siempre, con `pnpm --filter web build`, `turbo run build` o desde Vercel
-   — están en el `build` de `apps/web`, no en un hook aparte.
+   ningún candidato a LCP escondido tras `.aparece`, y que `tel:` no salga
+   con el marcador de reserva en `VERCEL_ENV=production`. Corren siempre que
+   corre `next build` en `apps/web` — `pnpm --filter web build`, `turbo run
+   build`, y también un deploy de Vercel (el `Build Command` de Vercel
+   termina invocando este mismo `build`) — no en un hook aparte.
 2. **`scripts/verify` en la raíz** (D29, `pnpm verify`/`pnpm verify:secrets`):
    sitemap/enlaces/redirecciones-por-código/JSON-LD/metadata/robots/
    imágenes-CTA/nº de páginas + fuga de secretos, con un baseline de
    problemas ya conocidos (`scripts/verify/known-issues.json`, p. ej. las
    landings `/lp/*` fuera del sitemap por diseño). Ver
    `scripts/verify/README.md` para el detalle de cada check y su
-   solapamiento (deliberadamente parcial) con los 5 de arriba.
+   solapamiento (deliberadamente parcial) con los 5 de arriba. **Esta capa
+   corre en CI (`.github/workflows/ci.yml`) y a mano, pero NO en un deploy
+   de Vercel** — el `Build Command` de Vercel de esta sección solo invoca
+   `pnpm turbo run build --filter=web` (capa 1), no `pnpm verify`; un
+   problema que solo detecte esta capa no bloquea un deploy real a menos
+   que se configure aparte (deployment gating, branch protection — ver
+   "CI").
+
+**Lighthouse CI** (`apps/web/lighthouserc.json`) existe pero queda fuera de
+las dos capas de arriba a propósito: no corre en CI ni en ningún build —
+sus números absolutos (server-response-time de un servidor local) no se
+parecen a los de producción tras el CDN de Vercel; la línea base real se
+toma desplegando un preview y midiendo ahí (ver el comentario de
+`.gitignore` sobre `.lighthouseci/`/`informes-lighthouse/`).
 
 ## CI
 
@@ -229,6 +244,9 @@ fusionar esta rama. Nada se toca en el dashboard todavía.
 producción: crear un **proyecto Vercel SEPARADO sobre el mismo repositorio
 de GitHub**, apuntado a esta rama.
 
+0. Esta rama es solo local hasta ahora (así lo pide esta fase de la
+   migración) — hace falta `git push -u origin monorepo-migration` antes de
+   que Vercel (o cualquier proyecto nuevo apuntado a ella) pueda verla.
 1. **New Project** → importar el mismo repo → antes de darle a Deploy,
    abrir **Root Directory** y poner `apps/web`.
 2. **Root Directory** → `apps/web`; activar **"Include files outside the
@@ -248,8 +266,9 @@ de GitHub**, apuntado a esta rama.
 5. Mismas variables de entorno que en producción (tabla de arriba) — si
    este proyecto de prueba se despliega con `Production Branch` apuntando a
    `monorepo-migration`, sus builds corren con `VERCEL_ENV=production`, así
-   que necesita también `NEXT_PUBLIC_TELEFONO`/`NEXT_PUBLIC_WHATSAPP` para
-   no hacer fallar `verificar-landings.mjs`.
+   que necesita también `NEXT_PUBLIC_TELEFONO` puesta o `verificar-landings.mjs`
+   hace fallar el build (`NEXT_PUBLIC_WHATSAPP` no tiene ese mismo gate hoy,
+   pero conviene ponerla igual para probar el sitio de verdad).
 6. **Node.js Version** del proyecto → 22.x (mínimo real `>=22.6`, igual que
    `engines.node` en el `package.json` raíz: `check-env` y
    `content:validate` corren con `node --experimental-strip-types`, una
@@ -332,12 +351,19 @@ Técnico, heredado de fases anteriores de esta migración:
     Pavivasa, es un añadido de este sitio que se mantiene.
   - `/zonas/xabia/` es `noindex` (sin foto todavía) pero sigue listada en
     `sitemap.xml` (`app/sitemap.ts` no filtra por `noindex`).
-- **Preguntas de texto legal sin resolver**: `packages/content/src/legal/`
-  (textos sin verificar) da un email y una razón social/NIF distintos de
-  `packages/content/src/data/business.ts` — ver el README de esa carpeta.
-  `data/legal.ts`'s `lastLegalReview` (`18 de septiembre de 2026`) es un
-  valor fijo, no derivado de ningún control de versiones del texto legal:
-  actualizarlo a mano cada vez que el texto cambie de verdad.
+- **Preguntas de texto legal sin resolver**: `packages/content/src/legal/09-instrucciones-legales.md`
+  deja varias filas de las tablas legales con `[PENDIENTE: confirmar...]`
+  — p. ej. si el dueño está adherido a algún código de conducta (§g) y si
+  aplica un delegado de protección de datos (§13.1.b, probablemente no,
+  pero sin confirmar). Ninguna de estas filas se ha escrito en
+  `apps/web/src/content/legal.tsx` todavía. El §6.3 de ese mismo documento
+  (mencionado en el comentario de `Consentimiento.tsx`) pide que `pa_ref`
+  no se escriba antes de que el visitante decida sobre las cookies —
+  arreglar eso es otro encargo, fuera de esta migración (comportamiento
+  idéntico al de antes de migrar). `data/legal.ts`'s `lastLegalReview`
+  (`18 de septiembre de 2026`) es un valor fijo, no derivado de ningún
+  control de versiones del texto legal: actualizarlo a mano cada vez que
+  el texto cambie de verdad.
 - **Copy del banner de cookies al reabrir**: `Consentimiento.tsx` usa el
   mismo texto ("antes de que decidas...") tanto en la primera visita como
   al reabrir el panel desde "Configurar cookies" en el pie, aunque quien
