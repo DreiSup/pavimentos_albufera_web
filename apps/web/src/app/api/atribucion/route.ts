@@ -6,6 +6,7 @@ import {
   generarReferencia,
 } from '@/lib/cookies'
 import { limitePorIp } from '@/lib/limite'
+import { buildAttributionCookieResponse } from '@site/tracking/server'
 
 /**
  * Escritor único de `pa_attr`, `pa_ref` y `_fbc`.
@@ -31,6 +32,13 @@ import { limitePorIp } from '@/lib/limite'
  *
  * Es la primera ruta dinámica del sitio: añade una `ƒ` a la salida de
  * `next build`.
+ *
+ * La decisión de QUÉ cookies escribir y con qué valor —primer toque gana,
+ * validación de `pa_attr`, composición de `_fbc`— vive ahora en
+ * `@site/tracking/server`'s `buildAttributionCookieResponse` (mecanismo
+ * genérico GDPR/ITP-safe, sin nombres de cookie ni de campo hardcodeados).
+ * Este archivo sigue siendo el único que conoce los nombres reales
+ * (`pa_ref`/`pa_attr`/`_fbc`, `CLAVES`) y hace el `NextResponse`/cookie-jar.
  */
 export const dynamic = 'force-dynamic'
 
@@ -73,30 +81,6 @@ const REFERENCIA = /^[A-Z2-9]{6}$/
 /** Lo que Meta admite dentro de un `fbclid`. Deja fuera todo lo demás. */
 const FBCLID = /^[A-Za-z0-9_-]{1,255}$/
 
-/**
- * Un valor con retorno de carro parte la cabecera `Set-Cookie` en dos. No se
- * escapa: se descarta el valor entero.
- */
-function limpio(valor: unknown): string | undefined {
-  if (typeof valor !== 'string') return undefined
-  if (/[\r\n]/.test(valor)) return undefined
-  const recortado = valor.slice(0, MAX_VALOR).trim()
-  return recortado || undefined
-}
-
-/** Deja pasar solo las claves conocidas, ya limpias y recortadas. */
-function atribucionValida(bruto: unknown): Record<string, string> | undefined {
-  if (typeof bruto !== 'object' || bruto === null || Array.isArray(bruto)) return undefined
-  const salida: Record<string, string> = {}
-  for (const clave of CLAVES) {
-    const valor = limpio((bruto as Record<string, unknown>)[clave])
-    if (valor) salida[clave] = valor
-  }
-  if (Object.keys(salida).length === 0) return undefined
-  if (encodeURIComponent(JSON.stringify(salida)).length > MAX_COOKIE) return undefined
-  return salida
-}
-
 export async function POST(request: NextRequest) {
   const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'anonimo'
   // Generoso a propósito: no son los 3/hora del formulario. Aquí una oficina o
@@ -129,58 +113,36 @@ export async function POST(request: NextRequest) {
     secure: seguro,
   }
 
-  // Primer toque gana, y la comprobación se hace aquí: la del cliente corre
-  // carreras entre pestañas.
-  const propuesta = limpio(cuerpo.referencia)
-  const referencia =
-    cookies.get(COOKIE_REFERENCIA)?.value ??
-    (propuesta && REFERENCIA.test(propuesta) ? propuesta : generarReferencia())
+  const { referenceCode: referencia, cookiesToSet } = buildAttributionCookieResponse({
+    referenceCookieName: COOKIE_REFERENCIA,
+    attributionCookieName: COOKIE_ATRIBUCION,
+    fbcCookieName: '_fbc',
+    attributionKeys: CLAVES,
+    referenceCodePattern: REFERENCIA,
+    fbclidPattern: FBCLID,
+    maxValueLength: MAX_VALOR,
+    maxCookieBytes: MAX_COOKIE,
+    generateReferenceCode: generarReferencia,
+    consentGranted: aceptado,
+    existingReferenceCode: cookies.get(COOKIE_REFERENCIA)?.value,
+    proposedReferenceCode: cuerpo.referencia,
+    hasAttributionCookie: Boolean(cookies.get(COOKIE_ATRIBUCION)),
+    rawAttribution: cuerpo.atribucion,
+    hasFbcCookie: Boolean(cookies.get('_fbc')),
+    fbclid: cuerpo.fbclid,
+    fbclidIndex: cuerpo.indice,
+    fbclidObservedAt: cuerpo.visto,
+  })
 
   const respuesta = NextResponse.json({ referencia }, { headers: { 'cache-control': 'no-store' } })
 
   // `ResponseCookies` no codifica el valor. `escribirCookie` y `leerCookie` de
   // `lib/cookies.ts` sí, y `cookies()` del servidor decodifica al leer: se
-  // codifica aquí para que las dos caras hablen el mismo formato. `pa_ref` y
-  // `_fbc` no lo necesitan —su alfabeto ya es seguro— y `_fbc` además **no debe**
-  // codificarse: `fbevents.js` lo lee crudo.
-  respuesta.cookies.set(COOKIE_REFERENCIA, referencia, opciones)
-
-  if (aceptado && !cookies.get(COOKIE_ATRIBUCION)) {
-    const atribucion = atribucionValida(cuerpo.atribucion)
-    if (atribucion) {
-      respuesta.cookies.set(
-        COOKIE_ATRIBUCION,
-        encodeURIComponent(JSON.stringify(atribucion)),
-        opciones,
-      )
-    }
-  }
-
-  // `_fbc` solo cubre el hueco que el Pixel no puede: cuando el consentimiento
-  // llega después de que el `fbclid` haya desaparecido de la URL. Si la cookie
-  // ya existe la escribió el Pixel, y esa manda.
-  if (aceptado && !cookies.get('_fbc')) {
-    const fbclid = limpio(cuerpo.fbclid)
-    // `fb.<índice>.<ms>.<fbclid>`, formato literal de la CAPI. El índice es el
-    // número de puntos del dominio donde se posa la cookie —`com` 0,
-    // `ejemplo.com` 1, `www.ejemplo.com` 2— y lo deriva el cliente con
-    // `location.hostname.split('.').length - 1`, no se escribe a mano: hasta que
-    // la tarea 2.4 fije si el canónico es apex o `www`, escribirlo a mano sería
-    // apostar. Se valida el rango; fuera de él no se compone nada, no se inventa
-    // un índice.
-    const indice = cuerpo.indice
-    // Meta pide el instante en que se **observó** el `fbclid`, no el de ahora:
-    // entre la llegada y el «Aceptar» pueden pasar minutos.
-    const visto = cuerpo.visto
-    const ahora = Date.now()
-    const marca =
-      typeof visto === 'number' && Number.isFinite(visto) && visto > 0 && visto <= ahora
-        ? Math.round(visto)
-        : ahora
-    const indiceValido = Number.isInteger(indice) && (indice as number) >= 0 && (indice as number) <= 4
-    if (fbclid && FBCLID.test(fbclid) && indiceValido) {
-      respuesta.cookies.set('_fbc', `fb.${indice}.${marca}.${fbclid}`, opciones)
-    }
+  // codifica en `buildAttributionCookieResponse` para que las dos caras hablen
+  // el mismo formato. `pa_ref` y `_fbc` no lo necesitan —su alfabeto ya es
+  // seguro— y `_fbc` además **no debe** codificarse: `fbevents.js` lo lee crudo.
+  for (const cookie of cookiesToSet) {
+    respuesta.cookies.set(cookie.name, cookie.value, opciones)
   }
 
   return respuesta

@@ -1,4 +1,6 @@
 /**
+ * legacy adapter, delete when a new design consumes @site/* directly
+ *
  * Cookies de primera parte, lado cliente.
  *
  * Por qué cookie y no `localStorage`, en los dos casos que las usan:
@@ -6,7 +8,31 @@
  *   el evento a Meta CAPI. `localStorage` no viaja al servidor.
  * - **`gclid` y `utm_*`**: es requisito explícito del plan de medición. Una
  *   atribución que solo vive en el navegador no llega al lead.
+ *
+ * Los nombres de cookie y el alfabeto del código de referencia siguen
+ * siendo literales de este archivo (D18 del runbook de migración): son el
+ * vocabulario de este negocio, no capacidad genérica. Lo genérico —lectura/
+ * escritura de cookie, el algoritmo de borrado por prefijo/nombre exacto, el
+ * generador de código aleatorio— viene ahora de `@site/tracking`, cada
+ * pieza importada por su PROPIA subruta hoja (D17 final: un export por
+ * archivo) — nunca el barrel principal.
+ *
+ * `leerCookie`/`escribirCookie` son bindings `const`, no
+ * `export { x } from …` de un nombre importado (D26, medido): un
+ * re-export literal apunta a cada componente cliente que lo usa
+ * directamente al módulo del paquete, y un módulo con varios
+ * importadores deja de poder concatenarse en el único módulo de este
+ * adaptador — cuesta bytes reales en cada ruta. Un `const` asignado desde
+ * el import es la misma función, pero deja a este archivo como su único
+ * importador.
  */
+import { readCookie } from '@site/tracking/read-cookie'
+import { writeCookie } from '@site/tracking/write-cookie'
+import { deleteTrackerCookies } from '@site/tracking/tracker-cookies'
+import { generateReferenceCode } from '@site/tracking/reference-code'
+
+export const leerCookie = readCookie
+export const escribirCookie = writeCookie
 
 export const COOKIE_CONSENTIMIENTO = 'pa_consent'
 export const COOKIE_ATRIBUCION = 'pa_attr'
@@ -22,32 +48,10 @@ export const COOKIE_REFERENCIA = 'pa_ref'
 const ALFABETO = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
 
 export function generarReferencia(): string {
-  const bytes = new Uint8Array(6)
-  crypto.getRandomValues(bytes)
-  return Array.from(bytes, (b) => ALFABETO[b % ALFABETO.length]).join('')
+  return generateReferenceCode(ALFABETO, 6)
 }
 
 export type EstadoConsentimiento = 'aceptado' | 'rechazado'
-
-export function leerCookie(nombre: string): string | undefined {
-  if (typeof document === 'undefined') return undefined
-  const pares = document.cookie.split('; ')
-  for (const par of pares) {
-    const separador = par.indexOf('=')
-    if (separador === -1) continue
-    if (par.slice(0, separador) === nombre) {
-      return decodeURIComponent(par.slice(separador + 1))
-    }
-  }
-  return undefined
-}
-
-export function escribirCookie(nombre: string, valor: string, dias: number) {
-  if (typeof document === 'undefined') return
-  const caduca = new Date(Date.now() + dias * 864e5).toUTCString()
-  const seguro = window.location.protocol === 'https:' ? '; Secure' : ''
-  document.cookie = `${nombre}=${encodeURIComponent(valor)}; Path=/; Expires=${caduca}; SameSite=Lax${seguro}`
-}
 
 /**
  * Cookies de rastreo que la retirada del consentimiento (`Consentimiento.tsx`)
@@ -60,51 +64,16 @@ const PREFIJOS_RASTREO = ['_ga', '_gcl']
 const EXACTAS_RASTREO: string[] = ['_fbp', '_fbc', COOKIE_ATRIBUCION]
 
 /**
- * Todos los sufijos de dominio de `host` con al menos dos etiquetas, el host
- * entero incluido: `www.ejemplo.com` → `['www.ejemplo.com', 'ejemplo.com']`.
- * Un navegador rechaza en silencio un `Domain` que sea un sufijo público
- * (`.com`, `.vercel.app`) o que tenga menos etiquetas que el propio host, así
- * que no hace falta filtrarlo aquí: sobra intentarlo y no pasa nada si falla.
- * Un host de una sola etiqueta (`localhost`) no tiene ningún sufijo que
- * probar y se queda solo con el borrado sin `Domain`.
- */
-function sufijosDominio(host: string): string[] {
-  if (/^[\d.]+$/.test(host) || host.includes(':')) return [] // IP o localhost:puerto
-  const etiquetas = host.split('.')
-  const sufijos: string[] = []
-  for (let i = 0; i < etiquetas.length - 1; i++) sufijos.push(etiquetas.slice(i).join('.'))
-  return sufijos
-}
-
-/**
  * Borra, en este navegador, las cookies de rastreo que gtag.js y fbevents.js
  * ya hubieran escrito, más `pa_attr`. Ninguno de los dos se puede
  * "desinyectar" una vez cargado —de ahí que quien llama a esto también
  * recargue la página después—, así que lo único que se puede hacer es apagar
- * lo que ya escribieron.
- *
- * Se borra sin `Domain` (cookie de solo-host) y, además, con cada sufijo de
- * `sufijosDominio()`: gtag.js decide él solo dónde posa cada cookie —en el
- * host exacto o en el dominio registrable, `.ejemplo.com`— y desde aquí no se
- * puede leer cuál usó, así que se prueban las dos formas.
+ * lo que ya escribieron. Mismo algoritmo que antes de la migración
+ * (`@site/tracking/tracker-cookies`'s `deleteTrackerCookies`): sin `Domain`
+ * (cookie de solo-host) y, además, con cada sufijo de dominio de
+ * `location.hostname` — gtag.js decide él solo dónde posa cada cookie y
+ * desde aquí no se puede leer cuál usó, así que se prueban las dos formas.
  */
 export function borrarCookiesRastreo() {
-  if (typeof document === 'undefined') return
-  const nombres = new Set<string>()
-  for (const par of document.cookie.split('; ')) {
-    const separador = par.indexOf('=')
-    if (separador === -1) continue
-    const nombre = par.slice(0, separador)
-    if (PREFIJOS_RASTREO.some((prefijo) => nombre.startsWith(prefijo)) || EXACTAS_RASTREO.includes(nombre)) {
-      nombres.add(nombre)
-    }
-  }
-  if (nombres.size === 0) return
-  const dominios = sufijosDominio(window.location.hostname)
-  for (const nombre of nombres) {
-    document.cookie = `${nombre}=; Path=/; Max-Age=0`
-    for (const dominio of dominios) {
-      document.cookie = `${nombre}=; Path=/; Max-Age=0; Domain=${dominio}`
-    }
-  }
+  deleteTrackerCookies(PREFIJOS_RASTREO, EXACTAS_RASTREO)
 }

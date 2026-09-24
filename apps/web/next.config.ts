@@ -4,10 +4,11 @@ import type { NextConfig } from 'next'
 const nextConfig: NextConfig = {
   // Monorepo: la raíz de rastreo de ficheros es la raíz del repo, no apps/web.
   outputFileTracingRoot: path.join(__dirname, '../..'),
-  // @site/content, @site/config y @site/seo viven en su propio package.json/tsconfig.json
-  // (workspace:* de pnpm) y publican `.ts` sin transpilar (`exports: {".": "./src/index.ts"}`) —
-  // Next necesita compilarlos con su propio pipeline, igual que a apps/web.
-  transpilePackages: ['@site/content', '@site/config', '@site/seo'],
+  // @site/content, @site/config, @site/seo y @site/tracking viven en su propio
+  // package.json/tsconfig.json (workspace:* de pnpm) y publican `.ts` sin
+  // transpilar (`exports: {".": "./src/index.ts"}`) — Next necesita
+  // compilarlos con su propio pipeline, igual que a apps/web.
+  transpilePackages: ['@site/content', '@site/config', '@site/seo', '@site/tracking'],
   trailingSlash: true,
   images: {
     formats: ['image/avif', 'image/webp'],

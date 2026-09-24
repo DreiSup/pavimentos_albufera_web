@@ -1,0 +1,31 @@
+{
+  "name": "@site/tracking",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./server": "./src/server.ts",
+    "./events": "./src/events.ts",
+    "./read-cookie": "./src/read-cookie.ts",
+    "./write-cookie": "./src/write-cookie.ts",
+    "./tracker-cookies": "./src/tracker-cookies.ts",
+    "./tracker-cookie-factory": "./src/tracker-cookie-factory.ts",
+    "./reference-code": "./src/reference-code.ts",
+    "./consent-store": "./src/consent-store.ts",
+    "./consent-mode": "./src/consent-mode.ts",
+    "./attribution-client": "./src/attribution-client.ts"
+  },
+  "sideEffects": false,
+  "scripts": {
+    "transit": "true",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@site/config": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.1",
+    "typescript": "5.9.3"
+  }
+}

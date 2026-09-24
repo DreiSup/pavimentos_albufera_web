@@ -1,4 +1,6 @@
 /**
+ * legacy adapter, delete when a new design consumes @site/* directly
+ *
  * Contrato de eventos de medición. Fuente única: si un nombre o un parámetro no
  * está aquí, no se manda.
  *
@@ -10,7 +12,18 @@
  * ⚠️ Cada parámetro de esta lista tiene que estar registrado como DIMENSIÓN
  * PERSONALIZADA en GA4 antes de mandar el primer tráfico. GA4 no rellena
  * dimensiones hacia atrás: lo que llegue antes de registrarlas se pierde.
+ *
+ * El disparo real a GA4/Meta vive ahora en `@site/tracking/events`'s
+ * `trackEvent` (mismo `gtag`/`fbq`, mismos nombres de método) — este
+ * archivo sigue siendo el ÚNICO sitio con el vocabulario de este negocio
+ * (`UBICACIONES`/`EVENTOS`/`TEMAS_FAQ`/`MONEDA`) y con las dos piezas que
+ * `@site/tracking` deja fuera a propósito por ser contrato de este sitio,
+ * no capacidad genérica: la deduplicación por sesión
+ * (`EVENTOS_UNA_VEZ_POR_SESION`, prefijo `'pa_evt_'`) y los parámetros
+ * automáticos de página/dispositivo (`paramsComunes`). Ver el propio
+ * comentario de `events.ts` en el paquete.
  */
+import { trackEvent } from '@site/tracking/events'
 
 declare global {
   interface Window {
@@ -186,15 +199,7 @@ export function registrarEvento(nombre: NombreEvento, opciones?: OpcionesEvento)
 
   const params = { ...paramsComunes(), ...opciones?.params }
 
-  window.gtag?.('event', nombre, params)
-
-  const evento = opciones?.metaEstandar ?? nombre
-  const metodo = opciones?.metaEstandar ? 'track' : 'trackCustom'
-  if (opciones?.metaEventId) {
-    window.fbq?.(metodo, evento, params, { eventID: opciones.metaEventId })
-  } else {
-    window.fbq?.(metodo, evento, params)
-  }
+  trackEvent(nombre, params, opciones?.metaEstandar, opciones?.metaEventId)
 
   // La ranura de sesión se quema DESPUÉS, y solo si había a quién mandarlo. Sin
   // consentimiento o sin ID no existen `gtag` ni `fbq` y la llamada entera es
