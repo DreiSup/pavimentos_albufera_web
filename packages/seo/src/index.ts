@@ -26,6 +26,9 @@ export type { BreadcrumbItem } from './json-ld/breadcrumbs.ts'
 export { buildSitemapEntries } from './sitemap.ts'
 export type { SitemapEntry, SitemapInput } from './sitemap.ts'
 
+export { DEFAULT_ROUTES } from './routes.ts'
+export type { RoutePrefixes } from './routes.ts'
+
 export { buildRobots } from './robots.ts'
 export type { RobotsRules } from './robots.ts'
 
