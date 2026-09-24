@@ -116,8 +116,11 @@ this repo's real ones are unset) is part of the phase 3 gate.
 `process.env` directly. Import it only from server-only code — a Server
 Action, a route handler, or `apps/web/src/lib/meta-capi.ts` (never a
 module a `'use client'` component's bundle can reach). `sendMetaConversionEvent`
-does nothing without a pixel id and a token; the caller (`lib/meta-capi.ts`)
-still gates on `pa_consent` itself before calling in, same as before.
+does nothing without a pixel id and a token, but neither it nor
+`lib/meta-capi.ts` checks `pa_consent` — that gate lives one level up, in
+`app/presupuesto/actions.ts` (`if (consentimiento === 'aceptado') …`), same
+as before the migration: the call into `enviarEventoCAPI` simply never
+happens without consent.
 `buildAttributionCookieResponse` is pure — no I/O, no secrets — and is
 only under this subpath because it's this repo's other server-only
 tracking concern; `app/api/atribucion/route.ts` supplies the actual

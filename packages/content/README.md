@@ -2,14 +2,23 @@
 
 Single source of truth for the business's facts: NAP, services, finishes,
 models, service areas, projects, articles, FAQ and legal facts. No React, no
-Next. `apps/web` never imports data straight out of `src/data/`; it only
-reads through `src/queries/`.
+Next. `apps/web`'s server-only code reads through `src/queries/`, the
+locale-aware API; a handful of client-reachable adapters instead import a
+few data-only leaves straight out of `src/data/` through their own subpath
+exports — see "Client-bundle rule" below for which, and why.
 
-**Phase 2a of the monorepo migration**: this package exists on its own,
-validated by `content:validate`, but is **not yet wired into `apps/web`** —
-that wiring, and the legacy adapters that keep the old Spanish API the
-frontend already uses, land in phase 2b. The `apps/web` build does not
-depend on this package yet.
+**Wired into `apps/web`** via the legacy adapters under `apps/web/src/lib`
+and `apps/web/src/content` that keep the old Spanish API the frontend
+components already use (`getServices`, `getFinishes`, `getProjects`… behind
+`lib/datos.ts`, `lib/tipos.ts`, `lib/config.ts`, `content/servicios.tsx`,
+`content/faq.ts`, `content/landings.ts`, `content/legal.tsx`).
+`apps/web/src/app/sitemap.ts` also reads from it, through `lib/datos.ts`
+and `content/servicios.tsx`. Run `pnpm turbo run
+content:validate` before any build that doesn't already depend on it;
+`turbo run build` does depend on it
+(`turbo.json`'s `build` task lists `content:validate`/`^content:validate`),
+but the plain `pnpm --filter web build` command does not invoke it by
+itself — run `content:validate` first, as the gate does.
 
 ## Layout
 
@@ -17,7 +26,8 @@ depend on this package yet.
 src/
   schemas/    Zod shapes (*.zod.ts) + the plain TS types data/queries use (*.ts)
   data/       The actual content, typed via `satisfies`/explicit types — no runtime validation here
-  queries/    The ONLY read API — locale-aware, resolves Localized<T> for a locale
+  queries/    The locale-aware read API — resolves Localized<T> for a locale (see
+              "Client-bundle rule" for the few data-only leaves read a different way)
   legal/      Unrendered source texts for the legal pages (not imported anywhere — see its own README)
 scripts/
   validate.ts Parses everything with Zod + checks referential integrity
@@ -113,8 +123,38 @@ codebases in full:
   editorial tracking only.
 
 Run `pnpm content:validate` after any content change (wired into
-`turbo run content:validate`; `apps/web build` will depend on it starting
-phase 2b).
+`turbo run content:validate`, and into `turbo run build` as a dependency —
+see this README's intro for the plain `pnpm --filter web build` caveat).
+
+## Client-bundle rule
+
+`src/queries/` is the locale-aware read API and the right import for any
+server-only code. A `'use client'` component's bundle can only reach a
+handful of `apps/web/src/lib` adapters, though, and those import a few
+**data-only leaves** straight out of `src/data/` through their own subpath
+exports (`@site/content/business-data`, `@site/content/color-data`,
+`@site/content/service-catalog-data`, `@site/content/models-data` — see
+`package.json`'s `exports`) instead of going through `queries/` or the main
+barrel (`.`). This is deliberate, not a shortcut: `queries/`'s resolvers
+(`pickLocalized` dispatch, conditional-spread field building for N locales)
+are real, non-dead code the moment any field is read, so webpack can't
+tree-shake them away, and importing them from a client-reachable module
+costs real bytes on every route that module reaches — measured and fixed
+during this migration by diffing compiled `.next` chunks byte-for-byte
+against a clean pre-migration build. Each of those four subpaths exports a
+single plain object/array literal — no zod, no locale resolution, no
+generic dispatch — so there is nothing left for a bundler to keep once the
+importing adapter re-derives just the fields it needs. Add a new such
+subpath only for another data-only leaf a client adapter genuinely needs
+this way; everything else — including every server-only adapter — reads
+through `queries/` or the main barrel as usual.
+
+The main barrel (`src/index.ts`) itself only ever re-exports names
+explicitly, never `export * from './queries/index.ts'`: a star export
+would silently widen the package's public surface with whatever `queries/`
+happens to add later, with no line in `index.ts` to review. Explicit names
+keep this package's entire public API — what any consumer, client-reachable
+or not, can import from `.` — readable as one flat list in this one file.
 
 ## Why `schemas/*.zod.ts` are separate from `schemas/*.ts`
 
@@ -122,4 +162,5 @@ phase 2b).
 runtime. The `*.zod.ts` siblings hold the actual `z.object(...)` schemas and
 are imported only by `scripts/validate.ts`. Constructing a Zod schema
 executes real code from the `zod` package; keeping it out of `data/`/
-`queries/` keeps it out of any future client bundle.
+`queries/` keeps it out of every client bundle those data-only leaves and
+adapters reach today, not just a hypothetical future one.

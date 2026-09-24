@@ -13,11 +13,11 @@
  * el valor SÍ los llevaba, por ser un cast sobre el JSON crudo). El paquete
  * `@site/content` los preserva como datos tipados en `data/*.ts` (D5) pero
  * deliberadamente NO los expone en su API pública — `content:validate`
- * (check #13) impide que se cuelen en el esquema público precisamente para
+ * (check #6) impide que se cuelen en el esquema público precisamente para
  * que ningún adaptador los reintroduzca por accidente. Ninguna pantalla los
  * lee nunca (son metadatos de redacción, no contenido), así que esta es una
- * diferencia de forma sin efecto en la salida — documentada en las
- * "questions" del informe de esta fase, no decidida en silencio aquí.
+ * diferencia de forma sin efecto en la salida — decisión tomada y aceptada
+ * durante la migración, no silenciada aquí.
  */
 import {
   getArticles,

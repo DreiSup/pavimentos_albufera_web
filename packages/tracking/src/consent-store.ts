@@ -1,6 +1,6 @@
 /**
- * Cookie-backed consent store, built on `cookie-storage.ts`'s generic
- * primitives — same shape as Pavivasa's `localStorage`-backed
+ * Cookie-backed consent store, built on `read-cookie.ts`/`write-cookie.ts`'s
+ * generic primitives — same shape as Pavivasa's `localStorage`-backed
  * `createConsentStore` (`key`/`read`/`write`, configurable key and the
  * exact two stored values), a cookie-backed sibling factory (D7).
  *

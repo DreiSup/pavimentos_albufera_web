@@ -1,17 +1,23 @@
 /**
- * `@site/content` — the single read API for the business's facts. Everything
- * here is safe to import from anywhere, including client-reachable code: no
- * zod runtime, no validation side effects. Validation happens once, in
- * `scripts/validate.ts` (the `content:validate` task) — see this package's
- * README.
+ * `@site/content` — the locale-aware read API for the business's facts.
+ * Nothing here has a zod runtime or a validation side effect (validation
+ * happens once, in `scripts/validate.ts`, the `content:validate` task — see
+ * this package's README), so importing it never leaks a secret or pulls in
+ * a dependency a bundle shouldn't have. That is NOT the same as it being
+ * the right import for a client-reachable module, though: `queries/`'s
+ * resolvers are real, non-dead code webpack can't tree-shake away, and cost
+ * real bytes wherever they're reachable — see the README's "Client-bundle
+ * rule" for why the handful of client-reachable adapters that need content
+ * import a few data-only leaves through their own subpath exports instead
+ * of this barrel.
  *
  * Explicit named re-exports, not `export * from './queries/index.ts'` — see
- * the README's "Client-bundle rule" for why a star export is avoided for
- * anything client-reachable.
+ * the README's "Client-bundle rule" for why: a star export would silently
+ * widen this package's public surface with whatever `queries/` adds later.
  *
- * Wired into `apps/web` (phase 2b) via the legacy adapters under
- * `apps/web/src/lib` and `apps/web/src/content` that keep the old Spanish
- * API the frontend components already use.
+ * Wired into `apps/web` via the legacy adapters under `apps/web/src/lib`
+ * and `apps/web/src/content` that keep the old Spanish API the frontend
+ * components already use.
  */
 
 export { resolveBusiness } from './queries/business.ts'
