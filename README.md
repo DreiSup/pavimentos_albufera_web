@@ -182,8 +182,10 @@ Dos capas permanentes, con alcance distinto:
 2. **`scripts/verify` en la raíz** (D29, `pnpm verify`/`pnpm verify:secrets`):
    sitemap/enlaces/redirecciones-por-código/JSON-LD/metadata/robots/
    imágenes-CTA/nº de páginas + fuga de secretos, con un baseline de
-   problemas ya conocidos (`scripts/verify/known-issues.json`, p. ej. las
-   landings `/lp/*` fuera del sitemap por diseño). Ver
+   problemas ya conocidos (`scripts/verify/known-issues.json`, p. ej. la
+   ausencia de `og:url` en toda página — `metadata:missing-og-url` — o la
+   descripción duplicada de las 3 páginas legales —
+   `metadata:duplicate-description`). Ver
    `scripts/verify/README.md` para el detalle de cada check y su
    solapamiento (deliberadamente parcial) con los 5 de arriba. **Esta capa
    corre en CI (`.github/workflows/ci.yml`) y a mano, pero NO en un deploy
@@ -231,7 +233,7 @@ cp .env.local apps/web/.env.local  # o cp apps/web/.env.example apps/web/.env.lo
 ahora el de pnpm (workspaces, symlinks internos), incompatible con lo que
 espera una rama de antes del monorepo. Y en sentido inverso, al volver a
 esta rama desde una de `npm`: `rm -rf node_modules && pnpm install`
-(D21 del runbook de migración) antes del primer build, para no arrastrar
+(D21 de `docs/migration/DECISIONS.md`) antes del primer build, para no arrastrar
 un `node_modules` de npm bajo un árbol que pnpm espera gestionar.
 
 ## Vercel — monorepo
@@ -328,6 +330,11 @@ construido para ese futuro pero no está enganchado en ningún sitio hoy.
 
 ## Pendiente
 
+Las decisiones vinculantes del orquestador citadas por D-número (D1-D30) en
+este documento y en el código están en
+[`docs/migration/DECISIONS.md`](./docs/migration/DECISIONS.md) — donde
+choquen con el código o con `ARCHITECTURE.md`, ganan estos dos.
+
 Técnico, heredado de fases anteriores de esta migración:
 
 - **Duplicación del limitador de tasa (D12)**: `apps/web/src/lib/limite.ts`
@@ -382,7 +389,9 @@ Técnico, heredado de fases anteriores de esta migración:
   antes de migrar) en el chunk del layout raíz y en el del formulario en
   vez de compartirlo — diagnosticado a nivel de chunk durante la migración
   (no queda documentado en el repo, solo en el scratchpad de esa sesión).
-  Un intento de forzarlo a un chunk propio (WF3, D28e) empeoró las 52 rutas
+  Un intento de forzarlo a un chunk propio, el intento opcional y no
+  bloqueante que D26 permitía hacer en WF3 (hecho durante la limpieza de
+  WF3), empeoró las 52 rutas
   y se revirtió. Aceptado, no corregido: todas las rutas siguen muy por
   debajo del techo duro de 112 kB.
 - **CI nunca ejecutado en un runner real**: esta rama no está en `origin`

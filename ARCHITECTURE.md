@@ -123,7 +123,7 @@ Verificado con grep sobre el código real, no solo declarado:
   - `lib/eventos.ts` → `@site/tracking/events` (`trackEvent`).
   - **Discrepancia real, sin corregir**: `@site/config/site.ts` tiene 4 exports de valor en un fichero y es alcanzable desde `'use client'` vía `lib/config.ts` — viola literalmente la regla "un export por fichero" de más arriba. Es el único caso; todas las demás hojas de datos client-reachable cumplen 1 export de valor por fichero. `packages/tracking/src/server.ts` (7 exports de valor + 7 de tipo) NO viola la regla porque es server-only, no alcanzable desde `'use client'`.
 - **Ningún fichero de `apps/web/src/components/**` importa `@site/*` directamente** — todos pasan por `src/lib/*`/`src/content/*`. Los únicos importadores directos de `@site/*` en `apps/web/src` son los 12 adaptadores de `lib/`/`content/` y los 5 ficheros del allowlist de `app/` (§16). `lib/limite.ts` es el único fichero de `lib/` que NO envuelve ningún paquete `@site/*` (rate-limiter en memoria, sin `import` propio — pendiente D12, §15).
-- **Consentimiento/atribución sin cablear (aceptado, no defecto)**: `@site/tracking/consent-store` y `/attribution-client` tienen 0 importadores en todo el repo — documentados a propósito para el diseño futuro. `tracker-cookie-factory` también tiene 0 importadores, pero **no** figura en la decisión que acepta los otros dos sin cablear — hecho nuevo, no confirmado como aceptado (ver §15).
+- **Consentimiento/atribución sin cablear (aceptado, no defecto)**: `@site/tracking/consent-store`, `/attribution-client` y `/tracker-cookie-factory` tienen 0 importadores en todo el repo — documentados a propósito para el diseño futuro, los tres con el mismo estatus aceptado (`docs/migration/DECISIONS.md` D27, addendum del 2026-09-24).
 
 ## 5. Paquetes
 
@@ -404,7 +404,7 @@ Estado publicado hoy: solo `es` (`publishedLocales: ['es']`). El contenido ya us
 
 ## 14. Decisiones y desviaciones respecto a la plantilla
 
-Documento citado: `arquitectura-plantilla-monorepo.md` (normativo). Donde choca con las decisiones vinculantes de esta migración concreta, ganan estas últimas — son las que fijaron el alcance real de P1-P3/WF3.
+Documento citado: `arquitectura-plantilla-monorepo.md` (normativo). Donde choca con las decisiones vinculantes de esta migración concreta, ganan estas últimas — son las que fijaron el alcance real de P1-P3/WF3. Esas decisiones, citadas por su D-número en todo este documento, están en [`docs/migration/DECISIONS.md`](./docs/migration/DECISIONS.md) — histórico: si choca con el código o con este documento, ganan estos dos.
 
 | Área | Qué dice la plantilla | Qué hace el código | Estado |
 |---|---|---|---|
@@ -431,7 +431,6 @@ Documento citado: `arquitectura-plantilla-monorepo.md` (normativo). Donde choca 
 | Pendiente | Detalle | Fuente |
 |---|---|---|
 | `trabajo/auditoria-medicion-y-servicios` sin decidir | Commit local, no fusionado, toca la zona congelada, incluye un posible índice de zonas (`zonas/page.tsx`) que hoy no existe | §1.1 |
-| `tracker-cookie-factory` sin cablear, no confirmado como aceptado | 0 importadores como `consent-store`/`attribution-client`, pero no figura en la decisión que acepta esos dos | §4 |
 | `sitemap.ts` no pasa `routes` explícito a `buildSitemapEntries` | El mecanismo de prefijos configurables existe en `@site/seo` desde WF3, pero el llamador se apoya en el default en vez de pasar su propia config — salida idéntica hoy; verificar si la intención exigía lo segundo | §8.4 |
 | Duplicación del limitador de tasa | `apps/web/src/lib/limite.ts` (compartible) vs. copia privada en `actions.ts` — un módulo `'use server'` solo puede exportar funciones async, y el limitador es síncrono | §4, §6.5 |
 | Mejoras de SEO detectadas, no corregidas | `Service` sin `description`; `areaServed` con dos formas distintas; `BreadcrumbList` no filtra tramos intermedios; `FAQPage` con `publisher`; `/zonas/xabia/` es noindex pero sigue en `sitemap.xml` | §8.4, §14 |
