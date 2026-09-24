@@ -56,7 +56,7 @@ const perfiles: string[] = []
  */
 const RUTA_LOGO = '/marca/logo.png'
 
-/** Provincias publicadas en `areaServed`: literal, no derivado de proyectos. Ver DECISIONS.md D10. */
+/** Provincias publicadas en `areaServed`: literal, no derivado de proyectos. Ver docs/migration/DECISIONS.md D10. */
 const PROVINCIAS_SERVIDAS = ['Valencia', 'Castellón', 'Alicante']
 
 export function schemaNegocioLocal() {

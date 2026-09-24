@@ -5,7 +5,7 @@
  * catch-all group does NOT reach a named group: if this is ever extended
  * with named crawler groups, `disallow` has to be mirrored into each one or
  * those crawlers see the disallowed paths as allowed. Not decided here —
- * DECISIONS.md D10 keeps this migration mechanical: one group, as today.
+ * docs/migration/DECISIONS.md D10 keeps this migration mechanical: one group, as today.
  */
 export type RobotsRules = {
   rules: { userAgent: string; allow: string; disallow?: string[] }[]

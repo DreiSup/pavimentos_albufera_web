@@ -12,7 +12,7 @@
  * FormularioPresupuesto…): por eso NO importa `resolveBusiness` de
  * `@site/content` (el barrel principal, con `queries/`, `pickLocalized`…) —
  * eso arrastra un resolver genérico al bundle de cliente por un puñado de
- * `tel:`/`wa.me` (D17 final del runbook de migración: ~+320 B de más en
+ * `tel:`/`wa.me` (D17 final de docs/migration/DECISIONS.md: ~+320 B de más en
  * cada una de las 52 rutas, medido). Importa solo la hoja de datos
  * `@site/content/business-data` (un único objeto literal, sin zod, sin
  * `queries/`) y reimplementa aquí mismo la derivación tal cual la tenía

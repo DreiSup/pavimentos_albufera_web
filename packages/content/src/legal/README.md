@@ -8,7 +8,7 @@ code reads this folder.** The text that actually ships on
 `/aviso-legal/`, `/politica-de-privacidad/` and `/cookies/` is authored
 directly as JSX in `apps/web/src/content/legal.tsx` (plain-string facts of
 it now live in `../data/legal.ts`, read through `../queries/legal.ts` —
-see D6 in the migration's `DECISIONS.md`); these `.md`/`.txt` files were
+see D6 in the migration's `docs/migration/DECISIONS.md`); these `.md`/`.txt` files were
 never imported by that file or any other module before this move, and
 still aren't.
 

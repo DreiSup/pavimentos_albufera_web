@@ -6,7 +6,7 @@
  * sitio es solo `es`) en vez de estar escritos a mano dos veces (aquí y en
  * `content/servicios.tsx`/`content/modelos.ts`).
  *
- * DECISIONS.md (D17 final) nombra este archivo explícitamente, junto con
+ * docs/migration/DECISIONS.md (D17 final) nombra este archivo explícitamente, junto con
  * `lib/config.ts`, como adaptador client-reachable: importa solo hojas de
  * datos por subpath (`service-catalog-data`, `models-data`, `color-data`),
  * nunca el barrel principal ni sus funciones de `queries/` — aunque hoy solo

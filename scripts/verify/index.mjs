@@ -2,7 +2,7 @@
 // scripts/verify/index.mjs [appDir]
 //
 // Postbuild verifier — this repo's own permanent quality gate (D29 of the
-// monorepo migration's DECISIONS.md; ported from Pavivasa's scripts/verify,
+// monorepo migration's docs/migration/DECISIONS.md; ported from Pavivasa's scripts/verify,
 // adapted to this site's own routes/shapes — see each checks/*.mjs and
 // lib/*.mjs file for the specific divergence). Run this AFTER `pnpm
 // --filter web build`. See scripts/verify/README.md for the full list of

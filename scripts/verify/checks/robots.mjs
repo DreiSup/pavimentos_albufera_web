@@ -3,7 +3,7 @@
 //
 // Adapted from Pavivasa's scripts/verify/checks/robots.mjs. Pavivasa's
 // version ALSO demands each AI crawler have its own explicit `User-agent:`
-// group (its site's own GEO/AEO decision). DECISIONS.md D10 keeps this
+// group (its site's own GEO/AEO decision). docs/migration/DECISIONS.md D10 keeps this
 // site's `robots.txt` as it always was: `@site/seo`'s `buildRobots` emits a
 // SINGLE `User-agent: *` group with `Disallow: /author/` (see
 // `packages/seo/src/robots.ts`'s own comment — no per-crawler groups here,

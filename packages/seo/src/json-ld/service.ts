@@ -2,7 +2,7 @@
  * Service node. Deliberately NOT Pavivasa's shape: this site's live output
  * has no `description` key at all (the pre-migration call site passes the
  * service *name* under a `nombre` argument, never a real description — see
- * `arquitectura-plantilla-monorepo.md`'s migration notes / DECISIONS.md D10:
+ * `arquitectura-plantilla-monorepo.md`'s migration notes / docs/migration/DECISIONS.md D10:
  * a mechanical migration keeps that gap, it doesn't fix it), and
  * `areaServed` is published as plain province-name strings, not
  * `AdministrativeArea` nodes — unlike the business node above. Both are

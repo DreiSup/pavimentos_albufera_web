@@ -10,7 +10,7 @@
  *   atribución que solo vive en el navegador no llega al lead.
  *
  * Los nombres de cookie y el alfabeto del código de referencia siguen
- * siendo literales de este archivo (D18 del runbook de migración): son el
+ * siendo literales de este archivo (D18 de docs/migration/DECISIONS.md): son el
  * vocabulario de este negocio, no capacidad genérica. Lo genérico —lectura/
  * escritura de cookie, el algoritmo de borrado por prefijo/nombre exacto, el
  * generador de código aleatorio— viene ahora de `@site/tracking`, cada
