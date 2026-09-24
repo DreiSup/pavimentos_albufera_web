@@ -18,12 +18,17 @@
  * `queries/`) y reimplementa aquí mismo la derivación tal cual la tenía
  * `lib/config.ts` antes de la migración — este sitio es solo `es`
  * (`publishedLocales`), así que lee `.es` directamente en vez de
- * `pickLocalized()`. `publicEnv`/`site` de `@site/config` (nunca
- * `@site/config/server`) ya eran datos puros y no cambian. No hay `claims`
- * en este negocio (a diferencia de Pavivasa) así que este archivo sigue
- * siendo un único módulo, sin el split `nap.ts`/`claims.ts` de Pavivasa.
+ * `pickLocalized()`. Por la misma regla (D17 final: este archivo también
+ * está nombrado explícitamente como adaptador client-reachable, "no
+ * barrels"), `publicEnv`/`site` se importan por subpath
+ * (`@site/config/env`, `@site/config/site`), nunca del barrel principal
+ * `@site/config` ni de `@site/config/server` — ya eran datos puros y no
+ * cambian de valor, solo de ruta de importación. No hay `claims` en este
+ * negocio (a diferencia de Pavivasa) así que este archivo sigue siendo un
+ * único módulo, sin el split `nap.ts`/`claims.ts` de Pavivasa.
  */
-import { publicEnv, site } from '@site/config'
+import { publicEnv } from '@site/config/env'
+import { site } from '@site/config/site'
 import { business } from '@site/content/business-data'
 
 const telefono = publicEnv.NEXT_PUBLIC_TELEFONO

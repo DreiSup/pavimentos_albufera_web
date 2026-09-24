@@ -5,7 +5,9 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./server": "./src/server.ts"
+    "./server": "./src/server.ts",
+    "./env": "./src/env.ts",
+    "./site": "./src/site.ts"
   },
   "sideEffects": false,
   "scripts": {

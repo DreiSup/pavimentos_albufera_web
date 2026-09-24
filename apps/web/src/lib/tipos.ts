@@ -10,7 +10,7 @@
  * `lib/config.ts`, como adaptador client-reachable: importa solo hojas de
  * datos por subpath (`service-catalog-data`, `models-data`, `color-data`),
  * nunca el barrel principal ni sus funciones de `queries/` — aunque hoy solo
- * lo importen componentes de servidor (14 sitios, no solo `Pie.tsx`), para
+ * lo importen componentes de servidor (16 archivos, no solo `Pie.tsx`), para
  * que ese hecho no se rompa en silencio el día que un componente de cliente
  * lo importe.
  *
