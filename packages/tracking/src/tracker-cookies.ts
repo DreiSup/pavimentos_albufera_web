@@ -2,8 +2,8 @@
  * Cleanup for first-party tracker cookies that gtag.js/fbevents.js already
  * wrote once marketing consent is withdrawn. One export per file (its own
  * concern, only ever needed together with `deleteTrackerCookies` — see
- * `read-cookie.ts`'s header for why file-per-export matters here, DECISIONS
- * D17(final)/D26).
+ * `read-cookie.ts`'s header for why file-per-export matters here,
+ * docs/migration/DECISIONS.md D17(final)/D26).
  *
  * `deleteTrackerCookies` takes `prefixes`/`exactNames` directly, not a
  * config-object factory: `apps/web/src/lib/cookies.ts`'s

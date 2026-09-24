@@ -1,7 +1,7 @@
 /**
  * Generic first-party cookie write, `document.cookie`-based. One export
  * per file — see `read-cookie.ts`'s header for why this split matters
- * here (DECISIONS D17(final)/D26).
+ * here (docs/migration/DECISIONS.md D17(final)/D26).
  *
  * Byte-for-byte port of the pre-migration `lib/cookies.ts`'s
  * `escribirCookie`.

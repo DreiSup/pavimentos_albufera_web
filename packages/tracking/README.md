@@ -9,7 +9,7 @@ No React, no Next.
 ```
 src/
   events.ts                 trackEvent (gtag + Meta Pixel — no adsConversion, see its own header)
-  read-cookie.ts             readCookie — one export per file, see its own header (DECISIONS D26)
+  read-cookie.ts             readCookie — one export per file, see its own header (docs/migration/DECISIONS.md D26)
   write-cookie.ts            writeCookie
   tracker-cookies.ts         deleteTrackerCookies(prefixes, exactNames)
   tracker-cookie-factory.ts  createTrackerCookieCleanup — Pavivasa-shaped factory (unwired, see below)
@@ -24,7 +24,7 @@ src/
 **Every client-reachable export lives in its own file** (`read-cookie.ts`,
 `write-cookie.ts`, `tracker-cookies.ts`, `reference-code.ts`), not grouped
 by theme — see `read-cookie.ts`'s own header for the measured reason: under
-this migration's zero-residual JS budget (DECISIONS D17(final)/D26), a
+this migration's zero-residual JS budget (docs/migration/DECISIONS.md D17(final)/D26), a
 module reachable through more than one importer can't be concatenated by
 webpack into that importer's own chunk, and `apps/web/src/lib/cookies.ts`
 re-exporting an imported name as `export { x }` (rather than a local
@@ -47,7 +47,7 @@ site. Concretely, versus Pavivasa's package:
 - **`trackEvent` takes positional arguments, not an options object, and
   has no `adsConversion` parameter.** Both are measured deviations from
   Pavivasa's shape (and from this file's own first draft), forced by this
-  migration's zero-residual JS budget (DECISIONS D26): an
+  migration's zero-residual JS budget (docs/migration/DECISIONS.md D26): an
   `{params, metaStandardEvent, metaEventId}` literal built at every call
   site costs real, unmangleable bytes on every route reached from the
   root layout, and this repo has no live Google Ads conversion call site
@@ -84,20 +84,25 @@ site. Concretely, versus Pavivasa's package:
 
 ## Unwired package surface
 
-`consent-store.ts` and `attribution-client.ts` are built but **not**
-imported by any `apps/web` adapter in this migration:
+`consent-store.ts`, `attribution-client.ts` and `tracker-cookie-factory.ts`
+are built but **not** imported by any `apps/web` adapter in this migration:
 
 - `createCookieConsentStore` — `apps/web/src/lib/cookies.ts` keeps
   `leerCookie`/`escribirCookie` as plain functions (also used for the
   reference/attribution cookies, not just consent), not a store object.
 - `captureLandingParams`/`utmRequiresConsent` —
   `components/layout/Atribucion.tsx` is frozen (P3 frontend allowlist,
-  DECISIONS D13) and has its own capture-in-memory +
+  docs/migration/DECISIONS.md D13) and has its own capture-in-memory +
   POST-to-`/api/atribucion` design; rewiring it to this generic shape is a
   frontend change out of scope for a zero-behaviour-change phase.
+- `createTrackerCookieCleanup` — Pavivasa's own curried-factory shape over
+  `deleteTrackerCookies`; `apps/web/src/lib/cookies.ts` calls
+  `deleteTrackerCookies` (`tracker-cookies.ts`) directly instead, so this
+  factory has 0 importers, same as the two above. Accepted with the same
+  status as them, addendum to docs/migration/DECISIONS.md D27.
 
-Both are kept for template convergence. Since neither is imported by any
-adapter leaf, neither ships to any route — an unimported ES module costs
+All three are kept for template convergence. Since none is imported by any
+adapter leaf, none ships to any route — an unimported ES module costs
 nothing in the built output.
 
 ## Byte-exact templates

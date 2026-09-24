@@ -10,11 +10,12 @@ estado actual.
 Las rutas relativas que aparecen en el cuerpo de abajo (`snapshots/`, `js/`, `facts/`, `leak/`,
 `notes/`, `buildcheck/`, `inventory/`, `design/package-plan.md`, `design/infra-plan.md`,
 `inventory/glossary.json`…) **no son de este repo**: son del `<scratchpad de la migración>`, el
-directorio de trabajo temporal de la sesión que hizo la migración, que ya no existe. Ojo en
-particular con `design/`: el `design/` que citan esas rutas es el del scratchpad (los planes WF1
-de la migración, borrados con él); el `design/` real de este repo — la especificación de diseño y
-contenido del sitio, `design/01-sistema-de-diseno.md` y el resto (ver D16 más abajo) — es un
-directorio distinto, con contenido distinto, que la migración no tocó y sigue existiendo.
+directorio de trabajo temporal de la sesión que hizo la migración — temporal, no versionado en
+este repo, fuera de su control de versiones. Ojo en particular con `design/`: el `design/` que
+citan esas rutas es el del scratchpad (los planes WF1 de la migración); el `design/` real de este
+repo — la especificación de diseño y contenido del sitio, `design/01-sistema-de-diseno.md` y el
+resto (ver D16 más abajo) — es un directorio distinto, con contenido distinto, que la migración no
+tocó y sigue existiendo.
 
 Copia verbatim del original salvo la línea marcada "(addendum, 2026-09-24)" bajo D27, añadida
 después de cerrar la migración y ausente del original. El original no contenía ningún valor de

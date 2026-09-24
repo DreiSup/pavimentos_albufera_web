@@ -23,8 +23,11 @@
 // TEXT `verificar-landings.mjs` also keys on, `whatsappConfigured` from
 // "does at least one page carry a real wa.me link", see index.mjs's own
 // comment for why they differ) is how a whole-build gap ("no contact data
-// configured at all — CI without `apps/web/.env.local`, the same situation
-// verificar-landings.mjs only warns about") is told apart from a genuine
+// configured at all — a bare build with neither `apps/web/.env.local` nor
+// `NEXT_PUBLIC_TELEFONO`/`_WHATSAPP` set, the same situation
+// verificar-landings.mjs only warns about; CI's own workflow avoids this by
+// setting dummy values for both at the job level, see .github/workflows/
+// ci.yml") is told apart from a genuine
 // per-page bug ("every other page has the link, this one doesn't"): a
 // build-wide gap only informs, a per-page miss inside an otherwise-
 // configured build still fails.

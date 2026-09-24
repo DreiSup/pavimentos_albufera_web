@@ -8,7 +8,7 @@
  * file's own comment for why (script-ordering, not `next/script`).
  *
  * Byte order and whitespace matter: this is compared byte-for-byte
- * against the pre-migration inline template (phase 3 gate, DECISIONS D7)
+ * against the pre-migration inline template (phase 3 gate, docs/migration/DECISIONS.md D7)
  * — never reformat this template literal.
  */
 export function buildConsentDefaultScript(cookieName: string, ids: readonly string[]): string {

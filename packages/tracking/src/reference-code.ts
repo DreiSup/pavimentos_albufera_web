@@ -1,7 +1,7 @@
 /**
  * Generic short random code generator over a caller-supplied alphabet.
  * One export per file — see `read-cookie.ts`'s header for why this split
- * matters here (DECISIONS D17(final)/D26).
+ * matters here (docs/migration/DECISIONS.md D17(final)/D26).
  *
  * Byte-for-byte port of the pre-migration `lib/cookies.ts`'s
  * `generarReferencia` (6 bytes, `crypto.getRandomValues`), parameterized

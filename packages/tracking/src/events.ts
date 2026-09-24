@@ -3,7 +3,7 @@
  * underlying script never loaded (no consent, or no id configured).
  *
  * Positional arguments, not an options object: measured against this
- * migration's zero-residual JS budget (DECISIONS D26), an
+ * migration's zero-residual JS budget (docs/migration/DECISIONS.md D26), an
  * `{params, metaStandardEvent, metaEventId}` literal built at the call
  * site costs real bytes a minifier can't mangle away (property names
  * survive minification) on EVERY route that reaches this function through

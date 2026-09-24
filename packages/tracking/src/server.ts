@@ -171,7 +171,7 @@ export async function sendMetaConversionEvent(event: ConversionEvent): Promise<v
 }
 
 // ---------------------------------------------------------------------------
-// Attribution cookie writer — /api/atribucion's own logic (DECISIONS D8).
+// Attribution cookie writer — /api/atribucion's own logic (docs/migration/DECISIONS.md D8).
 // ---------------------------------------------------------------------------
 
 export type CleanAttributionValueOptions = { maxValueLength: number }

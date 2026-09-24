@@ -5,7 +5,7 @@
  * hence `utmRequiresConsent = true` (Pavivasa: `false`).
  *
  * NOT wired into `components/layout/Atribucion.tsx` in this migration:
- * that component is frozen (P3 frontend allowlist, DECISIONS D13) and its
+ * that component is frozen (P3 frontend allowlist, docs/migration/DECISIONS.md D13) and its
  * capture-in-memory + POST-to-`/api/atribucion` design is this repo's own
  * mechanism (the cookie itself is written server-side, by
  * `@site/tracking/server`'s `buildAttributionCookieResponse`, not from

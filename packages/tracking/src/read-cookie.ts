@@ -1,6 +1,6 @@
 /**
  * Generic first-party cookie read, `document.cookie`-based. One export per
- * file (DECISIONS D17(final)/D26): `apps/web/src/lib/cookies.ts` re-exports
+ * file (docs/migration/DECISIONS.md D17(final)/D26): `apps/web/src/lib/cookies.ts` re-exports
  * this as a local `const` binding, not an `export { x }` of the imported
  * name — a plain re-export rewires every client component that imports
  * `leerCookie` to import THIS module directly, which stops webpack from

@@ -377,7 +377,7 @@ Toda variable de entorno nueva va también a `apps/web/.env.example` y a `global
 
 **`known-issues.json`**: 54 entradas exactas, agrupadas en 2 claves: `(metadata, missing-og-url)` → 51 (una por página; `app/layout.tsx` nunca fija `openGraph.url`) y `(metadata, duplicate-description)` → 3 (páginas legales sin `description` propia, heredan la de home). Una entrada que deja de fallar se reporta "stale" y **hace fallar el run** (a diferencia de Pavivasa, que solo lo imprime — este repo exige fallar en stale). Cualquier issue nuevo no listado también hace fallar.
 
-> **Inexactitud de documentación detectada**: `README.md` cita como ejemplo de known-issue "las landings `/lp/*` fuera del sitemap por diseño". Esa exclusión sí existe (`scripts/verify/checks/sitemap.mjs` filtra por `noindex`), pero **no es una entrada de `known-issues.json`** — es una regla estructural del propio check, no un baseline. Las 54 entradas reales son solo las dos claves de arriba. Pendiente de corregir la redacción del README (§15).
+> **Inexactitud de documentación corregida**: `README.md` citaba como ejemplo de known-issue "las landings `/lp/*` fuera del sitemap por diseño". Esa exclusión sí existe (`scripts/verify/checks/sitemap.mjs` filtra por `noindex`), pero **no es una entrada de `known-issues.json`** — es una regla estructural del propio check, no un baseline. Las 54 entradas reales son solo las dos claves de arriba. El README ya cita un ejemplo real (`metadata:missing-og-url`/`metadata:duplicate-description`).
 
 **CI** (`.github/workflows/ci.yml`, un job): checkout → `pnpm/action-setup@v6` (sin `version:`) → `setup-node@v7` (Node 22) → `pnpm install --frozen-lockfile` → `content:validate` → `lint` → `typecheck` → `pnpm --filter web build` (ya incluye los 5 verificadores) → `pnpm verify` → segundo build + `pnpm verify:secrets` con valores centinela. Sin paso de deploy — Vercel despliega por su integración Git, independiente del resultado de este workflow salvo que se configure deployment gating/branch protection aparte. **CI nunca ha corrido en un runner real**: la rama no está en `origin`.
 
@@ -441,9 +441,8 @@ Documento citado: `arquitectura-plantilla-monorepo.md` (normativo). Donde choca 
 | CI nunca ejecutado en un runner real | La rama no está en `origin` | §11 |
 | Configuración de Vercel sin aplicar ni probar | Toda la sección §12 es prescriptiva | §12 |
 | Enrutado multi-idioma | `[locale]`/`middleware.ts`/`next-intl` no montados; tipos y datos ya preparados | §13 |
-| `consent-store.ts`/`attribution-client.ts` sin enganchar | Documentados para un diseño futuro | §4, §8.3 |
+| `consent-store.ts`/`attribution-client.ts`/`tracker-cookie-factory.ts` sin enganchar | Documentados para un diseño futuro (D27 addendum) | §4, §8.3 |
 | `lastLegalReview` fijo en el dato | No derivado de control de versiones del texto legal — actualizar a mano | `packages/content/src/data/legal.ts` |
-| Doc inexacta: known-issue de `/lp/*` | El README lo cita como ejemplo baselineado; en realidad es una regla estructural del check, no una entrada de `known-issues.json` | §11 |
 | `turbo-ignore` no prescrito | La plantilla lo pide para Vercel; el README no lo menciona | §14 |
 | "49 rutas" del comentario de `layout.tsx` sin reconciliar | Ver §6.1 — no cuadra de forma verificable contra las 51 rutas reales de hoy | §6.1 |
 
