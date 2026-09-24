@@ -6,6 +6,7 @@ import { after } from 'next/server'
 import { enviarEventoCAPI } from '@/lib/meta-capi'
 import { sitio } from '@/lib/config'
 import { COOKIE_ATRIBUCION, COOKIE_CONSENTIMIENTO, COOKIE_REFERENCIA } from '@/lib/cookies'
+import { serverEnv } from '@site/config/server'
 
 /**
  * Lo que el visitante escribió, tal y como lo escribió.
@@ -291,8 +292,8 @@ export async function enviarPresupuesto(
   // - Esperarlos en línea son hasta 16 s de cola de timeouts que el usuario
   //   mira en el spinner, por dos entregas cuyo resultado no cambia nada de lo
   //   que va a ver.
-  const telegramToken = process.env.TELEGRAM_BOT_TOKEN
-  const telegramChat = process.env.TELEGRAM_CHAT_ID
+  const telegramToken = serverEnv.TELEGRAM_BOT_TOKEN
+  const telegramChat = serverEnv.TELEGRAM_CHAT_ID
   if (telegramToken && telegramChat) {
     after(async () => {
       try {
@@ -361,8 +362,8 @@ export async function enviarPresupuesto(
     )
   }
 
-  const apiKey = process.env.RESEND_API_KEY
-  const destino = process.env.EMAIL_DESTINO ?? 'comercial@pavimentos-albufera.com'
+  const apiKey = serverEnv.RESEND_API_KEY
+  const destino = serverEnv.EMAIL_DESTINO ?? 'comercial@pavimentos-albufera.com'
 
   if (apiKey) {
     // El email sí se espera: es lo único cuyo resultado decide qué ve el
