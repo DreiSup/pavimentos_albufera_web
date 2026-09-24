@@ -6,8 +6,8 @@
 // Adapted from Pavivasa's scripts/verify/lib/manifest.mjs: METADATA_ROUTES
 // matches THIS build's actual metadata routes (`icon.svg`, not
 // `favicon.ico` — this site has no `favicon.ico`; `opengraph-image.png`
-// instead of `.jpg`; no separate `apple-icon.png`... — verified against a
-// real build's prerender-manifest.json, see scripts/verify/README.md).
+// instead of `.jpg`) — verified against a real build's
+// prerender-manifest.json, see scripts/verify/README.md.
 // `next.config.ts`'s `headers()` has no `X-Robots-Tag` rule at all in this
 // repo (noindex is set entirely via per-route `robots: { index: false }`
 // metadata, read from the rendered `<meta name="robots">` — see

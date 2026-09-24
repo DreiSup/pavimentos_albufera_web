@@ -90,23 +90,41 @@ back to a non-CTA href (`apps/web/src/lib/config.ts`), and the business
 JSON-LD omits `telephone` entirely — a real, whole-build state, not a
 per-page bug, already gated for `VERCEL_ENV=production` by
 `apps/web/scripts/verificar-landings.mjs`. `index.mjs` detects this itself
-(`phoneConfigured`/`whatsappConfigured`: does at least one page in THIS
-build carry a real link) instead of reading `process.env` (a plain `node`
-process never sees `.env.local`'s values the way `next build` does) or
-baselining it in `known-issues.json` (which would either fail-as-new or
-go stale depending on which of the two builds — local, with
-`apps/web/.env.local`, or CI's clean clone, without it — last ran). A
-build-wide gap only informs (`pnpm verify` stays green in CI without env);
-a page missing the link inside an otherwise-configured build still fails.
+instead of reading `process.env` (a plain `node` process never sees
+`.env.local`'s values the way `next build` does) or baselining it in
+`known-issues.json` (which would either fail-as-new or go stale depending
+on which of the two builds — local, with `apps/web/.env.local`, or CI's
+clean clone, without it — last ran):
+
+- **`phoneConfigured`**: does ANY page's raw HTML contain the phone
+  RESERVE-PLACEHOLDER text (`business.ts`'s `phonePlaceholder.es`) — the
+  same signal `verificar-landings.mjs` keys its own check on. Deliberately
+  NOT "does some page have a `tel:` link": that reads false even when the
+  env IS set, if `telefonoHref` breaks build-wide some other way (every
+  link would fall back to `#`/`/presupuesto/`, same as the env being
+  unset) — which would wrongly turn a real regression into an
+  informational note. The placeholder text has no such blind spot: it's
+  shown precisely when, and only when, `telefonoHref` is absent.
+- **`whatsappConfigured`**: no equivalent placeholder text exists for
+  WhatsApp (`whatsappHref` is simply omitted, nothing renders in its
+  place), so this stays the coarser "does at least one page carry a real
+  `wa.me` link" — which HAS the same blind spot the old phone heuristic
+  did: it can't tell "WhatsApp env unset" apart from "env set but every
+  `wa.me` link broke build-wide some other way". Left as a known
+  limitation for lack of a comparable signal to key off.
+
+A build-wide gap only informs (`pnpm verify` stays green in CI without
+env); a page missing the link inside an otherwise-configured build still
+fails.
 
 ## How pages and noindex are determined
 
 Pages are enumerated from `prerender-manifest.json` (`lib/manifest.mjs`),
 never by walking the filesystem — same reasoning as Pavivasa's version.
 `lib/manifest.mjs`'s `METADATA_ROUTES` matches THIS site's actual metadata
-routes (`icon.svg`, not `favicon.ico`; `opengraph-image.png`; no separate
-apple touch icon route beyond `apple-icon.png`) — verified against a real
-build's `prerender-manifest.json`, not copied from Pavivasa's list.
+routes (`icon.svg`, not `favicon.ico`; `opengraph-image.png` instead of
+`.jpg`) — verified against a real build's `prerender-manifest.json`, not
+copied from Pavivasa's list.
 
 A page counts as noindex if its rendered HTML has `<meta name="robots"
 content="...noindex...">` (this site's `next.config.ts` has no
@@ -134,13 +152,32 @@ The live-server checks (b, c, the other half of a) always start `next
 start` from the real `appDir` — a copy's planted `<a href>`/redirect source
 is still read from the copy and then probed over real HTTP.
 
-This port was verified this way before being committed: 7 defects planted
-on throwaway `.next` copies (never the real build) — a second `<h1>`, a
-broken internal link, an injected `AggregateRating` JSON-LD node, a removed
-canonical `<link>`, an indexable page removed from `sitemap.xml`, a server
-secret's NAME leaked into a static JS chunk, and a stale `known-issues.json`
-entry — every one caught, with the correct check/code, and cleaned up
-before commit.
+This port was verified this way before being committed: 11 defects planted
+on throwaway `.next` copies (never the real build), every one caught with
+the correct check/code and cleaned up before commit —
+
+- a second `<h1>` → `metadata:h1-count`
+- a broken internal link → `internal-links:broken-or-redirecting`
+- an injected `AggregateRating` JSON-LD node → `jsonld:forbidden-type`
+- a removed canonical `<link>` → `metadata:missing-canonical`
+- an indexable page removed from `sitemap.xml` → `sitemap:missing-from-sitemap` (+ `sitemap:not-a-real-page` for the still-listed-but-now-foreign URL)
+- a server secret's NAME leaked into a static JS chunk → `secrets:name-leak`
+- a server secret's real sentinel VALUE leaked into a static JS chunk → `secrets:value-leak`
+- the same VALUE leaked into a rendered HTML file → `secrets:rendered-value-leak`
+- `.next/static` deleted entirely → `secrets:missing-surface`
+- every scannable file removed from `.next/server/app` (directory kept) → `secrets:empty-surface`
+- a stale `known-issues.json` entry (planted for a route that never
+  existed) → reported under "stale baseline entries" AND fails the run
+  (exit 1), both in a full `index.mjs` run and (for a live-only code) NOT
+  falsely in a `--skip-server` run of the same known-issues file — see
+  `lib/reporter.mjs`'s `excludeCodes`.
+
+A 12th check proves `phoneConfigured`'s own fix (see "`<DatoPendiente>`"
+above): on a copy with every `tel:` href stripped from every page but the
+reserve-placeholder text left untouched (so `phoneConfigured` correctly
+stays `true`), `cta:missing-tel` fires on every page — the OLD "does some
+page have a tel: link" heuristic would have silently read this as
+"phone not configured" and downgraded the whole thing to an info note.
 
 ## `known-issues.json` — the baseline allowlist
 

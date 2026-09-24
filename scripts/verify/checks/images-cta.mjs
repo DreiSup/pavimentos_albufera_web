@@ -19,12 +19,15 @@
 // reserve-placeholder TEXT verificar-landings.mjs checks).
 //
 // `phoneConfigured`/`whatsappConfigured` (computed once in index.mjs from
-// this build's OWN pages: "does at least one page carry a real tel:/wa.me
-// link") is how a whole-build gap ("no page anywhere has one — CI without
-// `apps/web/.env.local`, the same situation verificar-landings.mjs only
-// warns about") is told apart from a genuine per-page bug ("every other
-// page has the link, this one doesn't"): a build-wide gap only informs, a
-// per-page miss inside an otherwise-configured build still fails.
+// this build's OWN pages — `phoneConfigured` from the reserve-placeholder
+// TEXT `verificar-landings.mjs` also keys on, `whatsappConfigured` from
+// "does at least one page carry a real wa.me link", see index.mjs's own
+// comment for why they differ) is how a whole-build gap ("no contact data
+// configured at all — CI without `apps/web/.env.local`, the same situation
+// verificar-landings.mjs only warns about") is told apart from a genuine
+// per-page bug ("every other page has the link, this one doesn't"): a
+// build-wide gap only informs, a per-page miss inside an otherwise-
+// configured build still fails.
 export function checkImagesAndCta({ pages, phoneConfigured, whatsappConfigured, reporter }) {
   reporter.startCheck('(g) images: alt present, dimensions or fill · (h) tel:/wa.me CTA present')
 

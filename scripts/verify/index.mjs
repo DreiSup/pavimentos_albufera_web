@@ -16,6 +16,7 @@ import { loadBuild, isNoindexByHeader } from './lib/manifest.mjs'
 import { parsePage, isNoindexMeta } from './lib/html.mjs'
 import { startServer, findFreePort } from './lib/net.mjs'
 import { Reporter, loadKnownIssues } from './lib/reporter.mjs'
+import { business } from '../../packages/content/src/data/business.ts'
 
 import { checkSitemapStatic } from './checks/sitemap.mjs'
 import { checkMetadata } from './checks/metadata.mjs'
@@ -29,15 +30,15 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const repoRoot = path.resolve(__dirname, '..', '..')
 
 // Every check name any of the checks/*.mjs modules can report under — kept
-// as one explicit list so a run's `relevantChecks` (and therefore its
-// staleness scope) always matches reality, and so `--skip-server` (which
-// runs neither `checkLive` nor its 'redirects'/'internal-links' issues, and
-// no 'sitemap:url-not-200'/'metadata-route-not-200' from it either) doesn't
-// make an unrelated baseline entry look stale.
+// as one explicit list so a run's `relevantChecks` scope matches reality.
 const ALL_CHECK_NAMES = ['build', 'sitemap', 'metadata', 'jsonld', 'images', 'cta', 'robots', 'internal-links', 'redirects']
-// Checks that only `checkLive` (the live-server half) can report — excluded
-// from `relevantChecks` under `--skip-server`.
-const LIVE_ONLY_CODES = new Set(['internal-links', 'redirects'])
+// `check:code` pairs only `checkLive` (the live-server half) can report —
+// excluded (not the whole check, see `excludeCodes`'s own comment in
+// lib/reporter.mjs) under `--skip-server`. `sitemap` itself stays fully
+// relevant: `checkSitemapStatic` still runs and still reports
+// `sitemap:missing-from-sitemap`/`sitemap:not-a-real-page` under
+// `--skip-server`, only `checkLive`'s two `sitemap:*` codes don't run.
+const LIVE_ONLY_CODES = ['sitemap:url-not-200', 'sitemap:metadata-route-not-200', 'internal-links:broken-or-redirecting', 'redirects:wrong-status']
 
 function parseArgs(argv) {
   const args = { appDir: null, nextDir: null, siteUrl: null, port: null, skipServer: false, knownIssues: null }
@@ -77,23 +78,26 @@ async function main() {
 
   const build = await loadBuild(nextDir)
   const knownIssues = await loadKnownIssues(knownIssuesPath)
-  const relevantChecks = args.skipServer ? ALL_CHECK_NAMES.filter((c) => !LIVE_ONLY_CODES.has(c)) : ALL_CHECK_NAMES
   // failOnStale: true — D29 requires a stale baseline entry to fail the
   // build here, not just print (unlike Pavivasa's index.mjs, which only
   // prints it; secrets-scan.mjs's own reasoning for turning this on
   // applies just as much here: a stale entry almost always means the
   // underlying issue got fixed and nobody removed its baseline line, and
   // that's worth catching before something reintroduces it silently.
-  const reporter = new Reporter(knownIssues, relevantChecks, { failOnStale: true })
+  const reporter = new Reporter(knownIssues, ALL_CHECK_NAMES, {
+    failOnStale: true,
+    excludeCodes: args.skipServer ? LIVE_ONLY_CODES : null,
+  })
 
-  // -- read + parse every page once, tag noindex (header OR <meta robots>).
+  // -- read + parse every page once, tag noindex (header OR <meta robots>),
+  // keep the raw HTML too (needed below for the reserve-phone-text check).
   const pages = []
   for (const p of build.pages) {
     const html = await readHtml(p, reporter)
     if (html === null) continue
     const parsed = parsePage(html)
     const noindex = isNoindexByHeader(p.publicPath, build.noindexHeaderRules) || isNoindexMeta(parsed.robotsMeta)
-    pages.push({ ...p, parsed, noindex })
+    pages.push({ ...p, html, parsed, noindex })
   }
 
   const siteUrl = (
@@ -103,13 +107,35 @@ async function main() {
     'https://pavimentos-albufera.com'
   ).replace(/\/+$/, '')
 
-  // Whole-build facts, not per-page: does AT LEAST ONE page carry a real
-  // tel:/wa.me link? See checks/images-cta.mjs's header comment for why
-  // this — not `process.env.NEXT_PUBLIC_TELEFONO`/`_WHATSAPP` (a plain
-  // `node` process here never sees `.env.local`'s values the way `next
-  // build` does) — is how "contact data configured" is determined, and why
-  // it has to be build-wide rather than derived from `process.env`.
-  const phoneConfigured = pages.some((p) => p.parsed.links.some((l) => (l.href || '').startsWith('tel:')))
+  // Whole-build facts, not per-page — see checks/images-cta.mjs's header
+  // comment for why this can't be `process.env.NEXT_PUBLIC_TELEFONO`/
+  // `_WHATSAPP` (a plain `node` process here never sees `.env.local`'s
+  // values the way `next build` does).
+  //
+  // `phoneConfigured`: NOT "does some page have a tel: link" — that has a
+  // false negative when the env IS set but `telefonoHref` breaks some other
+  // way (a future refactor of `lib/config.ts`, say): every tel: link would
+  // fall back to `#`/`/presupuesto/` on EVERY page, "some page has one"
+  // would read false, and the CTA/JSON-LD `telephone` checks would wrongly
+  // drop to informational instead of catching a real regression. Instead:
+  // does ANY page's RAW html contain the phone RESERVE PLACEHOLDER text
+  // (`packages/content/src/data/business.ts`'s `phonePlaceholder.es`,
+  // `apps/web/src/lib/config.ts`'s `telefonoMostrado` fallback) — the same
+  // signal `apps/web/scripts/verificar-landings.mjs` already keys its own
+  // production-fatal check on. Read from the RAW html (before
+  // `parsePage`'s script/style/comment stripping), matching that script's
+  // own `html.includes(reserva)` — the placeholder is plain visible text,
+  // never inside a script/style block, so this is equivalent, just checked
+  // here without re-reading every file from disk a second time.
+  const phoneConfigured = !pages.some((p) => p.html.includes(business.phonePlaceholder.es))
+  // WhatsApp has no equivalent reserve-placeholder text anywhere in the
+  // rendered output (`whatsappHref` is simply omitted, no fallback string
+  // shown) — so this stays the coarser "does at least one page have a real
+  // wa.me link" heuristic, with the SAME false-negative limitation
+  // `phoneConfigured` used to have: it cannot distinguish "WhatsApp env
+  // unset" from "env set but every wa.me link broke build-wide". Documented
+  // in scripts/verify/README.md; not fixed here for lack of a comparable
+  // signal to key off.
   const whatsappConfigured = pages.some((p) => p.parsed.links.some((l) => /wa\.me\//.test(l.href || '')))
 
   console.log(`verify: ${pages.length} page(s), site "${siteUrl}", build ${nextDir}`)

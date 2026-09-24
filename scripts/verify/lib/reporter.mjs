@@ -28,13 +28,25 @@ export class Reporter {
    * entries for OTHER checks are ignored for staleness — they belong to a
    * different script's run, not to "no longer reproducing here".
    *
+   * `excludeCodes`: finer-grained than `relevantChecks` — a set of
+   * `"check:code"` strings for issues this invocation could never produce
+   * even though the wider check IS relevant (e.g. `index.mjs
+   * --skip-server` still runs `checkSitemapStatic`'s own
+   * `sitemap:missing-from-sitemap`/`sitemap:not-a-real-page`, but not
+   * `checkLive`'s `sitemap:url-not-200`/`sitemap:metadata-route-not-200` —
+   * excluding the whole `sitemap` check from `relevantChecks` would wrongly
+   * un-stale-check the codes it DOES still produce). A key whose
+   * `"check:code"` is in this set is never counted as stale, regardless of
+   * `relevantChecks`.
+   *
    * `failOnStale`: when true, a stale baseline entry (scoped to
-   * `relevantChecks`, same as above) also fails the run, not just prints as
-   * informational.
+   * `relevantChecks`/`excludeCodes`, same as above) also fails the run, not
+   * just prints as informational.
    */
-  constructor(knownIssues, relevantChecks = null, { failOnStale = false } = {}) {
+  constructor(knownIssues, relevantChecks = null, { failOnStale = false, excludeCodes = null } = {}) {
     this.knownIssues = knownIssues // Map from loadKnownIssues
     this.relevantChecks = relevantChecks ? new Set(relevantChecks) : null
+    this.excludeCodes = excludeCodes ? new Set(excludeCodes) : null
     this.failOnStale = failOnStale
     this.matchedBaselineKeys = new Set()
     this.newIssues = []
@@ -104,7 +116,9 @@ export class Reporter {
   get staleKeys() {
     return [...this.knownIssues.keys()].filter((k) => {
       if (this.matchedBaselineKeys.has(k)) return false
-      if (this.relevantChecks && !this.relevantChecks.has(k.split('|')[0])) return false
+      const [check, code] = k.split('|')
+      if (this.relevantChecks && !this.relevantChecks.has(check)) return false
+      if (this.excludeCodes && this.excludeCodes.has(`${check}:${code}`)) return false
       return true
     })
   }
