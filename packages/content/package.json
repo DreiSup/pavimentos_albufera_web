@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./business-data": "./src/data/business.ts",
+    "./color-data": "./src/data/colors.ts"
   },
   "sideEffects": false,
   "scripts": {

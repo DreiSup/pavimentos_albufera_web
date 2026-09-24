@@ -2,45 +2,50 @@
  * legacy adapter, delete when a new design consumes @site/* directly
  *
  * NAP único del sitio. Mismos nombres, misma forma, mismos valores que antes
- * de la migración — ahora construidos sobre `@site/content` (datos del
- * negocio, locale 'es') y `@site/config` (entorno). El teléfono y la
- * dirección no están confirmados por el cliente (05-pendientes-y-decisiones.md
- * §A1): mientras no lleguen por variable de entorno se muestran entre
- * corchetes con <DatoPendiente>, nunca escritos a mano en una plantilla.
+ * de la migración — ahora leídos de `@site/content`'s `business` (datos
+ * puros del negocio) y `@site/config` (entorno). El teléfono y la dirección
+ * no están confirmados por el cliente (05-pendientes-y-decisiones.md §A1):
+ * mientras no lleguen por variable de entorno se muestran entre corchetes
+ * con <DatoPendiente>, nunca escritos a mano en una plantilla.
  *
  * Client-reachable (Cabecera, MenuMovil, Consentimiento, EventosGlobales,
- * FormularioPresupuesto…): solo importa `resolveBusiness` de `@site/content`
- * (barrel principal) y `publicEnv`/`site` de `@site/config` (nunca
- * `@site/config/server`). No hay `claims` en este negocio (a diferencia de
- * Pavivasa) así que este archivo sigue siendo un único módulo, sin el
- * split `nap.ts`/`claims.ts` de Pavivasa.
+ * FormularioPresupuesto…): por eso NO importa `resolveBusiness` de
+ * `@site/content` (el barrel principal, con `queries/`, `pickLocalized`…) —
+ * eso arrastra un resolver genérico al bundle de cliente por un puñado de
+ * `tel:`/`wa.me` (D17 final del runbook de migración: ~+320 B de más en
+ * cada una de las 52 rutas, medido). Importa solo la hoja de datos
+ * `@site/content/business-data` (un único objeto literal, sin zod, sin
+ * `queries/`) y reimplementa aquí mismo la derivación tal cual la tenía
+ * `lib/config.ts` antes de la migración — este sitio es solo `es`
+ * (`publishedLocales`), así que lee `.es` directamente en vez de
+ * `pickLocalized()`. `publicEnv`/`site` de `@site/config` (nunca
+ * `@site/config/server`) ya eran datos puros y no cambian. No hay `claims`
+ * en este negocio (a diferencia de Pavivasa) así que este archivo sigue
+ * siendo un único módulo, sin el split `nap.ts`/`claims.ts` de Pavivasa.
  */
 import { publicEnv, site } from '@site/config'
-import { resolveBusiness } from '@site/content'
+import { business } from '@site/content/business-data'
 
-const resolved = resolveBusiness(
-  {
-    phone: publicEnv.NEXT_PUBLIC_TELEFONO,
-    whatsapp: publicEnv.NEXT_PUBLIC_WHATSAPP,
-    address: publicEnv.NEXT_PUBLIC_DIRECCION,
-  },
-  'es',
-)
+const telefono = publicEnv.NEXT_PUBLIC_TELEFONO
+const whatsapp = publicEnv.NEXT_PUBLIC_WHATSAPP
+const direccion = publicEnv.NEXT_PUBLIC_DIRECCION
 
 export const nap = {
-  nombre: resolved.name,
-  email: resolved.email,
-  telefono: resolved.phone,
-  telefonoMostrado: resolved.displayPhone,
-  telefonoHref: resolved.phoneHref,
-  whatsapp: resolved.whatsapp,
-  whatsappHref: resolved.whatsappHref,
-  direccion: resolved.address,
-  direccionMostrada: resolved.displayAddress,
-  municipio: resolved.town,
-  codigoPostal: resolved.postalCode,
-  provincia: resolved.province,
-  pais: resolved.country,
+  nombre: business.name,
+  email: business.email,
+  telefono,
+  telefonoMostrado: telefono ?? business.phonePlaceholder.es,
+  telefonoHref: telefono ? `tel:+34${telefono.replace(/\D/g, '')}` : undefined,
+  whatsapp,
+  whatsappHref: whatsapp
+    ? `https://wa.me/34${whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(business.whatsappMessage.es)}`
+    : undefined,
+  direccion,
+  direccionMostrada: direccion ?? business.addressPlaceholder.es,
+  municipio: business.town,
+  codigoPostal: business.postalCode,
+  provincia: business.province,
+  pais: business.country,
 }
 
 /**
