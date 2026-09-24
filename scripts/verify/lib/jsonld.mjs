@@ -15,8 +15,12 @@
 //    data — see `packages/content/src/data/business.ts`), which is a real,
 //    documented, non-production-blocking state (`apps/web/scripts/
 //    verificar-landings.mjs` already gates it for `VERCEL_ENV=production`).
-//    Demanding it unconditionally would fail every CI run built without
-//    `apps/web/.env.local` (exactly the clean-clone situation CI runs in).
+//    Demanding it unconditionally would fail every build made with no phone
+//    configured at all (a bare local build with no `apps/web/.env.local`
+//    and no `NEXT_PUBLIC_TELEFONO` set). CI's own workflow avoids exactly
+//    that by setting a dummy `NEXT_PUBLIC_TELEFONO`/`_WHATSAPP` pair at the
+//    job level (`.github/workflows/ci.yml`), so this requirement enforces
+//    there too, despite CI's checkout never having `apps/web/.env.local`.
 //  - Service: unchanged from Pavivasa's rule (name/serviceType + provider);
 //    this site's Service node has no `description` at all by design (D10 —
 //    reported to the user as an SEO improvement, not fixed here).

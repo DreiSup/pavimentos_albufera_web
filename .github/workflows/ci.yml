@@ -8,6 +8,13 @@ env:
   NEXT_TELEMETRY_DISABLED: '1'
   COREPACK_ENABLE_DOWNLOAD_PROMPT: '0'
   NEXT_PUBLIC_SITE_URL: https://pavimentos-albufera.com
+  # Dummy public contact values (never real data — see the Build step's own
+  # comment below). Without these, apps/web/.env.local being absent here
+  # (gitignored, never checked out — docs/migration/DECISIONS.md D2) would
+  # leave the tel:/wa.me CTA checks and the JSON-LD telephone check
+  # informational-only in every run of this workflow.
+  NEXT_PUBLIC_TELEFONO: '600 00 00 00'
+  NEXT_PUBLIC_WHATSAPP: '600 00 00 00'
 
 jobs:
   ci:
@@ -44,9 +51,13 @@ jobs:
       # chained with the 5 `verificar-*.mjs` postbuild verifiers — D3) run
       # here, inside this one step: apps/web/.env.local does NOT exist in
       # this clean checkout (it's a gitignored local dev symlink — see
-      # DECISIONS.md D2), and none of these gates depend on it. Contact-data
-      # checks (verificar-landings.mjs, and this port's CTA/JSON-LD checks
-      # below) all stay non-fatal without it — see scripts/verify/README.md.
+      # docs/migration/DECISIONS.md D2). The job-level env above sets dummy
+      # NEXT_PUBLIC_TELEFONO/NEXT_PUBLIC_WHATSAPP values so this build still
+      # renders real tel:/wa.me CTAs and a JSON-LD `telephone` despite that —
+      # without them, every contact-data check (verificar-landings.mjs, and
+      # this port's CTA/JSON-LD checks below) would stay informational-only
+      # here, same as any build with no contact env set at all — see
+      # scripts/verify/README.md's "<DatoPendiente>" section.
       - name: Build
         run: pnpm --filter web build
 

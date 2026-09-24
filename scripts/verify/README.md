@@ -74,7 +74,7 @@ repos).
 | c | `checks/live.mjs` | Every `next.config` redirect (33 of them) returns **308** — narrower than Pavivasa's, which also resolves the destination; see the overlap table below for why. |
 | d | `checks/jsonld.mjs` | Every `<script type="application/ld+json">` parses; no `AggregateRating`/`Review`; every `@id` reference resolves; required fields on the business (`#negocio`), `Service`, `FAQPage` (`publisher` + non-empty `mainEntity` — NEW vs. Pavivasa) and `BreadcrumbList` nodes — `telephone` only required when this build actually has a phone configured (see `lib/jsonld.mjs`'s header), and `BreadcrumbList` does NOT require `item`/href on non-last entries (this site's `Migas`/`buildBreadcrumbsJsonLd` deliberately keeps a hrefless intermediate crumb — relaxed vs. Pavivasa). |
 | e | `checks/metadata.mjs` | Exactly one `<h1>`; non-empty `<title>`/description, unique across indexable pages; absolute self canonical (trailing slash, `trailingSlash: true`); `og:url` present (see known-issues.json — this one's baselined site-wide today). |
-| f | `checks/robots.mjs` | `robots.txt` exists, references the sitemap, and doesn't disallow GPTBot/OAI-SearchBot/ClaudeBot/PerplexityBot/Google-Extended/CCBot on any sitemap path — checked with RFC 9309 longest-match semantics. Pavivasa's ALSO demands a named `User-agent:` group per AI crawler; this site's `robots.txt` is one `User-agent: *` group with `Disallow: /author/` by design (DECISIONS.md D10 — `packages/seo/src/robots.ts`), so that half is not ported: nothing disallows the AI crawlers, so the check passes. |
+| f | `checks/robots.mjs` | `robots.txt` exists, references the sitemap, and doesn't disallow GPTBot/OAI-SearchBot/ClaudeBot/PerplexityBot/Google-Extended/CCBot on any sitemap path — checked with RFC 9309 longest-match semantics. Pavivasa's ALSO demands a named `User-agent:` group per AI crawler; this site's `robots.txt` is one `User-agent: *` group with `Disallow: /author/` by design (docs/migration/DECISIONS.md D10 — `packages/seo/src/robots.ts`), so that half is not ported: nothing disallows the AI crawlers, so the check passes. |
 | g | `checks/images-cta.mjs` | Every RENDERED `<img>` has an `alt` attribute (empty `alt=""` is informational, not a failure) and either `width`+`height` or a `fill` container. Different layer than `verificar-imagenes.mjs` — see the overlap table. |
 | h | `checks/images-cta.mjs` | At least one `tel:` link and at least one `wa.me` link on every page — conditional on whether THIS build has contact data configured at all (see below and the file's own comment). |
 | i | `secrets-scan.mjs` | No server secret names/values in `.next/static` or `.next/server/app` — run separately, see above. |
@@ -93,8 +93,11 @@ per-page bug, already gated for `VERCEL_ENV=production` by
 instead of reading `process.env` (a plain `node` process never sees
 `.env.local`'s values the way `next build` does) or baselining it in
 `known-issues.json` (which would either fail-as-new or go stale depending
-on which of the two builds — local, with `apps/web/.env.local`, or CI's
-clean clone, without it — last ran):
+on which of the two builds — one with contact data configured (locally via
+`apps/web/.env.local`, or in CI via the dummy `NEXT_PUBLIC_TELEFONO`/
+`_WHATSAPP` values `.github/workflows/ci.yml`'s job-level `env` sets), or
+one genuinely without it (e.g. a bare local `pnpm --filter web build`) —
+last ran):
 
 - **`phoneConfigured`**: does ANY page's raw HTML contain the phone
   RESERVE-PLACEHOLDER text (`business.ts`'s `phonePlaceholder.es`) — the
@@ -113,9 +116,12 @@ clean clone, without it — last ran):
   `wa.me` link broke build-wide some other way". Left as a known
   limitation for lack of a comparable signal to key off.
 
-A build-wide gap only informs (`pnpm verify` stays green in CI without
-env); a page missing the link inside an otherwise-configured build still
-fails.
+A build-wide gap only informs — e.g. a bare `pnpm --filter web build` with
+neither `apps/web/.env.local` nor `NEXT_PUBLIC_TELEFONO`/`_WHATSAPP` set at
+all. CI's own workflow sets dummy values for both (`.github/workflows/
+ci.yml`'s job-level `env`), so `pnpm verify` there exercises the enforcing
+branch, not this one; a page missing the link inside an otherwise-
+configured build still fails.
 
 ## How pages and noindex are determined
 
