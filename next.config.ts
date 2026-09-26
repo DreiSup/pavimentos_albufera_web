@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next'
+import { sitio } from './lib/config'
 
 const nextConfig: NextConfig = {
   trailingSlash: true,
@@ -16,7 +17,7 @@ const nextConfig: NextConfig = {
       {
         source: '/:path*',
         has: [{ type: 'host', value: 'pavimentos-albufera-web.vercel.app' }],
-        destination: 'https://www.pavimentos-albufera.com/:path*',
+        destination: `${sitio.url}/:path*`,
         permanent: true,
       },
 
