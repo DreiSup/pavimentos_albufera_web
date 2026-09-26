@@ -30,7 +30,7 @@ export const nap = {
 }
 
 export const sitio = {
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://pavimentos-albufera.com',
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.pavimentos-albufera.com',
   gaId: process.env.NEXT_PUBLIC_GA_ID,
   metaPixelId: process.env.NEXT_PUBLIC_META_PIXEL_ID,
 }
