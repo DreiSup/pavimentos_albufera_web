@@ -10,6 +10,16 @@ const nextConfig: NextConfig = {
     // redirects, así que cada `source` tiene que llevar barra final para
     // que llegue a coincidir.
     return [
+      // Dominio de producción de Vercel → dominio propio. Sin esto sirve
+      // la web completa como duplicado exacto. Va primero para que gane
+      // a cualquier otra regla. Los previews usan otras URLs y no se tocan.
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'pavimentos-albufera-web.vercel.app' }],
+        destination: 'https://www.pavimentos-albufera.com/:path*',
+        permanent: true,
+      },
+
       // Servicios — URLs largas y redundantes de la web actual
       { source: '/pavimentos-de-hormigon-impreso/', destination: '/hormigon-impreso/', permanent: true },
       { source: '/pavimentos-de-hormigon-pulido/', destination: '/hormigon-pulido/', permanent: true },
