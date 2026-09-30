@@ -444,8 +444,9 @@ pueda pintar está aquí, y lo que no está aquí no se pinta.**
 - Ayuda de la foto: *Con una foto podemos darte un rango antes incluso de la visita.
   Máximo 4 MB.*
 - Enviando: *Enviando…*
-- Confirmación: *Recibido. Te llamamos hoy mismo si nos escribes antes de las 18:00, y mañana a
-  primera hora si no.*
+- Confirmación: *Recibido. Nos pondremos en contacto contigo cuanto antes podamos. Si tardamos es
+  porque tenemos mucha faena; somos muy buenos en lo nuestro.* (Cambiado por el dueño el
+  2026-09-30; antes prometía llamada el mismo día antes de las 18:00.)
 - Error de nombre: *Escribe tu nombre.*
 - Error de teléfono: *Escribe un número de 9 cifras para que podamos llamarte.*
 - Error de correo: *Escribe un correo electrónico válido para que podamos escribirte, o deja el

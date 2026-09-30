@@ -153,7 +153,8 @@ export default function FormularioPresupuesto({
       <div className="sobre-oscuro bg-tinta text-fondo p-[26px] flex flex-col gap-5">
         <p className="font-mono text-d-11 tracking-[0.08em] uppercase text-sobre-tinta m-0">Recibido</p>
         <p className="font-display font-bold fs-h2 text-26 m-0">
-          Te llamamos hoy mismo si nos escribes antes de las 18:00, y mañana a primera hora si no.
+          Nos pondremos en contacto contigo cuanto antes podamos. Si tardamos es porque tenemos mucha
+          faena; somos muy buenos en lo nuestro.
         </p>
         {/* `design/02` §B1, estado 4: «el resumen de lo enviado». Lo enviado,
             no la plantilla del formulario largo. La variante corta no pide ni
