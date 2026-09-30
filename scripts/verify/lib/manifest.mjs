@@ -51,7 +51,7 @@ export async function loadBuild(nextDir) {
   // Next's own internal trailing-slash normalization redirects.
   const redirects = (routes.redirects || [])
     .filter((r) => !r.internal)
-    .map((r) => ({ source: r.source, destination: r.destination, statusCode: r.statusCode }))
+    .map((r) => ({ source: r.source, destination: r.destination, statusCode: r.statusCode, has: r.has }))
 
   const pages = []
   for (const route of Object.keys(prerender.routes || {})) {

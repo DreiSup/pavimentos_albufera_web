@@ -17,6 +17,8 @@
 // true`) must all resolve as 308 specifically (verified against a real
 // build's routes-manifest.json — Next 15's App Router always emits 308 for
 // `permanent: true`, never 301), not just "some 3xx". That's the part kept.
+import http from 'node:http'
+
 /**
  * Resolves `href` against `base` (a full URL) the way a browser would —
  * this is what makes relative hrefs and protocol-relative ones work, and
@@ -33,6 +35,28 @@ function resolveInternalPath(href, base, siteOrigin) {
   }
   if (resolved.origin !== siteOrigin) return null
   return resolved.pathname
+}
+
+/**
+ * Like `fetchStatus`, but sending an explicit `Host` header — `fetch` won't
+ * let a caller set one. Needed for a redirect gated on `has: [{ type: 'host' }]`
+ * (the vercel.app → own-domain one): probed with the server's own host it
+ * never matches, and falls through to a 404.
+ */
+function fetchStatusWithHost(baseUrl, localPath, host) {
+  return new Promise((resolve) => {
+    const url = new URL(localPath, baseUrl)
+    const req = http.request(
+      { hostname: url.hostname, port: url.port, path: url.pathname, method: 'GET', headers: { host }, timeout: 10000 },
+      (res) => {
+        res.resume()
+        resolve({ status: res.statusCode, location: res.headers.location ?? null })
+      },
+    )
+    req.on('timeout', () => req.destroy(new Error('timeout')))
+    req.on('error', (err) => resolve({ status: null, error: String(err) }))
+    req.end()
+  })
 }
 
 async function fetchStatus(baseUrl, localPath) {
@@ -108,14 +132,17 @@ export async function checkLive({ pages, build, siteUrl, baseUrl, sitemapUrls, r
   // header comment.
   for (const r of build.redirects) {
     const probePath = probePathFor(r.source)
-    const { status } = await fetchStatus(baseUrl, probePath)
+    const host = r.has?.find((c) => c.type === 'host')?.value
+    const { status } = host
+      ? await fetchStatusWithHost(baseUrl, probePath, host)
+      : await fetchStatus(baseUrl, probePath)
     if (status !== 308) {
       reporter.report({
         check: 'redirects',
         code: 'wrong-status',
         route: r.source,
         detail: String(status ?? 'no-response'),
-        message: `expected a 308 redirect (this site's next.config.ts always uses permanent:true), got ${status ?? 'no response'} probing "${probePath}"`,
+        message: `expected a 308 redirect (this site's next.config.ts always uses permanent:true), got ${status ?? 'no response'} probing "${probePath}"${host ? ` with Host: ${host}` : ''}`,
       })
     }
   }
