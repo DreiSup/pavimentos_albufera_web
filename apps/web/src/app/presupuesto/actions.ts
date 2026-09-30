@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { cookies, headers } from 'next/headers'
 import { after } from 'next/server'
 import { enviarEventoCAPI } from '@/lib/meta-capi'
-import { sitio } from '@/lib/config'
+import { nap, sitio } from '@/lib/config'
 import { COOKIE_ATRIBUCION, COOKIE_CONSENTIMIENTO, COOKIE_REFERENCIA } from '@/lib/cookies'
 import { serverEnv } from '@site/config/server'
 
@@ -62,8 +62,39 @@ function texto(valor: FormDataEntryValue | null): string {
 // funciona en local y muere con un 413 opaco en producción.
 const MAX_FOTO = 4 * 1024 * 1024
 
-// Ningún proveedor externo puede tener al usuario esperando más que esto.
-const TIMEOUT_MS = 8000
+// Lo más que puede tener al usuario esperando cada canal. Los dos se esperan
+// en serie, así que el peor caso es la suma.
+const RESEND_TIMEOUT_MS = 15000
+const TELEGRAM_TIMEOUT_MS = 8000
+
+// Tope de `sendMessage`. Pasado, Telegram rechaza el mensaje entero con un 400.
+const TELEGRAM_MAX_CARACTERES = 4096
+
+/**
+ * El texto del aviso, recortado al tope de Telegram.
+ *
+ * Lo primero que se sacrifica es la procedencia (página de origen, referencia,
+ * consentimiento, atribución): sin ella el aviso sigue sirviendo para llamar.
+ * Si ni así cabe, se corta en seco por el final, así que lo que puede ser largo
+ * —el mensaje libre— tiene que ir la última de `lineas`.
+ */
+function textoTelegram(lineas: string[], procedencia: string[]): string {
+  const base = lineas.join('\n')
+  const cola = `\n\n${procedencia.join('\n')}`
+  const hueco = TELEGRAM_MAX_CARACTERES - base.length
+  return cortar(hueco > 0 ? `${base}${cola.slice(0, hueco)}` : base, TELEGRAM_MAX_CARACTERES)
+}
+
+/**
+ * `slice` sin partir un emoji. Corta por unidades UTF-16, y un par sustituto
+ * partido viaja como `\udXXX` suelto, que Telegram rechaza con un 400: el aviso
+ * que cabía se perdería por el último carácter.
+ */
+function cortar(texto: string, maximo: number): string {
+  const corte = texto.slice(0, maximo)
+  const ultimo = corte.charCodeAt(corte.length - 1)
+  return ultimo >= 0xd800 && ultimo <= 0xdbff ? corte.slice(0, -1) : corte
+}
 
 const esquema = z.object({
   nombre: z.string().min(1, 'Escribe tu nombre.'),
@@ -280,101 +311,28 @@ export async function enviarPresupuesto(
   const fbp = listaCookies.get('_fbp')?.value
   const fbc = listaCookies.get('_fbc')?.value
 
-  // Telegram y la CAPI se registran ANTES de intentar el email y salen después
-  // de responder. Dos motivos, y los dos eran defectos reales:
+  // Los dos canales se esperan antes de responder, en serie, y basta con que
+  // uno entregue para dar el envío por bueno. Es la regla de Pavivasa, y cierra
+  // dos defectos que había aquí:
   //
-  // - El `catch` de Resend hacía `return`. Un fallo de email cancelaba también
-  //   el aviso y el evento, que son los dos caminos por los que el lead podía
-  //   salvarse. Registrados aquí arriba, ninguna salida posterior debería
-  //   cancelarlos: `after()` cuelga del fin de la petición, no del valor que se
-  //   devuelva. ⚠️ Comprobado por lectura de la semántica, no en ejecución: que
-  //   se vacíen también en el `return` de error necesita un build.
-  // - Esperarlos en línea son hasta 16 s de cola de timeouts que el usuario
-  //   mira en el spinner, por dos entregas cuyo resultado no cambia nada de lo
-  //   que va a ver.
-  const telegramToken = serverEnv.TELEGRAM_BOT_TOKEN
-  const telegramChat = serverEnv.TELEGRAM_CHAT_ID
-  if (telegramToken && telegramChat) {
-    after(async () => {
-      try {
-        const respuesta = await fetch(`https://api.telegram.org/bot${telegramToken}/sendMessage`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            chat_id: telegramChat,
-            text: [
-              '🔔 Nuevo presupuesto',
-              `${nombre} · ${telefono}`,
-              // El aviso es lo primero que se lee, y muchas veces lo único: el
-              // email llegaba al buzón de Resend y a la CAPI, pero no aquí, así
-              // que quien atendía desde el móvil no tenía la segunda vía de
-              // contacto delante. Con `—` cuando no lo han dejado, para que la
-              // ausencia se vea y no se confunda con una línea que falta.
-              email || '—',
-              espacio,
-              municipio || '—',
-              '',
-              `Desde: ${origen}`,
-              ...atribucion,
-            ].join('\n'),
-          }),
-          signal: AbortSignal.timeout(TIMEOUT_MS),
-        })
-
-        // El único riesgo que traía diferir esto es que el fallo deje de verse:
-        // ya no queda rastro en la respuesta, así que el registro es lo único
-        // que hay. Un chat_id equivocado o un bot expulsado devuelven 400 y
-        // `fetch` no lanza.
-        if (!respuesta.ok) {
-          const cuerpo = await respuesta.text()
-          console.error(`Telegram ${respuesta.status}: ${cuerpo.slice(0, 500)}`)
-        }
-      } catch (error) {
-        // No bloquea el envío del presupuesto por un fallo de Telegram.
-        console.error('Telegram sin respuesta:', error)
-      }
-    })
-  }
-
-  // El email y el aviso de arriba salen siempre: son la ejecución del servicio
-  // que el usuario ha pedido. El evento a Meta es publicidad, y sin
-  // consentimiento no sale — ni siquiera con el teléfono hasheado.
-  if (consentimiento === 'aceptado') {
-    after(() =>
-      enviarEventoCAPI({
-        eventoId,
-        telefono,
-        email: email || undefined,
-        // La misma referencia que viaja en el mensaje de WhatsApp. Es la clave
-        // que une los dos leads, y ya estaba calculada aquí sin usarse.
-        referencia,
-        // El municipio ya se capturaba y solo llegaba al buzón. Meta lo hashea
-        // como `ct` y sube la tasa de emparejamiento sin pedir un dato nuevo.
-        // `provincia` no la recoge ningún formulario, así que `normalizar.st`
-        // de `lib/meta-capi.ts` sigue sin llamada viva: es deuda, no descuido.
-        municipio: municipio || undefined,
-        ip,
-        userAgent,
-        url: urlOrigen,
-        fbp,
-        fbc,
-      }),
-    )
-  }
-
+  // - Solo contaba el email. Con Resend caído el visitante veía el error aunque
+  //   Telegram hubiera entregado el aviso, y sin `RESEND_API_KEY` veía
+  //   «recibido» siempre, aunque el aviso de Telegram fallara o no estuviera
+  //   configurado: el lead se perdía sin que nadie lo supiera.
+  // - Telegram iba en `after()`, así que su resultado no podía decidir nada.
+  //
+  // El orden no es casual: Telegram va después para poder decir si la foto
+  // salió en el email. El coste es la espera: en el peor caso, 15 s de Resend
+  // más 8 s de Telegram, y solo cuando los dos fallan por timeout.
   const apiKey = serverEnv.RESEND_API_KEY
   const destino = serverEnv.EMAIL_DESTINO ?? 'comercial@pavimentos-albufera.com'
+  const telegramToken = serverEnv.TELEGRAM_BOT_TOKEN
+  const telegramChat = serverEnv.TELEGRAM_CHAT_ID
+
+  let emailEntregado = false
+  let telegramEntregado = false
 
   if (apiKey) {
-    // El email sí se espera: es lo único cuyo resultado decide qué ve el
-    // usuario. Si no se ha entregado, no puede ver la pantalla de «recibido».
-    //
-    // ⚠️ Consecuencia asumida: en ese camino la CAPI manda su `Lead` —el lead
-    // es real y Telegram puede haberlo entregado— y el Pixel del navegador no,
-    // porque `FormularioPresupuesto.tsx:66` solo dispara con `'enviado'`. Meta
-    // deduplica por `event_id` + `event_name`, así que el evento se cuenta una
-    // vez y bien; lo que falta es la pata de navegador, no el evento.
-    let entregado = false
     try {
       const respuesta = await fetch('https://api.resend.com/emails', {
         method: 'POST',
@@ -383,7 +341,11 @@ export async function enviarPresupuesto(
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          from: 'Pavimentos Albufera <presupuesto@pavimentos-albufera.com>',
+          // El dominio sale de la URL canónica sin `www.`: es el que hay que
+          // verificar en Resend. Si `NEXT_PUBLIC_SITE_URL` apunta a otro host,
+          // el remitente cambia con él y Resend lo rechaza. Una URL que no se
+          // puede analizar lanza aquí dentro y cae en el `catch`.
+          from: `${nap.nombre} <presupuesto@${new URL(sitio.url).hostname.replace(/^www\./, '')}>`,
           to: destino,
           reply_to: email || undefined,
           subject: `Presupuesto — ${nombre} · ${espacio}`,
@@ -402,38 +364,113 @@ export async function enviarPresupuesto(
           ].join('\n'),
           ...(adjunto ? { attachments: [adjunto] } : {}),
         }),
-        signal: AbortSignal.timeout(TIMEOUT_MS),
+        signal: AbortSignal.timeout(RESEND_TIMEOUT_MS),
       })
 
       // `fetch` no lanza con un 400. Sin esto, una clave caducada o un dominio
-      // sin verificar devuelven 401/422 y el usuario ve igualmente la pantalla
-      // de éxito mientras el lead se pierde.
-      entregado = respuesta.ok
+      // sin verificar devuelven 401/422 y el envío contaría como entregado.
+      emailEntregado = respuesta.ok
       if (!respuesta.ok) {
         const cuerpo = await respuesta.text()
         console.error(`Resend ${respuesta.status}: ${cuerpo.slice(0, 500)}`)
       }
     } catch (error) {
+      // No se corta aquí: puede que Telegram sí entregue.
       console.error('Resend sin respuesta:', error)
     }
+  }
 
-    if (!entregado) {
-      return {
-        estado: 'error',
-        errores: {
-          // El literal `[teléfono]` es el del microcopy de `design/02` §B1:
-          // `FormularioPresupuesto` lo sustituye al pintarlo, porque el número
-          // vive en configuración y el Server Action no es quien lo compone.
-          // Sin él, esa sustitución era código muerto sobre un camino vivo y el
-          // mensaje perdía la única vía de contacto que ofrece. Con el número
-          // configurado se lee el número; sin él, el hueco sale en
-          // `<DatoPendiente>` como en el resto del sitio, y no como el
-          // `96X XXX XXX` de relleno que antes pasaba por teléfono real.
-          form: 'No hemos podido enviarlo. Llámanos al [teléfono] o escríbenos por WhatsApp y lo resolvemos ahora.',
-        },
-        valores,
+  if (telegramToken && telegramChat) {
+    try {
+      const respuesta = await fetch(`https://api.telegram.org/bot${telegramToken}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: telegramChat,
+          text: textoTelegram(
+            [
+              '🔔 Nuevo presupuesto',
+              `${nombre} · ${telefono}`,
+              // El aviso es lo primero que se lee, y muchas veces lo único.
+              // Con `—` cuando no lo han dejado, para que la ausencia se vea y
+              // no se confunda con una línea que falta.
+              email || '—',
+              espacio,
+              superficie ? `${superficie} m²` : null,
+              municipio || '—',
+              // Antes que el mensaje: si el texto no cabe se corta por el
+              // final, y el aviso de foto sin entregar no puede ser lo que se
+              // pierda.
+              adjunto
+                ? `Foto: ${adjunto.filename}${emailEntregado ? ' — adjunta en el email' : ' — SIN ENTREGAR: el email no ha salido'}`
+                : null,
+              mensaje || null,
+            ].filter((linea): linea is string => linea !== null),
+            [`Desde: ${origen}`, ...atribucion],
+          ),
+        }),
+        signal: AbortSignal.timeout(TELEGRAM_TIMEOUT_MS),
+      })
+
+      // Un chat_id equivocado o un bot expulsado devuelven 400 y `fetch` no lanza.
+      telegramEntregado = respuesta.ok
+      if (!respuesta.ok) {
+        const cuerpo = await respuesta.text()
+        console.error(`Telegram ${respuesta.status}: ${cuerpo.slice(0, 500)}`)
       }
+    } catch (error) {
+      console.error('Telegram sin respuesta:', error)
     }
+  }
+
+  if (!emailEntregado && !telegramEntregado) {
+    // Sin esta línea, un despliegue sin variables no deja rastro: ningún canal
+    // se intenta y no hay respuesta de error que registrar.
+    if (!apiKey && !(telegramToken && telegramChat)) {
+      console.error(
+        'Presupuesto sin canal configurado: faltan RESEND_API_KEY y TELEGRAM_BOT_TOKEN/TELEGRAM_CHAT_ID',
+      )
+    }
+    return {
+      estado: 'error',
+      errores: {
+        // El literal `[teléfono]` es el del microcopy de `design/02` §B1:
+        // `FormularioPresupuesto` lo sustituye al pintarlo, porque el número
+        // vive en configuración y el Server Action no es quien lo compone.
+        // Con el número configurado se lee el número; sin él, el hueco sale en
+        // `<DatoPendiente>` como en el resto del sitio.
+        form: 'No hemos podido enviarlo. Llámanos al [teléfono] o escríbenos por WhatsApp y lo resolvemos ahora.',
+      },
+      valores,
+    }
+  }
+
+  // El evento a Meta sale solo con el lead entregado —un envío que no ha
+  // llegado a nadie no es un lead— y solo con consentimiento: es publicidad,
+  // no la ejecución del servicio pedido. Va en `after()` porque su resultado no
+  // cambia nada de lo que ve el visitante. Al salir solo con `'enviado'`, la CAPI
+  // y el Pixel del navegador (`FormularioPresupuesto.tsx`, que dispara desde ese
+  // mismo estado) cuentan ahora los mismos envíos.
+  if (consentimiento === 'aceptado') {
+    after(() =>
+      enviarEventoCAPI({
+        eventoId,
+        telefono,
+        email: email || undefined,
+        // La misma referencia que viaja en el mensaje de WhatsApp. Es la clave
+        // que une los dos leads.
+        referencia,
+        // Meta lo hashea como `ct` y sube la tasa de emparejamiento sin pedir
+        // un dato nuevo. `provincia` no la recoge ningún formulario, así que
+        // `normalizar.st` de `lib/meta-capi.ts` sigue sin llamada viva.
+        municipio: municipio || undefined,
+        ip,
+        userAgent,
+        url: urlOrigen,
+        fbp,
+        fbc,
+      }),
+    )
   }
 
   // El resumen viaja tal cual, con la cadena vacía cuando el campo no se pide.

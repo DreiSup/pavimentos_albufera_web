@@ -286,12 +286,12 @@ Server Action `enviarPresupuesto` (`app/presupuesto/actions.ts`), orden real:
 4. **Límite 3/hora por IP** en memoria, evaluado **después** del Zod (no bloquear un typo) y **antes** de convertir la foto a base64 (no pagar esa conversión en un envío que se va a rechazar).
 5. Adjunto opcional, máx. 4 MB (el límite real de plataforma en Vercel es 4,5 MB por función).
 6. Lee de cookie: `pa_ref`, `pa_consent`, `pa_attr`.
-7. **Telegram y Meta CAPI se registran con `after()` antes de intentar el email**, y corren tras responder al cliente — así ningún `return` posterior de la rama de email los cancela (el `catch` de Resend antiguo hacía `return` y cancelaba también Telegram/CAPI). Telegram solo si están los dos secretos; **la CAPI solo si `pa_consent==='aceptado'`** — único filtro de consentimiento del lado servidor de este sub-flujo (email y Telegram salen siempre: "ejecución del servicio pedido, no publicidad").
-8. Email (Resend), sí se espera en línea (`await`) porque su resultado decide la pantalla. Sin `RESEND_API_KEY`, esta sección se salta y el envío se da por `'enviado'` igualmente.
-9. Si Resend falla, `estado:'error'` — la CAPI y Telegram ya se habrán disparado igualmente vía `after()` (consecuencia asumida, documentada en el propio código).
+7. **Email (Resend) y luego Telegram, en serie y los dos esperados en línea** (`await`, 15 s y 8 s de timeout). Basta con que uno entregue (`response.ok`) para dar el envío por bueno. Telegram va después para poder decir si la foto salió en el email. Cada canal solo se intenta si tiene sus variables; cada fallo deja un `console.error` con el código y el cuerpo. El remitente del email es `${nap.nombre} <presupuesto@…>` con el dominio de `sitio.url` sin `www.`. El texto de Telegram se recorta a 4096 caracteres, sacrificando primero la procedencia. Email y Telegram salen siempre, con o sin consentimiento: "ejecución del servicio pedido, no publicidad".
+8. **Si ningún canal entrega** —o no hay ninguno configurado, que además se registra—, `estado:'error'` con el mensaje de «Llámanos al [teléfono]».
+9. **Meta CAPI**, solo con el lead entregado y **solo si `pa_consent==='aceptado'`** — único filtro de consentimiento del lado servidor de este sub-flujo. Se registra con `after()` y corre tras responder.
 10. Éxito: `estado:'enviado'`.
 
-`serverEnv` se importa de `@site/config/server` desde WF3 (antes eran lecturas directas de `process.env` — el diff entre la referencia y hoy en este fichero son 5 líneas: 1 import añadido + 4 líneas de `process.env.*` reescritas a `serverEnv.*`, en dos puntos del fichero).
+`serverEnv` se importa de `@site/config/server` desde WF3 (antes eran lecturas directas de `process.env`). Este fichero ya no es idéntico a la referencia pre-monorepo: la entrega por dos canales (pasos 7-9) se reescribió el 2026-09-30, con autorización expresa del dueño para tocar la zona congelada, para igualarla a la de Pavivasa.
 
 ### 8.3 Consentimiento / atribución — gates cliente y servidor, en orden
 
@@ -330,9 +330,9 @@ Regla general: `NEXT_PUBLIC_*` solo como literal exacto. Secretos de servidor so
 
 | Variable | Efecto si falta |
 |---|---|
-| `RESEND_API_KEY` | El formulario no intenta enviar email (Telegram/CAPI siguen igual) |
+| `RESEND_API_KEY` | El formulario no intenta enviar email; cuenta solo Telegram. Sin ninguno de los dos canales, el visitante ve el error |
 | `EMAIL_DESTINO` | Cae a `comercial@pavimentos-albufera.com` |
-| `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID` | No se manda aviso de Telegram |
+| `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID` | No se manda aviso de Telegram; cuenta solo el email |
 | `META_CAPI_ACCESS_TOKEN` | La CAPI no hace nada |
 | `META_CAPI_TEST_EVENT_CODE` | Opcional — el evento sale en Test Events de Meta, no cuenta |
 

@@ -134,8 +134,8 @@ Resumen:
 | `NEXT_PUBLIC_ADS_ETIQUETA_LLAMADA` | pública | Etiqueta de conversión de Google Ads, sin el prefijo `AW-`. Se expone en `sitio.adsEtiquetaLlamada` (`apps/web/src/lib/config.ts`) pero hoy ningún sitio del código la lee más allá de esa asignación — no hay ninguna llamada de conversión de Google Ads en este repo (`@site/tracking`'s `trackEvent` no tiene parámetro `adsConversion`, ver su README). Puesta o no, no cambia nada todavía. | igual |
 | `NEXT_PUBLIC_META_PIXEL_ID` | pública | Sin ella, no se carga el Pixel de Meta (ni el evento `PageView`). | igual |
 | `EMAIL_DESTINO` | servidor | Destino real del email del formulario de presupuesto (`app/presupuesto/actions.ts`). Sin ella, cae al fijo `comercial@pavimentos-albufera.com` (D28a) — no al email público del NAP. | igual, marcar "sensitive" |
-| `RESEND_API_KEY` | servidor | Sin ella, el formulario no intenta enviar el email (el Server Action sigue el resto del flujo: aviso de Telegram, evento a Meta CAPI si hay consentimiento, pantalla de "recibido"). | igual, marcar "sensitive" |
-| `TELEGRAM_BOT_TOKEN` | servidor | Sin ella (o sin `TELEGRAM_CHAT_ID`), no se manda el aviso de Telegram. | igual, marcar "sensitive" |
+| `RESEND_API_KEY` | servidor | Sin ella, el formulario no intenta enviar el email y solo cuenta el aviso de Telegram. Basta con que un canal entregue; si no entrega ninguno (o no hay ninguno configurado), el visitante ve el error «Llámanos al…». | igual, marcar "sensitive" |
+| `TELEGRAM_BOT_TOKEN` | servidor | Sin ella (o sin `TELEGRAM_CHAT_ID`), no se manda el aviso de Telegram y solo cuenta el email. | igual, marcar "sensitive" |
 | `TELEGRAM_CHAT_ID` | servidor | Igual que arriba. | igual |
 | `META_CAPI_ACCESS_TOKEN` | servidor | Sin ella, `sendMetaConversionEvent` (`@site/tracking/server`) no hace nada aunque haya consentimiento y pixel id. | igual, marcar "sensitive" |
 | `META_CAPI_TEST_EVENT_CODE` | servidor | Código de evento de prueba de Meta CAPI (Test Events); opcional, solo para depurar en el panel de Meta. | igual |

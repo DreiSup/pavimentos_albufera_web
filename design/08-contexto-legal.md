@@ -70,9 +70,9 @@ Todo ocurre en el Server Action `app/presupuesto/actions.ts`.
 
 | Destino | Qué recibe | ¿Exige consentimiento? |
 |---|---|---|
-| **Resend** (correo, EE. UU.) | Todo el formulario **incluida la foto**, la referencia, el estado de consentimiento y la atribución | **No** — `actions.ts:372` |
-| **Telegram** (Telegram FZ-LLC, Dubái) | Nombre · teléfono · correo · qué pavimentar · municipio · origen · referencia · atribución | **No** — `actions.ts:290` |
-| **Meta CAPI** | SHA-256 de teléfono (con prefijo `34`), correo y municipio · país `es` · `external_id` · **y en claro: IP, user-agent, URL, `_fbp`, `_fbc`** | **Sí** — solo si `pa_consent === 'aceptado'`, `actions.ts:335` |
+| **Resend** (correo, EE. UU.) | Todo el formulario **incluida la foto**, la referencia, el estado de consentimiento y la atribución | **No** — `actions.ts:335` |
+| **Telegram** (Telegram FZ-LLC, Dubái) | Nombre · teléfono · correo · qué pavimentar · superficie · municipio · **mensaje libre** · nombre del archivo de la foto (no la foto) · origen · referencia · atribución | **No** — `actions.ts:383` |
+| **Meta CAPI** | SHA-256 de teléfono (con prefijo `34`), correo y municipio · país `es` · `external_id` · **y en claro: IP, user-agent, URL, `_fbp`, `_fbc`** | **Sí** — solo si `pa_consent === 'aceptado'`, `actions.ts:454` |
 | **Google** (GA4 y Ads) | 🔴 **Los eventos se envían aunque se RECHACE.** Ver abajo | **No** (solo cambian los permisos) |
 | **Meta Pixel** | Bloqueo duro: no se carga sin consentimiento | Sí |
 | **Vercel** | Alojamiento y logs de servidor | — |
