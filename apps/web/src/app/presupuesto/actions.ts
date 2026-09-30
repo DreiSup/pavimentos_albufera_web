@@ -70,19 +70,49 @@ const TELEGRAM_TIMEOUT_MS = 8000
 // Tope de `sendMessage`. Pasado, Telegram rechaza el mensaje entero con un 400.
 const TELEGRAM_MAX_CARACTERES = 4096
 
+/** Un trozo de línea del aviso: texto tal cual, o en negrita. */
+type TrozoTelegram = string | { negrita: string }
+
 /**
- * El texto del aviso, recortado al tope de Telegram.
+ * El texto del aviso, con sus negritas, recortado al tope de Telegram.
+ *
+ * La negrita va en `entities` y no en `parse_mode`: el texto sigue siendo
+ * plano, así que lo que escribe el visitante no hay que escaparlo (un `<` o un
+ * `*` en su nombre no rompe el envío) y un recorte no puede partir una
+ * etiqueta. Los desplazamientos van en unidades UTF-16, que es lo que cuenta
+ * Telegram y lo que mide `.length`.
  *
  * Lo primero que se sacrifica es la procedencia (página de origen, referencia,
  * consentimiento, atribución): sin ella el aviso sigue sirviendo para llamar.
  * Si ni así cabe, se corta en seco por el final, así que lo que puede ser largo
  * —el mensaje libre— tiene que ir la última de `lineas`.
  */
-function textoTelegram(lineas: string[], procedencia: string[]): string {
-  const base = lineas.join('\n')
+function textoTelegram(
+  lineas: TrozoTelegram[][],
+  procedencia: string[],
+): { text: string; entities: { type: 'bold'; offset: number; length: number }[] } {
+  let base = ''
+  const negritas: { type: 'bold'; offset: number; length: number }[] = []
+  lineas.forEach((trozos, i) => {
+    if (i > 0) base += '\n'
+    for (const trozo of trozos) {
+      if (typeof trozo === 'string') {
+        base += trozo
+      } else if (trozo.negrita) {
+        negritas.push({ type: 'bold', offset: base.length, length: trozo.negrita.length })
+        base += trozo.negrita
+      }
+    }
+  })
   const cola = `\n\n${procedencia.join('\n')}`
   const hueco = TELEGRAM_MAX_CARACTERES - base.length
-  return cortar(hueco > 0 ? `${base}${cola.slice(0, hueco)}` : base, TELEGRAM_MAX_CARACTERES)
+  const text = cortar(hueco > 0 ? `${base}${cola.slice(0, hueco)}` : base, TELEGRAM_MAX_CARACTERES)
+  // Una negrita que se sale del texto recortado hace que Telegram rechace el
+  // mensaje entero: se recortan con él.
+  const entities = negritas
+    .filter((n) => n.offset < text.length)
+    .map((n) => ({ ...n, length: Math.min(n.length, text.length - n.offset) }))
+  return { text, entities }
 }
 
 /**
@@ -387,25 +417,28 @@ export async function enviarPresupuesto(
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           chat_id: telegramChat,
-          text: textoTelegram(
+          ...textoTelegram(
             [
-              '🔔 Nuevo presupuesto',
-              `${nombre} · ${telefono}`,
+              ['Nombre: ', { negrita: nombre }],
+              ['Teléfono: ', { negrita: telefono }],
               // El aviso es lo primero que se lee, y muchas veces lo único.
               // Con `—` cuando no lo han dejado, para que la ausencia se vea y
-              // no se confunda con una línea que falta.
-              email || '—',
-              espacio,
-              superficie ? `${superficie} m²` : null,
-              municipio || '—',
+              // no se confunda con una línea que falta. El dato en negrita; el
+              // guion, no.
+              [email ? { negrita: email } : '—'],
+              [{ negrita: espacio }],
+              superficie ? [{ negrita: `${superficie} m²` }] : null,
+              [municipio ? { negrita: municipio } : '—'],
               // Antes que el mensaje: si el texto no cabe se corta por el
               // final, y el aviso de foto sin entregar no puede ser lo que se
               // pierda.
               adjunto
-                ? `Foto: ${adjunto.filename}${emailEntregado ? ' — adjunta en el email' : ' — SIN ENTREGAR: el email no ha salido'}`
+                ? [
+                    `Foto: ${adjunto.filename}${emailEntregado ? ' — adjunta en el email' : ' — SIN ENTREGAR: el email no ha salido'}`,
+                  ]
                 : null,
-              mensaje || null,
-            ].filter((linea): linea is string => linea !== null),
+              mensaje ? [mensaje] : null,
+            ].filter((linea): linea is TrozoTelegram[] => linea !== null),
             [`Desde: ${origen}`, ...atribucion],
           ),
         }),
