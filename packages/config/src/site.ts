@@ -17,5 +17,5 @@ export const publishedLocales: readonly Locale[] = ['es']
  * No production throw when unset, per the migration's own instruction.
  */
 export const site = {
-  url: publicEnv.NEXT_PUBLIC_SITE_URL ?? 'https://pavimentos-albufera.com',
+  url: publicEnv.NEXT_PUBLIC_SITE_URL ?? 'https://www.pavimentos-albufera.com',
 }

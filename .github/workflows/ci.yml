@@ -7,7 +7,7 @@ on:
 env:
   NEXT_TELEMETRY_DISABLED: '1'
   COREPACK_ENABLE_DOWNLOAD_PROMPT: '0'
-  NEXT_PUBLIC_SITE_URL: https://pavimentos-albufera.com
+  NEXT_PUBLIC_SITE_URL: https://www.pavimentos-albufera.com
   # Dummy public contact values (never real data — see the Build step's own
   # comment below). Without these, apps/web/.env.local being absent here
   # (gitignored, never checked out — docs/migration/DECISIONS.md D2) would

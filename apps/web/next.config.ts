@@ -1,5 +1,6 @@
 import path from 'node:path'
 import type { NextConfig } from 'next'
+import { site } from '@site/config/site'
 
 const nextConfig: NextConfig = {
   // Monorepo: la raíz de rastreo de ficheros es la raíz del repo, no apps/web.
@@ -75,6 +76,16 @@ const nextConfig: NextConfig = {
     // redirects, así que cada `source` tiene que llevar barra final para
     // que llegue a coincidir.
     return [
+      // Dominio de producción de Vercel → dominio propio. Sin esto sirve
+      // la web completa como duplicado exacto. Va primero para que gane
+      // a cualquier otra regla. Los previews usan otras URLs y no se tocan.
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'pavimentos-albufera-web.vercel.app' }],
+        destination: `${site.url}/:path*`,
+        permanent: true,
+      },
+
       // Servicios — URLs largas y redundantes de la web actual
       { source: '/pavimentos-de-hormigon-impreso/', destination: '/hormigon-impreso/', permanent: true },
       { source: '/pavimentos-de-hormigon-pulido/', destination: '/hormigon-pulido/', permanent: true },

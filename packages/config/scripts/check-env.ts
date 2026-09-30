@@ -114,7 +114,7 @@ errors.push(...zodIssues('server env', ServerEnvSchema.safeParse(serverEnv)))
 
 /**
  * A production build that silently falls back to the hardcoded
- * `https://pavimentos-albufera.com` in `@site/config/site.ts` would
+ * `https://www.pavimentos-albufera.com` in `@site/config/site.ts` would
  * publish canonical URLs, the sitemap and JSON-LD under the wrong host.
  * Pending the user's decision, this WARNS loudly instead of failing the
  * build. One-line switch to make it fail instead: flip this constant to

@@ -104,7 +104,7 @@ async function main() {
     args.siteUrl ||
     process.env.NEXT_PUBLIC_SITE_URL?.trim() ||
     pages.find((p) => p.route === '/')?.parsed.canonical ||
-    'https://pavimentos-albufera.com'
+    'https://www.pavimentos-albufera.com'
   ).replace(/\/+$/, '')
 
   // Whole-build facts, not per-page — see checks/images-cta.mjs's header
