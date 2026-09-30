@@ -115,6 +115,56 @@ function textoTelegram(
   return { text, entities }
 }
 
+/** Una fila del email: etiqueta, valor (vacío si no lo han dejado) y si va en negrita. */
+type FilaEmail = { etiqueta: string; valor: string; negrita: boolean }
+
+/** Lo que escribe el visitante va dentro de HTML: sin escapar, un `<` rompe el correo. */
+function escaparHtml(texto: string): string {
+  return texto.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+}
+
+/**
+ * El cuerpo del email, en HTML (con los datos en negrita) y en texto plano
+ * (el que ve un cliente de correo que no pinta HTML). Un campo vacío sale como
+ * `—` sin negrita, para que la ausencia se vea y no se confunda con un dato.
+ */
+function cuerpoEmail(
+  cabecera: string,
+  filas: FilaEmail[],
+  procedencia: string[],
+): { text: string; html: string } {
+  const text = [
+    cabecera,
+    '',
+    ...filas.map((f) => `${f.etiqueta}: ${f.valor || '—'}`),
+    '',
+    ...procedencia,
+  ].join('\n')
+
+  const filaHtml = (f: FilaEmail) => {
+    if (!f.valor) return `${f.etiqueta}: —`
+    // Los saltos de línea del mensaje se conservan.
+    const valor = escaparHtml(f.valor).replace(/\r?\n/g, '<br>')
+    return `${f.etiqueta}: ${f.negrita ? `<strong>${valor}</strong>` : valor}`
+  }
+  const html = [
+    `<p>${escaparHtml(cabecera)}</p>`,
+    `<p>${filas.map(filaHtml).join('<br>')}</p>`,
+    `<p>${procedencia.map(escaparHtml).join('<br>')}</p>`,
+  ].join('\n')
+
+  return { text, html }
+}
+
+/** Día y hora del envío, en hora de España, sea cual sea la zona del servidor. */
+function momentoDeEnvio(fecha: Date): { dia: string; hora: string } {
+  const zona = 'Europe/Madrid'
+  return {
+    dia: new Intl.DateTimeFormat('es-ES', { timeZone: zona, day: '2-digit', month: '2-digit', year: 'numeric' }).format(fecha),
+    hora: new Intl.DateTimeFormat('es-ES', { timeZone: zona, hour: '2-digit', minute: '2-digit' }).format(fecha),
+  }
+}
+
 /**
  * `slice` sin partir un emoji. Corta por unidades UTF-16, y un par sustituto
  * partido viaja como `\udXXX` suelto, que Telegram rechaza con un 400: el aviso
@@ -360,6 +410,7 @@ export async function enviarPresupuesto(
   const telegramChat = serverEnv.TELEGRAM_CHAT_ID
 
   let emailEntregado = false
+  const enviado = momentoDeEnvio(new Date())
   let telegramEntregado = false
 
   if (apiKey) {
@@ -379,19 +430,22 @@ export async function enviarPresupuesto(
           to: destino,
           reply_to: email || undefined,
           subject: `Presupuesto — ${nombre} · ${espacio}`,
-          text: [
-            `Nombre: ${nombre}`,
-            `Teléfono: ${telefono}`,
-            `Email: ${email || '—'}`,
-            `Espacio: ${espacio}`,
-            `Superficie: ${superficie || '—'}`,
-            `Municipio: ${municipio || '—'}`,
-            `Mensaje: ${mensaje || '—'}`,
-            `Foto adjunta: ${adjunto ? 'sí' : 'no'}`,
-            '',
-            `Formulario de: ${origen}`,
-            ...atribucion,
-          ].join('\n'),
+          ...cuerpoEmail(
+            `Tienes una nueva demanda de presupuesto, pedida el ${enviado.dia} a las ${enviado.hora}`,
+            [
+              { etiqueta: 'Nombre', valor: nombre, negrita: true },
+              { etiqueta: 'Teléfono', valor: telefono, negrita: true },
+              { etiqueta: 'Email', valor: email, negrita: true },
+              { etiqueta: 'Espacio', valor: espacio, negrita: true },
+              { etiqueta: 'Superficie', valor: superficie ? `${superficie} m²` : '', negrita: true },
+              { etiqueta: 'Municipio', valor: municipio, negrita: true },
+              // El mensaje puede ser largo: en negrita se lee peor, no mejor.
+              { etiqueta: 'Mensaje', valor: mensaje, negrita: false },
+              // El nombre del archivo, para reconocer el adjunto en el correo.
+              { etiqueta: 'Foto', valor: adjunto?.filename ?? '', negrita: true },
+            ],
+            [`Formulario de: ${origen}`, ...atribucion],
+          ),
           ...(adjunto ? { attachments: [adjunto] } : {}),
         }),
         signal: AbortSignal.timeout(RESEND_TIMEOUT_MS),
