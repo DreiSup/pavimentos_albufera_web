@@ -473,14 +473,16 @@ export async function enviarPresupuesto(
           chat_id: telegramChat,
           ...textoTelegram(
             [
-              ['Nombre: ', { negrita: nombre }],
-              ['Teléfono: ', { negrita: telefono }],
+              // Primera línea, la que enseña la notificación: de qué web viene.
+              [`${nap.nombre} 🔔 Nuevo presupuesto`],
+              ['nombre: ', { negrita: nombre }],
+              ['teléfono: ', { negrita: telefono }],
               // El aviso es lo primero que se lee, y muchas veces lo único.
               // Con `—` cuando no lo han dejado, para que la ausencia se vea y
               // no se confunda con una línea que falta. El dato en negrita; el
               // guion, no.
-              [email ? { negrita: email } : '—'],
-              [{ negrita: espacio }],
+              ['email: ', email ? { negrita: email } : '—'],
+              [{ negrita: espacio.toLocaleUpperCase('es-ES') }],
               superficie ? [{ negrita: `${superficie} m²` }] : null,
               [municipio ? { negrita: municipio } : '—'],
               // Antes que el mensaje: si el texto no cabe se corta por el
