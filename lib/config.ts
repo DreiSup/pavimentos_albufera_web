@@ -9,11 +9,20 @@ const telefonoEnv = process.env.NEXT_PUBLIC_TELEFONO?.trim() || undefined
 const whatsappEnv = process.env.NEXT_PUBLIC_WHATSAPP?.trim() || undefined
 const direccionEnv = process.env.NEXT_PUBLIC_DIRECCION?.trim() || undefined
 
+/** Solo presentación: 622067884 → 622 067 884. El href tel: sigue usando los dígitos sin espacios. */
+function formatearTelefono(valor: string | undefined) {
+  if (!valor) return undefined
+  const digitos = valor.replace(/\D/g, '').replace(/^34(?=\d{9}$)/, '')
+  return digitos.length === 9 ? digitos.replace(/(\d{3})(\d{3})(\d{3})/, '$1 $2 $3') : valor
+}
+
+const telefonoVisible = formatearTelefono(telefonoEnv)
+
 export const nap = {
   nombre: 'Pavimentos Albufera',
   email: 'comercial@pavimentos-albufera.com',
-  telefono: telefonoEnv,
-  telefonoMostrado: telefonoEnv ?? '96X XXX XXX',
+  telefono: telefonoVisible,
+  telefonoMostrado: telefonoVisible ?? '96X XXX XXX',
   telefonoHref: telefonoEnv ? `tel:+34${telefonoEnv.replace(/\D/g, '')}` : undefined,
   whatsapp: whatsappEnv,
   whatsappHref: whatsappEnv
