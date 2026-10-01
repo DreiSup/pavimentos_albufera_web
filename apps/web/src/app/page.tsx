@@ -146,13 +146,21 @@ const DIAPOSITIVAS_HERO: { slug: string }[] = [
  */
 const muestraHome = acabadosPublicados.filter((a) => a.proyectos.length > 0)
 /**
- * Las NUEVE obras documentadas, no una selección. Solo se ordenan: las
+ * Las obras documentadas que tienen foto, no una selección. Solo se ordenan: las
  * destacadas delante, porque en móvil la sección es un carril horizontal
  * (`02-pantallas.md §A1`, sección de proyectos) y lo que se ve sin arrastrar
- * son las dos primeras tarjetas. En escritorio la rejilla de tres pasa de 3×2
- * a 3×3 sin tocar nada.
+ * son las dos primeras tarjetas.
+ *
+ * Las que no tienen foto no salen en la portada (decidido el 2026-10-01): un
+ * hueco con trama en medio de la rejilla de obra «mancha» la pantalla que más
+ * se mira. Hoy es solo `xabia-pulido`. Es un filtro de presentación, **no un
+ * borrado**: el proyecto sigue en el catálogo, en `/proyectos/`, en su ficha y en
+ * `/zonas/xabia/` (de la que cuelga una 301), y vuelve a la portada solo el día
+ * que se le añada la primera foto en `projects.ts`.
  */
-const proyectosHome = [...proyectos].sort((a, b) => Number(b.destacado) - Number(a.destacado))
+const proyectosHome = proyectos
+  .filter((p) => p.imagenes.length > 0)
+  .sort((a, b) => Number(b.destacado) - Number(a.destacado))
 
 // Cuatro secciones de la home pueden enseñar la MISMA foto de origen: el hero y
 // la tarjeta de obra de Moncada; una muestra de acabado y la tarjeta de la obra
