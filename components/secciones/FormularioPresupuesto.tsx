@@ -47,6 +47,21 @@ export default function FormularioPresupuesto({ variante = 'completo' }: { varia
     }
   }, [estado, eventoId])
 
+  const campoMunicipio = (
+    <Campo etiqueta="Municipio" htmlFor="municipio" obligatorio error={estado.errores.municipio}>
+      <input
+        id="municipio"
+        name="municipio"
+        type="text"
+        required
+        autoComplete="address-level2"
+        readOnly={enviando}
+        aria-invalid={Boolean(estado.errores.municipio)}
+        className={claseInput}
+      />
+    </Campo>
+  )
+
   if (estado.estado === 'enviado') {
     return (
       <div className="sobre-oscuro bg-tinta text-fondo p-[26px] flex flex-col gap-5">
@@ -116,6 +131,8 @@ export default function FormularioPresupuesto({ variante = 'completo' }: { varia
         </select>
       </Campo>
 
+      {variante === 'corto' ? campoMunicipio : null}
+
       {variante === 'completo' ? (
         <>
           <Campo
@@ -127,9 +144,7 @@ export default function FormularioPresupuesto({ variante = 'completo' }: { varia
             <input id="superficie" name="superficie" type="text" readOnly={enviando} className={claseInput} />
           </Campo>
 
-          <Campo etiqueta="Municipio" htmlFor="municipio" obligatorio>
-            <input id="municipio" name="municipio" type="text" required readOnly={enviando} className={claseInput} />
-          </Campo>
+          {campoMunicipio}
 
           <Campo etiqueta="Cuéntanos algo más" htmlFor="mensaje">
             <textarea id="mensaje" name="mensaje" rows={4} readOnly={enviando} className={claseInput} />

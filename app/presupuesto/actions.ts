@@ -20,7 +20,7 @@ const esquema = z.object({
   email: z.string().email().optional().or(z.literal('')),
   espacio: z.string().min(1, 'Selecciona qué quieres pavimentar.'),
   superficie: z.string().optional().default(''),
-  municipio: z.string().optional().default(''),
+  municipio: z.string().trim().min(1, 'Escribe tu municipio para que sepamos dónde ir.'),
   mensaje: z.string().optional().default(''),
   privacidad: z.string().optional(),
   evento_id: z.string().optional().default(''),
@@ -94,7 +94,7 @@ export async function enviarPresupuesto(
             `Email: ${email || '—'}`,
             `Espacio: ${espacio}`,
             `Superficie: ${superficie || '—'}`,
-            `Municipio: ${municipio || '—'}`,
+            `Municipio: ${municipio}`,
             `Mensaje: ${mensaje || '—'}`,
           ].join('\n'),
         }),
@@ -120,7 +120,7 @@ export async function enviarPresupuesto(
             '🔔 Nuevo presupuesto',
             `${nombre} · ${telefono}`,
             espacio,
-            municipio || '—',
+            municipio,
           ].join('\n'),
         }),
         signal: AbortSignal.timeout(8000),
@@ -145,6 +145,6 @@ export async function enviarPresupuesto(
   return {
     estado: 'enviado',
     errores: {},
-    resumen: { espacio, superficie: superficie || '—', municipio: municipio || '—' },
+    resumen: { espacio, superficie: superficie || '—', municipio },
   }
 }
