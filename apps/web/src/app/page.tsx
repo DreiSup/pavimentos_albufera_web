@@ -620,7 +620,7 @@ export default function Home() {
 
           <div className="flex md:grid md:grid-cols-3 gap-6 overflow-x-auto -mx-[18px] px-[18px] md:mx-0 md:px-0 md:col-span-2">
             {proyectosHome.map((p) => (
-              <div key={p.slug} className="min-w-[220px] shrink-0 md:min-w-0 md:shrink">
+              <div key={p.slug} className="w-[260px] shrink-0 md:w-auto md:shrink">
                 {/* La sección vuelve a fondo base con la nueva alternancia, así que la
                     tarjeta recupera su fondo alterno: es el contraste lo que la separa
                     de la página, no un color fijo. */}

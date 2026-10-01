@@ -588,6 +588,16 @@ ficha   Martian Mono 11px / 10px · line-height 1.9 · color: #41535C
 toda la tarjeta es un enlace, sin subrayado
 ```
 
+**Estructura (enmendada el 2026-10-01, handoff «Proyectos destacados»):** ya no es la ficha de tres
+líneas de arriba. Es, de arriba abajo: foto `4/3` · fila de ubicación (`MUNICIPIO · PROVINCIA`, sans 14,
+`--tinta-media`) con el año a la derecha · título (Archivo, igual que antes) · pie separado por un
+`border-top` en el color del fondo contrario (`--fondo` sobre tarjeta alterna, `--fondo-alt` sobre base),
+con la especificación en mono 10/11 `--acero` (`TÉCNICA · MODELO · COLOR · m²`) a la izquierda y
+`Ver proyecto →` (sans 14 / 600, `--tinta`) a la derecha. Se retira del handoff todo lo que choca con el
+sistema: sombra, elevación y zoom al pasar el ratón, `lucide`, `shadcn`, los cuatro colores nuevos y el
+texto breve de la tarjeta (ninguna obra lo tiene). Lo que falta de un dato no se pinta, ni el corchete.
+Los pies de una misma fila quedan alineados (`mt-auto`).
+
 **Variante *espacio*** (home §03, enmendado el 2026-10-01): la misma tarjeta, sin ficha. En su lugar,
 un rótulo de destino en Martian Mono 10/12 px, `--tinta`, mayúsculas, terminado en `→`
 (`VER OBRA →`, `VER HORMIGÓN PULIDO →`). Es una **acción y nunca un pie de foto**: las fotos de
