@@ -19,7 +19,7 @@ import { acabadosPublicados, proyectos } from '@/lib/datos'
 import { faqHome } from '@/content/faq'
 import { PASOS, SERVICIOS } from '@/content/servicios'
 import { NOMBRE_SERVICIO, RUTA_SERVICIO } from '@/lib/tipos'
-import type { Proyecto } from '@/lib/tipos'
+import type { Imagen, Proyecto, ServicioId } from '@/lib/tipos'
 import { nap } from '@/lib/config'
 
 /**
@@ -36,62 +36,95 @@ export const metadata: Metadata = {
   alternates: { canonical: '/' },
 }
 
-const espacios = [
+/**
+ * Cada espacio enlaza al sitio donde de verdad se ve ese espacio hecho: una obra
+ * documentada si la hay y, si no, la página del servicio que lo lista entre sus
+ * aplicaciones (`SPACE` en `packages/content/src/data/services.ts`). No se usa
+ * `/proyectos/?servicio=…`: los filtros se retiraron y el parámetro no lo lee nadie.
+ * El rótulo es una ACCIÓN, no un pie de foto: las fotos de `_sin-atribuir/` no
+ * tienen municipio y «MONCADA» debajo de una de ellas sería atribuirle una obra.
+ */
+type DestinoEspacio = { tipo: 'obra'; slug: string } | { tipo: 'servicio'; id: ServicioId }
+
+const espacios: { id: string; titulo: string; texto: string; imagen: Imagen; destino: DestinoEspacio }[] = [
   {
+    id: 'garaje',
     titulo: 'Entrada de garaje',
     texto: 'Aguanta el paso de coches sin agrietarse.',
     imagen: {
       src: '/obras/_sin-atribuir/b8c06394-3d87-41a8-92bb-7486e9b912de.jpeg',
       alt: 'Explanada de hormigón impreso gris ante la puerta basculante de un garaje.',
-      tipo: 'final' as const,
+      tipo: 'final',
     },
+    destino: { tipo: 'obra', slug: 'moncada-impreso-espiga-117' },
   },
   {
+    id: 'porche',
     titulo: 'Porche y terraza',
     texto: 'El acabado que más piden nuestros clientes.',
     imagen: {
       src: '/obras/_sin-atribuir/5da4504f-2c7e-4fee-897b-fe0ed0a4a3a1.jpeg',
       alt: 'Porche cubierto con solera de hormigón fratasado claro, con sofás y el jardín al fondo.',
-      tipo: 'final' as const,
+      tipo: 'final',
     },
+    destino: { tipo: 'servicio', id: 'fratasado' },
   },
   {
+    id: 'piscina',
     titulo: 'Contorno de piscina',
     texto: 'Antideslizante y frío al sol.',
     imagen: {
       src: '/obras/_sin-atribuir/4d88392b-d7b1-4d77-900b-82db9f0ecd29.jpeg',
       alt: 'Contorno de piscina de hormigón continuo en tono tostado ante una vivienda encalada.',
-      tipo: 'final' as const,
+      tipo: 'final',
     },
+    destino: { tipo: 'servicio', id: 'lavado' },
   },
   {
+    id: 'interior',
     titulo: 'Interior de vivienda',
     texto: 'Continuo, sin juntas, fácil de limpiar.',
     imagen: {
       src: '/obras/_sin-atribuir/WhatsApp-Image-2023-08-22-at-09.08.18.jpeg',
       alt: 'Estancia con arcos y suelo de hormigón pulido continuo que se prolonga hasta el porche.',
-      tipo: 'final' as const,
+      tipo: 'final',
     },
+    destino: { tipo: 'servicio', id: 'pulido' },
   },
   {
+    id: 'patio',
     titulo: 'Patio y jardín',
     texto: 'Integrado con el entorno, sin mantenimiento.',
     imagen: {
       src: '/obras/_sin-atribuir/hormigon-impreso-2.jpg',
       alt: 'Jardín con olivos, césped y un pavimento de hormigón de tono ocre que rodea los alcorques.',
-      tipo: 'final' as const,
+      tipo: 'final',
     },
+    destino: { tipo: 'obra', slug: 'corbera-fratasado-arena' },
   },
   {
+    id: 'nave',
     titulo: 'Nave, parking o local',
     texto: 'Resistente al tránsito pesado y a los ácidos.',
     imagen: {
       src: '/obras/ribarroja-pulido-gris.jpg',
       alt: 'Planta de aparcamiento cubierta con solera de hormigón pulido gris entre pilares.',
-      tipo: 'final' as const,
+      tipo: 'final',
     },
+    destino: { tipo: 'obra', slug: 'ribarroja-pulido' },
   },
 ]
+
+/** Falla el build si un slug deja de existir: mejor eso que un enlace a un 404. */
+function destinoDeEspacio(d: DestinoEspacio) {
+  if (d.tipo === 'obra') {
+    if (!proyectos.some((p) => p.slug === d.slug)) {
+      throw new Error(`«Por dónde empezar» enlaza a una obra que no existe: ${d.slug}`)
+    }
+    return { href: `/proyectos/${d.slug}/`, rotulo: 'Ver obra' }
+  }
+  return { href: RUTA_SERVICIO[d.id], rotulo: `Ver ${NOMBRE_SERVICIO[d.id].toLowerCase()}` }
+}
 
 const servicios = [
   { id: 'impreso' as const, texto: 'Textura de piedra, adoquín o madera sobre una solera continua. El más pedido para exteriores.' },
@@ -174,7 +207,7 @@ const proyectosHome = proyectos
 // El orden de precedencia es el del hueco más ancho, nunca al revés: degradar
 // el `sizes` de un hero para hacerlo coincidir con una tarjeta serviría una
 // imagen corta sobre el LCP. Y la regla se aplica **solo a la foto que se
-// repite**: las otras cinco fotos de espacio siguen pidiendo su media columna.
+// repite**: las otras cuatro fotos de espacio piden el ancho de su tarjeta.
 // 🔴 `100vw` a todos los anchos desde que el hero es a pantalla completa. Antes
 // eran 50vw por encima de 768, porque la foto ocupaba una de dos columnas; hoy
 // ocupa la sección entera y pedir media pantalla serviría un candidato corto
@@ -220,7 +253,9 @@ const proyectosHome = proyectos
 // obra de la sección 07, que comparten URL con el hero a propósito.
 const TAMANOS_HERO_HOME = '(min-width: 1200px) 1200px, 100vw'
 const TAMANOS_TARJETA_SERVICIO = '(min-width: 768px) 30vw, 100vw'
-const TAMANOS_ESPACIO = '(min-width: 768px) 30vw, 50vw'
+/** Tarjeta de espacio: 2 columnas en móvil, 3 entre 768 y 1279, y 3 junto a la columna de 380 desde 1280. */
+const TAMANOS_ESPACIO =
+  '(min-width: 1280px) calc(33vw - 196px), (min-width: 768px) calc(33vw - 48px), calc(50vw - 25px)'
 /** Las muestras del carril miden 160 px en móvil y 300 en escritorio, no un porcentaje. */
 const TAMANOS_MUESTRA_CARRIL = '(min-width: 768px) 300px, 160px'
 /**
@@ -404,7 +439,7 @@ export default function Home() {
 
       {/* 03 · Por dónde empezar */}
       <Aparece as="section" className="px-[18px] md:px-lat-desktop py-9 md:py-22">
-        <div className="grid grid-cols-1 md:grid-cols-[380px_1fr] gap-8 md:gap-16">
+        <div className="grid grid-cols-1 xl:grid-cols-[380px_1fr] gap-8 xl:gap-16">
           <div className="flex flex-col gap-4">
             <AntetituloSeccion numero="03">Por dónde empezar</AntetituloSeccion>
             <h2 className="font-display font-bold fs-h2 text-34 md:text-46 m-0">
@@ -416,31 +451,47 @@ export default function Home() {
             </p>
           </div>
 
-          {/* En móvil la sección era una lista de seis filas con una miniatura
-              CUADRADA de 76 px a la izquierda: un sello, no una fotografía. La
-              sección existe para que el visitante reconozca su espacio —un porche,
-              una entrada de garaje— y a 76 px no se reconoce nada.
-              Pasa a rejilla de dos columnas con la foto a 4/3 y el texto debajo,
-              la misma tarjeta que ya usaba escritorio. Dos columnas y no una:
-              apiladas a ancho completo serían seis fotos de 354×265, ~1.600 px de
-              scroll antes de llegar al Muestrario, y next/image pediría candidatos
-              de 1080 px seis veces. A 50vw la celda mide 174 px y el candidato cae
-              en 640. → `design/02` §A1, enmendado el 2026-09-17. */}
-          <div className="grid grid-cols-2 md:grid-cols-3 md:grid-rows-2 gap-[2px] bg-tinta p-[2px]">
-            {espacios.map((e) => (
-              <div key={e.titulo} className="bg-fondo flex flex-col gap-3">
-                <Foto
-                  imagen={e.imagen}
-                  proporcion="4/3"
-                  tamanos={tamanosCompartidos(e.imagen?.src) ?? TAMANOS_ESPACIO}
-                  className="w-full"
-                />
-                <div className="flex flex-col gap-1 px-3 pb-3 md:px-4 md:pb-4">
-                  <h3 className="font-display font-bold fs-h3 text-16 md:text-20 m-0">{e.titulo}</h3>
-                  <p className="text-14 md:text-16 text-tinta-media m-0">{e.texto}</p>
-                </div>
-              </div>
-            ))}
+          {/* Tarjetas separadas (§3.12): fondo alterno sobre la sección base, sin
+              borde, sin sombra, sin radio. Antes era una retícula de 2 px sobre
+              `bg-tinta` que se leía como tabla. Dos columnas en móvil por peso y
+              scroll (→ `design/02` §A1). La columna de 380 px pasa a `xl`: con `md`
+              la rejilla se quedaba en 228 px a 768 y salían celdas de ~60 px.
+              Cada tarjeta es UN enlace; el nombre accesible es título + rótulo. */}
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-[14px] md:gap-6">
+            {espacios.map((e) => {
+              const destino = destinoDeEspacio(e.destino)
+              const idTitulo = `espacio-${e.id}-titulo`
+              const idRotulo = `espacio-${e.id}-rotulo`
+              return (
+                <Link
+                  key={e.id}
+                  href={destino.href}
+                  aria-labelledby={`${idTitulo} ${idRotulo}`}
+                  className="group flex flex-col bg-fondo-alt no-underline"
+                >
+                  <Foto
+                    imagen={e.imagen}
+                    proporcion="4/3"
+                    tamanos={tamanosCompartidos(e.imagen.src) ?? TAMANOS_ESPACIO}
+                    className="w-full"
+                  />
+                  <div className="flex flex-1 flex-col justify-between gap-3 px-[14px] pt-3 pb-4 md:px-5 md:pt-[18px] md:pb-[22px]">
+                    <div className="flex flex-col gap-1 md:gap-2">
+                      <h3
+                        id={idTitulo}
+                        className="font-display font-bold fs-h3 text-16 md:text-20 leading-[1.2] text-tinta m-0"
+                      >
+                        {e.titulo}
+                      </h3>
+                      <p className="text-14 md:text-16 text-tinta-media m-0">{e.texto}</p>
+                    </div>
+                    <span className="font-mono text-d-10 md:text-d-12 uppercase text-tinta underline-offset-4 group-hover:underline">
+                      <span id={idRotulo}>{destino.rotulo}</span> <span aria-hidden="true">→</span>
+                    </span>
+                  </div>
+                </Link>
+              )
+            })}
           </div>
         </div>
       </Aparece>

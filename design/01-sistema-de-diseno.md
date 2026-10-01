@@ -588,6 +588,11 @@ ficha   Martian Mono 11px / 10px · line-height 1.9 · color: #41535C
 toda la tarjeta es un enlace, sin subrayado
 ```
 
+**Variante *espacio*** (home §03, enmendado el 2026-10-01): la misma tarjeta, sin ficha. En su lugar,
+un rótulo de destino en Martian Mono 10/12 px, `--tinta`, mayúsculas, terminado en `→`
+(`VER OBRA →`, `VER HORMIGÓN PULIDO →`). Es una **acción y nunca un pie de foto**: las fotos de
+espacio no tienen municipio confirmado y un pie con municipio sería atribuirles una obra.
+
 ### 3.13 Estado vacío
 
 No es un error: es una afirmación de honestidad. Se usa igual en el muestrario y en el índice
