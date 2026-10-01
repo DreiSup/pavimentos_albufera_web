@@ -15,7 +15,7 @@ import BarraConfianza from '@/components/layout/BarraConfianza'
 import Acordeon from '@/components/secciones/Acordeon'
 import FormularioPresupuesto from '@/components/secciones/FormularioPresupuesto'
 import { JsonLd, schemaFAQ } from '@/lib/schema'
-import { acabadosPublicados, proyectos, recuentoAcabadosPublicados } from '@/lib/datos'
+import { acabadosPublicados, proyectos } from '@/lib/datos'
 import { faqHome } from '@/content/faq'
 import { PASOS, SERVICIOS } from '@/content/servicios'
 import { NOMBRE_SERVICIO, RUTA_SERVICIO } from '@/lib/tipos'
@@ -127,29 +127,24 @@ const DIAPOSITIVAS_HERO: { slug: string }[] = [
 ]
 
 /**
- * Las cuatro muestras de la portada salen de `acabadosPublicados`, la misma
- * lista que el muestrario, las seis páginas de servicio y las fichas de modelo.
- * Hoy son las mismas cuatro que antes —espiga 117, adoquín irregular 107,
- * adoquín pequeño arena y manta gris—, así que es un cambio de ORIGEN, no de
- * contenido: `piedra-inglesa-crema` tiene obra y no tiene muestra, y lo único
- * que la mantenía fuera de esta rejilla era estar en la posición 12 del JSON.
+ * Las muestras de la portada salen de `acabadosPublicados`, la misma lista que el
+ * muestrario, las seis páginas de servicio y las fichas de modelo.
  *
- * ⚠️ **El criterio de esta rejilla NO es el del chip que tiene encima**, y hay
- * que saberlo antes de tocarla. El chip cuenta `documentados`, que exige
- * municipio confirmado (`estaDocumentado`); aquí se filtra por «tiene obra
- * asociada», que es más laxo y que `lib/datos.ts` desaconseja **para contar**.
- * Para elegir qué se enseña no es lo mismo: el muestrario existe para que el
- * visitante vea el modelo y el color, y eso una muestra con obra asociada lo
- * cumple aunque el municipio siga sin confirmar. La rejilla no afirma dónde se
- * hizo; el chip sí, y por eso cuenta más fino.
+ * Desde el 2026-10-01 no se recorta a cuatro: se enseñan TODAS las que tienen
+ * obra asociada, en un carril horizontal (decisión del dueño). Las dos publicadas
+ * sin obra, `silleria-grande-113` y `microcemento-crema`, quedan fuera a
+ * propósito: el texto de la sección dice que cada muestra es una obra ejecutada.
+ * Siguen en `/acabados/`.
  *
- * La diferencia son hoy **cuatro muestras y una sola discrepancia**: la cuarta
- * es `manta-gris`, cuya obra no tiene municipio. Con el criterio del chip saldría
- * `piedra-inglesa-gris` en su lugar. Cambiarlo **no es refactor, es contenido**
- * —`manta-gris` está en los pendientes de CLAUDE.md a la espera de que el dueño
- * confirme el modelo—, así que se deja como está y se deja dicho.
+ * ⚠️ El criterio es «tiene obra asociada», más laxo que `estaDocumentado`
+ * (municipio confirmado), que `lib/datos.ts` desaconseja **para contar**. Para
+ * elegir qué se enseña sí vale: el muestrario existe para que el visitante vea
+ * el modelo y el color, y una muestra con obra asociada lo cumple aunque el
+ * municipio siga sin confirmar. El carril no afirma dónde se hizo. La única
+ * muestra que lo ejerce es `manta-gris`, a la espera de que el dueño confirme
+ * el modelo (pendientes de CLAUDE.md).
  */
-const muestraHome = acabadosPublicados.filter((a) => a.proyectos.length > 0).slice(0, 4)
+const muestraHome = acabadosPublicados.filter((a) => a.proyectos.length > 0)
 /**
  * Las NUEVE obras documentadas, no una selección. Solo se ordenan: las
  * destacadas delante, porque en móvil la sección es un carril horizontal
@@ -218,6 +213,8 @@ const proyectosHome = [...proyectos].sort((a, b) => Number(b.destacado) - Number
 const TAMANOS_HERO_HOME = '(min-width: 1200px) 1200px, 100vw'
 const TAMANOS_TARJETA_SERVICIO = '(min-width: 768px) 30vw, 100vw'
 const TAMANOS_ESPACIO = '(min-width: 768px) 30vw, 50vw'
+/** Las muestras del carril miden 160 px en móvil y 300 en escritorio, no un porcentaje. */
+const TAMANOS_MUESTRA_CARRIL = '(min-width: 768px) 300px, 160px'
 /**
  * Las cuatro obras del hero vuelven a salir como tarjeta en la sección 07, así
  * que ahora son cuatro las fotos con dos huecos, no una. Igualarlas al `sizes`
@@ -279,16 +276,6 @@ const diapositivasHero = DIAPOSITIVAS_HERO.map(({ slug }) => {
     etiqueta: <EtiquetaTecnica lineas={etiquetaDeObra(proyecto)} />,
   }
 })
-/**
- * El recuento de lo PUBLICADO, el mismo que imprime `/acabados/`: diez muestras
- * y siete con obra documentada. La portada contaba `acabados.length` —el
- * catálogo entero, dieciséis— al lado de una rejilla que ya solo sale de
- * `acabadosPublicados`, y el visitante que tocaba «Abrir el muestrario
- * completo» aterrizaba en diez. Un contador que no cuadra con lo que hay debajo
- * es el mismo error del bloque de posición, contado con números.
- */
-const { publicados: totalAcabados, documentados } = recuentoAcabadosPublicados()
-
 export default function Home() {
   return (
     <>
@@ -495,26 +482,32 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Contador del inventario, no filtros: aquí no hay nada que seleccionar.
-              Se renderizan como etiqueta (`<span>`), que es lo que de verdad son.
+          {/* Contador de lo que hay debajo, no filtro: aquí no hay nada que seleccionar.
+              `Chip` sin `onClick` sale como `<span>`. La cifra es la de las muestras
+              que se pintan (`muestraHome`), no la del catálogo: un contador que no
+              cuadra con lo que tiene debajo es el error que esta sección ya tuvo.
               El ocre marca la cifra total, el segundo rol de la pantalla según
               `02-pantallas.md §A1` («CTA del hero + chip activo del muestrario»). */}
-          <div className="flex gap-2 overflow-x-auto md:col-span-2">
-            <Chip activo>
-              Todas ({totalAcabados})
-            </Chip>
-            <Chip>{documentados} con obra documentada</Chip>
+          <div className="flex gap-2 md:col-span-2">
+            <Chip activo>Todas ({muestraHome.length})</Chip>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-[14px_10px] md:gap-[32px_24px] md:col-span-2">
+          {/* Carril horizontal. Sangra a los bordes con margen negativo lateral, igual
+              que el de proyectos (`01 §2.5`), y deja asomar la muestra siguiente: es lo
+              que dice que hay más sin necesitar flechas ni librería. `min-w-0` impide
+              que el carril ensanche la celda de la rejilla y devuelva el scroll
+              horizontal a toda la página. El `snap` es de proximidad: ayuda a
+              asentar la muestra, no secuestra el desplazamiento. */}
+          <ul
+            aria-label="Acabados del muestrario"
+            className="flex items-start gap-[14px] md:gap-6 overflow-x-auto snap-x snap-proximity scroll-pl-[18px] md:scroll-pl-lat-desktop -mx-[18px] px-[18px] md:-mx-lat-desktop md:px-lat-desktop pb-4 list-none my-0 md:col-span-2 min-w-0"
+          >
             {muestraHome.map((a) => (
-              <MuestraAcabado
-                key={a.slug}
-                acabado={a}
-                tamanos={tamanosCompartidos(a.muestra?.src)}
-              />
+              <li key={a.slug} className="w-[160px] md:w-[300px] shrink-0 snap-start">
+                <MuestraAcabado acabado={a} tamanos={tamanosCompartidos(a.muestra?.src) ?? TAMANOS_MUESTRA_CARRIL} />
+              </li>
             ))}
-          </div>
+          </ul>
 
           <EnlaceEtiqueta href="/acabados/" className="md:col-start-2 md:row-start-1 md:justify-self-end">
             Abrir el muestrario completo →
