@@ -641,8 +641,15 @@ export default function Home() {
       {/* 08 · Garantía */}
       <Aparece as="section" className="sobre-oscuro bg-tinta text-fondo px-[18px] md:px-lat-desktop py-9 md:py-22">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-16">
-          <h2 className="font-display font-bold fs-h2 text-34 md:text-46 m-0">
-            10 años de garantía. Y el mantenimiento, también nuestro.
+          {/* «mantenimiento,» a 34 px mide 306 px y a 320 de pantalla la caja da 284:
+              4 px de scroll horizontal de todo el documento. La escala está cerrada,
+              así que se parte la palabra por sílabas con un guion blando (`&shy;`,
+              invisible salvo si hace falta partir): «manteni-miento». No se usa
+              `hyphens: auto` porque depende del diccionario del navegador —en uno sin
+              él salía «mantenimient / o,»— y cambiaría otras palabras del titular.
+              `overflow-wrap` queda de red por si una pantalla aún más estrecha. */}
+          <h2 className="font-display font-bold fs-h2 text-34 md:text-46 m-0 [overflow-wrap:break-word]">
+            10 años de garantía. Y el manteni&shy;miento, también nuestro.
           </h2>
           <div className="flex flex-col">
             <p className="text-16 md:text-20 text-sobre-tinta py-4 border-t border-acero m-0">
