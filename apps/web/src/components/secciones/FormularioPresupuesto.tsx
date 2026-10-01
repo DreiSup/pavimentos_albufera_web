@@ -71,6 +71,7 @@ export default function FormularioPresupuesto({
   const [estado, accion, enviando] = useActionState(enviarPresupuesto, estadoInicial)
   const telefonoRef = useRef<HTMLInputElement>(null)
   const emailRef = useRef<HTMLInputElement>(null)
+  const municipioRef = useRef<HTMLInputElement>(null)
   const [eventoId, setEventoId] = useState('')
   const [errorFoto, setErrorFoto] = useState('')
   const eventoDisparado = useRef(false)
@@ -117,6 +118,7 @@ export default function FormularioPresupuesto({
     if (estado.estado !== 'error') return
     if (estado.errores.telefono) telefonoRef.current?.focus()
     else if (estado.errores.email) emailRef.current?.focus()
+    else if (estado.errores.municipio) municipioRef.current?.focus()
   }, [estado])
 
   useEffect(() => {
@@ -129,11 +131,10 @@ export default function FormularioPresupuesto({
           form_location: origen,
           space_type: estado.resumen?.espacio,
           // `|| undefined` para que el parámetro no viaje cuando no se ha
-          // recogido. La variante corta no pide municipio y el resumen traía
-          // un guion de relleno: GA4 y Meta estaban recibiendo `—` como
-          // municipio en todos los leads de la portada y de las seis páginas de
-          // servicio. Una dimensión personalizada no se rellena hacia atrás, así
-          // que ese valor basura no se limpia después.
+          // recogido. Ahora el municipio es obligatorio en las dos variantes,
+          // pero el resumen puede traer un guion de relleno en otros campos y
+          // una dimensión personalizada no se rellena hacia atrás: ese valor
+          // basura no se limpiaría después.
           municipality: estado.resumen?.municipio || undefined,
           // Las dos claves de unión con el lead que llega al buzón. `event_id`
           // es el mismo que el Server Action manda a Meta CAPI; `reference_code`
@@ -148,6 +149,23 @@ export default function FormularioPresupuesto({
     }
   }, [estado, eventoId, origen])
 
+  const campoMunicipio = (
+    <Campo etiqueta="Municipio" htmlFor="municipio" obligatorio error={estado.errores.municipio}>
+      <input
+        ref={municipioRef}
+        id="municipio"
+        name="municipio"
+        type="text"
+        required
+        autoComplete="address-level2"
+        defaultValue={escrito?.municipio ?? ''}
+        readOnly={enviando}
+        aria-invalid={Boolean(estado.errores.municipio)}
+        className={claseInput}
+      />
+    </Campo>
+  )
+
   if (estado.estado === 'enviado') {
     return (
       <div className="sobre-oscuro bg-tinta text-fondo p-[26px] flex flex-col gap-5">
@@ -157,9 +175,8 @@ export default function FormularioPresupuesto({
           faena; somos muy buenos en lo nuestro.
         </p>
         {/* `design/02` §B1, estado 4: «el resumen de lo enviado». Lo enviado,
-            no la plantilla del formulario largo. La variante corta no pide ni
-            superficie ni municipio, y el panel pintaba sus dos líneas con un
-            guion: un estado vacío que no dice nada y que además hace dudar de
+            no la plantilla del formulario largo. La variante corta no pide
+            superficie, y el panel pintaba su línea con un guion: un estado vacío que no dice nada y que además hace dudar de
             si el dato se perdió por el camino. */}
         <div className="font-mono text-d-11 leading-[1.9] text-sobre-tinta">
           <p className="m-0">{estado.resumen?.espacio}</p>
@@ -281,6 +298,8 @@ export default function FormularioPresupuesto({
         </select>
       </Campo>
 
+      {variante === 'corto' ? campoMunicipio : null}
+
       {variante === 'completo' ? (
         <>
           <Campo
@@ -299,17 +318,7 @@ export default function FormularioPresupuesto({
             />
           </Campo>
 
-          <Campo etiqueta="Municipio" htmlFor="municipio" obligatorio>
-            <input
-              id="municipio"
-              name="municipio"
-              type="text"
-              required
-              defaultValue={escrito?.municipio ?? ''}
-              readOnly={enviando}
-              className={claseInput}
-            />
-          </Campo>
+          {campoMunicipio}
 
           <Campo etiqueta="Cuéntanos algo más" htmlFor="mensaje">
             <textarea

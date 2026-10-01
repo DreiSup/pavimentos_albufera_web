@@ -202,7 +202,7 @@ const esquema = z.object({
     ),
   espacio: z.string().min(1, 'Selecciona qué quieres pavimentar.'),
   superficie: z.string().optional().default(''),
-  municipio: z.string().optional().default(''),
+  municipio: z.string().trim().min(1, 'Escribe tu municipio para que sepamos dónde ir.'),
   mensaje: z.string().optional().default(''),
   // El `required` del navegador no es validación: un envío sin JS o manipulado
   // se la salta. Aquí es obligatorio de verdad.

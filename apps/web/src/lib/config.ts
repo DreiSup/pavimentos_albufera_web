@@ -35,11 +35,20 @@ const telefono = publicEnv.NEXT_PUBLIC_TELEFONO
 const whatsapp = publicEnv.NEXT_PUBLIC_WHATSAPP
 const direccion = publicEnv.NEXT_PUBLIC_DIRECCION
 
+/** Solo presentación: 622067884 → 622 067 884. El href tel: sigue usando los dígitos sin espacios. */
+function formatearTelefono(valor: string | undefined) {
+  if (!valor) return undefined
+  const digitos = valor.replace(/\D/g, '').replace(/^34(?=\d{9}$)/, '')
+  return digitos.length === 9 ? digitos.replace(/(\d{3})(\d{3})(\d{3})/, '$1 $2 $3') : valor
+}
+
+const telefonoVisible = formatearTelefono(telefono)
+
 export const nap = {
   nombre: business.name,
   email: business.email,
-  telefono,
-  telefonoMostrado: telefono ?? business.phonePlaceholder.es,
+  telefono: telefonoVisible,
+  telefonoMostrado: telefonoVisible ?? business.phonePlaceholder.es,
   telefonoHref: telefono ? `tel:+34${telefono.replace(/\D/g, '')}` : undefined,
   whatsapp,
   whatsappHref: whatsapp
