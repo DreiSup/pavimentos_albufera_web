@@ -47,16 +47,27 @@ export default function TarjetaProyecto({
   ]
     .filter(Boolean)
     .join(' · ')
+  // NBSP delante del «·»: el separador se queda pegado al dato anterior y, si la
+  // línea parte (a 768 la tarjeta mide 208 px), parte DESPUÉS de él y no deja un
+  // «· ARENA» huérfano al inicio de la línea siguiente. Sin `nowrap`: «Manta
+  // (imitación roca de montaña)» es largo y, sin poder partir, desbordaría.
   const acabado = [
     proyecto.modelo ? NOMBRE_MODELO[proyecto.modelo] : null,
     proyecto.color ? CODIGO_COLOR[proyecto.color] : null,
   ]
     .filter(Boolean)
-    .join(' · ')
+    .join('\u00a0· ')
+
+  // Nombre accesible = título + «Ver proyecto», no la tarjeta entera (ubicación,
+  // año, modelo, técnica…), que un lector de pantalla leía de corrido. Mismo
+  // patrón que las tarjetas de espacio de la portada.
+  const idTitulo = `proyecto-${proyecto.slug}-titulo`
+  const idRotulo = `proyecto-${proyecto.slug}-rotulo`
 
   return (
     <Link
       href={`/proyectos/${proyecto.slug}/`}
+      aria-labelledby={`${idTitulo} ${idRotulo}`}
       className={`group flex h-full flex-col no-underline ${fondo === 'alt' ? 'bg-fondo-alt' : 'bg-fondo'}`}
     >
       <Foto imagen={proyecto.imagenes[0]} proporcion="4/3" tamanos={tamanos} />
@@ -64,10 +75,10 @@ export default function TarjetaProyecto({
         {ubicacion || proyecto.anio ? (
           <div className="flex items-center justify-between gap-3 text-14 text-tinta-media">
             <span>{ubicacion}</span>
-            {proyecto.anio ? <span className="ml-auto tabular-nums">{proyecto.anio}</span> : null}
+            {proyecto.anio ? <span className="tabular-nums">{proyecto.anio}</span> : null}
           </div>
         ) : null}
-        <h3 className="font-display font-bold fs-h3 text-16 md:text-20 leading-[1.2] text-tinta m-0">
+        <h3 id={idTitulo} className="font-display font-bold fs-h3 text-16 md:text-20 leading-[1.2] text-tinta m-0">
           {proyecto.titulo}
         </h3>
         {acabado ? <p className="font-mono text-d-10 md:text-d-11 text-acero m-0">{acabado}</p> : null}
@@ -81,7 +92,7 @@ export default function TarjetaProyecto({
         >
           <span className="font-mono text-d-10 md:text-d-11 text-acero">{especificacion}</span>
           <span className="text-14 font-semibold text-tinta underline-offset-4 group-hover:underline">
-            Ver proyecto <span aria-hidden="true">→</span>
+            <span id={idRotulo}>Ver proyecto</span> <span aria-hidden="true">→</span>
           </span>
         </div>
       </div>
