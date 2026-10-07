@@ -261,6 +261,19 @@ export default function FormularioPresupuesto({
     </div>
   )
 
+  // La solicitud no llega al mínimo de su zona (2026-10-07). Al dueño le llega
+  // igual por Telegram; aquí el formulario se sustituye por el aviso, como con
+  // «Recibido», para que no se reenvíe subiendo los metros al momento. No
+  // dispara `generate_lead`: el efecto de arriba solo cuenta `'enviado'`.
+  if (estado.estado === 'rechazado') {
+    return (
+      <div role="alert" className="border-2 border-error p-[26px] flex flex-col gap-5">
+        <p className="font-mono text-d-11 tracking-[0.08em] uppercase text-error m-0">Fuera de zona</p>
+        <p className="font-display font-bold fs-h2 text-26 text-tinta m-0">{estado.aviso}</p>
+      </div>
+    )
+  }
+
   if (estado.estado === 'enviado') {
     return (
       <div className="sobre-oscuro bg-tinta text-fondo p-[26px] flex flex-col gap-5">

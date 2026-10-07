@@ -46,8 +46,14 @@ export type ValoresFormulario = {
 }
 
 export type EstadoEnvio = {
-  estado: 'inicial' | 'error' | 'enviando' | 'enviado'
+  estado: 'inicial' | 'error' | 'enviando' | 'enviado' | 'rechazado'
   errores: Record<string, string>
+  /**
+   * Solo en `'rechazado'`: la solicitud no llega al mínimo de su zona. Al dueño
+   * le llega igual por Telegram; al visitante se le dice que no se acepta, en
+   * lugar del «Recibido».
+   */
+  aviso?: string
   resumen?: { espacio: string; superficie: string; municipio: string }
   /** Solo en `'error'`. En `'enviado'` el formulario desaparece y no hay nada que repoblar. */
   valores?: ValoresFormulario
@@ -165,6 +171,19 @@ function cuerpoEmail(
 function etiquetaZona({ zone, minSquareMeters }: LeadClassification): string {
   if (zone === 'unknown') return 'Zona sin identificar (código postal no reconocido)'
   return minSquareMeters === null ? `Zona ${zone}` : `Zona ${zone} · solo obras de más de ${minSquareMeters} m²`
+}
+
+/**
+ * Lo que ve el visitante cuando su solicitud no llega al mínimo de su zona.
+ * Texto del dueño (2026-10-07) para fuera de la Comunitat Valenciana; el de la
+ * zona B sigue el mismo molde. Los dos, pendientes de aprobar en `design/02` §B1.
+ */
+function avisoRechazo({ zone, minSquareMeters }: LeadClassification): string {
+  // Espacio de no separación: «1000» y «m²» no pueden quedar en líneas distintas.
+  const minimo = `${minSquareMeters}\u00a0m²`
+  return zone === 'C'
+    ? `No hacemos obras fuera de la Comunitat Valenciana de ${minimo} o menos. Lo sentimos.`
+    : `En tu zona solo hacemos obras de más de ${minimo}. Lo sentimos.`
 }
 
 /** Día y hora del envío, en hora de España, sea cual sea la zona del servidor. */
@@ -478,7 +497,7 @@ export async function enviarPresupuesto(
           subject: `${filtrada ? '[Fuera de filtro] ' : ''}Presupuesto — ${nombre} · ${espacio}`,
           ...cuerpoEmail(
             filtrada
-              ? `Solicitud fuera de filtro (${zona}), pedida el ${enviado.dia} a las ${enviado.hora}. Llega por correo porque el aviso de Telegram no ha salido.`
+              ? `Solicitud fuera de filtro (${zona}), pedida el ${enviado.dia} a las ${enviado.hora}. Al cliente se le ha dicho que no se acepta. Llega por correo porque el aviso de Telegram no ha salido.`
               : `Tienes una nueva demanda de presupuesto, pedida el ${enviado.dia} a las ${enviado.hora}`,
             [
               { etiqueta: 'Nombre', valor: nombre, negrita: true },
@@ -534,6 +553,8 @@ export async function enviarPresupuesto(
               // y, si está filtrada, que solo la ve el dueño.
               [filtrada ? `${nap.nombre} 🟡 Fuera de filtro · solo Telegram` : `${nap.nombre} 🔔 Nuevo presupuesto`],
               filtrada ? [{ negrita: zona }] : null,
+              // Para que el dueño sepa qué ha leído el cliente antes de llamarle.
+              filtrada ? ['Al cliente se le ha dicho que no se acepta.'] : null,
               ['nombre: ', { negrita: nombre }],
               ['teléfono: ', { negrita: telefono }],
               // El aviso es lo primero que se lee, y muchas veces lo único.
@@ -577,6 +598,17 @@ export async function enviarPresupuesto(
   } else {
     emailEntregado = await enviarEmail()
     telegramEntregado = await enviarTelegram(emailEntregado)
+  }
+
+  // Una filtrada se rechaza ante el visitante haya entregado o no algún canal:
+  // la respuesta a su solicitud es la misma. Y no es un lead para la
+  // publicidad —ni CAPI aquí ni `generate_lead` en el navegador, que solo
+  // dispara con `'enviado'`—, así que las campañas no aprenden a traer más.
+  if (filtrada) {
+    if (!emailEntregado && !telegramEntregado) {
+      console.error(`Solicitud fuera de filtro sin entregar a ningún canal (CP ${codigoPostal}, ${superficieAviso})`)
+    }
+    return { estado: 'rechazado', errores: {}, aviso: avisoRechazo(clasificacion) }
   }
 
   if (!emailEntregado && !telegramEntregado) {

@@ -440,8 +440,9 @@ sale nunca hacia un tercero.
 zonas (`docs/zonas-cp.md`): zona A, cualquier obra; resto de la Comunitat Valenciana, más de
 500 m²; resto de España, más de 1000 m². Una solicitud que no llega a su mínimo **sale solo por
 Telegram**, para el dueño, y no por correo; si Telegram falla, sale por correo marcada
-«Fuera de filtro». **El visitante ve exactamente lo mismo** en los dos casos: el filtro no se
-anuncia. La corta deja de ser «nombre, teléfono y espacio»: suma tres campos obligatorios, que
+«Fuera de filtro». ~~El visitante ve exactamente lo mismo~~ — cambiado el mismo día por el
+dueño: **al visitante se le dice que no se acepta** (aviso «Fuera de zona» en lugar del
+«Recibido»), y esa solicitud no cuenta como conversión en GA4 ni en Meta. La corta deja de ser «nombre, teléfono y espacio»: suma tres campos obligatorios, que
 es un coste de conversión asumido por el dueño.
 Botón de envío ocre a ancho completo: `Enviar y que me llamen`.
 
@@ -470,6 +471,12 @@ pueda pintar está aquí, y lo que no está aquí no se pinta.**
 - Error de superficie ilegible: *Escribe la superficie en metros cuadrados, por ejemplo 80.*
   `[pendiente de aprobar]`
 - Error de código postal: *Escribe tu código postal de 5 cifras.* `[pendiente de aprobar]`
+- Solicitud fuera de zona, sustituye al formulario como la confirmación, con antetítulo
+  `FUERA DE ZONA` `[pendiente de aprobar]` y borde `--error`:
+  - Fuera de la Comunitat Valenciana: *No hacemos obras fuera de la Comunitat Valenciana de
+    1000 m² o menos. Lo sentimos.* (del dueño, 2026-10-07)
+  - Resto de la Comunitat Valenciana: *En tu zona solo hacemos obras de más de 500 m². Lo
+    sentimos.* `[pendiente de aprobar]`
 - Error de teléfono: *Escribe un número de 9 cifras para que podamos llamarte.*
 - Error de correo: *Escribe un correo electrónico válido para que podamos escribirte, o deja el
   campo vacío.*
