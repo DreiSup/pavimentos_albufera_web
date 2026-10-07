@@ -77,6 +77,10 @@ export { homeFaqRefs } from './data/faq.ts'
 export { getQuestionsByRefs } from './queries/faq.ts'
 export type { ResolvedImage, ResolvedQuestion, Locale } from './queries/resolve.ts'
 
+// Server-only (carries the Zone A postal-code list): the quote Server Action is its only caller.
+export { classifyLead, isValidPostalCode, normalizePostalCode, parseSquareMeters } from './queries/lead-routing.ts'
+export type { LeadClassification, LeadZone } from './queries/lead-routing.ts'
+
 export { pickLocalized, pickLocalizedList, LOCALES } from './schemas/localized.ts'
 export type { ProjectId } from './schemas/ids.ts'
 export type {

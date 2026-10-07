@@ -418,13 +418,23 @@ La pantalla que cierra el embudo. Copy del §7.4.
 | Teléfono | tel | sí |
 | Email | email | no |
 | ¿Qué quieres pavimentar? | desplegable de 7 opciones | sí |
-| Superficie aproximada en m² | numérico, admite «no lo sé» | sí |
+| Superficie aproximada en m² | texto, se lee como número (`80`, `1.200`, `10x5`) | sí |
+| Código postal | texto numérico, 5 cifras | sí |
 | Municipio | texto | sí |
 | Cuéntanos algo más | textarea | no |
 | Sube una foto del espacio | archivo | no |
 | He leído la política de privacidad | casilla | sí |
 
-Nombre y teléfono comparten fila; el resto ocupa el ancho.
+Nombre y teléfono comparten fila; código postal y municipio, también; el resto ocupa el ancho.
+
+⚠️ **Enmienda del 2026-10-07: filtro por zona.** Superficie, código postal y municipio van en
+**las dos variantes** y son obligatorios. El Server Action clasifica el código postal en tres
+zonas (`docs/zonas-cp.md`): zona A, cualquier obra; resto de la Comunitat Valenciana, más de
+500 m²; resto de España, más de 1000 m². Una solicitud que no llega a su mínimo **sale solo por
+Telegram**, para el dueño, y no por correo; si Telegram falla, sale por correo marcada
+«Fuera de filtro». **El visitante ve exactamente lo mismo** en los dos casos: el filtro no se
+anuncia. La corta deja de ser «nombre, teléfono y espacio»: suma tres campos obligatorios, que
+es un coste de conversión asumido por el dueño.
 Botón de envío ocre a ancho completo: `Enviar y que me llamen`.
 
 ⚠️ **Enmienda del 2026-09-18: la fila de nombre y teléfono se reparte por el ancho de su
@@ -448,6 +458,11 @@ pueda pintar está aquí, y lo que no está aquí no se pinta.**
   porque tenemos mucha faena; somos muy buenos en lo nuestro.* (Cambiado por el dueño el
   2026-09-30; antes prometía llamada el mismo día antes de las 18:00.)
 - Error de nombre: *Escribe tu nombre.*
+- Error de municipio: *Escribe tu municipio para que sepamos dónde ir.*
+- Error de superficie vacía: *Escribe la superficie aproximada en m².* `[pendiente de aprobar]`
+- Error de superficie ilegible: *Escribe la superficie en metros cuadrados, por ejemplo 80.*
+  `[pendiente de aprobar]`
+- Error de código postal: *Escribe tu código postal de 5 cifras.* `[pendiente de aprobar]`
 - Error de teléfono: *Escribe un número de 9 cifras para que podamos llamarte.*
 - Error de correo: *Escribe un correo electrónico válido para que podamos escribirte, o deja el
   campo vacío.*
@@ -547,7 +562,7 @@ tiene las dos variables.
    enviado (espacio, superficie, municipio) y dos salidas: `Ver el muestrario` y
    `Ver proyectos`. **No se vuelve a pedir nada.**
    ⚠️ **Enmienda del 2026-09-18: el resumen enseña lo que esa variante recoge, y nada más.**
-   La corta no pide superficie ni municipio, y el panel pintaba sus dos líneas como `— m²` y
+   La corta no pedía superficie ni municipio (desde el 2026-10-07 pide los dos), y el panel pintaba sus dos líneas como `— m²` y
    `—`. El guion de relleno no era solo un hueco vacío: el componente reenvía ese mismo resumen
    a GA4 y al Pixel, así que **todos los leads de la portada y de las seis páginas de servicio
    declaraban `—` como `municipality`**. Una dimensión personalizada de GA4 no se rellena hacia

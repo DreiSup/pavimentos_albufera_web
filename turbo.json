@@ -40,9 +40,13 @@
       "dependsOn": ["^build", "^transit"],
       "outputs": []
     },
+    "test": {
+      "dependsOn": ["^transit"],
+      "outputs": []
+    },
     "content:validate": {
       "dependsOn": ["^transit"],
-      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/apps/web/public/**"],
+      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/apps/web/public/**", "$TURBO_ROOT$/docs/zonas-cp.csv"],
       "outputs": []
     }
   }

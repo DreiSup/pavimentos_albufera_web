@@ -7,6 +7,8 @@ import { enviarEventoCAPI } from '@/lib/meta-capi'
 import { nap, sitio } from '@/lib/config'
 import { COOKIE_ATRIBUCION, COOKIE_CONSENTIMIENTO, COOKIE_REFERENCIA } from '@/lib/cookies'
 import { serverEnv } from '@site/config/server'
+import { classifyLead, normalizePostalCode, parseSquareMeters } from '@site/content'
+import type { LeadClassification } from '@site/content'
 
 /**
  * Lo que el visitante escribió, tal y como lo escribió.
@@ -30,6 +32,7 @@ export type ValoresFormulario = {
   email: string
   espacio: string
   superficie: string
+  codigo_postal: string
   municipio: string
   mensaje: string
   privacidad: boolean
@@ -156,6 +159,15 @@ function cuerpoEmail(
   return { text, html }
 }
 
+/**
+ * La zona en palabras, para el aviso. Solo para el dueño: el visitante no la ve
+ * nunca, ni sabe que existe un filtro.
+ */
+function etiquetaZona({ zone, minSquareMeters }: LeadClassification): string {
+  if (zone === 'unknown') return 'Zona sin identificar (código postal no reconocido)'
+  return minSquareMeters === null ? `Zona ${zone}` : `Zona ${zone} · solo obras de más de ${minSquareMeters} m²`
+}
+
 /** Día y hora del envío, en hora de España, sea cual sea la zona del servidor. */
 function momentoDeEnvio(fecha: Date): { dia: string; hora: string } {
   const zona = 'Europe/Madrid'
@@ -201,7 +213,21 @@ const esquema = z.object({
       'Escribe un correo electrónico válido para que podamos escribirte, o deja el campo vacío.',
     ),
   espacio: z.string().min(1, 'Selecciona qué quieres pavimentar.'),
-  superficie: z.string().optional().default(''),
+  // Obligatoria en las dos variantes desde el filtro por zona (2026-10-07): sin
+  // superficie no se puede decidir si la solicitud sale por correo, y si fuera
+  // opcional, cualquiera de fuera la dejaría vacía y saltaría el filtro. Tiene
+  // que poder leerse como número: lo que no se entiende se pregunta, no se adivina.
+  superficie: z
+    .string()
+    .trim()
+    .min(1, 'Escribe la superficie aproximada en m².')
+    .refine((v) => parseSquareMeters(v) !== null, 'Escribe la superficie en metros cuadrados, por ejemplo 80.'),
+  // Solo se comprueba el formato. Un prefijo que no existe (00, 53…) pasa y se
+  // trata como zona desconocida, que se acepta: ante la duda no se pierde el lead.
+  codigo_postal: z
+    .string()
+    .transform(normalizePostalCode)
+    .refine((v) => /^\d{5}$/.test(v), 'Escribe tu código postal de 5 cifras.'),
   municipio: z.string().trim().min(1, 'Escribe tu municipio para que sepamos dónde ir.'),
   mensaje: z.string().optional().default(''),
   // El `required` del navegador no es validación: un envío sin JS o manipulado
@@ -306,6 +332,7 @@ export async function enviarPresupuesto(
     email: texto(formData.get('email')),
     espacio: texto(formData.get('espacio')),
     superficie: texto(formData.get('superficie')),
+    codigo_postal: texto(formData.get('codigo_postal')),
     municipio: texto(formData.get('municipio')),
     mensaje: texto(formData.get('mensaje')),
     privacidad: texto(formData.get('privacidad')).length > 0,
@@ -359,11 +386,25 @@ export async function enviarPresupuesto(
     email,
     espacio,
     superficie,
+    codigo_postal: codigoPostal,
     municipio,
     mensaje,
     origen,
     evento_id: eventoIdEnviado,
   } = analizado.data
+
+  // Filtro por zona y superficie (`@site/content` → `classifyLead`, zonas en
+  // `docs/zonas-cp.md`). Solo decide por dónde llega el aviso: el visitante ve
+  // lo mismo se acepte o no.
+  const clasificacion = classifyLead({ postalCode: codigoPostal, squareMeters: parseSquareMeters(superficie) })
+  const filtrada = !clasificacion.accepted
+
+  // El esquema ya garantiza que se puede leer. Lo escrito se conserva al lado
+  // cuando no es el mismo número («10x5», «1.200 m2»): el dueño ve qué se
+  // tecleó y qué ha entendido el filtro.
+  const metros = parseSquareMeters(superficie) ?? 0
+  const metrosTexto = metros.toLocaleString('es-ES')
+  const superficieAviso = metrosTexto === superficie ? `${metrosTexto} m²` : `${metrosTexto} m² (escrito: «${superficie}»)`
 
   // Si el formulario se envió antes de hidratar, el campo llega vacío. Sin un
   // id, el Pixel y la CAPI no se pueden deduplicar.
@@ -391,8 +432,8 @@ export async function enviarPresupuesto(
   const fbp = listaCookies.get('_fbp')?.value
   const fbc = listaCookies.get('_fbc')?.value
 
-  // Los dos canales se esperan antes de responder, en serie, y basta con que
-  // uno entregue para dar el envío por bueno. Es la regla de Pavivasa, y cierra
+  // Los canales se esperan antes de responder, en serie, y basta con que uno
+  // entregue para dar el envío por bueno. Es la regla de Pavivasa, y cierra
   // dos defectos que había aquí:
   //
   // - Solo contaba el email. Con Resend caído el visitante veía el error aunque
@@ -401,19 +442,22 @@ export async function enviarPresupuesto(
   //   configurado: el lead se perdía sin que nadie lo supiera.
   // - Telegram iba en `after()`, así que su resultado no podía decidir nada.
   //
-  // El orden no es casual: Telegram va después para poder decir si la foto
-  // salió en el email. El coste es la espera: en el peor caso, 15 s de Resend
-  // más 8 s de Telegram, y solo cuando los dos fallan por timeout.
+  // Una solicitud aceptada sale por correo y después por Telegram: Telegram va
+  // detrás para poder decir si la foto salió en el email. Una filtrada sale
+  // SOLO por Telegram, para que la vea el dueño y no el buzón de los clientes;
+  // y si Telegram no entrega, cae al correo marcada como filtrada, porque un
+  // aviso de más es mejor que un lead perdido. El peor caso de espera sigue
+  // siendo 15 s de Resend más 8 s de Telegram.
   const apiKey = serverEnv.RESEND_API_KEY
   const destino = serverEnv.EMAIL_DESTINO ?? 'comercial@pavimentos-albufera.com'
   const telegramToken = serverEnv.TELEGRAM_BOT_TOKEN
   const telegramChat = serverEnv.TELEGRAM_CHAT_ID
 
-  let emailEntregado = false
   const enviado = momentoDeEnvio(new Date())
-  let telegramEntregado = false
+  const zona = etiquetaZona(clasificacion)
 
-  if (apiKey) {
+  async function enviarEmail(): Promise<boolean> {
+    if (!apiKey) return false
     try {
       const respuesta = await fetch('https://api.resend.com/emails', {
         method: 'POST',
@@ -429,15 +473,19 @@ export async function enviarPresupuesto(
           from: `${nap.nombre} <presupuesto@${new URL(sitio.url).hostname.replace(/^www\./, '')}>`,
           to: destino,
           reply_to: email || undefined,
-          subject: `Presupuesto — ${nombre} · ${espacio}`,
+          // Solo llega aquí una filtrada si Telegram no la ha entregado.
+          subject: `${filtrada ? '[Fuera de filtro] ' : ''}Presupuesto — ${nombre} · ${espacio}`,
           ...cuerpoEmail(
-            `Tienes una nueva demanda de presupuesto, pedida el ${enviado.dia} a las ${enviado.hora}`,
+            filtrada
+              ? `Solicitud fuera de filtro (${zona}), pedida el ${enviado.dia} a las ${enviado.hora}. Llega por correo porque el aviso de Telegram no ha salido.`
+              : `Tienes una nueva demanda de presupuesto, pedida el ${enviado.dia} a las ${enviado.hora}`,
             [
               { etiqueta: 'Nombre', valor: nombre, negrita: true },
               { etiqueta: 'Teléfono', valor: telefono, negrita: true },
               { etiqueta: 'Email', valor: email, negrita: true },
               { etiqueta: 'Espacio', valor: espacio, negrita: true },
-              { etiqueta: 'Superficie', valor: superficie ? `${superficie} m²` : '', negrita: true },
+              { etiqueta: 'Superficie', valor: superficieAviso, negrita: true },
+              { etiqueta: 'Código postal', valor: codigoPostal, negrita: true },
               { etiqueta: 'Municipio', valor: municipio, negrita: true },
               // El mensaje puede ser largo: en negrita se lee peor, no mejor.
               { etiqueta: 'Mensaje', valor: mensaje, negrita: false },
@@ -453,18 +501,26 @@ export async function enviarPresupuesto(
 
       // `fetch` no lanza con un 400. Sin esto, una clave caducada o un dominio
       // sin verificar devuelven 401/422 y el envío contaría como entregado.
-      emailEntregado = respuesta.ok
       if (!respuesta.ok) {
         const cuerpo = await respuesta.text()
         console.error(`Resend ${respuesta.status}: ${cuerpo.slice(0, 500)}`)
       }
+      return respuesta.ok
     } catch (error) {
       // No se corta aquí: puede que Telegram sí entregue.
       console.error('Resend sin respuesta:', error)
+      return false
     }
   }
 
-  if (telegramToken && telegramChat) {
+  /** `emailEntregado` es `null` cuando el email no se ha intentado a propósito (solicitud filtrada). */
+  async function enviarTelegram(emailEntregado: boolean | null): Promise<boolean> {
+    if (!telegramToken || !telegramChat) return false
+    const lineaFoto = !adjunto
+      ? null
+      : emailEntregado === null
+        ? `Foto: ${adjunto.filename} — no reenviada: esta solicitud no sale por email, pídesela al cliente`
+        : `Foto: ${adjunto.filename}${emailEntregado ? ' — adjunta en el email' : ' — SIN ENTREGAR: el email no ha salido'}`
     try {
       const respuesta = await fetch(`https://api.telegram.org/bot${telegramToken}/sendMessage`, {
         method: 'POST',
@@ -473,8 +529,10 @@ export async function enviarPresupuesto(
           chat_id: telegramChat,
           ...textoTelegram(
             [
-              // Primera línea, la que enseña la notificación: de qué web viene.
-              [`${nap.nombre} 🔔 Nuevo presupuesto`],
+              // Primera línea, la que enseña la notificación: de qué web viene
+              // y, si está filtrada, que solo la ve el dueño.
+              [filtrada ? `${nap.nombre} 🟡 Fuera de filtro · solo Telegram` : `${nap.nombre} 🔔 Nuevo presupuesto`],
+              filtrada ? [{ negrita: zona }] : null,
               ['nombre: ', { negrita: nombre }],
               ['teléfono: ', { negrita: telefono }],
               // El aviso es lo primero que se lee, y muchas veces lo único.
@@ -483,16 +541,13 @@ export async function enviarPresupuesto(
               // guion, no.
               ['email: ', email ? { negrita: email } : '—'],
               [{ negrita: espacio.toLocaleUpperCase('es-ES') }],
-              superficie ? [{ negrita: `${superficie} m²` }] : null,
-              [municipio ? { negrita: municipio } : '—'],
+              [{ negrita: superficieAviso }],
+              [municipio ? { negrita: municipio } : '—', ` · CP ${codigoPostal}`],
+              filtrada ? null : [zona],
               // Antes que el mensaje: si el texto no cabe se corta por el
               // final, y el aviso de foto sin entregar no puede ser lo que se
               // pierda.
-              adjunto
-                ? [
-                    `Foto: ${adjunto.filename}${emailEntregado ? ' — adjunta en el email' : ' — SIN ENTREGAR: el email no ha salido'}`,
-                  ]
-                : null,
+              lineaFoto ? [lineaFoto] : null,
               mensaje ? [mensaje] : null,
             ].filter((linea): linea is TrozoTelegram[] => linea !== null),
             [`Desde: ${origen}`, ...atribucion],
@@ -502,14 +557,25 @@ export async function enviarPresupuesto(
       })
 
       // Un chat_id equivocado o un bot expulsado devuelven 400 y `fetch` no lanza.
-      telegramEntregado = respuesta.ok
       if (!respuesta.ok) {
         const cuerpo = await respuesta.text()
         console.error(`Telegram ${respuesta.status}: ${cuerpo.slice(0, 500)}`)
       }
+      return respuesta.ok
     } catch (error) {
       console.error('Telegram sin respuesta:', error)
+      return false
     }
+  }
+
+  let emailEntregado = false
+  let telegramEntregado = false
+  if (filtrada) {
+    telegramEntregado = await enviarTelegram(null)
+    if (!telegramEntregado) emailEntregado = await enviarEmail()
+  } else {
+    emailEntregado = await enviarEmail()
+    telegramEntregado = await enviarTelegram(emailEntregado)
   }
 
   if (!emailEntregado && !telegramEntregado) {
@@ -562,14 +628,16 @@ export async function enviarPresupuesto(
     )
   }
 
-  // El resumen viaja tal cual, con la cadena vacía cuando el campo no se pide.
-  // El guion de relleno que había antes no era solo un hueco feo en el panel de
+  // La superficie viaja como el número que ha entendido el filtro, para que el
+  // panel de «Recibido» no pinte «80 m2 m²» a quien escribió la unidad.
+  //
+  // El resumen no lleva relleno cuando falta un dato. El guion de relleno que había antes no era solo un hueco feo en el panel de
   // «Recibido»: `FormularioPresupuesto` lo reenvía como `municipality` a GA4 y
   // al Pixel, así que cada lead de la variante corta declaraba `—` de
   // municipio. Quién decide si un campo se enseña es quien lo pinta.
   return {
     estado: 'enviado',
     errores: {},
-    resumen: { espacio, superficie, municipio },
+    resumen: { espacio, superficie: metrosTexto, municipio },
   }
 }

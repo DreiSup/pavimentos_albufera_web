@@ -86,14 +86,14 @@ export default function PoliticaPrivacidad() {
               <BloqueLegal titulo="Formulario de presupuesto">
                 <p>
                   El formulario tiene dos variantes. La <strong>corta</strong>, que cierra la
-                  portada, pide nombre y apellidos, teléfono, correo electrónico —opcional—, qué
-                  quieres pavimentar y la casilla de haber leído esta política. La{' '}
-                  <strong>larga</strong>, que está en{' '}
+                  portada y cada página de servicio, pide nombre y apellidos, teléfono, correo
+                  electrónico —opcional—, qué quieres pavimentar, la superficie en metros
+                  cuadrados, el código postal, el municipio y la casilla de haber leído esta
+                  política. La <strong>larga</strong>, que está en{' '}
                   <Link href="/presupuesto/">
                     la página de presupuesto
-                  </Link>{' '}
-                  y al final de cada página de servicio, pide además la superficie en metros
-                  cuadrados, el municipio, un mensaje libre y, si quieres,{' '}
+                  </Link>
+                  , pide además un mensaje libre y, si quieres,{' '}
                   <strong>una foto del espacio</strong>, que puede ser cualquier imagen de hasta
                   4 MB.
                 </p>
@@ -209,9 +209,9 @@ export default function PoliticaPrivacidad() {
             <p>
               No estás obligado por ninguna ley a dárnoslos, pero sin ellos no podemos hacer lo que
               nos pides. El formulario marca con asterisco los campos que pide como obligatorios: el
-              nombre, el teléfono, qué quieres pavimentar y, en la variante larga, la superficie y el
-              municipio. Sin nombre, sin teléfono, sin elegir qué quieres pavimentar y sin aceptar
-              esta política, el envío no llega a salir. El correo, el mensaje y la foto son
+              nombre, el teléfono, qué quieres pavimentar, la superficie, el código postal y el
+              municipio. Sin cualquiera de ellos y sin aceptar esta política, el envío no llega a
+              salir. El correo, el mensaje y la foto son
               opcionales, y lo único que pasa si no los pones es que el presupuesto será menos
               afinado o tendremos que preguntártelo por teléfono.
             </p>

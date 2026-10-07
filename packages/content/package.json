@@ -14,7 +14,8 @@
   "scripts": {
     "transit": "true",
     "typecheck": "tsc --noEmit",
-    "content:validate": "node --experimental-strip-types scripts/validate.ts"
+    "content:validate": "node --experimental-strip-types scripts/validate.ts",
+    "test": "node --experimental-strip-types --test 'src/**/*.test.ts'"
   },
   "dependencies": {
     "zod": "3.25.76"

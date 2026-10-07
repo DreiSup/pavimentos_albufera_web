@@ -71,6 +71,8 @@ export default function FormularioPresupuesto({
   const [estado, accion, enviando] = useActionState(enviarPresupuesto, estadoInicial)
   const telefonoRef = useRef<HTMLInputElement>(null)
   const emailRef = useRef<HTMLInputElement>(null)
+  const superficieRef = useRef<HTMLInputElement>(null)
+  const codigoPostalRef = useRef<HTMLInputElement>(null)
   const municipioRef = useRef<HTMLInputElement>(null)
   const [eventoId, setEventoId] = useState('')
   const [errorFoto, setErrorFoto] = useState('')
@@ -118,6 +120,8 @@ export default function FormularioPresupuesto({
     if (estado.estado !== 'error') return
     if (estado.errores.telefono) telefonoRef.current?.focus()
     else if (estado.errores.email) emailRef.current?.focus()
+    else if (estado.errores.superficie) superficieRef.current?.focus()
+    else if (estado.errores.codigo_postal) codigoPostalRef.current?.focus()
     else if (estado.errores.municipio) municipioRef.current?.focus()
   }, [estado])
 
@@ -149,21 +153,70 @@ export default function FormularioPresupuesto({
     }
   }, [estado, eventoId, origen])
 
-  const campoMunicipio = (
-    <Campo etiqueta="Municipio" htmlFor="municipio" obligatorio error={estado.errores.municipio}>
+  // Superficie y código postal son obligatorios en las dos variantes desde el
+  // filtro por zona (2026-10-07): el Server Action decide con ellos si la
+  // solicitud sale por correo. El visitante no ve el filtro; solo los campos.
+  //
+  // La superficie es texto y no `type="number"`: la ayuda pide «Largo × ancho»
+  // y `10x5` tiene que poder escribirse. El servidor la lee y, si no la
+  // entiende, la devuelve con su error en vez de adivinar.
+  const campoSuperficie = (
+    <Campo
+      etiqueta="Superficie aproximada en m²"
+      htmlFor="superficie"
+      obligatorio
+      ayuda="Un cálculo aproximado nos vale. Largo × ancho."
+      error={estado.errores.superficie}
+    >
       <input
-        ref={municipioRef}
-        id="municipio"
-        name="municipio"
+        ref={superficieRef}
+        id="superficie"
+        name="superficie"
         type="text"
         required
-        autoComplete="address-level2"
-        defaultValue={escrito?.municipio ?? ''}
+        defaultValue={escrito?.superficie ?? ''}
         readOnly={enviando}
-        aria-invalid={Boolean(estado.errores.municipio)}
+        aria-invalid={Boolean(estado.errores.superficie)}
         className={claseInput}
       />
     </Campo>
+  )
+
+  // Código postal y municipio comparten fila, con la misma regla de reparto
+  // que nombre y teléfono: las dos etiquetas son cortas y no parten línea.
+  const filaUbicacion = (
+    <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4">
+      <Campo etiqueta="Código postal" htmlFor="codigo_postal" obligatorio error={estado.errores.codigo_postal}>
+        <input
+          ref={codigoPostalRef}
+          id="codigo_postal"
+          name="codigo_postal"
+          type="text"
+          inputMode="numeric"
+          autoComplete="postal-code"
+          maxLength={5}
+          required
+          defaultValue={escrito?.codigo_postal ?? ''}
+          readOnly={enviando}
+          aria-invalid={Boolean(estado.errores.codigo_postal)}
+          className={claseInput}
+        />
+      </Campo>
+      <Campo etiqueta="Municipio" htmlFor="municipio" obligatorio error={estado.errores.municipio}>
+        <input
+          ref={municipioRef}
+          id="municipio"
+          name="municipio"
+          type="text"
+          required
+          autoComplete="address-level2"
+          defaultValue={escrito?.municipio ?? ''}
+          readOnly={enviando}
+          aria-invalid={Boolean(estado.errores.municipio)}
+          className={claseInput}
+        />
+      </Campo>
+    </div>
   )
 
   if (estado.estado === 'enviado') {
@@ -175,9 +228,9 @@ export default function FormularioPresupuesto({
           faena; somos muy buenos en lo nuestro.
         </p>
         {/* `design/02` §B1, estado 4: «el resumen de lo enviado». Lo enviado,
-            no la plantilla del formulario largo. La variante corta no pide
-            superficie, y el panel pintaba su línea con un guion: un estado vacío que no dice nada y que además hace dudar de
-            si el dato se perdió por el camino. */}
+            no la plantilla del formulario largo. Cada línea se pinta solo si
+            trae dato: un guion de relleno es un estado vacío que no dice nada
+            y que además hace dudar de si el dato se perdió por el camino. */}
         <div className="font-mono text-d-11 leading-[1.9] text-sobre-tinta">
           <p className="m-0">{estado.resumen?.espacio}</p>
           {estado.resumen?.superficie ? <p className="m-0">{estado.resumen.superficie} m²</p> : null}
@@ -298,28 +351,11 @@ export default function FormularioPresupuesto({
         </select>
       </Campo>
 
-      {variante === 'corto' ? campoMunicipio : null}
+      {campoSuperficie}
+      {filaUbicacion}
 
       {variante === 'completo' ? (
         <>
-          <Campo
-            etiqueta="Superficie aproximada en m²"
-            htmlFor="superficie"
-            obligatorio
-            ayuda="Un cálculo aproximado nos vale. Largo × ancho."
-          >
-            <input
-              id="superficie"
-              name="superficie"
-              type="text"
-              defaultValue={escrito?.superficie ?? ''}
-              readOnly={enviando}
-              className={claseInput}
-            />
-          </Campo>
-
-          {campoMunicipio}
-
           <Campo etiqueta="Cuéntanos algo más" htmlFor="mensaje">
             <textarea
               id="mensaje"

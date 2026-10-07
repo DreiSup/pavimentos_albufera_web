@@ -12,6 +12,7 @@
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "content:validate": "turbo run content:validate",
+    "test": "turbo run test",
     "verify": "node --experimental-strip-types scripts/verify/index.mjs apps/web",
     "verify:secrets": "node scripts/verify/build-and-scan-secrets.mjs apps/web"
   },
