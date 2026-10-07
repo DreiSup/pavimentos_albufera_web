@@ -81,6 +81,9 @@ export type { ResolvedImage, ResolvedQuestion, Locale } from './queries/resolve.
 export { classifyLead, isValidPostalCode, normalizePostalCode, parseSquareMeters } from './queries/lead-routing.ts'
 export type { LeadClassification, LeadZone } from './queries/lead-routing.ts'
 
+// Server-only (carries ~11,000 town names): the quote Server Action and the static /api/cp/ route.
+export { getPostalCodeName, getPostalCodeProvinces, getProvincePostalCodeNames } from './queries/postal-code-names.ts'
+
 export { pickLocalized, pickLocalizedList, LOCALES } from './schemas/localized.ts'
 export type { ProjectId } from './schemas/ids.ts'
 export type {

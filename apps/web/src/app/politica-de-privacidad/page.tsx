@@ -88,8 +88,8 @@ export default function PoliticaPrivacidad() {
                   El formulario tiene dos variantes. La <strong>corta</strong>, que cierra la
                   portada y cada página de servicio, pide nombre y apellidos, teléfono, correo
                   electrónico —opcional—, qué quieres pavimentar, la superficie en metros
-                  cuadrados, el código postal, el municipio y la casilla de haber leído esta
-                  política. La <strong>larga</strong>, que está en{' '}
+                  cuadrados, el código postal y la casilla de haber leído esta política. El
+                  municipio no te lo pedimos: lo deducimos del código postal. La <strong>larga</strong>, que está en{' '}
                   <Link href="/presupuesto/">
                     la página de presupuesto
                   </Link>
@@ -209,8 +209,8 @@ export default function PoliticaPrivacidad() {
             <p>
               No estás obligado por ninguna ley a dárnoslos, pero sin ellos no podemos hacer lo que
               nos pides. El formulario marca con asterisco los campos que pide como obligatorios: el
-              nombre, el teléfono, qué quieres pavimentar, la superficie, el código postal y el
-              municipio. Sin cualquiera de ellos y sin aceptar esta política, el envío no llega a
+              nombre, el teléfono, qué quieres pavimentar, la superficie y el código postal. Sin
+              cualquiera de ellos y sin aceptar esta política, el envío no llega a
               salir. El correo, el mensaje y la foto son
               opcionales, y lo único que pasa si no los pones es que el presupuesto será menos
               afinado o tendremos que preguntártelo por teléfono.

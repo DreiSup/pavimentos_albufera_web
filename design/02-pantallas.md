@@ -419,16 +419,24 @@ La pantalla que cierra el embudo. Copy del §7.4.
 | Email | email | no |
 | ¿Qué quieres pavimentar? | desplegable de 7 opciones | sí |
 | Superficie aproximada en m² | texto, se lee como número (`80`, `1.200`, `10x5`) | sí |
-| Código postal | texto numérico, 5 cifras | sí |
-| Municipio | texto | sí |
+| Código postal | texto numérico, 5 cifras; debajo, la población | sí |
 | Cuéntanos algo más | textarea | no |
 | Sube una foto del espacio | archivo | no |
 | He leído la política de privacidad | casilla | sí |
 
-Nombre y teléfono comparten fila; código postal y municipio, también; el resto ocupa el ancho.
+Nombre y teléfono comparten fila; el resto ocupa el ancho.
+
+⚠️ **Enmienda del 2026-10-07 (2): el municipio ya no se pide.** Sale del código postal
+(GeoNames, `packages/content/src/data/postal-code-names.ts`). Al teclear las cinco cifras aparece
+bajo el campo el nombre de la población —46440 → «Almussafes»—, solo el pueblo principal y solo
+la primera forma de un nombre doble («Alicante/Alacant» → «Alicante»). Un código que no está en
+la tabla no pinta nada y **no bloquea el envío**. La línea está reservada desde el principio
+para que el formulario no salte, y es región viva para lectores de pantalla. Los nombres se
+piden por provincia a `/api/cp/[provincia]/`, un JSON estático de 2–4 kB: el código postal no
+sale nunca hacia un tercero.
 
 ⚠️ **Enmienda del 2026-10-07: filtro por zona.** Superficie, código postal y municipio van en
-**las dos variantes** y son obligatorios. El Server Action clasifica el código postal en tres
+**las dos variantes** y son obligatorios (el municipio se retiró después: ver la enmienda (2) de arriba). El Server Action clasifica el código postal en tres
 zonas (`docs/zonas-cp.md`): zona A, cualquier obra; resto de la Comunitat Valenciana, más de
 500 m²; resto de España, más de 1000 m². Una solicitud que no llega a su mínimo **sale solo por
 Telegram**, para el dueño, y no por correo; si Telegram falla, sale por correo marcada
@@ -458,7 +466,6 @@ pueda pintar está aquí, y lo que no está aquí no se pinta.**
   porque tenemos mucha faena; somos muy buenos en lo nuestro.* (Cambiado por el dueño el
   2026-09-30; antes prometía llamada el mismo día antes de las 18:00.)
 - Error de nombre: *Escribe tu nombre.*
-- Error de municipio: *Escribe tu municipio para que sepamos dónde ir.*
 - Error de superficie vacía: *Escribe la superficie aproximada en m².* `[pendiente de aprobar]`
 - Error de superficie ilegible: *Escribe la superficie en metros cuadrados, por ejemplo 80.*
   `[pendiente de aprobar]`

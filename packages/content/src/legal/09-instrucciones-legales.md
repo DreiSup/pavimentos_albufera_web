@@ -161,7 +161,7 @@ los informa como destinatarios; no pide consentimiento "para ellos".
 | Destino | Qué recibe | Encuadre |
 |---|---|---|
 | Resend (EE. UU.) | Todo el formulario, incluida la foto | Encargado. Entrega del correo |
-| Telegram FZ-LLC (Dubái) | Nombre, teléfono, correo, servicio, superficie, código postal, municipio, origen, referencia. Desde el 2026-10-07 es el **único** canal de las solicitudes fuera de filtro por zona | Encargado. Aviso interno |
+| Telegram FZ-LLC (Dubái) | Nombre, teléfono, correo, servicio, superficie, código postal, municipio (deducido del código postal), origen, referencia. Desde el 2026-10-07 es el **único** canal de las solicitudes fuera de filtro por zona | Encargado. Aviso interno |
 | Vercel (EE. UU.) | Alojamiento y logs | Encargado |
 | Meta | Hashes de teléfono, correo y municipio; en claro IP, user-agent, URL, `_fbp`, `_fbc` | Publicidad. Consentimiento |
 | Google (GA4 y Ads) | Eventos de navegación y de lead | Analítica y publicidad. Consentimiento |

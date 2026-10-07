@@ -54,8 +54,13 @@ export async function loadBuild(nextDir) {
     .map((r) => ({ source: r.source, destination: r.destination, statusCode: r.statusCode, has: r.has }))
 
   const pages = []
-  for (const route of Object.keys(prerender.routes || {})) {
+  for (const [route, entry] of Object.entries(prerender.routes || {})) {
     if (route === '/_not-found' || METADATA_ROUTES.has(route)) continue
+    // Static route handlers (e.g. the per-province JSON under /api/cp/) are
+    // prerendered too, but they are data, not pages: no HTML file, no <h1>,
+    // no sitemap entry. Next records their content type; pages carry none.
+    const contentType = entry.initialHeaders?.['content-type']
+    if (contentType && !contentType.startsWith('text/html')) continue
     pages.push({
       route,
       htmlFile: path.join(nextDir, 'server', 'app', routeToHtmlFile(route)),

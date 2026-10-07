@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, useEffect, useRef, useState } from 'react'
+import { useActionState, useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { enviarPresupuesto, type EstadoEnvio } from '@/app/presupuesto/actions'
 import Campo, { claseInput } from '../ui/Campo'
@@ -11,6 +11,28 @@ import { EVENTOS, MONEDA, registrarEvento, type Ubicacion } from '@/lib/eventos'
 import { COOKIE_REFERENCIA, leerCookie } from '@/lib/cookies'
 
 const estadoInicial: EstadoEnvio = { estado: 'inicial', errores: {} }
+
+/**
+ * Nombres de población por provincia, pedidos a `/api/cp/[provincia]/` (un
+ * JSON estático por provincia, ver `app/api/cp/[provincia]/route.ts`). Se
+ * guarda la promesa y no el resultado: dos teclas seguidas no lanzan dos
+ * peticiones. Un fallo de red se olvida, para poder reintentar con la siguiente.
+ */
+const poblacionesPorProvincia = new Map<string, Promise<Record<string, string>>>()
+
+function poblacionesDe(provincia: string): Promise<Record<string, string>> {
+  let pendiente = poblacionesPorProvincia.get(provincia)
+  if (!pendiente) {
+    pendiente = fetch(`/api/cp/${provincia}/`)
+      .then((respuesta) => (respuesta.ok ? (respuesta.json() as Promise<Record<string, string>>) : {}))
+      .catch(() => {
+        poblacionesPorProvincia.delete(provincia)
+        return {}
+      })
+    poblacionesPorProvincia.set(provincia, pendiente)
+  }
+  return pendiente
+}
 
 const ESPACIOS = [
   'Entrada de garaje',
@@ -73,7 +95,8 @@ export default function FormularioPresupuesto({
   const emailRef = useRef<HTMLInputElement>(null)
   const superficieRef = useRef<HTMLInputElement>(null)
   const codigoPostalRef = useRef<HTMLInputElement>(null)
-  const municipioRef = useRef<HTMLInputElement>(null)
+  const [poblacion, setPoblacion] = useState('')
+  const codigoBuscado = useRef('')
   const [eventoId, setEventoId] = useState('')
   const [errorFoto, setErrorFoto] = useState('')
   const eventoDisparado = useRef(false)
@@ -111,6 +134,34 @@ export default function FormularioPresupuesto({
     setEventoId(crypto.randomUUID())
   }, [])
 
+  /**
+   * La población del código postal, bajo el campo, para que quien lo escribe
+   * vea que lo ha escrito bien: 46440 → «Almussafes». Con dos cifras ya se pide
+   * la provincia, así que al teclear la quinta el nombre sale sin espera. Un
+   * código que no está en la tabla (00123) no pinta nada y no bloquea el envío:
+   * la tabla no es exhaustiva, y el servidor solo exige cinco cifras.
+   *
+   * `codigoBuscado` descarta respuestas viejas: si llega tarde la de un código
+   * que ya se ha borrado, no pinta un nombre que no corresponde.
+   */
+  const buscarPoblacion = useCallback((valor: string) => {
+    const codigo = valor.replace(/\s/g, '')
+    codigoBuscado.current = codigo
+    if (codigo.length < 5) setPoblacion('')
+    if (!/^\d{2}/.test(codigo)) return
+    const provincia = codigo.slice(0, 2)
+    void poblacionesDe(provincia).then((poblaciones) => {
+      if (codigoBuscado.current !== codigo || !/^\d{5}$/.test(codigo)) return
+      setPoblacion(Object.hasOwn(poblaciones, codigo.slice(2)) ? poblaciones[codigo.slice(2)] : '')
+    })
+  }, [])
+
+  // Tras un rechazo del servidor el campo se repuebla con lo escrito, y el
+  // nombre tiene que volver con él.
+  useEffect(() => {
+    if (estado.estado === 'error') buscarPoblacion(estado.valores?.codigo_postal ?? '')
+  }, [estado, buscarPoblacion])
+
   // `design/02` §B1, estado 2: el foco va al campo rechazado. Estaba escrito
   // solo para el teléfono porque era el único error que se pintaba; ahora que
   // el del email también se ve, el foco tiene que poder llegar a él o el
@@ -122,7 +173,6 @@ export default function FormularioPresupuesto({
     else if (estado.errores.email) emailRef.current?.focus()
     else if (estado.errores.superficie) superficieRef.current?.focus()
     else if (estado.errores.codigo_postal) codigoPostalRef.current?.focus()
-    else if (estado.errores.municipio) municipioRef.current?.focus()
   }, [estado])
 
   useEffect(() => {
@@ -135,10 +185,9 @@ export default function FormularioPresupuesto({
           form_location: origen,
           space_type: estado.resumen?.espacio,
           // `|| undefined` para que el parámetro no viaje cuando no se ha
-          // recogido. Ahora el municipio es obligatorio en las dos variantes,
-          // pero el resumen puede traer un guion de relleno en otros campos y
-          // una dimensión personalizada no se rellena hacia atrás: ese valor
-          // basura no se limpiaría después.
+          // recogido. El municipio sale del código postal y llega vacío si el
+          // código no está en la tabla; una dimensión personalizada no se
+          // rellena hacia atrás, así que un valor basura no se limpiaría después.
           municipality: estado.resumen?.municipio || undefined,
           // Las dos claves de unión con el lead que llega al buzón. `event_id`
           // es el mismo que el Server Action manda a Meta CAPI; `reference_code`
@@ -182,10 +231,12 @@ export default function FormularioPresupuesto({
     </Campo>
   )
 
-  // Código postal y municipio comparten fila, con la misma regla de reparto
-  // que nombre y teléfono: las dos etiquetas son cortas y no parten línea.
-  const filaUbicacion = (
-    <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4">
+  // El municipio ya no se pide (2026-10-07): sale del código postal. Debajo del
+  // campo se pinta la población, en una línea reservada desde el principio para
+  // que el formulario no salte al aparecer el nombre. Es región viva: quien usa
+  // lector de pantalla oye «Almussafes» al teclear la última cifra.
+  const campoCodigoPostal = (
+    <div className="flex flex-col gap-[6px]">
       <Campo etiqueta="Código postal" htmlFor="codigo_postal" obligatorio error={estado.errores.codigo_postal}>
         <input
           ref={codigoPostalRef}
@@ -198,24 +249,15 @@ export default function FormularioPresupuesto({
           required
           defaultValue={escrito?.codigo_postal ?? ''}
           readOnly={enviando}
+          onChange={(evento) => buscarPoblacion(evento.target.value)}
+          aria-describedby="codigo_postal-poblacion"
           aria-invalid={Boolean(estado.errores.codigo_postal)}
           className={claseInput}
         />
       </Campo>
-      <Campo etiqueta="Municipio" htmlFor="municipio" obligatorio error={estado.errores.municipio}>
-        <input
-          ref={municipioRef}
-          id="municipio"
-          name="municipio"
-          type="text"
-          required
-          autoComplete="address-level2"
-          defaultValue={escrito?.municipio ?? ''}
-          readOnly={enviando}
-          aria-invalid={Boolean(estado.errores.municipio)}
-          className={claseInput}
-        />
-      </Campo>
+      <p id="codigo_postal-poblacion" aria-live="polite" className="font-sans text-14 text-tinta-media min-h-[1lh] m-0">
+        {poblacion}
+      </p>
     </div>
   )
 
@@ -352,7 +394,7 @@ export default function FormularioPresupuesto({
       </Campo>
 
       {campoSuperficie}
-      {filaUbicacion}
+      {campoCodigoPostal}
 
       {variante === 'completo' ? (
         <>

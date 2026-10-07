@@ -195,7 +195,7 @@ export const legal: LegalFacts = {
         {
           label: { es: 'QUÉ RECIBE' },
           value: {
-            es: 'Nombre, teléfono, correo, qué quieres pavimentar, superficie, código postal, municipio, origen de la visita, código de referencia y qué habías contestado al aviso de cookies. No recibe la foto',
+            es: 'Nombre, teléfono, correo, qué quieres pavimentar, superficie, código postal, el municipio que le corresponde, origen de la visita, código de referencia y qué habías contestado al aviso de cookies. No recibe la foto',
           },
         },
         { label: { es: 'DÓNDE TRATA LOS DATOS' }, value: { es: 'Emiratos Árabes Unidos (Telegram FZ-LLC, Dubái)' } },
@@ -243,7 +243,7 @@ export const legal: LegalFacts = {
         {
           label: { es: 'QUÉ RECIBE' },
           value: {
-            es: 'Los avisos de navegación y de contacto: página, tipo de dispositivo, dónde pulsaste y, al enviar el formulario, qué quieres pavimentar, el municipio que hayas escrito, el código de referencia de tu visita, en qué punto de la web estaba el formulario, un identificador de este envío y la moneda. Y, como en cualquier petición a un servidor, tu dirección IP y tu navegador',
+            es: 'Los avisos de navegación y de contacto: página, tipo de dispositivo, dónde pulsaste y, al enviar el formulario, qué quieres pavimentar, el municipio que corresponde a tu código postal, el código de referencia de tu visita, en qué punto de la web estaba el formulario, un identificador de este envío y la moneda. Y, como en cualquier petición a un servidor, tu dirección IP y tu navegador',
           },
         },
         {

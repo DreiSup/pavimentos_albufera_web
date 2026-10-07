@@ -7,7 +7,7 @@ import { enviarEventoCAPI } from '@/lib/meta-capi'
 import { nap, sitio } from '@/lib/config'
 import { COOKIE_ATRIBUCION, COOKIE_CONSENTIMIENTO, COOKIE_REFERENCIA } from '@/lib/cookies'
 import { serverEnv } from '@site/config/server'
-import { classifyLead, normalizePostalCode, parseSquareMeters } from '@site/content'
+import { classifyLead, getPostalCodeName, normalizePostalCode, parseSquareMeters } from '@site/content'
 import type { LeadClassification } from '@site/content'
 
 /**
@@ -16,7 +16,7 @@ import type { LeadClassification } from '@site/content'
  * `design/02` §B1, estado 2: «el resto de campos conserva lo escrito». React
  * resetea el formulario después de ejecutar una acción, así que un rechazo del
  * servidor devolvía los siete campos en blanco: en móvil, quien acaba de
- * teclear nombre, teléfono, superficie y municipio no lo vuelve a escribir. La
+ * teclear nombre, teléfono, superficie y código postal no lo vuelve a escribir. La
  * única forma de repoblarlos es que el estado los traiga de vuelta y que cada
  * control los declare como `defaultValue`.
  *
@@ -33,7 +33,6 @@ export type ValoresFormulario = {
   espacio: string
   superficie: string
   codigo_postal: string
-  municipio: string
   mensaje: string
   privacidad: boolean
   /**
@@ -228,7 +227,6 @@ const esquema = z.object({
     .string()
     .transform(normalizePostalCode)
     .refine((v) => /^\d{5}$/.test(v), 'Escribe tu código postal de 5 cifras.'),
-  municipio: z.string().trim().min(1, 'Escribe tu municipio para que sepamos dónde ir.'),
   mensaje: z.string().optional().default(''),
   // El `required` del navegador no es validación: un envío sin JS o manipulado
   // se la salta. Aquí es obligatorio de verdad.
@@ -333,7 +331,6 @@ export async function enviarPresupuesto(
     espacio: texto(formData.get('espacio')),
     superficie: texto(formData.get('superficie')),
     codigo_postal: texto(formData.get('codigo_postal')),
-    municipio: texto(formData.get('municipio')),
     mensaje: texto(formData.get('mensaje')),
     privacidad: texto(formData.get('privacidad')).length > 0,
     foto: foto instanceof File && foto.size > 0,
@@ -387,7 +384,6 @@ export async function enviarPresupuesto(
     espacio,
     superficie,
     codigo_postal: codigoPostal,
-    municipio,
     mensaje,
     origen,
     evento_id: eventoIdEnviado,
@@ -398,6 +394,11 @@ export async function enviarPresupuesto(
   // lo mismo se acepte o no.
   const clasificacion = classifyLead({ postalCode: codigoPostal, squareMeters: parseSquareMeters(superficie) })
   const filtrada = !clasificacion.accepted
+
+  // El municipio ya no se pide (2026-10-07): sale del código postal, con la
+  // misma tabla que pinta el nombre bajo el campo. Vacío si el código no está
+  // en la tabla —que no lo hace inválido—; los avisos lo enseñan como `—`.
+  const municipio = getPostalCodeName(codigoPostal) ?? ''
 
   // El esquema ya garantiza que se puede leer. Lo escrito se conserva al lado
   // cuando no es el mismo número («10x5», «1.200 m2»): el dueño ve qué se
