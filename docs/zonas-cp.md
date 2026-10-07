@@ -13,6 +13,8 @@ Generado por `packages/content/scripts/build-lead-zones.ts` el 2026-10-07. No ed
 - GeoNames postal codes (ES.zip), licencia CC BY 4.0 (© GeoNames), datos "as is". Fecha de descarga: 2026-10-07. Las coordenadas pueden ser interpoladas o aproximadas: los CP cercanos al borde conviene contrastarlos con CartoCiudad (IGN, CC BY 4.0).
 - Coordenadas de vértices: Peñíscola (Wikipedia), Utiel, Villena y Benidorm (distanciasentreciudades.com); resto aproximadas y contrastadas con Nominatim/OSM (ODbL) al ejecutar.
 - Correos no publica base abierta; no se ha usado.
+- Cómo regenerar: descargar https://download.geonames.org/export/zip/ES.zip, descomprimir `ES.txt` en `packages/content/data-raw/` (ignorado por git; conservar la fecha del archivo, `cp -p`) y ejecutar desde `packages/content`: `node --experimental-strip-types scripts/build-lead-zones.ts`.
+- Contraste de vértices con Nominatim: en este entorno la red lo bloquea; se generó con `--skip-nominatim`.
 
 ## Vértices (en orden)
 | # | Vértice | lat | lon | Coordenada |
@@ -36,8 +38,8 @@ Generado por `packages/content/scripts/build-lead-zones.ts` el 2026-10-07. No ed
 - Nominatim check skipped (--skip-nominatim).
 
 ## Recuento de CP
-- Zona A: 455
-- Zona B: 202
+- Zona A: 456
+- Zona B: 201
 - Total CP Comunitat Valenciana en la fuente: 657
 
 ## Municipios a menos de 10 km del borde (negativo = dentro)
@@ -154,7 +156,7 @@ Centroide municipal = mediana de las coordenadas GeoNames fiables (precisión �
 - Cofrentes: 46625 (fuera del polígono)
 - Villena: 03400, 03408, 03639
 - Castalla: 03420 (fuera del polígono)
-- Benidorm: 03500 (fuera del polígono), 03501 (fuera del polígono), 03502 (fuera del polígono), 03503 (fuera del polígono)
+- Benidorm: 03500 (fuera del polígono), 03501 (fuera del polígono), 03502 (fuera del polígono), 03503 (fuera del polígono), 03508 (fuera del polígono)
 - Vinaròs: 12500 (fuera del polígono)
 - Benicarló: 12580 (fuera del polígono)
 - Almansa (vértice) es de Albacete, prefijo 02: queda en Zona C a propósito.

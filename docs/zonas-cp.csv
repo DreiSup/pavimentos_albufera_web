@@ -114,7 +114,7 @@ cp,zona,localidades,municipio,provincia,lat,lon,km_linea_recta_a_Sollana,distanc
 03501,A,"Benidorm","Benidorm","Alicante",38.5378,-0.1313,85.1,0.5,no,sí,no
 03502,A,"Benidorm; Tolls (Partida)","Benidorm","Alicante",38.5417,-0.1395,84.5,0.1,no,sí,no
 03503,A,"Saltet (Partida); Lloma (Partida); Armanello (Partida); Foya Manera, La (Partida); Almafra (Partida); Coves (Partida); Benidorm","Benidorm","Alicante",38.5418,-0.106,85.3,0.4,no,sí,no
-03508,B,"Benidorm","","Alicante",38.5382,-0.131,85.1,0.4,no,no,no
+03508,A,"Benidorm","","Alicante",38.5382,-0.131,85.1,0.4,no,sí,no
 03509,A,"Figueretes (Partida); Molino, El (Urbanizacion); Ramal De Loix (Urbanizacion); Tapiada, La (Urbanizacion); Golf Bahia (Urbanizacion); Hortetes, Les (Partida); Tamarit, El (Urbanizacion); Finestrat","Finestrat","Alicante",38.5679,-0.2118,80.3,-1.9,no,no,no
 03510,A,"Callosa D'En Sarria; Marchequivir; Almedia; Tosal De Banderes","Callosa d'En Sarrià","Alicante",38.65,-0.1167,73.5,-11.0,no,no,no
 03516,A,"Benimantell","Benimantell","Alicante",38.676,-0.2098,68.6,-13.8,no,no,no

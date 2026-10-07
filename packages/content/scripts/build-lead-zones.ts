@@ -59,7 +59,7 @@ const FORCE_ZONE_A_POSTAL_CODES: Record<string, string[]> = {
   Cofrentes: ['46625'],
   Villena: ['03400', '03408', '03639'],
   Castalla: ['03420'],
-  Benidorm: ['03500', '03501', '03502', '03503'],
+  Benidorm: ['03500', '03501', '03502', '03503', '03508'],
   'Vinaròs': ['12500'],
   'Benicarló': ['12580'],
 };
@@ -384,6 +384,8 @@ Generado por \`packages/content/scripts/build-lead-zones.ts\` el ${new Date().to
 - GeoNames postal codes (ES.zip), licencia CC BY 4.0 (© GeoNames), datos "as is". Fecha de descarga: ${downloadDate}. Las coordenadas pueden ser interpoladas o aproximadas: los CP cercanos al borde conviene contrastarlos con CartoCiudad (IGN, CC BY 4.0).
 - Coordenadas de vértices: Peñíscola (Wikipedia), Utiel, Villena y Benidorm (distanciasentreciudades.com); resto aproximadas y contrastadas con Nominatim/OSM (ODbL) al ejecutar.
 - Correos no publica base abierta; no se ha usado.
+- Cómo regenerar: descargar https://download.geonames.org/export/zip/ES.zip, descomprimir \`ES.txt\` en \`packages/content/data-raw/\` (ignorado por git; conservar la fecha del archivo, \`cp -p\`) y ejecutar desde \`packages/content\`: \`node --experimental-strip-types scripts/build-lead-zones.ts\`.
+- Contraste de vértices con Nominatim: en este entorno la red lo bloquea; se generó con \`--skip-nominatim\`.
 
 ## Vértices (en orden)
 | # | Vértice | lat | lon | Coordenada |
