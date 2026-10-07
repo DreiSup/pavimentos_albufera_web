@@ -50,3 +50,6 @@ informes-lighthouse/
 
 # worktrees de agentes de Claude Code (sesiones y subagentes)
 /.claude/
+
+# raw third-party datasets (e.g. GeoNames ES.txt), downloaded locally, never committed
+packages/content/data-raw/
