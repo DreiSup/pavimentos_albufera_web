@@ -32,7 +32,13 @@ export {
   getLandingService,
   getLandingSlug,
 } from './queries/services.ts'
-export type { ResolvedService, ResolvedLandingService, ResolvedServiceCatalogEntry } from './queries/services.ts'
+export type {
+  ResolvedService,
+  ResolvedLandingService,
+  ResolvedServiceCatalogEntry,
+  ResolvedServiceGuide,
+} from './queries/services.ts'
+export type { ResolvedRichTextRun } from './queries/rich-text.ts'
 
 export {
   getFinishes,
@@ -95,6 +101,9 @@ export type {
   ServiceSection,
   SpecRow,
   ServiceApplications,
+  ServiceGuide,
+  ServiceGuideBlock,
+  RichText,
   WhenNotTo,
   Service,
   LandingService,

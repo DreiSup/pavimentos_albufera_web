@@ -44,6 +44,7 @@ import { ZONE_A_POSTAL_CODES, ZONE_B_PREFIXES } from '../src/data/lead-zones.ts'
 import { getProjects } from '../src/queries/projects.ts'
 import { getFinishes } from '../src/queries/finishes.ts'
 import { getServiceAreas } from '../src/queries/service-areas.ts'
+import { parseRichText } from '../src/queries/rich-text.ts'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const publicDir = path.resolve(here, '../../../apps/web/public')
@@ -211,6 +212,38 @@ for (const ref of homeFaqRefs) {
 }
 for (const ref of serviceAreaFaqRefs) {
   if (!faqKeys.has(ref)) fail(`serviceAreaFaqRefs: references unknown question "${ref}"`)
+}
+
+// 3k. service guide -> internal links resolve to a page this content produces,
+// and the `{{pending}}`/`[text](/path/)` markup is well-formed. `next build`
+// would compile a link to a page that doesn't exist; `pnpm verify` (b) only
+// catches it after a full build. This catches it here, first.
+const knownPaths = new Set<string>([
+  '/',
+  '/acabados/',
+  '/proyectos/',
+  '/presupuesto/',
+  '/empresa/',
+  ...services.map((s) => s.path.es),
+  ...projects.map((p) => `/proyectos/${p.slug.es}/`),
+  ...serviceAreas.map((a) => `/zonas/${a.slug.es}/`),
+  // Same rule as `apps/web/src/lib/datos.ts`'s `rutasDeAcabado`: one route per
+  // mould, and the finish's own slug for techniques without a mould.
+  ...finishes.map((f) => `/acabados/${f.model ?? f.slug}/`),
+])
+for (const service of services) {
+  if (!service.guide) continue
+  const texts = [service.guide.intro.es, ...service.guide.blocks.flatMap((b) => b.paragraphs.map((p) => p.es))]
+  for (const text of texts) {
+    for (const run of parseRichText(text)) {
+      if (run.type === 'link' && !knownPaths.has(run.href)) {
+        fail(`service "${service.id}": guide links to "${run.href}", which is not a page this content produces`)
+      }
+      if (run.type === 'text' && /\{\{|\}\}|\]\(/.test(run.text)) {
+        fail(`service "${service.id}": malformed guide markup near "${run.text.slice(0, 60)}"`)
+      }
+    }
+  }
 }
 
 // ---- 4. Slugs unique per locale --------------------------------------------

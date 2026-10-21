@@ -1,6 +1,11 @@
 import type { ReactNode } from 'react'
 import type { PreguntaFAQ } from '@/components/secciones/Acordeon'
-import { getServices, type ResolvedLandingService, type ResolvedService } from '@site/content'
+import {
+  getServices,
+  type ResolvedLandingService,
+  type ResolvedRichTextRun,
+  type ResolvedService,
+} from '@site/content'
 import type { Imagen, ServicioId } from '@/lib/tipos'
 
 /**
@@ -21,12 +26,32 @@ import type { Imagen, ServicioId } from '@/lib/tipos'
 type Aplicacion = { nombre: string; texto: string }
 
 /**
+ * Un tramo de prosa de la guía: texto, enlace interno o dato pendiente. Es el
+ * `ResolvedRichTextRun` de `@site/content` tal cual — el adaptador no le pone
+ * nombre en español a un tipo que nació después de la migración.
+ */
+export type TramoProsa = ResolvedRichTextRun
+
+/**
+ * La banda «Qué es / cómo se hace» de la receta SEO del 2026-10-21
+ * (`design/seo/receta-paginas-servicio.md`). Sin número ni ancla: va pegada al
+ * hero y es la que responde a la búsqueda principal de la página.
+ */
+export type GuiaServicio = {
+  antetitulo: string
+  titulo: string
+  entradilla: TramoProsa[]
+  bloques: { titulo: string; parrafos: TramoProsa[][] }[]
+}
+
+/**
  * Las secciones numeradas del cuerpo de `PaginaServicio`. Es una unión y no
  * `string` para que un `ocultarSecciones` con una errata no compile: el
  * numerado y el submenú se construyen de esta lista, y un id que no existe
  * ocultaría exactamente nada sin decirlo.
  */
 export type SeccionServicio =
+  | 'seccion-guia'
   | 'seccion-aplicaciones'
   | 'seccion-muestrario'
   | 'seccion-ficha'
@@ -47,6 +72,8 @@ export type Servicio = {
   imagenHero?: Imagen
   /** Tarjeta del servicio en la home. Distinta de la del hero a propósito. */
   imagenTarjeta?: Imagen
+  /** Banda «Qué es» tras el hero. Sin ella no se pinta. */
+  guia?: GuiaServicio
   /** Solo donde hay copy aprobado que lo respalde. Si no, la sección no se renderiza. */
   aplicaciones?: { intro: string; lista: Aplicacion[] }
   fichaTecnica: { etiqueta: string; valor: ReactNode }[]
@@ -124,6 +151,16 @@ function aServicio(s: ResolvedService): Servicio {
     etiquetaHero: s.heroLabelLines,
     ...(s.heroImage ? { imagenHero: { src: s.heroImage.src, alt: s.heroImage.alt, tipo: s.heroImage.kind as Imagen['tipo'] } } : {}),
     ...(s.cardImage ? { imagenTarjeta: { src: s.cardImage.src, alt: s.cardImage.alt, tipo: s.cardImage.kind as Imagen['tipo'] } } : {}),
+    ...(s.guide
+      ? {
+          guia: {
+            antetitulo: s.guide.kicker,
+            titulo: s.guide.title,
+            entradilla: s.guide.intro,
+            bloques: s.guide.blocks.map((b) => ({ titulo: b.title, parrafos: b.paragraphs })),
+          },
+        }
+      : {}),
     ...(s.applications
       ? {
           aplicaciones: {

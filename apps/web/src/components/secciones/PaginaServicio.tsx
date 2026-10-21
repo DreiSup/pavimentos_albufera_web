@@ -1,4 +1,5 @@
-import type { ReactNode } from 'react'
+import { Fragment, type ReactNode } from 'react'
+import Link from 'next/link'
 import Aparece from '@/components/ui/Aparece'
 import AntetituloSeccion from '@/components/ui/AntetituloSeccion'
 import Boton from '@/components/ui/Boton'
@@ -15,11 +16,11 @@ import SubmenuServicio from '@/components/secciones/SubmenuServicio'
 import Acordeon from '@/components/secciones/Acordeon'
 import FormularioPresupuesto from '@/components/secciones/FormularioPresupuesto'
 import { JsonLd, schemaFAQ, schemaServicio } from '@/lib/schema'
-import { acabadosPorServicio, proyectosPorServicio } from '@/lib/datos'
+import { acabadosPorServicio, proyectosDe, proyectosPorServicio, zonas } from '@/lib/datos'
 import { nap } from '@/lib/config'
 import type { Ubicacion } from '@/lib/eventos'
 import { PASOS } from '@/content/servicios'
-import type { SeccionServicio, Servicio } from '@/content/servicios'
+import type { SeccionServicio, Servicio, TramoProsa } from '@/content/servicios'
 
 /**
  * Plantilla única de las seis páginas de servicio.
@@ -59,6 +60,7 @@ const CLASE_FONDO: Record<Fondo, string> = {
 
 /** El reparto de partida, el mismo que la plantilla tenía escrito a mano. */
 const FONDO_DE_BANDA: Record<Banda, Fondo> = {
+  'seccion-guia': 'alt',
   'seccion-aplicaciones': 'base',
   'seccion-muestrario': 'alt',
   'seccion-ficha': 'base',
@@ -163,6 +165,28 @@ function CtaContacto({ ubicacion }: { ubicacion: Ubicacion }) {
 }
 
 /**
+ * Prosa de la guía: texto, enlace en prosa (`01` §3.16) o dato pendiente
+ * (`01` §3.9). Es todo el marcado que admite `RichText` en `@site/content`.
+ */
+function Prosa({ tramos }: { tramos: TramoProsa[] }) {
+  return (
+    <>
+      {tramos.map((t, i) =>
+        t.type === 'link' ? (
+          <Link key={i} href={t.href} className="enlace-prosa">
+            {t.text}
+          </Link>
+        ) : t.type === 'pending' ? (
+          <DatoPendiente key={i}>{t.text}</DatoPendiente>
+        ) : (
+          <Fragment key={i}>{t.text}</Fragment>
+        ),
+      )}
+    </>
+  )
+}
+
+/**
  * El cierre es el bloque de conversión, y es el único de los nueve `<Aparece>`
  * del cuerpo que la landing exime: así no depende de que hidrate un
  * `IntersectionObserver` para verse. El hero no entra en la cuenta —ya es un
@@ -198,6 +222,22 @@ export default function PaginaServicio({ servicio }: { servicio: Servicio }) {
   // grande y además el pequeño. El hero no entra —su foto no se repite abajo—.
   const fotosDeObra = new Set(proyectos.map((p) => p.imagenes[0]?.src).filter(Boolean))
 
+  // Zonas donde hay obra de ESTA técnica, con la misma condición con la que
+  // `zonas/[municipio]/page.tsx` decide indexar: al menos una foto de obra. Una
+  // zona sin foto va en `noindex`, y enlazarla desde aquí sería mandar a Google
+  // a una página que se le pide no indexar. Se deriva de los datos: si otra
+  // zona gana obra de esta técnica, aparece sola.
+  const zonasServicio = zonas.filter(
+    (z) => z.servicios.includes(servicio.id) && proyectosDe(z.proyectos).some((p) => p.imagenes.length > 0),
+  )
+
+  // La guía («Qué es», receta SEO del 2026-10-21) no lleva número ni ancla: va
+  // pegada al hero, justo debajo del submenú, así que un ancla a ella no lleva
+  // a ningún sitio. Y el submenú se queda en sus 6 anclas, que es su tope
+  // (`design/02` §A2). La landing de campaña la oculta por `ocultarSecciones`.
+  const guia =
+    servicio.guia && !(servicio.ocultarSecciones ?? []).includes('seccion-guia') ? servicio.guia : undefined
+
   // El numerado sigue el orden real de las secciones presentes. Un servicio sin
   // `aplicaciones` o sin `cuandoNo` no deja hueco vacío ni número saltado.
   //
@@ -232,7 +272,12 @@ export default function PaginaServicio({ servicio }: { servicio: Servicio }) {
   // lleven número ni ancla. El hero no entra —es la cabeza de la página, no una
   // banda: §A2 lo lista sin número, igual que las migas—.
   const llevaFaq = Boolean(servicio.faq && servicio.faq.length > 0)
-  const bandas: Banda[] = [...secciones.map((s) => s.id), ...(llevaFaq ? (['faq'] as const) : []), 'cierre']
+  const bandas: Banda[] = [
+    ...(guia ? (['seccion-guia'] as const) : []),
+    ...secciones.map((s) => s.id),
+    ...(llevaFaq ? (['faq'] as const) : []),
+    'cierre',
+  ]
   const fondo = repartirFondos(bandas)
   const claseBanda = (b: Banda) =>
     `${CLASE_FONDO[fondo(b)]} px-[18px] md:px-lat-desktop py-9 md:py-22`.trim()
@@ -244,7 +289,7 @@ export default function PaginaServicio({ servicio }: { servicio: Servicio }) {
 
   return (
     <>
-      <JsonLd data={schemaServicio(servicio.id, servicio.nombre, servicio.ruta)} />
+      <JsonLd data={schemaServicio(servicio.id, servicio.nombre, servicio.ruta, servicio.description)} />
       <Migas items={[{ nombre: 'Servicios' }, { nombre: servicio.nombre }]} />
 
       {/*
@@ -309,6 +354,35 @@ export default function PaginaServicio({ servicio }: { servicio: Servicio }) {
       </section>
 
       <SubmenuServicio anclas={anclas} />
+
+      {/* Guía: qué es, cómo se hace, dónde sí y dónde no. Es la banda que
+          responde a la búsqueda principal de la página, por eso va la
+          primera. Mismo `380px 1fr` que Aplicaciones y la ficha técnica. */}
+      {guia ? (
+        <Aparece as="section" id="seccion-guia" className={claseBanda('seccion-guia')}>
+          <div className="grid grid-cols-1 md:grid-cols-[380px_1fr] gap-8 md:gap-16">
+            <div className="flex flex-col gap-4">
+              <AntetituloSeccion>{guia.antetitulo}</AntetituloSeccion>
+              <h2 className="font-display font-bold fs-h2 text-34 md:text-46 m-0">{guia.titulo}</h2>
+            </div>
+            <div className="flex flex-col gap-8">
+              <p className="text-16 md:text-20 m-0 max-w-lectura">
+                <Prosa tramos={guia.entradilla} />
+              </p>
+              {guia.bloques.map((b) => (
+                <div key={b.titulo} className="flex flex-col gap-3">
+                  <h3 className="font-display font-bold fs-h3 text-20 md:text-26 m-0">{b.titulo}</h3>
+                  {b.parrafos.map((p, i) => (
+                    <p key={i} className="text-16 text-tinta-media m-0 max-w-lectura">
+                      <Prosa tramos={p} />
+                    </p>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        </Aparece>
+      ) : null}
 
       {servicio.aplicaciones && monta('seccion-aplicaciones') ? (
         <Aparece as="section" id="seccion-aplicaciones" className={claseBanda('seccion-aplicaciones')}>
@@ -442,7 +516,10 @@ export default function PaginaServicio({ servicio }: { servicio: Servicio }) {
       {monta('seccion-obra') ? (
         <Aparece as="section" id="seccion-obra" className={claseBanda('seccion-obra')}>
           <div className="flex flex-col gap-6">
-            <AntetituloSeccion numero={numero('seccion-obra')}>Obra ejecutada</AntetituloSeccion>
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <AntetituloSeccion numero={numero('seccion-obra')}>Obra ejecutada</AntetituloSeccion>
+              {proyectos.length > 0 ? <EnlaceEtiqueta href="/proyectos/">Ver todas las obras →</EnlaceEtiqueta> : null}
+            </div>
             {proyectos.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* La tarjeta invierte su fondo respecto a la banda, `01` §3.12:
@@ -462,6 +539,21 @@ export default function PaginaServicio({ servicio }: { servicio: Servicio }) {
                 texto="Lo hemos ejecutado, pero aún no tenemos la ficha con fotos propias montada. Pídenos referencias y te las pasamos."
               />
             )}
+            {/* Enlace de la técnica a sus zonas, con el municipio en el texto
+                del enlace: es lo que conecta «hormigón fratasado» con
+                «… en Corbera» para quien llega y para quien rastrea. */}
+            {zonasServicio.length > 0 ? (
+              <div className="flex flex-col gap-2">
+                <AntetituloSeccion>Dónde lo hemos hecho</AntetituloSeccion>
+                <div className="flex flex-wrap gap-x-6 gap-y-1">
+                  {zonasServicio.map((z) => (
+                    <EnlaceEtiqueta key={z.slug} href={`/zonas/${z.slug}/`}>
+                      {`${servicio.nombre} en ${z.municipio} →`}
+                    </EnlaceEtiqueta>
+                  ))}
+                </div>
+              </div>
+            ) : null}
           </div>
         </Aparece>
       ) : null}
