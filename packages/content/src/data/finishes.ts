@@ -110,7 +110,9 @@ export const finishes: FinishRecord[] = [
       alt: { es: 'Solárium de hormigón impreso en sillería grande de tono ocre junto al vaso de una piscina.' },
       kind: 'final',
     },
-    projects: [],
+    // The sample IS a photo of this job (2026-10-21): linking it is what makes
+    // the finish count as "con obra documentada" and shows it on /zonas/moraira/.
+    projects: ['moraira-impreso-silleria-grande-113'],
   },
   {
     slug: 'piedra-silleria-109',

@@ -356,8 +356,9 @@ Técnico, heredado de fases anteriores de esta migración:
     `scripts/verify`).
   - `FAQPage` lleva `publisher`: este sitio lo emitía ya antes de migrar; el
     `FAQPage` de Pavivasa no lo lleva.
-  - `/zonas/xabia/` es `noindex` (sin foto todavía) pero sigue listada en
-    `sitemap.xml` (`app/sitemap.ts` no filtra por `noindex`).
+  - ~~`/zonas/xabia/` es `noindex` pero sigue listada en `sitemap.xml`~~ —
+    corregido el 2026-10-21: el sitemap solo lista `zonasIndexables`, y
+    `pnpm verify` falla (`sitemap:noindex-in-sitemap`) si vuelve a pasar.
 - **Preguntas de texto legal sin resolver**: `packages/content/src/legal/09-instrucciones-legales.md`
   deja varias respuestas pendientes de que el dueño confirme (art. 10.1.g
   LSSI: código de conducta al que esté adherida la empresa, si a alguno;

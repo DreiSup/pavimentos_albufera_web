@@ -56,6 +56,14 @@ export default function Pie() {
         </nav>
 
         <nav className="flex flex-row md:flex-col flex-wrap gap-x-6 gap-y-0 font-sans text-14 md:text-16 text-sobre-tinta">
+          {/* 2026-10-21: el único enlace no legal de esta columna, y va en ella
+              porque es la que se ve también en móvil. Hace que el índice de
+              zonas —y desde él, cada zona— cuelgue de todas las rutas del sitio:
+              una página de zona sin enlaces internos es la huella de una doorway.
+              → `design/01` §4.4 */}
+          <Link href="/zonas/" className="min-h-tactil flex items-center text-sobre-tinta no-underline">
+            Zonas de trabajo
+          </Link>
           <Link href="/aviso-legal/" className="min-h-tactil flex items-center text-sobre-tinta no-underline">
             Aviso legal
           </Link>

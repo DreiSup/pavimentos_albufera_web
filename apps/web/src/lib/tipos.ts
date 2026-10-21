@@ -99,6 +99,14 @@ export type Zona = {
   anillo: 1 | 2 | 3
   proyectos: string[]
   servicios: ServicioId[]
+  /** Comarca (`Marina Alta`, `Horta Nord`…). */
+  comarca: string
+  /** Meta description propia de la zona. */
+  descripcion: string
+  /** Entradilla bajo el H1. */
+  entradilla: string
+  /** Párrafos propios de la zona; puede ir vacío. */
+  cuerpo: string[]
 }
 
 export type Articulo = {

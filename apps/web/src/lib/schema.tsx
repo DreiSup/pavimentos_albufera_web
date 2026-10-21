@@ -92,6 +92,29 @@ export function schemaServicio(servicio: ServicioId, nombre: string, ruta: strin
   })
 }
 
+/**
+ * `Service` de una página de zona: el mismo nodo que el de servicio, pero con
+ * `@id` en la URL de la zona y `areaServed` acotado a su municipio (`City`
+ * dentro de su provincia), no a las tres provincias. Es lo que dice la página:
+ * este servicio, hecho en este municipio. Sin `description`, igual que
+ * `schemaServicio`, y por lo mismo: no hay campo de dato que la sostenga.
+ */
+export function schemaServicioZona(nombre: string, ruta: string, municipio: string, provincia: string) {
+  return buildServiceJsonLd({
+    siteUrl: sitio.url,
+    route: ruta,
+    name: nombre,
+    businessId: ID_NEGOCIO,
+    areaServed: [
+      {
+        '@type': 'City',
+        name: municipio,
+        containedInPlace: { '@type': 'AdministrativeArea', name: `Provincia de ${provincia}` },
+      },
+    ],
+  })
+}
+
 export function schemaFAQ(preguntas: { pregunta: string; respuesta: string }[]) {
   return buildFaqJsonLd(
     ID_NEGOCIO,

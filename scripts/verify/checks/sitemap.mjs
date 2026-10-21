@@ -2,16 +2,13 @@
 // every sitemap URL corresponds to a real prerendered page. The "returns
 // 200" half needs a live server — see checks/live.mjs.
 //
-// Ported near-verbatim from Pavivasa's scripts/verify/checks/sitemap.mjs.
-// Not ported: a check that a NOINDEX page is absent from the sitemap. This
-// site's `/zonas/xabia/` is noindex (no documented project photo — see
-// `app/zonas/[municipio]/page.tsx`'s `sinFoto`) yet IS listed in
-// sitemap.xml (`app/sitemap.ts` spreads every zone's slug unconditionally).
-// That is a real, pre-existing SEO gap — reported to the user, not encoded
-// as a new failing check here (out of scope: Pavivasa's own sitemap check
-// never asserted this either, and this task ports Pavivasa's checks, it
-// doesn't add new ones — see scripts/verify/README.md's "SEO findings not
-// enforced" section).
+// Ported near-verbatim from Pavivasa's scripts/verify/checks/sitemap.mjs,
+// plus one check Pavivasa's doesn't have (added 2026-10-21): a NOINDEX page
+// listed in the sitemap fails (`sitemap:noindex-in-sitemap`). Until that date
+// `/zonas/xabia/` (noindex, no documented project photo) was listed because
+// `app/sitemap.ts` spread every zone's slug unconditionally; it now lists
+// only `zonasIndexables` (`apps/web/src/lib/datos.ts`), and this check keeps
+// it that way for any zone that loses its photos.
 import { readServerAppFile } from '../lib/manifest.mjs'
 
 function extractLocs(xml) {
@@ -43,8 +40,11 @@ export async function checkSitemapStatic({ pages, nextDir, siteUrl, reporter }) 
   }
 
   for (const url of sitemapUrls) {
-    if (!pageUrlByPath.has(url)) {
+    const page = pageUrlByPath.get(url)
+    if (!page) {
       reporter.report({ check: 'sitemap', code: 'not-a-real-page', route: null, detail: url, message: `sitemap.xml lists "${url}", which is not a prerendered page in this build` })
+    } else if (page.noindex) {
+      reporter.report({ check: 'sitemap', code: 'noindex-in-sitemap', route: page.publicPath, message: `sitemap.xml lists "${url}", but the page is noindex — a sitemap must only list canonical, indexable URLs` })
     }
   }
 
