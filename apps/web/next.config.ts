@@ -99,7 +99,13 @@ const nextConfig: NextConfig = {
       { source: '/pavimentos-de-caucho/', destination: '/', permanent: true },
 
       // Institucional y conversión
-      { source: '/pavimentos-de-hormigon-valencia/', destination: '/empresa/', permanent: true },
+      // A la home, no a `/empresa/`: su `title.default` es «Pavimentos de hormigón
+      // en Valencia», la misma búsqueda por la que posicionaba esta URL (Search
+      // Console, 2026-10). `/empresa/` es «Quiénes somos» y no responde a ella.
+      { source: '/pavimentos-de-hormigon-valencia/', destination: '/', permanent: true },
+      // `/precios/` se retiró el 2026-09-17 (`design/04` §1) sin redirección y
+      // Google la seguía mostrando: daba 404.
+      { source: '/precios/', destination: '/presupuesto/', permanent: true },
       { source: '/contacto/', destination: '/presupuesto/', permanent: true },
       { source: '/galeria/', destination: '/proyectos/', permanent: true },
 
@@ -169,9 +175,18 @@ const nextConfig: NextConfig = {
         destination: '/hormigon-impreso/',
         permanent: true,
       },
+      // ⚠️ Antes iba a `/blog/guia-hormigon-pulido/`, un artículo sin cuerpo: la
+      // URL vieja con más impresiones de la web (737, Search Console 2026-10)
+      // transfería su relevancia a una página vacía. Va al servicio.
       {
         source: '/brillo-y-elegancia-explorando-el-hormigon-pulido/',
-        destination: '/blog/guia-hormigon-pulido/',
+        destination: '/hormigon-pulido/',
+        permanent: true,
+      },
+      // No tenía redirección y daba 404 estando en posición 6,7 (434 impresiones).
+      {
+        source: '/hormigon-pulido-alicante-transformando-espacios-con-elegancia-y-durabilidad/',
+        destination: '/hormigon-pulido/',
         permanent: true,
       },
       {
@@ -185,6 +200,8 @@ const nextConfig: NextConfig = {
 
       // Versión francesa
       { source: '/fr/:path*', destination: '/', permanent: true },
+      // Página francesa que vivía fuera de `/fr/` y daba 404.
+      { source: '/revetements-en-beton-imprime/', destination: '/hormigon-impreso/', permanent: true },
 
       // Legales
       { source: '/cookies/', destination: '/politica-de-cookies/', permanent: true },
