@@ -9,7 +9,8 @@ import type { Project } from '../schemas/project.ts'
 export type ProjectRecord = Project & { _pending?: string[]; _note?: string }
 
 /**
- * The 9 documented jobs, from `content/proyectos.json`. `null` in the
+ * The documented jobs: the 9 from `content/proyectos.json` plus
+ * `moraira-impreso-silleria-grande-113` (2026-10-21). `null` in the
  * source ("not yet confirmed") is normalized to an absent key here (D5 —
  * package-plan's `?:` convention), never to an invented value.
  * `xabia-pulido` genuinely has zero photos yet (`images: []`) — unlike
@@ -96,6 +97,56 @@ export const projects: ProjectRecord[] = [
     _pending: ['superficie', 'plazoDias', 'encargo', 'ejecucion', 'fotos a 2400 px'],
   },
   {
+    // Added 2026-10-21 (owner's SEO order: «la segunda obra de /zonas/moraira/»).
+    // Municipio, modelo and colour come from the WordPress media library's
+    // own titles for this batch ("sillería grande, color 113, Moraira" —
+    // `apps/web/public/obras/INVENTARIO.md`), not from the owner; the same
+    // source already backs `finishes.ts`'s `silleria-grande-113` sample, which
+    // is one of these three photos. The other two are the same site at a
+    // glance (same pool, olive tree in its tree pit, white plant room, pines).
+    // A fourth photo of the series (`…10.36.08-1`) is left out on purpose: a
+    // worker appears in it.
+    slug: { es: 'moraira-impreso-silleria-grande-113' },
+    title: { es: 'Contorno de piscina en Moraira' },
+    town: 'Moraira',
+    province: 'Alicante',
+    service: 'impreso',
+    model: 'silleria-grande',
+    color: '113',
+    images: [
+      {
+        src: '/obras/_sin-atribuir/WhatsApp-Image-2021-07-23-at-10.36.09-3.jpeg',
+        alt: {
+          es: 'Contorno de piscina de hormigón impreso en sillería grande de tono ocre, con un olivo en un alcorque y pinar al fondo; el vaso aún está vacío.',
+        },
+        kind: 'final',
+      },
+      {
+        src: '/obras/_sin-atribuir/WhatsApp-Image-2021-07-23-at-10.35.36-1.jpeg',
+        alt: {
+          es: 'Solárium de hormigón impreso en sillería grande ocre junto al borde de la piscina, con una caseta blanca de instalaciones a un lado.',
+        },
+        kind: 'final',
+      },
+      {
+        src: '/obras/_sin-atribuir/WhatsApp-Image-2021-07-23-at-10.36.09.jpeg',
+        alt: {
+          es: 'Olivo plantado en un alcorque abierto en el pavimento de hormigón impreso ocre, junto a la esquina de la piscina.',
+        },
+        kind: 'final',
+      },
+    ],
+    featured: false,
+    _pending: [
+      'confirmar con el dueño municipio, modelo y color (salen del title de la mediateca de WordPress)',
+      'superficie',
+      'anio',
+      'plazoDias',
+      'encargo',
+      'ejecucion',
+    ],
+  },
+  {
     slug: { es: 'corbera-fratasado-arena' },
     title: { es: 'Fratasado en Corbera' },
     town: 'Corbera',
@@ -152,6 +203,24 @@ export const projects: ProjectRecord[] = [
       {
         src: '/obras/denia-impreso-piedra-inglesa-gris.jpg',
         alt: { es: 'Patio de hormigón impreso en piedra inglesa de tono gris ante una vivienda blanca con palmeras.' },
+        kind: 'final',
+      },
+      // Added 2026-10-21: same house (white two-storey house, palms, the same
+      // whitewashed low wall) and named `…denia…` in the WordPress library.
+      // The alt doesn't say which of the two finishes each photo shows: that
+      // is the owner's to confirm.
+      {
+        src: '/obras/_sin-atribuir/hormigon-impreso-denia-e1507367883776.jpg',
+        alt: {
+          es: 'Explanada de hormigón impreso en piedra inglesa ante una vivienda blanca de dos plantas con porche en arco, entre palmeras.',
+        },
+        kind: 'final',
+      },
+      {
+        src: '/obras/_sin-atribuir/hormigon-impreso-denia-alicante-e1507368037484.jpg',
+        alt: {
+          es: 'Explanada de hormigón impreso en piedra inglesa de tono gris claro, cerrada por un murete encalado, con palmeras y arbolado detrás.',
+        },
         kind: 'final',
       },
     ],

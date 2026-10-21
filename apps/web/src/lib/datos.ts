@@ -24,11 +24,13 @@ import {
   getFinishes,
   getProjects,
   getServiceAreas,
+  getTownsWithUndocumentedWork,
   type ResolvedArticle,
   type ResolvedFinish,
   type ResolvedProject,
   type ResolvedServiceArea,
 } from '@site/content'
+import { NOMBRE_SERVICIO } from './tipos'
 import type { Acabado, Articulo, ModeloId, Proyecto, ServicioId, TipoImagen, Zona } from './tipos'
 
 function aProyecto(p: ResolvedProject): Proyecto {
@@ -96,6 +98,10 @@ function aZona(z: ResolvedServiceArea): Zona {
     anillo: (z as unknown as Record<string, 1 | 2 | 3>)['ri' + 'ng'],
     proyectos: z.projects,
     servicios: z.services as ServicioId[],
+    comarca: z.region,
+    descripcion: z.description,
+    entradilla: z.lead,
+    cuerpo: z.body,
   }
 }
 
@@ -135,6 +141,36 @@ export function zonaPorSlug(slug: string): Zona | undefined {
 
 export function proyectosDe(slugs: string[]): Proyecto[] {
   return slugs.map((s) => proyectoPorSlug(s)).filter((p): p is Proyecto => Boolean(p))
+}
+
+/**
+ * Una zona se publica para indexar cuando alguna de sus obras tiene foto. Sin
+ * ninguna, la página se sirve igual —es destino de una 301— pero con `noindex`,
+ * fuera del sitemap, fuera del índice `/zonas/` y sin enlaces desde las demás
+ * zonas ni desde sus obras: hoy es el caso de `xabia`. Origen único de la regla
+ * para las cuatro pantallas que la usan, en vez de cuatro copias del filtro.
+ */
+export function zonaIndexable(zona: Zona): boolean {
+  return proyectosDe(zona.proyectos).some((p) => p.imagenes.length > 0)
+}
+
+export const zonasIndexables = zonas.filter(zonaIndexable)
+
+/**
+ * Municipios con obra según el dueño pero sin obra documentada con foto, y la
+ * sede. Solo para mencionarlos en texto en `/zonas/`: nunca generan ruta.
+ */
+export const municipiosSinDocumentar = getTownsWithUndocumentedWork()
+
+/** La zona indexable a la que pertenece una obra, si la hay. */
+export function zonaDeProyecto(slugProyecto: string): Zona | undefined {
+  return zonasIndexables.find((z) => z.proyectos.includes(slugProyecto))
+}
+
+/** «Hormigón impreso» o «Hormigón impreso y hormigón pulido»: el H1 y el title de la zona. */
+export function serviciosDeZona(zona: Zona): string {
+  const nombres = zona.servicios.map((s) => NOMBRE_SERVICIO[s])
+  return nombres.map((n, i) => (i === 0 ? n : n.toLowerCase())).join(' y ')
 }
 
 /**

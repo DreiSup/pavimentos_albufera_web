@@ -34,6 +34,26 @@ export type ServiceArea = {
    */
   projects: ProjectId[]
   services: ServiceId[]
+  /**
+   * Comarca the town belongs to (`Marina Alta`, `Horta Nord`…) — a
+   * geographic fact, verifiable, used in the page's eyebrow and in the
+   * `/zonas/` index grouping. Proper noun: plain, not translated.
+   */
+  region: string
+  /**
+   * Meta description for `/zonas/[municipio]/`. Hand-written per area, from
+   * the area's own documented jobs — never a template with the town name
+   * swapped (`design/seo/receta-paginas-zona.md`).
+   */
+  description: Localized<string>
+  /** One-sentence lead under the H1: what was done in this town. */
+  lead: Localized<string>
+  /**
+   * Area-specific body paragraphs: the jobs (what the photos show, model,
+   * colour, execution data when it exists) and verifiable local facts.
+   * May be empty when there is nothing true to say beyond `lead`.
+   */
+  body: Localized<string>[]
 }
 
 /**

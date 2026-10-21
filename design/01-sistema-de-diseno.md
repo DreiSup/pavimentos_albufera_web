@@ -603,6 +603,13 @@ un rótulo de destino en Martian Mono 10/12 px, `--tinta`, mayúsculas, terminad
 (`VER OBRA →`, `VER HORMIGÓN PULIDO →`). Es una **acción y nunca un pie de foto**: las fotos de
 espacio no tienen municipio confirmado y un pie con municipio sería atribuirles una obra.
 
+**Variante *zona*** (índice `/zonas/`, añadida el 2026-10-21 — `TarjetaZona.tsx`): la misma caja y el
+mismo pie que la de proyecto, sobre `--fondo-alt`. Cambia solo lo que dice: la fila de ubicación es
+`COMARCA · PROVINCIA` (sans 14, `--tinta-media`), el título es la técnica en el municipio
+(«Hormigón impreso en Moraira») y el pie lleva el número de obras documentadas en mono 10/11 `--acero`
+(`2 OBRAS`) con `Ver zona →` a la derecha. Sin año ni ficha: una zona no los tiene. La foto es la primera
+de la primera obra de la zona, la misma que el hero de su página.
+
 ### 3.13 Estado vacío
 
 No es un error: es una afirmación de honestidad. Se usa igual en el muestrario y en el índice
@@ -1271,6 +1278,10 @@ col 2  NAP en Martian Mono 11px · line-height: 2.2
 col 3  servicios · Instrument Sans 16px · color: #DADCD6 · cada enlace min-height: 44px
 col 4  legales · igual
 ```
+
+Desde el 2026-10-21 la col 4 empieza por **«Zonas de trabajo»** (`/zonas/`), el único enlace no legal de
+la columna: va ahí porque es la que también se ve en móvil, y hace que el índice de zonas cuelgue de
+todas las rutas del sitio.
 
 En móvil: una columna, logo + NAP, y los enlaces legales en fila con `min-height: 44px`.
 El año del copyright se calcula, no se escribe.

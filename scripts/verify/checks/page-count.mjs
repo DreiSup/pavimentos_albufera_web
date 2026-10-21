@@ -41,6 +41,7 @@ const STATIC_ROUTES = [
   '/microcemento/',
   '/acabados/',
   '/proyectos/',
+  '/zonas/',
   '/empresa/',
   '/presupuesto/',
   '/blog/',

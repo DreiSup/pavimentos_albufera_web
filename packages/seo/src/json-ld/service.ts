@@ -16,8 +16,19 @@ export type ServiceInput = {
   name: string
   /** The local-business node's `@id` — see `businessJsonLdId`. */
   businessId: string
-  /** Plain province-name strings, published as-is (no `AdministrativeArea` mapping). */
-  areaServed: readonly string[]
+  /**
+   * Published as-is. The service pages pass plain province-name strings (no
+   * `AdministrativeArea` mapping); the `/zonas/[municipio]/` pages pass a
+   * `City` node for their town (2026-10-21).
+   */
+  areaServed: readonly (string | AreaServedNode)[]
+}
+
+/** A schema.org place node for `areaServed`, e.g. `{ '@type': 'City', name: 'Moraira' }`. */
+export type AreaServedNode = {
+  '@type': 'City' | 'AdministrativeArea'
+  name: string
+  containedInPlace?: AreaServedNode
 }
 
 export function buildServiceJsonLd(input: ServiceInput) {

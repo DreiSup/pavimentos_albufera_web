@@ -143,12 +143,11 @@ Unlike Pavivasa's 3 legal pages, THIS site's `/aviso-legal/`,
 `/politica-de-cookies/` and `/politica-de-privacidad/` are indexable
 (`aviso-legal/page.tsx` sets `robots: { index: true }` explicitly).
 
-**Not enforced, reported to the user instead:** `/zonas/xabia/` is
-noindex yet still listed in `sitemap.xml` (`app/sitemap.ts` spreads every
-service area's slug unconditionally) — a real, pre-existing gap. Neither
-Pavivasa's original sitemap check nor this port asserts "no noindex page
-in the sitemap", so it isn't a new failing check here; see
-`checks/sitemap.mjs`'s header comment.
+**Enforced since 2026-10-21:** a noindex page listed in `sitemap.xml`
+fails as `sitemap:noindex-in-sitemap` (not in Pavivasa's port). Until then
+`/zonas/xabia/` was noindex yet listed, because `app/sitemap.ts` spread
+every service area's slug unconditionally; it now lists only the zones with
+a project photo (`zonasIndexables`). See `checks/sitemap.mjs`'s header.
 
 ## Defect-planting / testing this toolkit itself
 
@@ -194,9 +193,11 @@ When this toolkit finds a genuine pre-existing issue there, it goes in
 doesn't match an entry here still fails the build.
 
 Two structural, site-wide pre-existing gaps are baselined today, one entry
-per affected route (54 entries total — see the file for the full list):
+per affected route (56 entries total — see the file for the full list):
 
-- **`metadata:missing-og-url`** on all 51 pages. `app/layout.tsx`'s shared
+- **`metadata:missing-og-url`** on all 53 indexable pages (51 at the
+  migration, plus `/zonas/` and `/proyectos/moraira-impreso-silleria-grande-113/`
+  added on 2026-10-21). `app/layout.tsx`'s shared
   `openGraph` block never sets `openGraph.url` (its own comment explains
   why — title/description/image are meant to cascade, `url` was simply
   never added), so Next never emits `<meta property="og:url">` anywhere.
