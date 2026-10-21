@@ -626,6 +626,11 @@ formato:  04 · MUESTRARIO      (numeral de dos cifras, punto medio, nombre en m
 
 La numeración es continua dentro de la página y sirve al lector como índice implícito.
 
+**Sin número, una sola vez por página de servicio (2026-10-21):** la banda «Qué es» que abre el
+cuerpo de las páginas de servicio lleva el antetítulo sin numeral (`QUÉ ES`, `CÓMO SE HACE`). No
+es una sección del índice: va pegada al hero, debajo del submenú, y un ancla hacia ella no lleva a
+ningún sitio. La numeración continua empieza en la sección siguiente. → `design/02` §A2
+
 ### 3.15 Carrusel de fotografía de obra
 
 **Componente nuevo, 2026-09-17.** Decisión del dueño: el hero de la home enseña varias fotos
@@ -994,6 +999,13 @@ Se distingue del dato pendiente de §3.9, que también lleva línea inferior, po
   haberla leído.
 
 ⚠️ La regla se generaliza **añadiendo la clase, nunca copiando el declarado.**
+
+**Segundo consumidor, 2026-10-21:** la banda «Qué es» de las seis páginas de servicio
+(`design/02` §A2, receta SEO de `design/seo/receta-paginas-servicio.md`). Sus párrafos enlazan a
+otros servicios, a proyectos y a fichas de acabado **dentro de la frase**, con `.enlace-prosa`
+añadida al `<Link>`. Mismo declarado, ninguna variante nueva. En esos mismos párrafos el dato que
+solo puede dar el dueño va en `<DatoPendiente>` (§3.9): continua = sitio al que ir, punteada =
+dato que falta, también aquí.
 
 ### 3.17 Botón de WhatsApp, y los dos iconos del sitio
 

@@ -50,6 +50,58 @@ export const faq: Record<string, Question> = {
     topic: 'sector',
   },
 
+  /*
+   * Added with the SEO recipe of 2026-10-21 (`design/seo/receta-paginas-servicio.md`),
+   * under the owner's order to improve the service pages. General technical
+   * facts about each technique and this business's own stated policy (visit,
+   * closed quote, no prices on the web) — no figures, no products, no claims
+   * the owner hasn't made. Whatever only the owner knows stays pending in the
+   * page's guide, never here: an FAQ answer is plain text and also travels in
+   * the `FAQPage` JSON-LD.
+   */
+  priceFactors: {
+    question: { es: '¿Cuánto cuesta el metro cuadrado?' },
+    answer: {
+      es: 'No publicamos un precio por metro cuadrado, porque el mismo acabado cambia mucho de una obra a otra: la superficie, el espesor y el armado que pide el uso, si hay que demoler o preparar el terreno y el acceso para el camión. Vamos a verlo sin coste y te damos un precio cerrado y desglosado: lo que pone es lo que se paga.',
+    },
+    topic: 'precio',
+  },
+  troweledSlip: {
+    question: { es: '¿El hormigón fratasado resbala?' },
+    answer: {
+      es: 'Seco, no más que cualquier suelo liso. Mojado, un fratasado muy cerrado puede resbalar, sobre todo en rampa o donde se anda descalzo. Por eso en exterior el agarre se decide con el uso delante, y donde se anda descalzo y mojado, como el borde de una piscina, va mejor un acabado con más textura: el lavado o el desactivado.',
+    },
+    topic: 'proceso',
+  },
+  troweledInterior: {
+    question: { es: '¿Se puede poner dentro de casa?' },
+    answer: {
+      es: 'Sí, como suelo continuo y mate, siempre que se haga una solera nueva: en obra nueva o en una reforma que levanta el suelo. Si lo quieres con brillo, eso es el hormigón pulido; si quieres renovar sin levantar lo que tienes, el microcemento.',
+    },
+    topic: 'proceso',
+  },
+  troweledExisting: {
+    question: { es: '¿Se puede fratasar el suelo que ya tengo?' },
+    answer: {
+      es: 'No. El fratasado se da a máquina sobre el hormigón todavía fresco, así que necesita una solera nueva. Para renovar un suelo sin levantarlo, la opción es el microcemento.',
+    },
+    topic: 'terreno',
+  },
+  polishedOutdoor: {
+    question: { es: '¿Se puede poner hormigón pulido en exterior?' },
+    answer: {
+      es: 'Sí. Lo hacemos en terrazas, porches, patios y accesos donde se anda con calzado. Donde se anda descalzo y mojado, como el borde de una piscina, no lo recomendamos: una superficie pulida resbala, y ahí van mejor el lavado, el desactivado o el impreso con acabado antideslizante.',
+    },
+    topic: 'proceso',
+  },
+  washedVsExposed: {
+    question: { es: '¿Qué diferencia hay entre el hormigón lavado y el desactivado?' },
+    answer: {
+      es: 'El resultado se parece: los dos dejan a la vista la piedra del propio hormigón. Cambia cómo se consigue. En el lavado, el mortero de la superficie se retira con agua y cepillo con el hormigón todavía fresco, en el momento justo del fraguado y sin productos añadidos. En el desactivado se pulveriza antes un retardante que frena el fraguado solo de esa capa, y el lavado a presión se hace después, con más margen de tiempo.',
+    },
+    topic: 'proceso',
+  },
+
   microSupport: {
     question: { es: '¿Sobre qué suelos se puede aplicar?' },
     answer: {
