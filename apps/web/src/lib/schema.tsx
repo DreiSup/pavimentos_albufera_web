@@ -17,8 +17,8 @@
  *   - `schemaServicio`'s `areaServed` is plain province-name strings, not
  *     `AdministrativeArea` nodes like the business node below.
  *   - `schemaFAQ` always carries `publisher` and never filters/returns null.
- *   - `schemaMigas` never drops an intermediate item with no route (unlike
- *     Pavivasa's builder) — `zonas/[municipio]/page.tsx` relies on that.
+ *   - `schemaMigas` drops intermediate items with no route since 2026-10-24
+ *     (Search Console: `Falta el campo "item"` on the service pages' «Servicios»).
  */
 import {
   businessJsonLdId,
