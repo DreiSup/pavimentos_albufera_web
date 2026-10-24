@@ -12,7 +12,9 @@ import type { Service, SpecRow } from '../schemas/service.ts'
 
 const SLAB_BASE_SPECS: SpecRow[] = [
   { label: { es: 'ARMADO' }, value: { es: 'Mallazo electrosoldado + fibra de polipropileno' } },
-  { label: { es: 'HORMIGÓN' }, value: { es: 'HA-25 según EHE-08' } },
+  // The EHE-08 was repealed by the Código Estructural (Real Decreto 470/2021,
+  // in force since 10-11-2021). HA-25 keeps the same designation under it.
+  { label: { es: 'HORMIGÓN' }, value: { es: 'HA-25 según Código Estructural' } },
 ]
 
 const SLAB_SCHEDULE_SPECS: SpecRow[] = [
@@ -37,15 +39,15 @@ export const services = [
     id: 'impreso',
     path: { es: '/hormigon-impreso/' },
     name: { es: 'Hormigón impreso' },
-    title: { es: 'Hormigón impreso Valencia | Acabados y obra ejecutada' },
+    title: { es: 'Hormigón impreso en Valencia: modelos y colores' },
     description: {
-      es: 'Hormigón impreso para patios, entradas y piscinas. Mira los acabados reales y pide presupuesto sin compromiso.',
+      es: 'Hormigón impreso para patios, entradas de garaje y piscinas: modelos de piedra, adoquín y espiga, colores y obras reales. Visita y presupuesto sin compromiso.',
     },
     h1: { es: 'Hormigón impreso en Valencia, Castellón y Alicante' },
     intro: {
       es: 'Textura de piedra natural, adoquín o madera sobre una solera continua. Sin juntas donde crezca la hierba, sin baldosas que se levanten y con un mantenimiento que se reduce a barrer.',
     },
-    heroLabelLines: [{ es: 'IMPRESO' }, { es: 'ESPESOR 10 CM · HA-25 · EHE-08' }],
+    heroLabelLines: [{ es: 'IMPRESO' }, { es: 'ESPESOR 10 CM · HA-25' }],
     heroImage: {
       src: '/obras/_sin-atribuir/WhatsApp-Image-2021-07-23-at-10.36.09-3.jpeg',
       alt: {
@@ -57,6 +59,45 @@ export const services = [
       src: '/obras/_sin-atribuir/hormigon-impreso-economico-valencia.jpg',
       alt: { es: 'Acceso de hormigón impreso de tono rojizo entre setos recortados, ante la puerta de un garaje.' },
       kind: 'final',
+    },
+    guide: {
+      kicker: { es: 'Cómo se hace' },
+      title: { es: 'Cómo se hace el hormigón impreso' },
+      intro: {
+        es: 'Es una solera de hormigón a la que, todavía fresca, se le da color y se le imprime un molde: piedra, adoquín o ladrillo en espiga. Queda un pavimento continuo con el aspecto de una pieza, sin las juntas de una baldosa donde crece la hierba.',
+      },
+      blocks: [
+        {
+          title: { es: 'El proceso, paso a paso' },
+          paragraphs: [
+            {
+              es: 'Se prepara y compacta la base, se coloca el mallazo y se vierte el hormigón con fibra, con el espesor que pide el uso: 10 cm para paso de personas y de 12 a 15 cm donde entran coches. Con el hormigón fresco se aplica el color y el desmoldeante, y se imprime el molde.',
+            },
+            {
+              es: 'Después se cortan las juntas, se lava la superficie y se sella con resina acrílica, que es la que protege el color del sol y de las manchas. Las grietas aparecen cuando falta alguna de esas piezas: mallazo, espesor o juntas.',
+            },
+          ],
+        },
+        {
+          title: { es: 'Modelos y colores' },
+          paragraphs: [
+            {
+              es: 'El dibujo lo pone el molde y el color, la carta de pigmentos. Cada modelo está fotografiado sobre obra real en el [muestrario de acabados](/acabados/): [espiga](/acabados/espiga/), [adoquín irregular](/acabados/adoquin-irregular/), [adoquín pequeño](/acabados/adoquin-pequeno/), [piedra inglesa](/acabados/piedra-inglesa/), [sillería grande](/acabados/silleria-grande/) o [manta roca de montaña](/acabados/manta/).',
+            },
+            {
+              es: 'El color arena es el del [adoquín pequeño de Moraira](/proyectos/moraira-impreso-adoquin-arena/); el 117, el de la [entrada en espiga de Moncada](/proyectos/moncada-impreso-espiga-117/).',
+            },
+          ],
+        },
+        {
+          title: { es: 'Mantenimiento' },
+          paragraphs: [
+            {
+              es: 'Se barre y se friega. Cada pocos años hay que volver a sellarlo —antes donde pasan coches o junto a una piscina— y nosotros volvemos a resellar cuando toca: es parte de los 10 años de garantía.',
+            },
+          ],
+        },
+      ],
     },
     applications: {
       intro: {
@@ -87,20 +128,20 @@ export const services = [
         { href: '/microcemento/', text: { es: 'Ver microcemento' } },
       ],
     },
-    faqRefs: ['walkable', 'cracking', 'overExistingFloor', 'resealing'],
+    faqRefs: ['walkable', 'cracking', 'overExistingFloor', 'resealing', 'priceFactors'],
   },
 
   {
     id: 'pulido',
     path: { es: '/hormigon-pulido/' },
     name: { es: 'Hormigón pulido' },
-    title: { es: 'Hormigón pulido Valencia | Interior e industrial' },
+    title: { es: 'Hormigón pulido en Valencia: interior y exterior' },
     description: {
-      es: 'Hormigón pulido para naves, parkings, garajes e interiores de vivienda. Ficha técnica y obras ejecutadas.',
+      es: 'Hormigón pulido para naves, garajes, viviendas y terrazas. Dónde funciona en exterior y dónde resbala, ficha técnica y obra real. Presupuesto sin compromiso.',
     },
     h1: { es: 'Hormigón pulido en Valencia, Castellón y Alicante' },
-    intro: { es: 'Superficie lisa y brillante. De la nave industrial al salón de casa.' },
-    heroLabelLines: [{ es: 'PULIDO' }, { es: 'HA-25 · EHE-08' }],
+    intro: { es: 'Superficie lisa y brillante. De la nave industrial al salón de casa, y también en terrazas y porches.' },
+    heroLabelLines: [{ es: 'PULIDO' }, { es: 'HA-25 · CÓDIGO ESTRUCTURAL' }],
     heroImage: {
       src: '/obras/_sin-atribuir/WhatsApp-Image-2023-08-22-at-09.08.17-1.jpeg',
       alt: { es: 'Interior diáfano con solera de hormigón pulido gris que refleja el ventanal como un espejo.' },
@@ -111,11 +152,60 @@ export const services = [
       alt: { es: 'Terraza de hormigón pulido claro ante una vivienda blanca de líneas rectas.' },
       kind: 'final',
     },
+    guide: {
+      kicker: { es: 'Qué es' },
+      title: { es: 'Qué es el hormigón pulido' },
+      intro: {
+        es: 'Una solera de hormigón que, después del fratasado a máquina, se sigue puliendo hasta que la superficie queda lisa, cerrada y con brillo. Es un suelo continuo, sin las juntas de una baldosa, con la resistencia del hormigón que tiene debajo: el mismo sirve para una nave que para un salón.',
+      },
+      blocks: [
+        {
+          title: { es: 'En interior: naves, garajes y vivienda' },
+          paragraphs: [
+            {
+              es: 'Es su terreno natural. En naves, talleres y parkings, por cómo aguanta el tránsito y lo fácil que es de limpiar, como en la [planta de aparcamiento de Ribarroja](/proyectos/ribarroja-pulido/). En vivienda, por el aspecto de suelo continuo de pared a pared.',
+            },
+            {
+              es: 'Pide solera nueva. Para renovar un suelo sin levantarlo, la opción es el [microcemento](/microcemento/).',
+            },
+          ],
+        },
+        {
+          title: { es: 'Hormigón pulido en exterior: dónde sí' },
+          paragraphs: [
+            {
+              es: 'También lo hacemos fuera: terrazas, porches, patios y accesos de vivienda donde se anda con calzado. El hormigón aguanta la intemperie como cualquier solera; lo que hay que cuidar fuera es el agarre: {{cómo dejáis el pulido en exterior: grado de pulido o tratamiento antideslizante}}.',
+            },
+          ],
+        },
+        {
+          title: { es: 'Y dónde no' },
+          paragraphs: [
+            {
+              es: 'Donde se anda descalzo y mojado —el borde de una piscina, una ducha de jardín— una superficie pulida resbala, y ahí no lo recomendamos. Van mejor el [hormigón lavado](/hormigon-lavado/), el [desactivado](/hormigon-desactivado/) o el [impreso](/hormigon-impreso/) con acabado antideslizante. Tampoco en una rampa con pendiente que se moja: necesita un acabado con textura.',
+            },
+          ],
+        },
+        {
+          title: { es: 'Pulido o fratasado' },
+          paragraphs: [
+            {
+              es: 'Los dos parten de la misma solera fratasada a máquina. El [fratasado](/hormigon-fratasado/) se queda ahí, liso y mate; el pulido sigue hasta sacar brillo.',
+            },
+          ],
+        },
+      ],
+    },
     applications: {
       intro: {
-        es: 'Es el acabado de interior y de gran superficie: continuo, sin juntas donde se acumule suciedad y con la resistencia de una solera de hormigón.',
+        es: 'Dentro es el acabado de gran superficie: continuo, sin juntas donde se acumule suciedad y con la resistencia de una solera de hormigón. Fuera, terrazas y porches donde se anda con calzado.',
       },
-      list: [SPACE.interior, SPACE.warehouse, SPACE.garage],
+      list: [
+        SPACE.interior,
+        SPACE.warehouse,
+        SPACE.garage,
+        { name: { es: 'Terraza, porche y patio' }, text: { es: 'En exterior, donde se anda con calzado. Junto a la piscina, no.' } },
+      ],
     },
     specs: [
       ...SLAB_BASE_SPECS,
@@ -132,7 +222,7 @@ export const services = [
         { href: '/microcemento/', text: { es: 'Ver microcemento' } },
       ],
     },
-    faqRefs: SLAB_FAQ_REFS,
+    faqRefs: ['polishedOutdoor', ...SLAB_FAQ_REFS, 'priceFactors'],
   },
 
   {
@@ -141,7 +231,7 @@ export const services = [
     name: { es: 'Microcemento' },
     title: { es: 'Microcemento en Valencia | Sin obra ni escombros' },
     description: {
-      es: 'Renueva suelos, baños y paredes sin picar lo que ya tienes. Microcemento aplicado sobre azulejo, terrazo o gres.',
+      es: 'Renueva suelos, baños y paredes sin picar lo que ya tienes: microcemento de 2 a 3 mm, continuo y sin juntas, aplicado sobre azulejo, terrazo o gres.',
     },
     h1: { es: 'Microcemento en Valencia, Castellón y Alicante' },
     intro: { es: 'Renueva suelos y paredes sin levantar lo que ya tienes.' },
@@ -155,6 +245,31 @@ export const services = [
       src: '/obras/_sin-atribuir/microcemento-valencia-1.jpg',
       alt: { es: 'Encimera de baño de microcemento con dos lavabos sobre encimera y frente continuo sin juntas.' },
       kind: 'final',
+    },
+    guide: {
+      kicker: { es: 'Qué es' },
+      title: { es: 'Qué es el microcemento' },
+      intro: {
+        es: 'Un revestimiento continuo de 2 a 3 milímetros que se aplica en capas finas sobre el suelo o la pared que ya tienes —azulejo, gres, terrazo o una solera— sin levantar nada. Por eso es la forma de renovar sin obra ni escombro.',
+      },
+      blocks: [
+        {
+          title: { es: 'Suelos, paredes y baños' },
+          paragraphs: [
+            {
+              es: 'Se aplica igual en horizontal que en vertical, así que un baño puede quedar entero en el mismo material: suelo, paredes y encimera, sin juntas entre piezas, como en la [muestra en tono crema](/acabados/microcemento-crema/).',
+            },
+          ],
+        },
+        {
+          title: { es: 'Microcemento o hormigón pulido' },
+          paragraphs: [
+            {
+              es: 'A la vista se parecen, y no son lo mismo. El [hormigón pulido](/hormigon-pulido/) es una solera nueva, de centímetros, pulida en su sitio: pide obra. El microcemento es una capa de milímetros sobre lo que ya hay: no la pide, pero copia lo que haga el soporte, así que necesita un suelo firme y seco.',
+            },
+          ],
+        },
+      ],
     },
     applications: {
       intro: {
@@ -185,7 +300,7 @@ export const services = [
     name: { es: 'Hormigón lavado' },
     title: { es: 'Hormigón lavado y árido visto en Valencia' },
     description: {
-      es: 'Pavimento antideslizante de clase 3 para zonas peatonales, piscinas y accesos. Ficha técnica y acabados.',
+      es: 'Hormigón lavado con árido visto, antideslizante de clase 3, para piscinas, patios y caminos. Cómo se hace, en qué se diferencia del desactivado y obra real.',
     },
     h1: { es: 'Hormigón lavado en Valencia, Castellón y Alicante' },
     intro: { es: 'Árido visto, antideslizante. Ideal para zonas de paso y piscinas.' },
@@ -201,6 +316,39 @@ export const services = [
       src: '/obras/godella-lavado-gris-2.jpg',
       alt: { es: 'Paseo de hormigón lavado con árido visto entre dos franjas de césped.' },
       kind: 'final',
+    },
+    guide: {
+      kicker: { es: 'Qué es' },
+      title: { es: 'Qué es el hormigón lavado' },
+      intro: {
+        es: 'Un pavimento de hormigón al que, con la masa todavía fresca, se le retira con agua el mortero de la superficie para dejar a la vista el árido —la grava— que lleva dentro. Queda una superficie rugosa y antideslizante, de clase 3, la que piden las zonas donde se anda mojado.',
+      },
+      blocks: [
+        {
+          title: { es: 'Cómo se hace: en fresco y sin retardante' },
+          paragraphs: [
+            {
+              es: 'Se vierte la solera y, cuando el hormigón empieza a fraguar, se cepilla y se lava la capa de arriba con agua hasta descubrir la piedra. Se hace el mismo día y sin productos que retrasen el fraguado: el momento lo marca el propio hormigón, y acertar con él es el oficio.',
+            },
+          ],
+        },
+        {
+          title: { es: 'Lavado o desactivado' },
+          paragraphs: [
+            {
+              es: 'El [hormigón desactivado](/hormigon-desactivado/) llega a un aspecto parecido por otro camino: se pulveriza un retardante sobre la superficie y el lavado se hace después, a presión. Los dos dejan la piedra vista; en la visita vemos cuál encaja con tu superficie.',
+            },
+          ],
+        },
+        {
+          title: { es: 'El color lo pone la piedra' },
+          paragraphs: [
+            {
+              es: 'En el lavado no hay molde que dibuje nada: el aspecto lo da sobre todo el árido. En la foto de arriba hay dos paños contiguos, uno de árido oscuro y otro dorado; en el [paseo de Godella](/proyectos/godella-lavado-arido-visto/), un árido gris. Áridos con los que trabajamos: {{tamaños y colores disponibles}}.',
+            },
+          ],
+        },
+      ],
     },
     applications: {
       intro: {
@@ -219,20 +367,20 @@ export const services = [
         { href: '/hormigon-impreso/', text: { es: 'Ver hormigón impreso' } },
       ],
     },
-    faqRefs: SLAB_FAQ_REFS,
+    faqRefs: ['washedVsExposed', ...SLAB_FAQ_REFS, 'priceFactors'],
   },
 
   {
     id: 'fratasado',
     path: { es: '/hormigon-fratasado/' },
     name: { es: 'Hormigón fratasado' },
-    title: { es: 'Hormigón fratasado en Valencia' },
+    title: { es: 'Suelo de hormigón fratasado en Valencia' },
     description: {
-      es: 'Acabado fino y mate sobre solera de hormigón, para patios, jardines y superficies de paso. Ficha técnica, obra ejecutada y presupuesto sin compromiso.',
+      es: 'Suelo de hormigón fratasado fino y mate, interior y exterior: patios, porches, garajes y naves. Colores como el arena, obra real y visita sin coste.',
     },
     h1: { es: 'Hormigón fratasado en Valencia, Castellón y Alicante' },
-    intro: { es: 'Acabado fino y mate. Sobrio, moderno y económico.' },
-    heroLabelLines: [{ es: 'FRATASADO' }, { es: 'HA-25 · EHE-08' }],
+    intro: { es: 'Acabado fino y mate sobre una solera de hormigón. Sobrio, moderno y económico, dentro y fuera de casa.' },
+    heroLabelLines: [{ es: 'FRATASADO' }, { es: 'HA-25 · CÓDIGO ESTRUCTURAL' }],
     heroImage: {
       src: '/obras/_sin-atribuir/5da4504f-2c7e-4fee-897b-fe0ed0a4a3a1.jpeg',
       alt: { es: 'Porche cubierto con solera de hormigón fratasado claro, con sofás y el jardín al fondo.' },
@@ -242,6 +390,61 @@ export const services = [
       src: '/obras/_sin-atribuir/4d88392b-d7b1-4d77-900b-82db9f0ecd29.jpeg',
       alt: { es: 'Contorno de piscina de hormigón fratasado en tono tostado ante una vivienda encalada.' },
       kind: 'final',
+    },
+    guide: {
+      kicker: { es: 'Qué es' },
+      title: { es: 'Qué es el hormigón fratasado' },
+      intro: {
+        es: 'Es el acabado que se da a una solera de hormigón mientras todavía está fresca: una fratasadora mecánica —el «helicóptero»— pasa sus palas sobre la superficie, la compacta y le cierra el poro. Queda un suelo continuo, plano y mate, liso al tacto, sin el brillo del pulido ni el dibujo del impreso.',
+      },
+      blocks: [
+        {
+          title: { es: 'Fratasado fino, el acabado decorativo de vivienda' },
+          paragraphs: [
+            {
+              es: 'Cuantas más pasadas, más cerrada y fina queda la superficie. Ese fratasado fino es el que se deja visto en casas: porches, patios, terrazas y caminos donde se quiere un suelo de cemento limpio y sobrio, que no compita con la arquitectura ni con el jardín.',
+            },
+          ],
+        },
+        {
+          title: { es: 'Suelo fratasado en exterior' },
+          paragraphs: [
+            {
+              es: 'Aguanta la intemperie y, con el espesor y el armado adecuados, el paso de coches: por eso sirve igual para un patio que para una entrada de garaje o un aparcamiento.',
+            },
+            {
+              es: 'Donde se anda mojado o hay pendiente —una rampa, el borde de una piscina— hay que pensar el agarre: un fratasado muy cerrado puede resbalar mojado, y ahí conviene un acabado con más textura, como el [hormigón lavado](/hormigon-lavado/) o el [desactivado](/hormigon-desactivado/).',
+            },
+          ],
+        },
+        {
+          title: { es: 'Suelo fratasado en interior' },
+          paragraphs: [
+            {
+              es: 'Dentro de casa da un suelo continuo y mate, con el aspecto del hormigón tal cual. Pide solera nueva, así que encaja en obra nueva o en una reforma que levanta el suelo. Si lo quieres con brillo, eso es el [hormigón pulido](/hormigon-pulido/); si quieres renovar sin levantar lo que tienes, el [microcemento](/microcemento/).',
+            },
+            {
+              es: 'Como todo hormigón visto, conviene protegerlo para que no absorba manchas: {{tratamiento o sellado que aplicáis en interior}}.',
+            },
+          ],
+        },
+        {
+          title: { es: 'Colores del suelo fratasado' },
+          paragraphs: [
+            {
+              es: 'Puede quedarse en el gris natural del hormigón o ir en color. El arena es el de la [obra de Corbera](/proyectos/corbera-fratasado-arena/), un patio fratasado alrededor de un olivo, y lo tienes como [muestra de fratasado fino](/acabados/fratasado-arena/). Otros colores: {{carta de colores disponible para fratasado}}.',
+            },
+          ],
+        },
+        {
+          title: { es: 'Fratasado, pulido o impreso' },
+          paragraphs: [
+            {
+              es: 'Los tres parten de la misma solera de hormigón. El fratasado se queda en el acabado de máquina: liso y mate. El [pulido](/hormigon-pulido/) sigue puliendo hasta sacar brillo. El [impreso](/hormigon-impreso/), en vez de alisar, marca un molde de piedra, adoquín o madera.',
+            },
+          ],
+        },
+      ],
     },
     applications: {
       intro: {
@@ -257,9 +460,17 @@ export const services = [
           name: { es: 'Porche, patio y zonas de paso' },
           text: { es: 'Liso y mate, sin dibujo que compita con el resto.' },
         },
+        {
+          name: { es: 'Interior de vivienda' },
+          text: { es: 'Suelo continuo y mate, en obra nueva o en una reforma con solera nueva.' },
+        },
       ],
     },
-    specs: [...SLAB_BASE_SPECS, ...SLAB_SCHEDULE_SPECS],
+    specs: [
+      { label: { es: 'ACABADO' }, value: { es: 'Fratasado mecánico, fino y mate' } },
+      ...SLAB_BASE_SPECS,
+      ...SLAB_SCHEDULE_SPECS,
+    ],
     whenNotTo: {
       title: { es: 'Cuándo NO elegir fratasado' },
       text: {
@@ -270,16 +481,16 @@ export const services = [
         { href: '/hormigon-impreso/', text: { es: 'Ver hormigón impreso' } },
       ],
     },
-    faqRefs: SLAB_FAQ_REFS,
+    faqRefs: ['troweledSlip', 'troweledInterior', 'troweledExisting', ...SLAB_FAQ_REFS, 'priceFactors'],
   },
 
   {
     id: 'desactivado',
     path: { es: '/hormigon-desactivado/' },
     name: { es: 'Hormigón desactivado' },
-    title: { es: 'Hormigón desactivado en Valencia' },
+    title: { es: 'Hormigón desactivado en Valencia: piedra vista' },
     description: {
-      es: 'Piedra vista con la resistencia de una solera de hormigón, para caminos, patios y zonas de paso. Ficha técnica, obra ejecutada y presupuesto sin compromiso.',
+      es: 'Hormigón desactivado con piedra vista para caminos, patios y bordes de piscina. Qué es, cómo se hace con retardante y en qué se diferencia del lavado.',
     },
     h1: { es: 'Hormigón desactivado en Valencia, Castellón y Alicante' },
     intro: { es: 'Piedra vista con la resistencia de una solera.' },
@@ -296,9 +507,42 @@ export const services = [
       alt: { es: 'Primer plano del árido de un hormigón desactivado, con los cantos rodados al descubierto.' },
       kind: 'detalle',
     },
+    guide: {
+      kicker: { es: 'Qué es' },
+      title: { es: 'Qué es el hormigón desactivado' },
+      intro: {
+        es: 'Un pavimento de hormigón con la piedra a la vista, conseguido con un retardante de superficie. Se pulveriza un desactivante que retrasa el fraguado de la capa más superficial y, unas horas después, un lavado a presión retira ese mortero y descubre el árido.',
+      },
+      blocks: [
+        {
+          title: { es: 'Por qué con retardante' },
+          paragraphs: [
+            {
+              es: 'El retardante separa el vertido del lavado. En vez de tener que descubrir la piedra en el momento justo del fraguado, el lavado se hace después, con el hormigón de debajo ya firme. Eso da margen para trabajar superficies grandes y deja una profundidad de árido pareja en todo el paño.',
+            },
+          ],
+        },
+        {
+          title: { es: 'Desactivado o lavado' },
+          paragraphs: [
+            {
+              es: 'Esa es la diferencia con el [hormigón lavado](/hormigon-lavado/), que se descubre en fresco, con agua y cepillo, sin retardante. El aspecto final se parece —piedra vista y superficie rugosa—; cambia cómo se llega a él.',
+            },
+          ],
+        },
+        {
+          title: { es: 'Piedra vista: el árido manda' },
+          paragraphs: [
+            {
+              es: 'La piedra que se ve es la del propio hormigón, no un añadido ni un molde: el aspecto se elige al elegir el árido de la mezcla. Áridos con los que trabajamos: {{tamaños y colores disponibles}}.',
+            },
+          ],
+        },
+      ],
+    },
     applications: {
       intro: {
-        es: 'Se pulveriza un desactivante que retrasa el fraguado de la capa más superficial y, unas horas después, un lavado a presión retira ese mortero y descubre el árido. La piedra que se ve es la del propio hormigón: no es un añadido ni un molde.',
+        es: 'Funciona donde se anda a pie, también descalzo y mojado: la superficie rugosa da paso firme, y debajo hay la resistencia de una solera de hormigón.',
       },
       list: [
         { name: { es: 'Caminos y accesos de parcela' }, text: { es: '' } },
@@ -321,6 +565,6 @@ export const services = [
         { href: '/hormigon-pulido/', text: { es: 'Ver hormigón pulido' } },
       ],
     },
-    faqRefs: SLAB_FAQ_REFS,
+    faqRefs: ['washedVsExposed', ...SLAB_FAQ_REFS, 'priceFactors'],
   },
 ] satisfies Service[]

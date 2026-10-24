@@ -175,3 +175,38 @@ ojo: son el único material que podría cubrir `xabia-pulido`.
 
 El manifiesto completo, con dimensiones, `alt` y `title` originales de las 164, está en
 `fotos-origen/manifiesto.json` — fuera de git, en la máquina de trabajo.
+
+## 2026-10-21 — páginas de zona: Moraira C-113, Dénia y GPS
+
+Encargo del dueño (SEO de las zonas). Detalle y porqué en `design/seo/receta-paginas-zona.md`.
+
+**GPS quitado** de las dos únicas fotos que lo llevaban (escaneadas las 123 JPEG: EXIF binario y
+XMP): `_sin-atribuir/hormigon-impreso-denia-chalet.jpg` (iPhone 7, 2017, GPS en EXIF **y** en XMP)
+y `_sin-atribuir/microcemento-4.jpg` (iPhone 6, 2015, la de `/microcemento/`). Sin recomprimir: se
+han quitado los segmentos APP1 (EXIF y XMP) y nada más; el perfil ICC (APP2) y los datos de imagen
+son byte a byte los mismos. Las dos tenían `Orientation = 1`, así que quitar el EXIF no gira nada.
+
+**Obra nueva `moraira-impreso-silleria-grande-113`** con tres fotos de la serie
+`WhatsApp-Image-2021-07-23-at-10.3x`: `10.36.09-3` (2048, va a sangre), `10.35.36-1` y `10.36.09`.
+Municipio, modelo y color salen de lo que este inventario ya recogía del `title` de la mediateca
+(«113 (Moraira) dorado», y `10.35.36-1` es desde el 2026-08-29 la muestra de `silleria-grande-113`);
+las otras dos son la misma obra a ojo: mismo vaso, mismo olivo en su alcorque, misma caseta blanca,
+mismo pinar. **`10.36.08-1` se deja fuera a propósito: sale un operario.**
+
+**Dénia +2:** `hormigon-impreso-denia-e1507367883776.jpg` y `hormigon-impreso-denia-alicante-e1507368037484.jpg`
+(2048 las dos) entran en `denia-impreso-piedra-inglesa`: misma casa, mismas palmeras, mismo murete.
+`hormigon-impreso-denia-chalet.jpg` es la misma obra, pero la galería de proyecto solo pinta tres.
+⚠️ La foto de la raíz `denia-impreso-piedra-inglesa-gris.jpg` se ve **cálida**, más crema que gris; la
+obra tiene los dos acabados. Que el dueño diga cuál es cuál antes de tocar su `alt`.
+
+**Lo que NO se ha podido convertir en obra, y por qué:**
+
+| Obra (según la mediateca) | Fotos identificadas | Bloqueo |
+|---|---|---|
+| Catadau · piedra rodena 107 | `10.32.11-2` (documentada aquí), y a ojo `10.32.10-1`, `10.32.11-3`, `10.32.12-1` | Todas verticales a **1536 px**: la primera foto de una obra va a sangre y exige 1600. Hace falta una horizontal ≥ 1600 |
+| Carlet · piedra sillería gris | `10.33.34-1` (documentada aquí) | Una sola foto, vertical a **1536 px**: mismo bloqueo |
+| Turís · sillería grande 109 | Sin archivo identificado: el manifiesto con los `title` está fuera de git | Candidatas a ojo, **sin confirmar**: `10.29.48-1`/`10.29.49-1` (gris claro, 1500 px) |
+| Alfafar · piedra inglesa 117 | Sin archivo identificado | Candidatas a ojo, **sin confirmar**: `10.27.03-2`/`-3` (beige grisáceo, 1200 px) |
+| Ollería · manta gris (2048 px) | Sin archivo identificado | Candidatas a ojo, **sin confirmar**: `10.19.21`, `10.19.21-1`, `10.19.22` (gris, 2048) |
+| Vedat de Torrent (6 fotos) | Sin archivo identificado | Candidatas a ojo, **sin confirmar**: `10.17.29`, `10.17.30`, `10.17.30-1` (rojizo, piscina) |
+| Moraira, tercera obra | `hormigon-impreso-moraira-chale-piscina{,-entrada}.jpeg` (900 px), nombre de archivo con municipio | Modelo y color desconocidos; las dos fotos parecen el mismo chalé pero no consta. Y 900 < 1600 para la primera foto |

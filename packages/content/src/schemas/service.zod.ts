@@ -14,6 +14,7 @@ const localizedTextOrEmpty = localizedSchema(z.string())
 export const serviceIdSchema = z.enum(['impreso', 'pulido', 'microcemento', 'lavado', 'fratasado', 'desactivado'])
 
 export const serviceSectionSchema = z.enum([
+  'seccion-guia',
   'seccion-aplicaciones',
   'seccion-muestrario',
   'seccion-ficha',
@@ -27,6 +28,22 @@ const specRowSchema = z.object({ label: localizedText, value: localizedText })
 const serviceApplicationsSchema = z.object({
   intro: localizedText,
   list: z.array(z.object({ name: localizedText, text: localizedTextOrEmpty })),
+})
+
+/**
+ * `RichText` (see `schemas/service.ts`): a plain string whose only markup is
+ * `[text](/internal/path/)` and `{{pending}}`. Shape-checked here; the link
+ * targets themselves are checked by `scripts/validate.ts`.
+ */
+const richText = localizedText
+
+const serviceGuideSchema = z.object({
+  kicker: localizedText,
+  title: localizedText,
+  intro: richText,
+  blocks: z
+    .array(z.object({ title: localizedText, paragraphs: z.array(richText).min(1) }))
+    .min(1),
 })
 
 const whenNotToSchema = z.object({
@@ -46,6 +63,7 @@ export const serviceSchema = z.object({
   heroLabelLines: z.array(localizedText),
   heroImage: siteImageSchema.optional(),
   cardImage: siteImageSchema.optional(),
+  guide: serviceGuideSchema.optional(),
   applications: serviceApplicationsSchema.optional(),
   specs: z.array(specRowSchema),
   whenNotTo: whenNotToSchema.optional(),

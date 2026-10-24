@@ -228,6 +228,30 @@ remedio ya está escrito en §A1 —«los CTA del hero y del cierre bajan a cont
 breakpoint, como hace `app/presupuesto/page.tsx`. **Ya pasaba por debajo de 768**; lo que cambia
 es que ahora pasa en 512 px más de ancho.
 
+### Enmienda del 2026-10-21 — banda «Qué es», zonas y FAQ propia (receta SEO)
+
+**Orden del dueño: aplicar las mejoras SEO de `design/seo/receta-paginas-servicio.md` a las seis
+páginas de servicio.** Eso levanta, solo para esta plantilla, el congelado del frontend de la fase
+de monorepo. Tres cambios en la plantilla, con piezas que ya existían:
+
+| # | Sección | Notas |
+|---|---|---|
+| — | **Qué es** (nueva) | Entre el submenú y Aplicaciones. `380px 1fr`, como Aplicaciones y la ficha técnica: antetítulo **sin número** (`01` §3.14) + H2 a la izquierda; entradilla a 16/20 px y bloques H3 + párrafos a la derecha, `max-w-lectura`. Prosa con enlace (`01` §3.16) y dato pendiente (`01` §3.9). Fondo alterno de partida, repartido por la regla de posición de abajo |
+| 06 | Obra ejecutada | Gana a la derecha del antetítulo el enlace-etiqueta `Ver todas las obras →` (`01` §3.5, mismo patrón que el del muestrario) y, debajo de las tarjetas, `Dónde lo hemos hecho` con un enlace-etiqueta por zona con obra fotografiada de esta técnica: `HORMIGÓN FRATASADO EN CORBERA →` |
+| 07 | FAQ | Cada servicio suma preguntas propias de su técnica. Las cifras de la fila 07 de arriba dejan de valer: impreso 5, pulido 5, lavado 5, fratasado 7, desactivado 5, microcemento 5 |
+
+- **El submenú se queda en 6 anclas.** La banda nueva no entra: va justo debajo de él, y un
+  séptimo chip rompería el tope de 6 y el ancho de 1135 px de la tabla de pistas de arriba.
+- **La numeración no cambia:** Aplicaciones sigue siendo la 01. La banda nueva no es una sección
+  del índice, es la continuación del hero.
+- **Las cuatro landings `/lp/` la ocultan** (`ocultarSecciones`, junto a la ficha técnica): son
+  tráfico de pago, `noindex`, y van directas a la oferta.
+- **Sin componente nuevo.** Antetítulo, H2/H3 de la escala, párrafo, enlace en prosa, enlace-
+  etiqueta y dato pendiente son los de siempre; por eso no hay entrada nueva en `01` §3, solo las
+  dos notas de §3.14 y §3.16.
+- **Ningún JS nuevo:** la banda es de servidor. Medido en el build: el máximo del sitio sigue en
+  109,2 kB brotli (`/hormigon-desactivado/`), el mismo que antes del cambio.
+
 ## A3 · Muestrario — `/acabados/`
 
 El elemento firma. 16 acabados en el catálogo; **desde el 2026-09-17 se publican los 10 que

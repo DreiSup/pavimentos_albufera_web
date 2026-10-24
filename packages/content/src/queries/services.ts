@@ -2,10 +2,20 @@ import { services } from '../data/services.ts'
 import { serviceCatalog } from '../data/service-catalog.ts'
 import { CAMPAIGN_SERVICE_IDS } from '../data/campaign-landings.ts'
 import { faq } from '../data/faq.ts'
-import type { Service, ServiceId } from '../schemas/service.ts'
+import type { Service, ServiceGuide, ServiceId } from '../schemas/service.ts'
 import type { Question } from '../schemas/faq.ts'
 import { pickLocalized, pickLocalizedList, resolveImage, resolveQuestions } from './resolve.ts'
 import type { Locale, ResolvedImage, ResolvedQuestion } from './resolve.ts'
+import { parseRichText } from './rich-text.ts'
+import type { ResolvedRichTextRun } from './rich-text.ts'
+
+/** A resolved `ServiceGuide`: every `RichText` already split into runs. */
+export type ResolvedServiceGuide = {
+  kicker: string
+  title: string
+  intro: ResolvedRichTextRun[]
+  blocks: { title: string; paragraphs: ResolvedRichTextRun[][] }[]
+}
 
 export type ResolvedService = {
   id: ServiceId
@@ -18,6 +28,7 @@ export type ResolvedService = {
   heroLabelLines: string[]
   heroImage?: ResolvedImage
   cardImage?: ResolvedImage
+  guide?: ResolvedServiceGuide
   applications?: { intro: string; list: { name: string; text: string }[] }
   specs: { label: string; value: string }[]
   whenNotTo?: { title: string; text: string; alternatives: { href: string; text: string }[] }
@@ -40,10 +51,27 @@ function resolveFaqRefs(refs: readonly string[], locale: Locale): ResolvedQuesti
   return resolveQuestions(questions, locale)
 }
 
+/** A guide without its title or intro in `locale` isn't publishable there: dropped whole, never half-rendered. */
+function resolveGuide(guide: ServiceGuide, locale: Locale): ResolvedServiceGuide | undefined {
+  const kicker = pickLocalized(guide.kicker, locale)
+  const title = pickLocalized(guide.title, locale)
+  const intro = pickLocalized(guide.intro, locale)
+  if (kicker === undefined || title === undefined || intro === undefined) return undefined
+  const blocks: ResolvedServiceGuide['blocks'] = []
+  for (const block of guide.blocks) {
+    const blockTitle = pickLocalized(block.title, locale)
+    const paragraphs = pickLocalizedList(block.paragraphs, locale)
+    if (blockTitle === undefined || paragraphs.length === 0) continue
+    blocks.push({ title: blockTitle, paragraphs: paragraphs.map(parseRichText) })
+  }
+  return { kicker, title, intro: parseRichText(intro), blocks }
+}
+
 function resolveService(service: Service, locale: Locale): ResolvedService | undefined {
   const name = pickLocalized(service.name, locale)
   const path = pickLocalized(service.path, locale)
   if (name === undefined || path === undefined) return undefined // no translation at all: not publishable in this locale
+  const guide = service.guide ? resolveGuide(service.guide, locale) : undefined
 
   return {
     id: service.id,
@@ -56,6 +84,7 @@ function resolveService(service: Service, locale: Locale): ResolvedService | und
     heroLabelLines: pickLocalizedList(service.heroLabelLines, locale),
     ...(service.heroImage ? { heroImage: resolveImage(service.heroImage, locale) } : {}),
     ...(service.cardImage ? { cardImage: resolveImage(service.cardImage, locale) } : {}),
+    ...(guide ? { guide } : {}),
     ...(service.applications
       ? {
           applications: {
@@ -140,7 +169,9 @@ export function getLandingService(id: ServiceId, locale: Locale): ResolvedLandin
   if (!resolved) return undefined
   return {
     ...resolved,
-    hiddenSections: ['seccion-ficha'],
+    // The guide band is long-form text for organic search; a paid-traffic
+    // landing (noindex) goes straight to the offer, so it hides it too.
+    hiddenSections: ['seccion-guia', 'seccion-ficha'],
     ctaContact: true,
     noAppear: true,
   }

@@ -32,7 +32,13 @@ export {
   getLandingService,
   getLandingSlug,
 } from './queries/services.ts'
-export type { ResolvedService, ResolvedLandingService, ResolvedServiceCatalogEntry } from './queries/services.ts'
+export type {
+  ResolvedService,
+  ResolvedLandingService,
+  ResolvedServiceCatalogEntry,
+  ResolvedServiceGuide,
+} from './queries/services.ts'
+export type { ResolvedRichTextRun } from './queries/rich-text.ts'
 
 export {
   getFinishes,
@@ -52,7 +58,7 @@ export type { ResolvedFinish } from './queries/finishes.ts'
 export { getModels, getModel } from './queries/models.ts'
 export type { ResolvedModel } from './queries/models.ts'
 
-export { getServiceAreas, getServiceArea, getServiceAreaFaq } from './queries/service-areas.ts'
+export { getServiceAreas, getServiceArea, getServiceAreaFaq, getTownsWithUndocumentedWork } from './queries/service-areas.ts'
 export type { ResolvedServiceArea } from './queries/service-areas.ts'
 
 export { colorCatalog } from './data/colors.ts'
@@ -95,6 +101,9 @@ export type {
   ServiceSection,
   SpecRow,
   ServiceApplications,
+  ServiceGuide,
+  ServiceGuideBlock,
+  RichText,
   WhenNotTo,
   Service,
   LandingService,

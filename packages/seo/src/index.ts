@@ -15,7 +15,7 @@ export { businessJsonLdId, buildLocalBusinessJsonLd } from './json-ld/business.t
 export type { LocalBusinessInput } from './json-ld/business.ts'
 
 export { buildServiceJsonLd } from './json-ld/service.ts'
-export type { ServiceInput } from './json-ld/service.ts'
+export type { ServiceInput, AreaServedNode } from './json-ld/service.ts'
 
 export { buildFaqJsonLd } from './json-ld/faq.ts'
 export type { FaqQuestion } from './json-ld/faq.ts'

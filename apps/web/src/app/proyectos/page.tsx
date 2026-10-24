@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import AntetituloSeccion from '@/components/ui/AntetituloSeccion'
+import { EnlaceEtiqueta } from '@/components/ui/EnlaceEtiqueta'
 import Migas from '@/components/layout/Migas'
 import TarjetaProyecto from '@/components/contenido/TarjetaProyecto'
 import { proyectos } from '@/lib/datos'
@@ -34,6 +35,7 @@ export default function Proyectos() {
           <p className="text-16 md:text-20 text-tinta-media max-w-[52ch] m-0">
             Todas las fotos de esta web son trabajos nuestros.
           </p>
+          <EnlaceEtiqueta href="/zonas/">Ver las obras por municipio →</EnlaceEtiqueta>
         </div>
       </section>
 

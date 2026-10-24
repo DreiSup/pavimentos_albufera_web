@@ -603,6 +603,13 @@ un rótulo de destino en Martian Mono 10/12 px, `--tinta`, mayúsculas, terminad
 (`VER OBRA →`, `VER HORMIGÓN PULIDO →`). Es una **acción y nunca un pie de foto**: las fotos de
 espacio no tienen municipio confirmado y un pie con municipio sería atribuirles una obra.
 
+**Variante *zona*** (índice `/zonas/`, añadida el 2026-10-21 — `TarjetaZona.tsx`): la misma caja y el
+mismo pie que la de proyecto, sobre `--fondo-alt`. Cambia solo lo que dice: la fila de ubicación es
+`COMARCA · PROVINCIA` (sans 14, `--tinta-media`), el título es la técnica en el municipio
+(«Hormigón impreso en Moraira») y el pie lleva el número de obras documentadas en mono 10/11 `--acero`
+(`2 OBRAS`) con `Ver zona →` a la derecha. Sin año ni ficha: una zona no los tiene. La foto es la primera
+de la primera obra de la zona, la misma que el hero de su página.
+
 ### 3.13 Estado vacío
 
 No es un error: es una afirmación de honestidad. Se usa igual en el muestrario y en el índice
@@ -625,6 +632,11 @@ formato:  04 · MUESTRARIO      (numeral de dos cifras, punto medio, nombre en m
 ```
 
 La numeración es continua dentro de la página y sirve al lector como índice implícito.
+
+**Sin número, una sola vez por página de servicio (2026-10-21):** la banda «Qué es» que abre el
+cuerpo de las páginas de servicio lleva el antetítulo sin numeral (`QUÉ ES`, `CÓMO SE HACE`). No
+es una sección del índice: va pegada al hero, debajo del submenú, y un ancla hacia ella no lleva a
+ningún sitio. La numeración continua empieza en la sección siguiente. → `design/02` §A2
 
 ### 3.15 Carrusel de fotografía de obra
 
@@ -995,6 +1007,13 @@ Se distingue del dato pendiente de §3.9, que también lleva línea inferior, po
 
 ⚠️ La regla se generaliza **añadiendo la clase, nunca copiando el declarado.**
 
+**Segundo consumidor, 2026-10-21:** la banda «Qué es» de las seis páginas de servicio
+(`design/02` §A2, receta SEO de `design/seo/receta-paginas-servicio.md`). Sus párrafos enlazan a
+otros servicios, a proyectos y a fichas de acabado **dentro de la frase**, con `.enlace-prosa`
+añadida al `<Link>`. Mismo declarado, ninguna variante nueva. En esos mismos párrafos el dato que
+solo puede dar el dueño va en `<DatoPendiente>` (§3.9): continua = sitio al que ir, punteada =
+dato que falta, también aquí.
+
 ### 3.17 Botón de WhatsApp, y los dos iconos del sitio
 
 **Pieza nueva del sistema, 2026-09-18.** Encargo del dueño: los botones de WhatsApp en verde de
@@ -1271,6 +1290,10 @@ col 2  NAP en Martian Mono 11px · line-height: 2.2
 col 3  servicios · Instrument Sans 16px · color: #DADCD6 · cada enlace min-height: 44px
 col 4  legales · igual
 ```
+
+Desde el 2026-10-21 la col 4 empieza por **«Zonas de trabajo»** (`/zonas/`), el único enlace no legal de
+la columna: va ahí porque es la que también se ve en móvil, y hace que el índice de zonas cuelgue de
+todas las rutas del sitio.
 
 En móvil: una columna, logo + NAP, y los enlaces legales en fila con `min-height: 44px`.
 El año del copyright se calcula, no se escribe.

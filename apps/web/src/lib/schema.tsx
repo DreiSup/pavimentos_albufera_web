@@ -11,9 +11,9 @@
  * Pavivasa's own package — this site's live output differs from Pavivasa's
  * shape in several places (see each builder's own comment), and this
  * migration reproduces THAT output, not Pavivasa's:
- *   - `schemaServicio` has no `description` key at all. The old call passed
- *     the service *name* under an argument literally called `nombre` — a
- *     pre-existing gap (no real `description` ever shipped), not fixed here.
+ *   - `schemaServicio` had no `description` key at all until the SEO recipe
+ *     of 2026-10-21 (`design/seo/receta-paginas-servicio.md`): it now takes
+ *     the page's meta description as an optional 4th argument.
  *   - `schemaServicio`'s `areaServed` is plain province-name strings, not
  *     `AdministrativeArea` nodes like the business node below.
  *   - `schemaFAQ` always carries `publisher` and never filters/returns null.
@@ -78,16 +78,40 @@ export function schemaNegocioLocal() {
   })
 }
 
-export function schemaServicio(servicio: ServicioId, nombre: string, ruta: string) {
+export function schemaServicio(servicio: ServicioId, nombre: string, ruta: string, descripcion?: string) {
   return buildServiceJsonLd({
     siteUrl: sitio.url,
     route: ruta,
     name: nombre,
+    ...(descripcion ? { description: descripcion } : {}),
     // Referencia al nodo del layout, no una copia. Antes esto era un
     // `HomeAndConstructionBusiness` inline con solo el nombre: un segundo
     // negocio, sin dirección ni teléfono, compitiendo con el de verdad.
     businessId: ID_NEGOCIO,
     areaServed: PROVINCIAS_SERVIDAS,
+  })
+}
+
+/**
+ * `Service` de una página de zona: el mismo nodo que el de servicio, pero con
+ * `@id` en la URL de la zona y `areaServed` acotado a su municipio (`City`
+ * dentro de su provincia), no a las tres provincias. Es lo que dice la página:
+ * este servicio, hecho en este municipio. Sin `description`, igual que
+ * `schemaServicio`, y por lo mismo: no hay campo de dato que la sostenga.
+ */
+export function schemaServicioZona(nombre: string, ruta: string, municipio: string, provincia: string) {
+  return buildServiceJsonLd({
+    siteUrl: sitio.url,
+    route: ruta,
+    name: nombre,
+    businessId: ID_NEGOCIO,
+    areaServed: [
+      {
+        '@type': 'City',
+        name: municipio,
+        containedInPlace: { '@type': 'AdministrativeArea', name: `Provincia de ${provincia}` },
+      },
+    ],
   })
 }
 

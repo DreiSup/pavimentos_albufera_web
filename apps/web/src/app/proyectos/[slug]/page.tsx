@@ -7,7 +7,15 @@ import Foto from '@/components/contenido/Foto'
 import FichaObra from '@/components/datos/FichaObra'
 import TarjetaProyecto from '@/components/contenido/TarjetaProyecto'
 import Migas from '@/components/layout/Migas'
-import { acabados, articuloQueExplica, proyectoPorSlug, proyectos, proyectosPorServicio } from '@/lib/datos'
+import {
+  acabados,
+  articuloQueExplica,
+  proyectoPorSlug,
+  proyectos,
+  proyectosPorServicio,
+  serviciosDeZona,
+  zonaDeProyecto,
+} from '@/lib/datos'
 import { CODIGO_COLOR, NOMBRE_MODELO, NOMBRE_SERVICIO } from '@/lib/tipos'
 
 /**
@@ -47,9 +55,29 @@ export async function generateMetadata({
   ]
     .filter(Boolean)
     .join(' · ')
+  // 2026-10-21: la description decía solo «Título. Técnica ejecutado por
+  // Pavimentos Albufera.», igual en las diez obras. Ahora lleva los datos de la
+  // ficha que sí existen —técnica, modelo, color, año, provincia—, filtrando lo
+  // que falta igual que el title, y «Fotos de la obra» solo si las hay. Nada
+  // nuevo: es lo que la ficha ya enseña, dicho en el resultado de búsqueda.
+  const ficha = [
+    `${NOMBRE_SERVICIO[proyecto.servicio]}${modelo ? ` en ${modelo.toLowerCase()}` : ''}`,
+    color ? `color ${color}` : null,
+    proyecto.anio ? String(proyecto.anio) : null,
+  ]
+    .filter(Boolean)
+    .join(', ')
+  const descripcion = [
+    proyecto.titulo,
+    ficha,
+    proyecto.provincia ? `Provincia de ${proyecto.provincia}` : null,
+    proyecto.imagenes.length > 0 ? 'Fotos de la obra, por Pavimentos Albufera' : 'Obra de Pavimentos Albufera',
+  ]
+    .filter(Boolean)
+    .join('. ')
   return {
     title: titulo,
-    description: `${proyecto.titulo}. ${NOMBRE_SERVICIO[proyecto.servicio]} ejecutado por Pavimentos Albufera.`,
+    description: `${descripcion}.`,
     alternates: { canonical: `/proyectos/${proyecto.slug}/` },
   }
 }
@@ -64,6 +92,7 @@ export default async function FichaProyecto({ params }: { params: Promise<{ slug
   )
   const articulo = articuloQueExplica(proyecto.servicio)
   const similares = proyectosPorServicio(proyecto.servicio, proyecto.slug).slice(0, 3)
+  const zona = zonaDeProyecto(proyecto.slug)
 
   return (
     <>
@@ -147,6 +176,14 @@ export default async function FichaProyecto({ params }: { params: Promise<{ slug
             ) : null}
             {articulo ? (
               <EnlaceEtiqueta href={`/blog/${articulo.slug}/`}>Cómo se hace →</EnlaceEtiqueta>
+            ) : null}
+            {/* 2026-10-21: la obra enlaza a su zona con la consulta como ancla
+                («Hormigón impreso en Moraira»). Antes ninguna obra enlazaba a
+                su zona, que quedaba huérfana. Solo zonas indexables. */}
+            {zona ? (
+              <EnlaceEtiqueta href={`/zonas/${zona.slug}/`}>
+                {serviciosDeZona(zona)} en {zona.municipio} →
+              </EnlaceEtiqueta>
             ) : null}
           </div>
 
