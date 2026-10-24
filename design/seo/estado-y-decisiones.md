@@ -173,3 +173,36 @@ El dueño va a enviar un **CSV de Google Search Console** con el rendimiento de
 pavimentos-albufera.com. Analizarlo contra todo lo anterior: consultas y páginas con impresiones,
 posiciones 4–20 (oportunidad), CTR bajo, URLs antiguas que aún reciben tráfico, consultas por
 municipio, y canibalización (consultas con 2+ URLs).
+
+## Actualización 2026-10-24
+
+**Hecho y publicado** (PR #2, desplegado a mano por el dueño):
+- redirecciones corregidas: las dos URLs viejas de pulido, `/precios/`, `/pavimentos-de-hormigon-valencia/` y `/revetements-en-beton-imprime/`;
+- receta SEO en las 6 páginas de servicio (ver `receta-paginas-servicio.md`);
+- páginas de zona con texto propio, índice `/zonas/` y segunda obra en Moraira (ver `receta-paginas-zona.md`);
+- GPS quitado de las fotos;
+- Xàbia fuera del sitemap.
+
+**Indexación:** el dueño ha pedido la indexación de las URLs principales y ha reenviado el sitemap.
+
+**PR #3** (migas de pan sin `item` en «Servicios»): pendiente de merge y deploy. Después hay que pulsar «Validar corrección» en Search Console → Mejoras → Rutas de exploración.
+
+**Pendiente:**
+- ⚠️ Los push a `main` no despliegan solos a producción: los 7 commits anteriores a PR #2 nunca se publicaron y el dueño tuvo que desplegar a mano. Revisar en Vercel la rama de producción, el *Ignored Build Step* y la asignación automática del dominio.
+- Datos que tiene que dar el dueño:
+  - pulido en exterior (acabado o antideslizante);
+  - sellado del fratasado en interior;
+  - carta de colores del fratasado;
+  - áridos del lavado y del desactivado;
+  - piscina: ¿lavado o desactivado? (la foto de portada del fratasado es un contorno de piscina);
+  - Moraira C-113;
+  - fotos horizontales de Catadau y Carlet;
+  - qué fotos son de Turís, Alfafar, Ollería y Vedat de Torrent;
+  - Moncada: ¿entrada o plaza?;
+  - Denia: ¿cuál es el gris y cuál el crema?;
+  - foto de Xàbia.
+- Página de caucho y parques infantiles: interesa al dueño, pero faltan obras y fotos.
+- Quitar los 3 artículos vacíos del blog con 301 a su servicio, y publicar el artículo 1 (borrador en `borradores/`).
+- Prototipo de páginas con las fotos sin usar y posible rediseño.
+- Ficha de Google Business Profile.
+- Medir a las 8–12 semanas (diciembre 2026 – enero 2027) con las consultas de `analisis-gsc-2026-10.md`.
