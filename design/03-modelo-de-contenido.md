@@ -127,7 +127,9 @@ estos servicios), y «Obra ejecutada» aparece solo cuando haya una obra con ese
 un acabado cuyo `service` sea uno de estos dos. Las seis técnicas no declaran el campo: un
 muestrario vacío ahí es la verdad («hay acabados, falta la foto»). El otro campo nuevo,
 `Service.cardText`, es la línea de su tarjeta en la sección 04 de la home; las seis técnicas
-siguen con la suya escrita en `app/page.tsx`.
+siguen con la suya escrita en `app/page.tsx`. Y `Service.gallery` (`SiteImage[]`, opcional)
+alimenta la banda «Galería» de su página: fotos del servicio, nunca de una obra concreta, que
+van en `Project.images`.
 
 ### 2.2 Modelos de molde (solo aplican a impreso)
 

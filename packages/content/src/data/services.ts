@@ -606,7 +606,7 @@ export const services = [
     },
     heroLabelLines: [{ es: 'BOMBEO Y VERTIDO' }, { es: 'ÁRIDO MÁXIMO 12 MM' }],
     cardText: { es: 'Hormigón por manguera hasta donde no llega el camión. Árido de 12 mm.' },
-    // Provisional AI-generated image — see design/05 §C #15. Never attach to a project or a place.
+    // Provisional AI-generated images (card, hero, gallery) — see design/05 §C #15. Never attach to a project or a place.
     cardImage: {
       src: '/obras/_ia-provisional/ia-bombeo-tarjeta.jpg',
       alt: {
@@ -614,6 +614,36 @@ export const services = [
       },
       kind: 'proceso',
     },
+    heroImage: {
+      src: '/obras/_ia-provisional/ia-bombeo-hero.jpg',
+      alt: {
+        es: 'Autobomba de hormigón con la pluma desplegada sobre una calle de chalés, junto a una hormigonera, con el perímetro balizado con conos y cinta.',
+      },
+      kind: 'proceso',
+    },
+    gallery: [
+      {
+        src: '/obras/_ia-provisional/ia-bombeo-galeria-1.jpg',
+        alt: {
+          es: 'Manos con guantes guiando el extremo de la manguera de bombeo mientras el hormigón cae sobre el mallazo con separadores.',
+        },
+        kind: 'detalle',
+      },
+      {
+        src: '/obras/_ia-provisional/ia-bombeo-galeria-2.jpg',
+        alt: {
+          es: 'Pluma de bombeo vertiendo hormigón en el patio de una casa blanca de una planta, sobre el mallazo, entre encofrados de madera.',
+        },
+        kind: 'proceso',
+      },
+      {
+        src: '/obras/_ia-provisional/ia-bombeo-galeria-3.jpg',
+        alt: {
+          es: 'Hormigón recién vertido avanzando sobre el mallazo y la grava, junto a un encofrado de madera con regla de aluminio.',
+        },
+        kind: 'detalle',
+      },
+    ],
     hasFinishes: false,
     guide: {
       kicker: { es: 'Qué es' },
@@ -740,7 +770,7 @@ export const services = [
     },
     heroLabelLines: [{ es: 'AUTONIVELANTE' }, { es: 'BASE PLANA · INTERIOR' }],
     cardText: { es: 'Suelo interior a nivel, listo para tarima, vinílico o microcemento.' },
-    // Provisional AI-generated image — see design/05 §C #15. Never attach to a project or a place.
+    // Provisional AI-generated images (card, hero, gallery) — see design/05 §C #15. Never attach to a project or a place.
     cardImage: {
       src: '/obras/_ia-provisional/ia-autonivelante-tarjeta.jpg',
       alt: {
@@ -748,6 +778,36 @@ export const services = [
       },
       kind: 'final',
     },
+    heroImage: {
+      src: '/obras/_ia-provisional/ia-autonivelante-hero.jpg',
+      alt: {
+        es: 'Autonivelante recién vertido extendiéndose sobre el suelo de una habitación vacía, con trípodes de nivelación y la luz de la ventana reflejada.',
+      },
+      kind: 'proceso',
+    },
+    gallery: [
+      {
+        src: '/obras/_ia-provisional/ia-autonivelante-galeria-1.jpg',
+        alt: {
+          es: 'Habitación preparada para el autonivelante: imprimación a medio extender, trípodes de nivelación, banda perimetral y nivel láser.',
+        },
+        kind: 'proceso',
+      },
+      {
+        src: '/obras/_ia-provisional/ia-autonivelante-galeria-2.jpg',
+        alt: {
+          es: 'Planta baja de una casa antigua en reforma con el autonivelante entrando por manguera y repartiéndose entre los trípodes de nivelación.',
+        },
+        kind: 'proceso',
+      },
+      {
+        src: '/obras/_ia-provisional/ia-autonivelante-galeria-3.jpg',
+        alt: {
+          es: 'Rodillo de púas pasando sobre el autonivelante fresco, con las botas de púas del operario al fondo.',
+        },
+        kind: 'detalle',
+      },
+    ],
     hasFinishes: false,
     guide: {
       kicker: { es: 'Qué es' },

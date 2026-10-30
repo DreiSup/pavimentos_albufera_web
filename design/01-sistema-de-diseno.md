@@ -582,6 +582,13 @@ etiqueta  Martian Mono 11px · color: #5C625E · letter-spacing: 0.05em
 Proporciones: `21/9` galería principal de proyecto · `4/3` tarjetas y hero de servicio ·
 `16/10` tarjetas de servicio · `16/9` genérico · `1` muestras · `3/4` hero de móvil.
 
+**Galería de servicio** (2026-10-30). Banda numerada «Galería» de la página de servicio, solo
+donde el servicio declara `Service.gallery`. No es un componente nuevo: es `Foto` (con su caída
+a este bloque de posición) en la rejilla de la obra ejecutada —`grid-cols-1 md:grid-cols-3
+gap-6`, `4/3`, `sizes="(min-width: 768px) 33vw, 100vw"`— bajo un `AntetituloSeccion`. Una
+foto vertical se recorta al centro con el `object-cover` de `Foto`. Sin pie de foto ni
+etiqueta técnica: no representa una obra concreta.
+
 **El nombre de archivo no aparece nunca.** Es anotación de producción.
 
 ### 3.12 Tarjeta de proyecto

@@ -31,6 +31,7 @@ export type ServiceId =
 export type ServiceSection =
   | 'seccion-guia'
   | 'seccion-aplicaciones'
+  | 'seccion-galeria'
   | 'seccion-muestrario'
   | 'seccion-ficha'
   | 'seccion-cuando-no'
@@ -143,6 +144,14 @@ export type Service = {
    * `content:validate` rejects a finish pointing at a service set to `false`.
    */
   hasFinishes?: boolean
+  /**
+   * Photos of the service being carried out, shown as a numbered "Galería"
+   * band after "Aplicaciones". Optional: absent or empty, the band isn't
+   * rendered. Today only the two services with no client photo at all use it,
+   * with provisional AI-generated images (`design/05` §C #15) — never project
+   * or place photos, which belong to `Project.images`.
+   */
+  gallery?: SiteImage[]
   /** "What it is / how it's done" band, right after the hero. See `ServiceGuide`. */
   guide?: ServiceGuide
   /** Only present where there's approved copy backing it — an absent section isn't rendered. */

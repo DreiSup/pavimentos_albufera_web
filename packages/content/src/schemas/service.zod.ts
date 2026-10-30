@@ -25,6 +25,7 @@ export const serviceIdSchema = z.enum([
 export const serviceSectionSchema = z.enum([
   'seccion-guia',
   'seccion-aplicaciones',
+  'seccion-galeria',
   'seccion-muestrario',
   'seccion-ficha',
   'seccion-cuando-no',
@@ -74,6 +75,7 @@ export const serviceSchema = z.object({
   cardImage: siteImageSchema.optional(),
   cardText: localizedText.optional(),
   hasFinishes: z.boolean().optional(),
+  gallery: z.array(siteImageSchema).optional(),
   guide: serviceGuideSchema.optional(),
   applications: serviceApplicationsSchema.optional(),
   specs: z.array(specRowSchema),

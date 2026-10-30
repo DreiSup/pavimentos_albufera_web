@@ -92,6 +92,11 @@ escribir otros sería copy inventado— y **«Obra ejecutada» solo cuando haya 
 servicio, porque su estado vacío habla «de este acabado». El numerado y el submenú se cierran
 solos sobre lo que queda. La ficha técnica pinta sus `{{pendiente}}` en `<DatoPendiente>`.
 
+Y una fila que solo tienen ellos: **«Galería»**, justo tras Aplicaciones —donde las técnicas
+llevan el muestrario—, con las fotos de `Service.gallery` en rejilla de 3 a `4/3` (`01` §3.11).
+Hoy son imágenes de IA provisionales (`05` §C #15). Con ella el submenú de estas dos páginas
+tiene 4 anclas: Aplicaciones · Galería · Ficha técnica · Cuándo NO.
+
 | # | Sección | Notas |
 |---|---|---|
 | — | Migas | `INICIO / SERVICIOS / HORMIGÓN IMPRESO` |

@@ -54,6 +54,7 @@ export type GuiaServicio = {
 export type SeccionServicio =
   | 'seccion-guia'
   | 'seccion-aplicaciones'
+  | 'seccion-galeria'
   | 'seccion-muestrario'
   | 'seccion-ficha'
   | 'seccion-cuando-no'
@@ -83,6 +84,8 @@ export type Servicio = {
    * cuando hay obra. Las seis técnicas no lo declaran.
    */
   sinAcabados?: true
+  /** Banda «Galería» tras «Aplicaciones» (`Service.gallery`). Sin fotos no se pinta. */
+  galeria?: Imagen[]
   /** Banda «Qué es» tras el hero. Sin ella no se pinta. */
   guia?: GuiaServicio
   /** Solo donde hay copy aprobado que lo respalde. Si no, la sección no se renderiza. */
@@ -169,6 +172,9 @@ function aServicio(s: ResolvedService): Servicio {
     ...(s.cardImage ? { imagenTarjeta: { src: s.cardImage.src, alt: s.cardImage.alt, tipo: s.cardImage.kind as Imagen['tipo'] } } : {}),
     ...(s.cardText ? { textoTarjeta: s.cardText } : {}),
     ...(s.hasFinishes ? {} : { sinAcabados: true as const }),
+    ...(s.gallery
+      ? { galeria: s.gallery.map((i) => ({ src: i.src, alt: i.alt, tipo: i.kind as Imagen['tipo'] })) }
+      : {}),
     ...(s.guide
       ? {
           guia: {

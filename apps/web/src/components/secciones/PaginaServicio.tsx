@@ -64,6 +64,7 @@ const CLASE_FONDO: Record<Fondo, string> = {
 const FONDO_DE_BANDA: Record<Banda, Fondo> = {
   'seccion-guia': 'alt',
   'seccion-aplicaciones': 'base',
+  'seccion-galeria': 'alt',
   'seccion-muestrario': 'alt',
   'seccion-ficha': 'base',
   'seccion-cuando-no': 'tinta',
@@ -264,9 +265,17 @@ export default function PaginaServicio({ servicio }: { servicio: Servicio }) {
   // confirmado para bombear hormigón o verter autonivelante (la bomba puede ser
   // contratada). Escribir otros pasos sería copy inventado, así que la sección
   // sale entera y el numerado y el submenú se cierran sobre lo que queda.
+  //
+  // «Galería» solo existe donde el servicio declara fotos propias
+  // (`Servicio.galeria`): hoy, bombeo y autonivelante, con imágenes de IA
+  // provisionales (`design/05` §C #15). Va donde las técnicas llevan el
+  // muestrario —la banda visual tras «Aplicaciones»— y en las seis técnicas no
+  // aparece, así que su salida no cambia.
   const sinAcabados = servicio.sinAcabados === true
+  const galeria = servicio.galeria ?? []
   const todas: (Seccion | null)[] = [
     servicio.aplicaciones ? { id: 'seccion-aplicaciones', texto: 'Aplicaciones' } : null,
+    galeria.length > 0 ? { id: 'seccion-galeria', texto: 'Galería' } : null,
     sinAcabados ? null : { id: 'seccion-muestrario', texto: 'Muestrario' },
     { id: 'seccion-ficha', texto: 'Ficha técnica' },
     servicio.cuandoNo ? { id: 'seccion-cuando-no', texto: 'Cuándo NO' } : null,
@@ -439,6 +448,22 @@ export default function PaginaServicio({ servicio }: { servicio: Servicio }) {
                   <h3 className="font-display font-bold fs-h3 text-20 md:text-26 m-0">{a.nombre}</h3>
                   {a.texto ? <p className="text-16 text-tinta-media m-0">{a.texto}</p> : null}
                 </div>
+              ))}
+            </div>
+          </div>
+        </Aparece>
+      ) : null}
+
+      {/* Galería. Rejilla de 3 en `4/3`, la misma proporción y el mismo
+          `gap-6` que la obra ejecutada; una foto vertical se recorta al centro
+          con el `object-cover` de `Foto`. En móvil, una por fila. */}
+      {monta('seccion-galeria') ? (
+        <Aparece as="section" id="seccion-galeria" className={claseBanda('seccion-galeria')}>
+          <div className="flex flex-col gap-6">
+            <AntetituloSeccion numero={numero('seccion-galeria')}>Galería</AntetituloSeccion>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {galeria.map((imagen) => (
+                <Foto key={imagen.src} imagen={imagen} proporcion="4/3" tamanos="(min-width: 768px) 33vw, 100vw" />
               ))}
             </div>
           </div>

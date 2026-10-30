@@ -161,7 +161,7 @@ obra sin municipio no puede dejar un « · » suelto ni una línea en blanco.
 imágenes provisionales»), acotada a `/bombeo-de-hormigon/` y `/vertido-de-autonivelante/`, que no
 tienen ni una foto del cliente. Se sustituyen en cuanto lleguen las reales.
 
-- **Dónde pueden ir:** solo `cardImage` y `heroImage` de esos dos servicios. **Nunca** en
+- **Dónde pueden ir:** solo `cardImage`, `heroImage` y `gallery` de esos dos servicios. **Nunca** en
   `Project.images`, una zona, el muestrario ni con municipio o año: sería presentar como obra real
   algo que no lo es.
 - **Archivos:** `apps/web/public/obras/_ia-provisional/ia-<servicio>-<hueco>.jpg`. No usan el
@@ -169,10 +169,16 @@ tienen ni una foto del cliente. Se sustituyen en cuanto lleguen las reales.
   `Iptc4xmpExt:DigitalSourceType = trainedAlgorithmicMedia`; el manifiesto C2PA del PNG original
   no sobrevive a la conversión a JPEG, y esa marca es la que lo sustituye.
 - **Sin caras.** Encuadres de maquinaria, tubería y superficie; como mucho botas o guantes.
-- **Estado:** las dos tarjetas de la home, publicadas (1086 y 1448 px: por encima del suelo de
-  800, por debajo del objetivo de 1600, avisa). Los dos `heroImage`, **pendientes**: los
-  originales generados miden 1448 px y el hero exige 1600 (§13). El dueño las regenera ampliadas;
-  no se reescalan aquí, porque pasaría el verificador sin ganar nitidez.
+- **Estado (2026-10-30, segunda decisión del dueño: «son provisionales, utilízalas todas»):** las
+  diez del lote, publicadas. Por servicio: tarjeta, hero y tres en la nueva banda «Galería»
+  (`01` §3.11, `02` §A2). Todas superan el suelo de 800 px y ninguna llega al objetivo de 1600.
+  Los dos heroes miden 1448 px, por debajo de los 1600 a sangre de §13: entran en
+  `HEREDADAS_A_SANGRE` de `verificar-imagenes.mjs`, que **avisa en vez de fallar** y caduca sola
+  cuando cambie el ancho del archivo. No se han reescalado: eso pasaría el verificador sin ganar
+  nitidez. Si el dueño las regenera a 1600 px o más, basta con sustituir el archivo.
+- **Lo que el dueño aceptó a sabiendas:** dos imágenes de la galería de bombeo enseñan un árido más
+  grueso que 12 mm, y en otra el chorro de hormigón cae trenzado, no como cae de verdad. Los `alt`
+  no afirman el tamaño del árido.
 - Prompts y criterios de revisión: `docs/servicios-nuevos/prompts-imagenes-ia.md`. Registro de
   archivos: `apps/web/public/obras/INVENTARIO.md`, sección del 2026-10-30.
 

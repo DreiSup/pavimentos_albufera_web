@@ -31,6 +31,7 @@ export type ResolvedService = {
   cardText?: string
   /** `Service.hasFinishes` with its default applied: `false` only where the service has no decorative finish by nature. */
   hasFinishes: boolean
+  gallery?: ResolvedImage[]
   guide?: ResolvedServiceGuide
   applications?: { intro: string; list: { name: string; text: string }[] }
   /** `value` split into runs: a spec value may carry `{{pending}}` markup (see `SpecRow`). */
@@ -91,6 +92,14 @@ function resolveService(service: Service, locale: Locale): ResolvedService | und
     ...(service.cardImage ? { cardImage: resolveImage(service.cardImage, locale) } : {}),
     ...(cardText !== undefined ? { cardText } : {}),
     hasFinishes: service.hasFinishes !== false,
+    ...(service.gallery && service.gallery.length > 0
+      ? {
+          gallery: service.gallery.flatMap((image) => {
+            const resolved = resolveImage(image, locale)
+            return resolved ? [resolved] : []
+          }),
+        }
+      : {}),
     ...(guide ? { guide } : {}),
     ...(service.applications
       ? {

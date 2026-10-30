@@ -109,6 +109,11 @@ const HEREDADAS_A_SANGRE = new Map([
   ['/obras/alzira-impreso-adoquin-irregular-107-2.jpg', 1200],
   ['/obras/impreso-manta-gris-2.jpg', 1200],
   ['/obras/moncada-impreso-espiga-117-2025.jpg', 1200],
+  // No son obra: heroes provisionales generados con IA de los dos servicios
+  // sin ninguna foto del cliente (`design/05` §C #15). Misma caducidad: el día
+  // que el dueño los regenere a 1600 px o más, el ancho deja de coincidir.
+  ['/obras/_ia-provisional/ia-bombeo-hero.jpg', 1448],
+  ['/obras/_ia-provisional/ia-autonivelante-hero.jpg', 1448],
 ])
 
 function archivosDe(dir, exts) {
