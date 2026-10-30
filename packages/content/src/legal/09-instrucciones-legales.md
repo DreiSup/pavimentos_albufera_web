@@ -41,7 +41,7 @@ asesoría decidan. Un texto legal publicado responde ante un organismo que sanci
 | Datos registrales | 🔴 `[PENDIENTE: Registro Mercantil, tomo, folio, hoja, inscripción]` — sale de la escritura de constitución o de una nota simple |
 | Correo | comercial@pavimentos-albufera.com |
 | Teléfono | Vive en `NEXT_PUBLIC_TELEFONO`. Úsalo desde `lib/config.ts`, no lo escribas a mano |
-| Actividad | Pavimentos de hormigón: impreso, pulido, lavado, fratasado, desactivado y microcemento |
+| Actividad | Pavimentos de hormigón: impreso, pulido, lavado, fratasado, desactivado y microcemento. Bombeo de hormigón y vertido de autonivelante |
 | Dominio | pavimentos-albufera.com |
 | Alojamiento | Vercel |
 

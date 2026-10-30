@@ -297,9 +297,9 @@ No son corchetes del texto, pero conviene confirmarlos con el cliente antes de p
   retiraron en septiembre de 2026).
 - **Ficha técnica con `{{…}}`.** Los valores de `specs` usan el marcado de pendiente; el agente de
   estructura amplió `SpecRow` para que la tabla lo pinte como `<DatoPendiente>`.
-- **`legal.ts`.** La fila ACTIVIDAD del aviso legal sigue diciendo «Pavimentos de hormigón:
-  impreso, pulido, lavado, fratasado, desactivado y microcemento». No se ha tocado: es texto legal
-  con fecha de revisión propia. Si el cliente quiere que conste la actividad nueva, se cambia en
-  `legal.ts` y en `apps/web/src/content/legal.tsx` y se actualiza la fecha de revisión.
+- **`legal.ts`.** La fila ACTIVIDAD del aviso legal incluye desde el 2026-10-30 los dos servicios
+  nuevos: «… y microcemento. Bombeo de hormigón y vertido de autonivelante». La fecha de última
+  revisión (`lastLegalReview`) no se ha movido: la comparten el aviso legal y la política de
+  privacidad, y esta última no ha cambiado.
 - **Landings de campaña.** Los dos servicios nuevos no tienen `/lp/`, igual que fratasado y
   desactivado.

@@ -24,7 +24,7 @@ publicado responde ante un organismo que sanciona.
 | **Domicilio social** | 🔴 **Sin confirmar.** El sitio muestra Sollana (46430, Valencia) como municipio, pero la calle y el número no los ha dado nadie |
 | **Correo** | comercial@pavimentos-albufera.com |
 | **Teléfono** | Sale de la variable de entorno `NEXT_PUBLIC_TELEFONO`. No está en el código |
-| **Actividad** | Pavimentos de hormigón: impreso, pulido, lavado, fratasado, desactivado y microcemento |
+| **Actividad** | Pavimentos de hormigón: impreso, pulido, lavado, fratasado, desactivado y microcemento. Bombeo de hormigón y vertido de autonivelante |
 | **Ámbito** | Valencia, Castellón y Alicante sin desplazamiento; Murcia, Albacete, Almería, Tarragona y Teruel a partir de 100 m² |
 | **Antigüedad** | Desde 2009 |
 
