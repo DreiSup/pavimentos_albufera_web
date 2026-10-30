@@ -176,6 +176,10 @@ componente *bloque de posición* (`01-sistema-de-diseno.md §3.11`), un sólido 
 con trama diagonal y la ficha del trabajo sobrepuesta. Cuando entre la foto buena, la ficha
 se queda exactamente donde está.
 
+**Única excepción, acotada:** los dos servicios sin ninguna foto del cliente
+(`/bombeo-de-hormigon/` y `/vertido-de-autonivelante/`) llevan imágenes generadas con IA,
+provisionales, solo en su tarjeta y su hero. Condiciones en `05-pendientes-y-decisiones.md` §C #15.
+
 Nomenclatura de archivo obligatoria: `municipio-servicio-modelo-color-año.jpg` →
 `moncada-impreso-espiga-117-2025.jpg`. **El nombre de archivo no se muestra nunca en pantalla**:
 es anotación de producción y SEO de imagen, no contenido.

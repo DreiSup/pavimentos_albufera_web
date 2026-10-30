@@ -606,6 +606,14 @@ export const services = [
     },
     heroLabelLines: [{ es: 'BOMBEO Y VERTIDO' }, { es: 'ÁRIDO MÁXIMO 12 MM' }],
     cardText: { es: 'Hormigón por manguera hasta donde no llega el camión. Árido de 12 mm.' },
+    // Provisional AI-generated image — see design/05 §C #15. Never attach to a project or a place.
+    cardImage: {
+      src: '/obras/_ia-provisional/ia-bombeo-tarjeta.jpg',
+      alt: {
+        es: 'Tubería de bombeo de hormigón tendida por un pasillo estrecho entre la casa y un muro de piedra, hacia el patio trasero.',
+      },
+      kind: 'proceso',
+    },
     hasFinishes: false,
     guide: {
       kicker: { es: 'Qué es' },
@@ -732,6 +740,14 @@ export const services = [
     },
     heroLabelLines: [{ es: 'AUTONIVELANTE' }, { es: 'BASE PLANA · INTERIOR' }],
     cardText: { es: 'Suelo interior a nivel, listo para tarima, vinílico o microcemento.' },
+    // Provisional AI-generated image — see design/05 §C #15. Never attach to a project or a place.
+    cardImage: {
+      src: '/obras/_ia-provisional/ia-autonivelante-tarjeta.jpg',
+      alt: {
+        es: 'Habitación vacía con el suelo de autonivelante gris ya seco, cajas de tarima y un rollo de base aislante junto a la ventana.',
+      },
+      kind: 'final',
+    },
     hasFinishes: false,
     guide: {
       kicker: { es: 'Qué es' },

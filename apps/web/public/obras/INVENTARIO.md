@@ -210,3 +210,21 @@ obra tiene los dos acabados. Que el dueño diga cuál es cuál antes de tocar su
 | Ollería · manta gris (2048 px) | Sin archivo identificado | Candidatas a ojo, **sin confirmar**: `10.19.21`, `10.19.21-1`, `10.19.22` (gris, 2048) |
 | Vedat de Torrent (6 fotos) | Sin archivo identificado | Candidatas a ojo, **sin confirmar**: `10.17.29`, `10.17.30`, `10.17.30-1` (rojizo, piscina) |
 | Moraira, tercera obra | `hormigon-impreso-moraira-chale-piscina{,-entrada}.jpeg` (900 px), nombre de archivo con municipio | Modelo y color desconocidos; las dos fotos parecen el mismo chalé pero no consta. Y 900 < 1600 para la primera foto |
+
+## 2026-10-30 — `_ia-provisional/`: imágenes generadas con IA (no son obra)
+
+**No son fotos de obra y no cuentan en ninguna cifra de este inventario.** Excepción aprobada por el
+dueño para los dos servicios sin foto del cliente; condiciones en `design/05` §C #15. Se borran
+cuando lleguen las reales. Nunca en un proyecto, una zona ni el muestrario.
+
+| Archivo | Uso | Píxeles | Origen | Estado |
+|---|---|---|---|---|
+| `ia-bombeo-tarjeta.jpg` | `cardImage` de `bombeo` | 1086×679 | IA, recorte 16:10 de «Narrow Sunlit Passage with Pipeline» (1086×1448), prompt B-4 | En uso |
+| `ia-autonivelante-tarjeta.jpg` | `cardImage` de `autonivelante` | 1448×905 | IA, recorte 16:10 de «Sunlit Minimalist Room Under Renovation» (1448×1086), prompt A-5 | En uso |
+| — | `heroImage` de `bombeo` | — | Propuesta: «Concrete Pump Truck at Residential Worksite», regenerada a 2000×1500 o más | Pendiente |
+| — | `heroImage` de `autonivelante` | — | Propuesta: «Reflective Self-Leveling Floor in Progress», regenerada a 2000×1500 o más | Pendiente |
+
+Las dos llevan en XMP `DigitalSourceType = trainedAlgorithmicMedia`. Las otras ocho imágenes del
+lote no se suben: dos de ellas («Concreto fresco sobre malla de acero» y «Fresh Concrete Pour Over
+Steel Grid») enseñan un árido visiblemente más grueso que 12 mm, y en la página de bombeo eso
+contradice el dato que la define.

@@ -87,7 +87,7 @@ Desde esta fase, además, el repo es un monorepo pnpm + Turborepo (`apps/web`
 
 ## Estado — actualizado 2026-08-30
 
-> 2026-10-30: ocho servicios — `/bombeo-de-hormigon/` y `/vertido-de-autonivelante/` se suman a las seis técnicas con la misma plantilla (`hasFinishes: false`, ver `design/03` §2.1).
+> 2026-10-30: ocho servicios — `/bombeo-de-hormigon/` y `/vertido-de-autonivelante/` se suman a las seis técnicas con la misma plantilla (`hasFinishes: false`, ver `design/03` §2.1). Llevan imágenes generadas con IA, provisionales: única excepción a «sin originales, `<BloquePosicion>`», acotada en `design/05` §C #15.
 
 ### 🆕 Auditoría de rendimiento y medición → `design/06`
 

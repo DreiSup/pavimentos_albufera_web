@@ -155,6 +155,29 @@ obra sin municipio no puede dejar un « · » suelto ni una línea en blanco.
 
 ---
 
+### 15 · Imágenes generadas con IA, provisionales, en los dos servicios nuevos — 2026-10-30
+
+**Decisión del dueño, contestada expresamente.** Excepción a la regla de README §10 («no se usan
+imágenes provisionales»), acotada a `/bombeo-de-hormigon/` y `/vertido-de-autonivelante/`, que no
+tienen ni una foto del cliente. Se sustituyen en cuanto lleguen las reales.
+
+- **Dónde pueden ir:** solo `cardImage` y `heroImage` de esos dos servicios. **Nunca** en
+  `Project.images`, una zona, el muestrario ni con municipio o año: sería presentar como obra real
+  algo que no lo es.
+- **Archivos:** `apps/web/public/obras/_ia-provisional/ia-<servicio>-<hueco>.jpg`. No usan el
+  patrón `municipio-servicio-…`, que afirma una obra. Llevan en XMP
+  `Iptc4xmpExt:DigitalSourceType = trainedAlgorithmicMedia`; el manifiesto C2PA del PNG original
+  no sobrevive a la conversión a JPEG, y esa marca es la que lo sustituye.
+- **Sin caras.** Encuadres de maquinaria, tubería y superficie; como mucho botas o guantes.
+- **Estado:** las dos tarjetas de la home, publicadas (1086 y 1448 px: por encima del suelo de
+  800, por debajo del objetivo de 1600, avisa). Los dos `heroImage`, **pendientes**: los
+  originales generados miden 1448 px y el hero exige 1600 (§13). El dueño las regenera ampliadas;
+  no se reescalan aquí, porque pasaría el verificador sin ganar nitidez.
+- Prompts y criterios de revisión: `docs/servicios-nuevos/prompts-imagenes-ia.md`. Registro de
+  archivos: `apps/web/public/obras/INVENTARIO.md`, sección del 2026-10-30.
+
+---
+
 ## D. Riesgos
 
 | Riesgo | Gravedad | Mitigación |
