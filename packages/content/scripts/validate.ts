@@ -188,6 +188,16 @@ for (const finish of finishes) {
   if (!serviceIds.has(finish.service)) fail(`finish "${finish.slug}": unknown service "${finish.service}"`)
 }
 
+// 3g'. finish -> service that has finishes at all (`Service.hasFinishes: false`
+// means "no decorative finish by nature": its page renders no sample section,
+// so a finish filed under it would be published nowhere on that page)
+const servicesWithoutFinishes = new Set<string>(services.filter((s) => s.hasFinishes === false).map((s) => s.id))
+for (const finish of finishes) {
+  if (servicesWithoutFinishes.has(finish.service)) {
+    fail(`finish "${finish.slug}": service "${finish.service}" is declared hasFinishes: false`)
+  }
+}
+
 // 3h. finish -> project
 for (const finish of finishes) {
   for (const slug of finish.projects) {
@@ -242,6 +252,29 @@ for (const service of services) {
       if (run.type === 'text' && /\{\{|\}\}|\]\(/.test(run.text)) {
         fail(`service "${service.id}": malformed guide markup near "${run.text.slice(0, 60)}"`)
       }
+    }
+  }
+}
+
+// 3l. service spec values: `{{pending}}` is the only markup a spec cell takes
+// (see `SpecRow`) — a link there, or a half-written `{{`, is a content bug.
+for (const service of services) {
+  for (const row of service.specs) {
+    for (const run of parseRichText(row.value.es)) {
+      if (run.type === 'link') fail(`service "${service.id}": spec "${row.label.es}" carries a link; spec values take only {{pending}}`)
+      if (run.type === 'text' && /\{\{|\}\}/.test(run.text)) {
+        fail(`service "${service.id}": malformed spec markup in "${row.label.es}"`)
+      }
+    }
+  }
+}
+
+// 3m. "when not to" alternatives point at a page this content produces (they
+// render as plain hrefs, no markup to parse — same `knownPaths` as 3k).
+for (const service of services) {
+  for (const alt of service.whenNotTo?.alternatives ?? []) {
+    if (!knownPaths.has(alt.href)) {
+      fail(`service "${service.id}": whenNotTo alternative links to "${alt.href}", which is not a page this content produces`)
     }
   }
 }

@@ -11,7 +11,16 @@ import { siteImageSchema } from './image.zod.ts'
  */
 const localizedTextOrEmpty = localizedSchema(z.string())
 
-export const serviceIdSchema = z.enum(['impreso', 'pulido', 'microcemento', 'lavado', 'fratasado', 'desactivado'])
+export const serviceIdSchema = z.enum([
+  'impreso',
+  'pulido',
+  'microcemento',
+  'lavado',
+  'fratasado',
+  'desactivado',
+  'bombeo',
+  'autonivelante',
+])
 
 export const serviceSectionSchema = z.enum([
   'seccion-guia',
@@ -63,6 +72,8 @@ export const serviceSchema = z.object({
   heroLabelLines: z.array(localizedText),
   heroImage: siteImageSchema.optional(),
   cardImage: siteImageSchema.optional(),
+  cardText: localizedText.optional(),
+  hasFinishes: z.boolean().optional(),
   guide: serviceGuideSchema.optional(),
   applications: serviceApplicationsSchema.optional(),
   specs: z.array(specRowSchema),

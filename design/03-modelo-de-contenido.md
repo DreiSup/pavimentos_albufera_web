@@ -6,6 +6,7 @@
 export type ServicioId =
   | 'impreso' | 'pulido' | 'microcemento'
   | 'lavado'  | 'fratasado' | 'desactivado'
+  | 'bombeo'  | 'autonivelante'           // 2026-10-30, ver §2.1
 
 export type Provincia = 'Valencia' | 'Castellón' | 'Alicante'
 
@@ -105,6 +106,28 @@ No es contenido de relleno. Es el catálogo con el que trabaja Pavimentos Albufe
 ### 2.1 Técnicas
 
 `impreso` · `pulido` · `microcemento` · `lavado` · `fratasado` · `desactivado`
+
+**Y dos servicios sin acabado decorativo, desde el 2026-10-30** (petición del dueño):
+
+| ServicioId | Nombre en pantalla | Ruta |
+|---|---|---|
+| `bombeo` | Bombeo de hormigón | `/bombeo-de-hormigon/` |
+| `autonivelante` | Vertido de autonivelante | `/vertido-de-autonivelante/` |
+
+El bombeo es bombeo y vertido de hormigón con árido de 12 mm. Lo único confirmado por el dueño es
+que se hacen los dos servicios; toda cifra del negocio (alcance, caudal, volumen mínimo, producto,
+espesores, plazos) va como `{{pendiente}}` y se pinta en `<DatoPendiente>`, también dentro de la
+ficha técnica (`SpecRow.value` admite ese marcado y ningún otro).
+
+No son técnicas de acabado, y el modelo lo dice con un campo explícito en vez de deducirlo de que
+no haya fotos: `Service.hasFinishes: false`. Con él la plantilla de servicio no monta el muestrario
+ni el botón «Ver acabados», ni «Cómo trabajamos» (pasos de solera decorativa sin confirmar para
+estos servicios), y «Obra ejecutada» aparece solo cuando haya una obra con ese
+`servicio` (su estado vacío habla «de este acabado» y aquí no lo hay). `content:validate` rechaza
+un acabado cuyo `service` sea uno de estos dos. Las seis técnicas no declaran el campo: un
+muestrario vacío ahí es la verdad («hay acabados, falta la foto»). El otro campo nuevo,
+`Service.cardText`, es la línea de su tarjeta en la sección 04 de la home; las seis técnicas
+siguen con la suya escrita en `app/page.tsx`.
 
 ### 2.2 Modelos de molde (solo aplican a impreso)
 

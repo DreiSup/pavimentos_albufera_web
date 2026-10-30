@@ -17,6 +17,8 @@ app/
 ├── hormigon-lavado/page.tsx
 ├── hormigon-fratasado/page.tsx       NUEVA
 ├── hormigon-desactivado/page.tsx     NUEVA
+├── bombeo-de-hormigon/page.tsx       NUEVA (2026-10-30) · misma plantilla, sin acabados
+├── vertido-de-autonivelante/page.tsx NUEVA (2026-10-30) · misma plantilla, sin acabados
 │
 ├── acabados/
 │   ├── page.tsx                      muestrario con filtros
@@ -168,6 +170,8 @@ Del §7.5. `title` ≤ 60 caracteres, `description` ≤ 155.
 | `/hormigon-pulido/` | Hormigón pulido Valencia \| Interior e industrial |
 | `/microcemento/` | Microcemento en Valencia \| Sin obra ni escombros |
 | `/hormigon-lavado/` | Hormigón lavado y árido visto en Valencia |
+| `/bombeo-de-hormigon/` | Desde `packages/content/src/data/services.ts` (`title`), servicio añadido el 2026-10-30 |
+| `/vertido-de-autonivelante/` | Ídem |
 | `/acabados/` | Muestrario de acabados de hormigón impreso |
 | ~~`/precios/`~~ | ⛔ Ruta retirada el 2026-09-17 por decisión del dueño (`02-pantallas.md §A5`) |
 | `/proyectos/` | Proyectos ejecutados \| Pavimentos Albufera |
@@ -186,6 +190,15 @@ las dos son secciones que esa misma página sirve (§A2, filas 02 y 06), con 12 
 documentadas detrás. `/hormigon-fratasado/` y `/hormigon-desactivado/` no se tocan: «presupuesto
 sin compromiso» sigue siendo verdad y es la misma fórmula con la que cierra la `description` del
 layout raíz.
+
+**Dos servicios más el 2026-10-30, por petición del dueño:** bombeo de hormigón (árido de 12 mm) y
+vertido de autonivelante. Usan la misma plantilla `PaginaServicio` —mismo hero, submenú, guía,
+aplicaciones, ficha técnica, «Cuándo NO», FAQ con `FAQPage`, `Service` en JSON-LD y formulario de
+cierre— y entran solos en la home, el pie y el sitemap, porque todos leen del catálogo. No son
+acabados decorativos: declaran `hasFinishes: false` en el modelo (`03` §2.1) y la plantilla no
+monta ni el muestrario, ni el botón «Ver acabados», ni «Cómo trabajamos» (`02` §A2). Sin landing
+`/lp/`. Su `title` y su
+`description` viven en el modelo de contenido, no aquí.
 
 Las descripciones completas están en el §7.5 del documento maestro. Para las rutas generadas
 (`[slug]`, `[modelo]`, `[municipio]`) se construyen desde los datos, sin plantilla vacía:

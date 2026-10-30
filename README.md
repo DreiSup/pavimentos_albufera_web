@@ -48,7 +48,7 @@ Gates antes de cada commit: `content:validate` → `lint` → `typecheck` →
 
 ```
 apps/web/                    Next.js — única app
-  src/app/                   rutas (congeladas): home, 6 servicios, /acabados + [modelo],
+  src/app/                   rutas: home, 8 servicios, /acabados + [modelo],
                               /proyectos + [slug], /zonas/[municipio], /empresa, /presupuesto,
                               /blog + [slug], legales, /lp/[slug], /api/atribucion, sitemap, robots
   src/components/            layout · ui · contenido · datos · secciones (congelados)

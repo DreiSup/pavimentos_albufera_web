@@ -23,7 +23,7 @@ literal del §7.1 del documento maestro.
 | 01 | Hero | **A pantalla completa.** El **carrusel** ocupa la sección entera y encima van, en una columna, titular 88 px, entradilla y 2 botones, todo sobre el velo (`01 §2.8`). Etiqueta técnica abajo a la derecha, control de pausa abajo a la izquierda. Alto: `min-height` del 88 % del alto útil (`01 §3.15`) | Lo mismo, con el titular a 46 px y los 2 botones a ancho completo. El alto útil descuenta también la barra fija de contacto |
 | 02 | Barra de confianza | Anclada, una línea, 4 datos | No anclada, 4 filas numeradas |
 | 03 | Por dónde empezar | `380px 1fr` **desde 1280** (entre 768 y 1279, cabecera arriba y 3 columnas) + 3×2 tarjetas `01 §3.12` separadas por `gap` 24, **cada una un enlace** | **2 columnas**, `gap` 14, tarjeta `01 §3.12` (`4/3` + título + texto + rótulo de destino). **Enmendado el 2026-10-01 por decisión del dueño:** antes era una retícula de 2 px sobre `--tinta` que se leía como tabla, y no enlazaba a nada. Destinos: entrada de garaje → `/proyectos/moncada-impreso-espiga-117/` · porche y terraza → `/hormigon-fratasado/` · contorno de piscina → `/hormigon-lavado/` · interior de vivienda → `/hormigon-pulido/` · patio y jardín → `/proyectos/corbera-fratasado-arena/` · nave, parking o local → `/proyectos/ribarroja-pulido/`. Donde no hay obra documentada del espacio se enlaza al servicio que lo lista entre sus aplicaciones, nunca a una obra inventada |
-| 04 | Servicios | Fondo `--fondo-alt`. Rejilla de 3×2, imagen `16/10`, título 26 px | Columna, imagen `16/10`, título 20 px |
+| 04 | Servicios | Fondo `--fondo-alt`. Rejilla de **4×2 desde 1280 y 2×4 entre 768 y 1279** (ocho servicios desde el 2026-10-30; antes 3×2 con seis — `01` §2.5), imagen `16/10`, título 26 px | Columna, imagen `16/10`, título 20 px |
 | 05 | Muestrario | Antetítulo + enlace-etiqueta a la derecha. Chips en una fila. Rejilla de 4 | Chips en carril deslizante. Rejilla de 2×2 con 4 muestras. Enlace-etiqueta al final |
 | 06 | Cómo trabajamos | Fondo `--fondo-alt`. 4 columnas, numeral 34 px en `--acero` sobre `border-top` | 4 filas, numeral 26 px en columna fija de 42 px |
 | 07 | Proyectos | Rejilla de 3×3, **las 9 obras documentadas** | Carrusel horizontal de tarjetas de 220 px, las 9 |
@@ -80,6 +80,17 @@ Enhanced Conversions solo puede contar con los leads que lo dejen por su cuenta.
 
 **Plantilla de los 6 servicios.** 8 secciones. Copy de las 4 primeras del §7.2; las restantes
 reutilizan literal el §7.1 filtrado a este servicio. Cero texto nuevo.
+
+**Desde el 2026-10-30 la plantilla sirve ocho servicios**: las seis técnicas y dos servicios sin
+acabado decorativo, `/bombeo-de-hormigon/` y `/vertido-de-autonivelante/` (`03` §2.1). Misma
+plantilla, con tres diferencias que salen del modelo (`hasFinishes: false`), no
+de una plantilla aparte: **sin fila 02 (Muestrario) ni botón «Ver acabados» en el hero** —no hay
+acabado que enseñar, ni hoy ni con obra—, **sin fila 05 (Cómo trabajamos)** —sus cuatro pasos son
+los de una solera decorativa: equipo propio, 80-100 m² en 2 o 3 días, 24-48 h sin pisar y 28 de
+curado, 10 años de garantía y resellado, nada confirmado para bombear o verter autonivelante, y
+escribir otros sería copy inventado— y **«Obra ejecutada» solo cuando haya obra** de ese
+servicio, porque su estado vacío habla «de este acabado». El numerado y el submenú se cierran
+solos sobre lo que queda. La ficha técnica pinta sus `{{pendiente}}` en `<DatoPendiente>`.
 
 | # | Sección | Notas |
 |---|---|---|

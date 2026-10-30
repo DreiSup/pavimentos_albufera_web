@@ -1,9 +1,11 @@
 import type { Service, SpecRow } from '../schemas/service.ts'
 
 /**
- * The 6 techniques, from `apps/web/src/content/servicios.tsx`'s `SERVICIOS`.
- * Array order is the site's menu order. Every `specs` value is a plain
- * string in the source (confirmed by reading the whole file): the only JSX
+ * The 6 techniques, from `apps/web/src/content/servicios.tsx`'s `SERVICIOS`,
+ * plus the 2 services added on 2026-10-30 (`bombeo`, `autonivelante`, at the
+ * end — see their own comment). Array order is the site's menu order. Every
+ * `specs` value of the 6 techniques is a plain string in the source
+ * (confirmed by reading the whole file): the only JSX
  * there is 2 of the 4 `PASOS[].texto` entries, which are a SEPARATE export
  * this migration deliberately does not move here (D6 — they stay in the
  * `apps/web/src/content/servicios.tsx` adapter, proven identical in phase
@@ -566,5 +568,275 @@ export const services = [
       ],
     },
     faqRefs: ['washedVsExposed', ...SLAB_FAQ_REFS, 'priceFactors'],
+  },
+
+  /*
+   * Two services added 2026-10-30 at the owner's request, at the end of the
+   * menu. The ONLY facts the owner has confirmed are the services themselves:
+   * pumping and placing concrete with 12 mm aggregate, and placing
+   * self-levelling screed. The copy is new, authorized by the project lead
+   * and still pending the owner's review
+   * (`docs/servicios-nuevos/copy-bombeo-y-autonivelante.md`, which also lists
+   * every `{{pending}}` below and what to ask). Technique is explained in
+   * general, correct trade terms; every figure or commitment of the business
+   * (reach, flow, minimum volume, who orders the concrete, own or hired pump,
+   * product, thicknesses, times, service scope) stays `{{pending}}`. No
+   * photos, no projects: the template falls back to `<BloquePosicion>`.
+   * `hasFinishes: false`: neither has a decorative finish to show.
+   *
+   * The second one is named «Vertido de autonivelante», never after the
+   * material's generic trade name: the owner doesn't want that word in any
+   * title, name, H1, link or CTA. The guide may still say what the material
+   * is, once, where it explains it.
+   *
+   * `specs[].value` uses the `{{…}}` pending markup (see `SpecRow` in
+   * `schemas/service.ts`); no links there.
+   */
+  {
+    id: 'bombeo',
+    path: { es: '/bombeo-de-hormigon/' },
+    name: { es: 'Bombeo de hormigón' },
+    title: { es: 'Bombeo de hormigón en Valencia: árido de 12 mm' },
+    description: {
+      es: 'Bombeo y vertido de hormigón con árido de 12 mm hasta el patio, la parcela o la planta a la que no llega el camión. Cómo funciona y cuándo no compensa.',
+    },
+    h1: { es: 'Bombeo de hormigón en Valencia, Castellón y Alicante' },
+    intro: {
+      es: 'Llevamos el hormigón por manguera hasta donde la cuba no llega: el patio de atrás, la parcela sin entrada o la planta de arriba. Bombeo y vertido con árido de 12 mm.',
+    },
+    heroLabelLines: [{ es: 'BOMBEO Y VERTIDO' }, { es: 'ÁRIDO MÁXIMO 12 MM' }],
+    cardText: { es: 'Hormigón por manguera hasta donde no llega el camión. Árido de 12 mm.' },
+    hasFinishes: false,
+    guide: {
+      kicker: { es: 'Qué es' },
+      title: { es: 'Qué es el bombeo de hormigón' },
+      intro: {
+        es: 'Es mover el hormigón desde la cuba hasta el sitio donde se vierte por una manguera, empujado por una bomba. Hace falta cuando el camión no puede acercarse: un patio trasero, una parcela con la entrada estrecha, un sótano o una planta alta. El hormigón llega al tajo sin carretillas ni cubos.',
+      },
+      blocks: [
+        {
+          title: { es: 'Por qué árido de 12 mm' },
+          paragraphs: [
+            {
+              es: 'El árido es la piedra que lleva dentro el hormigón. Con un tamaño máximo de 12 mm, la mezcla pasa por una manguera de menos diámetro, que pesa menos y se mueve a mano: por un pasillo, por una puerta o por encima de una tapia.',
+            },
+            {
+              es: 'Ese tamaño encaja con soleras y capas de poco espesor, donde una piedra gruesa no tiene sitio. Si tu obra tiene proyecto y pide un árido mayor, dínoslo antes de pedir el hormigón: {{si bombeáis también hormigón con árido de más de 12 mm}}.',
+            },
+          ],
+        },
+        {
+          title: { es: 'Cómo se organiza el día del vertido' },
+          paragraphs: [
+            {
+              es: 'La cuba descarga en la tolva de la bomba y la bomba empuja el hormigón hasta la boca de la manguera. Para que eso funcione hacen falta tres cosas: un sitio para la bomba al que la cuba pueda llegar, un recorrido libre para la manguera y la zona de vertido preparada —base, encofrado y armado— antes de que llegue el camión.',
+            },
+            {
+              es: 'La bomba que usamos: {{propia o contratada, y de qué tipo: bomba de manguera o pluma sobre camión}}. Hasta dónde llega y cuánto mueve: {{alcance en metros de manguera o de pluma, y caudal en m³/h}}. Con la medida del recorrido delante te decimos si se llega.',
+            },
+            {
+              es: 'El hormigón: {{si lo pedís vosotros a planta o lo pide el cliente, y qué resistencia y consistencia servís}}.',
+            },
+          ],
+        },
+        {
+          title: { es: 'En casa y en obra' },
+          paragraphs: [
+            {
+              es: 'Si vas a hacer una solera en el patio de atrás y el camión no entra por la calle, el bombeo es lo que evita meter el hormigón a carretilla por el garaje o por el salón.',
+            },
+            {
+              es: 'Si eres constructor o reformista, es el vertido con la manguera hasta el tajo. Lo que entra además de bombear y verter: {{si extendéis, regleáis y fratasáis, o solo bombeo y vertido}}.',
+            },
+          ],
+        },
+        {
+          title: { es: 'Bomba, canaleta o carretilla' },
+          paragraphs: [
+            {
+              es: 'Son tres maneras de llevar el hormigón al sitio. La canaleta es la del propio camión: si la cuba se arrima al tajo, descarga directa y no hace falta nada más. La carretilla sirve para poco volumen y poca distancia, a costa de viajes y de tiempo con el hormigón fraguando. La bomba es para cuando la cuba no llega y el volumen ya no se mueve a mano.',
+            },
+            {
+              es: 'Desde qué volumen compensa traer la bomba: {{volumen mínimo por servicio, en m³}}.',
+            },
+          ],
+        },
+        {
+          title: { es: 'Del bombeo al pavimento' },
+          paragraphs: [
+            {
+              es: 'La solera que se bombea puede quedarse como base o terminar en un pavimento: [fratasada](/hormigon-fratasado/), [impresa](/hormigon-impreso/) o [pulida](/hormigon-pulido/). {{si el bombeo se presupuesta junto con el pavimento o como servicio aparte}}.',
+            },
+            {
+              es: 'Si lo que hay que nivelar es un suelo interior antes de la tarima o el vinílico, no hace falta hormigón: eso es [vertido de autonivelante](/vertido-de-autonivelante/).',
+            },
+          ],
+        },
+      ],
+    },
+    applications: {
+      intro: {
+        es: 'El bombeo resuelve un problema de acceso, no de acabado: lo que cambia es por dónde llega el hormigón hasta el sitio.',
+      },
+      list: [
+        {
+          name: { es: 'Patio trasero sin acceso para el camión' },
+          text: { es: 'La manguera cruza el garaje o la casa, y el hormigón no pasa por la carretilla.' },
+        },
+        {
+          name: { es: 'Parcela con la entrada estrecha o en cuesta' },
+          text: { es: 'El camión se queda en la calle; la manguera hace el resto.' },
+        },
+        { name: { es: 'Planta alta, ático o azotea' }, text: { es: 'Sin subir el hormigón a cubos.' } },
+        { name: { es: 'Sótano o planta baja interior' }, text: { es: 'Vertido dentro, con el camión fuera.' } },
+        {
+          name: { es: 'Obra de constructor o reformista' },
+          text: { es: 'Soleras y capas de poco espesor, con la manguera hasta el tajo.' },
+        },
+      ],
+    },
+    specs: [
+      { label: { es: 'TAMAÑO MÁXIMO DE ÁRIDO' }, value: { es: '12 mm' } },
+      { label: { es: 'TIPO DE BOMBA' }, value: { es: '{{manguera o pluma · propia o contratada}}' } },
+      { label: { es: 'ALCANCE' }, value: { es: '{{metros de manguera o de pluma}}' } },
+      { label: { es: 'CAUDAL' }, value: { es: '{{m³/h}}' } },
+      { label: { es: 'VOLUMEN MÍNIMO' }, value: { es: '{{m³ por servicio}}' } },
+      { label: { es: 'HORMIGÓN' }, value: { es: '{{resistencia y consistencia · quién lo pide a planta}}' } },
+      { label: { es: 'ANTELACIÓN DE RESERVA' }, value: { es: '{{días}}' } },
+    ],
+    whenNotTo: {
+      title: { es: 'Cuándo NO hace falta bombear' },
+      text: {
+        es: 'Si el camión se puede arrimar y descargar con su canaleta, la bomba es un gasto que no necesitas. Para muy poco hormigón —un escalón, un hueco, una arqueta— tampoco suele compensar: a veces sale mejor la carretilla. Si lo que buscas es un suelo interior plano para la tarima, no es hormigón bombeado: es autonivelante. Y el bombeo no es un acabado: lo que se ve al final es la solera, fratasada o impresa.',
+      },
+      alternatives: [
+        { href: '/vertido-de-autonivelante/', text: { es: 'Ver vertido de autonivelante' } },
+        { href: '/hormigon-fratasado/', text: { es: 'Ver hormigón fratasado' } },
+        { href: '/hormigon-impreso/', text: { es: 'Ver hormigón impreso' } },
+      ],
+    },
+    faqRefs: ['pumpWhen', 'pumpAggregate', 'pumpSetup', 'pumpSmallVolume', 'pumpPrice'],
+  },
+
+  {
+    id: 'autonivelante',
+    path: { es: '/vertido-de-autonivelante/' },
+    name: { es: 'Vertido de autonivelante' },
+    title: { es: 'Vertido de autonivelante en Valencia: nivelar el suelo' },
+    description: {
+      es: 'Vertido de autonivelante para dejar el suelo interior plano antes de la tarima, el vinílico o el microcemento. Qué es, cómo se aplica y cuándo no sirve.',
+    },
+    h1: { es: 'Vertido de autonivelante en Valencia, Castellón y Alicante' },
+    intro: {
+      es: 'Una masa fluida que se reparte sola y deja el suelo a nivel. La base plana que piden la tarima, el vinílico o el microcemento.',
+    },
+    heroLabelLines: [{ es: 'AUTONIVELANTE' }, { es: 'BASE PLANA · INTERIOR' }],
+    cardText: { es: 'Suelo interior a nivel, listo para tarima, vinílico o microcemento.' },
+    hasFinishes: false,
+    guide: {
+      kicker: { es: 'Qué es' },
+      title: { es: 'Qué es el autonivelante' },
+      intro: {
+        es: 'Un mortero muy fluido que, al verterlo, se reparte solo y se nivela por su propio peso. Deja una base plana y lisa para el pavimento final: tarima, laminado, vinílico, cerámica o microcemento. No es el suelo que se ve: es el que hace que el de encima quede bien.',
+      },
+      blocks: [
+        {
+          title: { es: 'Cuándo hace falta' },
+          paragraphs: [
+            {
+              es: 'Cuando la solera tiene desniveles, cejas o zonas hundidas que el suelo nuevo no va a perdonar. Una tarima flotante sobre una base irregular cruje y se mueve; un vinílico en lámina marca cada bache; un [microcemento](/microcemento/) repite la forma de lo que tiene debajo.',
+            },
+            {
+              es: 'También sirve para recrecer: subir el suelo de una habitación hasta la altura de la de al lado, o dejar a cota la planta baja después de levantar el pavimento viejo.',
+            },
+          ],
+        },
+        {
+          title: { es: 'Cómo se aplica' },
+          paragraphs: [
+            {
+              es: 'Primero, el soporte: firme, limpio y seco, sin polvo ni piezas sueltas. Encima va una imprimación, que mejora el agarre y evita que el suelo de debajo le robe el agua a la masa. Al pie de las paredes se pone una banda perimetral, para que la capa nueva no quede pegada a ellas y pueda moverse sin fisurarse.',
+            },
+            {
+              es: 'Después se vierte y se pasa un rodillo de púas, que saca el aire y ayuda a que la masa se reparta. Cómo lo vertemos nosotros: {{a mano o con bomba}}.',
+            },
+          ],
+        },
+        {
+          title: { es: 'Tipos, espesores y tiempos' },
+          paragraphs: [
+            {
+              es: 'Hay autonivelantes de base cemento y de sulfato cálcico, la anhidrita. Cada producto tiene su espesor mínimo y máximo y sus plazos. La anhidrita no lleva bien la humedad, así que en baños, cocinas y zonas que se mojan se suele preferir el de cemento.',
+            },
+            {
+              es: 'Lo que vertemos nosotros: {{tipo y marca del autonivelante, espesor mínimo y máximo, y plazo para pisarlo y para poner el pavimento final}}.',
+            },
+          ],
+        },
+        {
+          title: { es: 'Sobre suelo radiante' },
+          paragraphs: [
+            {
+              es: 'Sobre los tubos de un suelo radiante, una masa fluida los envuelve sin dejar bolsas de aire, y eso ayuda a que el calor llegue parejo al pavimento. {{si vertéis autonivelante sobre suelo radiante, y con qué producto}}.',
+            },
+          ],
+        },
+        {
+          title: { es: 'Autonivelante, microcemento o solera nueva' },
+          paragraphs: [
+            {
+              es: 'El microcemento es un acabado de milímetros que se queda a la vista; el autonivelante corrige la planitud y se tapa. Por eso pueden ir juntos: primero la base a nivel y, encima, el acabado continuo.',
+            },
+            {
+              es: 'Lo que no hace es sustituir a una solera. Si no hay suelo de hormigón, o el que hay está roto, primero va una solera nueva —con [bombeo de hormigón](/bombeo-de-hormigon/) si el camión no llega—. Y si quieres ver el hormigón, esa solera puede quedar [pulida](/hormigon-pulido/) o [fratasada](/hormigon-fratasado/).',
+            },
+          ],
+        },
+      ],
+    },
+    applications: {
+      intro: {
+        es: 'Va en interior, entre la solera y el suelo que se ve. Casi siempre en una reforma: cuando el suelo nuevo pide una base que la que hay no da.',
+      },
+      list: [
+        { name: { es: 'Reforma de vivienda' }, text: { es: 'Base plana después de levantar el suelo viejo.' } },
+        {
+          name: { es: 'Antes de tarima, laminado o vinílico' },
+          text: { es: 'Sin baches que crujan ni se marquen.' },
+        },
+        { name: { es: 'Base para microcemento' }, text: { es: 'Plano antes del acabado continuo.' } },
+        { name: { es: 'Recrecido entre estancias' }, text: { es: 'Para igualar la altura de dos habitaciones.' } },
+        { name: { es: 'Local comercial u oficina' }, text: { es: 'La base del pavimento que va encima.' } },
+      ],
+    },
+    specs: [
+      { label: { es: 'USO' }, value: { es: 'Interior, bajo otro pavimento' } },
+      { label: { es: 'SOPORTE' }, value: { es: 'Firme, limpio y seco' } },
+      { label: { es: 'PREPARACIÓN' }, value: { es: 'Imprimación y banda perimetral' } },
+      { label: { es: 'TIPO' }, value: { es: '{{base cemento o anhidrita · marca}}' } },
+      { label: { es: 'ESPESOR' }, value: { es: '{{mínimo y máximo}}' } },
+      { label: { es: 'RESISTENCIA' }, value: { es: '{{clase a compresión y a flexión}}' } },
+      { label: { es: 'PISABLE' }, value: { es: '{{horas}}' } },
+      { label: { es: 'LISTO PARA EL PAVIMENTO FINAL' }, value: { es: '{{días, según espesor}}' } },
+    ],
+    whenNotTo: {
+      title: { es: 'Cuándo NO elegir autonivelante' },
+      text: {
+        es: 'No es un suelo de exterior ni un acabado para dejarlo visto. En un patio o una terraza va una solera de hormigón con su acabado, impreso o fratasado. Si quieres el aspecto de cemento continuo dentro de casa, eso es microcemento o una solera pulida. Y si el soporte se mueve, tiene grietas vivas o humedad que sube del terreno, el autonivelante no lo arregla: lo tapa una temporada. Eso se resuelve antes.',
+      },
+      alternatives: [
+        { href: '/microcemento/', text: { es: 'Ver microcemento' } },
+        { href: '/hormigon-pulido/', text: { es: 'Ver hormigón pulido' } },
+        { href: '/hormigon-impreso/', text: { es: 'Ver hormigón impreso' } },
+      ],
+    },
+    faqRefs: [
+      'selfLevelWhat',
+      'selfLevelSupport',
+      'selfLevelFinish',
+      'selfLevelVsMicro',
+      'selfLevelTimes',
+      'selfLevelPrice',
+    ],
   },
 ] satisfies Service[]

@@ -28,9 +28,13 @@ export type ResolvedService = {
   heroLabelLines: string[]
   heroImage?: ResolvedImage
   cardImage?: ResolvedImage
+  cardText?: string
+  /** `Service.hasFinishes` with its default applied: `false` only where the service has no decorative finish by nature. */
+  hasFinishes: boolean
   guide?: ResolvedServiceGuide
   applications?: { intro: string; list: { name: string; text: string }[] }
-  specs: { label: string; value: string }[]
+  /** `value` split into runs: a spec value may carry `{{pending}}` markup (see `SpecRow`). */
+  specs: { label: string; value: ResolvedRichTextRun[] }[]
   whenNotTo?: { title: string; text: string; alternatives: { href: string; text: string }[] }
   faq: ResolvedQuestion[]
 }
@@ -72,6 +76,7 @@ function resolveService(service: Service, locale: Locale): ResolvedService | und
   const path = pickLocalized(service.path, locale)
   if (name === undefined || path === undefined) return undefined // no translation at all: not publishable in this locale
   const guide = service.guide ? resolveGuide(service.guide, locale) : undefined
+  const cardText = service.cardText ? pickLocalized(service.cardText, locale) : undefined
 
   return {
     id: service.id,
@@ -84,6 +89,8 @@ function resolveService(service: Service, locale: Locale): ResolvedService | und
     heroLabelLines: pickLocalizedList(service.heroLabelLines, locale),
     ...(service.heroImage ? { heroImage: resolveImage(service.heroImage, locale) } : {}),
     ...(service.cardImage ? { cardImage: resolveImage(service.cardImage, locale) } : {}),
+    ...(cardText !== undefined ? { cardText } : {}),
+    hasFinishes: service.hasFinishes !== false,
     ...(guide ? { guide } : {}),
     ...(service.applications
       ? {
@@ -98,7 +105,7 @@ function resolveService(service: Service, locale: Locale): ResolvedService | und
       : {}),
     specs: service.specs.map((row) => ({
       label: pickLocalized(row.label, locale) ?? '',
-      value: pickLocalized(row.value, locale) ?? '',
+      value: parseRichText(pickLocalized(row.value, locale) ?? ''),
     })),
     ...(service.whenNotTo
       ? {
@@ -116,7 +123,7 @@ function resolveService(service: Service, locale: Locale): ResolvedService | und
   }
 }
 
-/** All 6 services, in menu order, resolved for `locale`. A service without a translation for `locale` is dropped (never a silent Spanish fallback). */
+/** All services (8 today), in menu order, resolved for `locale`. A service without a translation for `locale` is dropped (never a silent Spanish fallback). */
 export function getServices(locale: Locale): ResolvedService[] {
   const out: ResolvedService[] = []
   for (const service of services) {

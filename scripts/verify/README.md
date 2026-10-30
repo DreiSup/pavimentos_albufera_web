@@ -193,11 +193,12 @@ When this toolkit finds a genuine pre-existing issue there, it goes in
 doesn't match an entry here still fails the build.
 
 Two structural, site-wide pre-existing gaps are baselined today, one entry
-per affected route (56 entries total — see the file for the full list):
+per affected route (58 entries total — see the file for the full list):
 
-- **`metadata:missing-og-url`** on all 53 indexable pages (51 at the
+- **`metadata:missing-og-url`** on all 55 indexable pages (51 at the
   migration, plus `/zonas/` and `/proyectos/moraira-impreso-silleria-grande-113/`
-  added on 2026-10-21). `app/layout.tsx`'s shared
+  added on 2026-10-21, and the service pages `/bombeo-de-hormigon/` and
+  `/vertido-de-autonivelante/` added on 2026-10-30). `app/layout.tsx`'s shared
   `openGraph` block never sets `openGraph.url` (its own comment explains
   why — title/description/image are meant to cascade, `url` was simply
   never added), so Next never emits `<meta property="og:url">` anywhere.

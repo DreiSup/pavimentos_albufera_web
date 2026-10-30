@@ -137,6 +137,96 @@ export const faq: Record<string, Question> = {
     },
     topic: 'mantenimiento',
   },
+
+  /*
+   * Added 2026-10-30 with the two new services (`bombeo`, `autonivelante`).
+   * New copy authorized by the project lead, pending the owner's review
+   * (`docs/servicios-nuevos/copy-bombeo-y-autonivelante.md`). Only general
+   * trade facts and this business's stated policy (no prices on the web,
+   * closed quote): no reach, flow, minimum volume, product, thickness or
+   * time of theirs — those stay `{{pending}}` in each page's guide/specs,
+   * never here (an FAQ answer is plain text and travels in `FAQPage`).
+   * Each question names its service, because `FAQPage` lifts it out of the
+   * page. `topic` values are all from the existing GA4 vocabulary.
+   */
+  pumpWhen: {
+    question: { es: '¿Cuándo hace falta bombear el hormigón?' },
+    answer: {
+      es: 'Cuando la cuba no puede acercarse a donde va el hormigón: un patio trasero, una parcela sin entrada para el camión, un sótano o una planta alta. Si el camión llega al sitio, descarga con su canaleta y la bomba sobra.',
+    },
+    topic: 'proceso',
+  },
+  pumpAggregate: {
+    question: { es: '¿Qué ventaja tiene bombear con árido de 12 mm?' },
+    answer: {
+      es: 'Con una piedra más pequeña, el hormigón pasa por una manguera más estrecha. Pesa menos y se maneja a mano, así que entra por sitios donde una manguera gruesa no cabe. Va bien en soleras y capas de poco espesor. Si tu obra tiene proyecto y pide un árido mayor, cuéntanoslo antes de pedir el hormigón.',
+    },
+    topic: 'proceso',
+  },
+  pumpSetup: {
+    question: { es: '¿Qué tiene que estar listo el día del bombeo?' },
+    answer: {
+      es: 'Un hueco para la bomba al que llegue la cuba, un paso libre para la manguera y la zona de vertido terminada: la base compactada, el encofrado y el armado, si lo lleva. El hormigón fresco no espera, así que todo eso tiene que estar hecho antes de que llegue el camión.',
+    },
+    topic: 'terreno',
+  },
+  pumpSmallVolume: {
+    question: { es: '¿Compensa bombear poco hormigón?' },
+    answer: {
+      es: 'Depende del acceso. Si el camión llega, no: la bomba suma un coste que no hace falta. Si no llega, la otra opción es moverlo a carretilla, y con muy poco hormigón a veces sigue siendo lo razonable. Dinos cuánto es y por dónde hay que pasar, y te decimos qué sale mejor.',
+    },
+    topic: 'precio',
+  },
+  pumpPrice: {
+    question: { es: '¿Cuánto cuesta bombear el hormigón?' },
+    answer: {
+      es: 'No publicamos precios. El del bombeo depende sobre todo de cuánto hormigón hay que mover, de la distancia y la altura que tiene que salvar la manguera y del tiempo que la bomba pasa en la obra. Con esos datos te damos un precio cerrado antes de empezar.',
+    },
+    topic: 'precio',
+  },
+
+  selfLevelWhat: {
+    question: { es: '¿Para qué sirve el autonivelante?' },
+    answer: {
+      es: 'Para dejar un suelo interior plano y liso antes de poner el pavimento final. Corrige los desniveles y las irregularidades de la solera, que es justo lo que necesitan la tarima, el laminado, el vinílico o el microcemento para quedar bien.',
+    },
+    topic: 'proceso',
+  },
+  selfLevelSupport: {
+    question: { es: '¿Sobre qué suelo se puede verter el autonivelante?' },
+    answer: {
+      es: 'Sobre una solera de hormigón, un recrecido o un suelo cerámico bien pegado, siempre que esté firme, limpio y seco. Antes va una imprimación que mejora la adherencia. Si el soporte se mueve, está suelto o tiene humedad, eso se arregla primero: el autonivelante no lo corrige.',
+    },
+    topic: 'terreno',
+  },
+  selfLevelFinish: {
+    question: { es: '¿Se puede dejar el autonivelante visto, como suelo final?' },
+    answer: {
+      es: 'En una casa, no es lo suyo. El autonivelante de regularización está pensado para recibir otro pavimento encima, no para quedarse a la vista y pisarse a diario. Si quieres un suelo continuo de cemento visto, eso es microcemento sobre el suelo que tienes, o una solera de hormigón pulido o fratasado.',
+    },
+    topic: 'proceso',
+  },
+  selfLevelVsMicro: {
+    question: { es: '¿Qué diferencia hay entre autonivelante y microcemento?' },
+    answer: {
+      es: 'Hacen trabajos distintos. El autonivelante es una base: endereza el suelo y queda tapado por otro. El microcemento es un acabado de 2 a 3 milímetros que se ve, y que sigue la forma de lo que tiene debajo. Por eso se combinan bien: primero se nivela y luego va el microcemento.',
+    },
+    topic: 'proceso',
+  },
+  selfLevelTimes: {
+    question: { es: '¿Cuándo se puede pisar el autonivelante y poner el suelo encima?' },
+    answer: {
+      es: 'Depende del producto y del espesor, y son dos plazos distintos. El de pisar es corto. El de poner el pavimento final es más largo, porque la tarima o el vinílico piden que la base haya secado hasta una humedad concreta. Te damos los dos con el producto y el espesor de tu obra delante.',
+    },
+    topic: 'plazo',
+  },
+  selfLevelPrice: {
+    question: { es: '¿Cuánto cuesta el autonivelante por metro cuadrado?' },
+    answer: {
+      es: 'No publicamos precios. Depende de la superficie, del espesor que hace falta para dejar el suelo a nivel —que es lo que decide cuánto material entra— y del estado del soporte: si antes hay que levantar el suelo viejo, limpiarlo o reparar grietas. Lo medimos y te damos un precio cerrado.',
+    },
+    topic: 'precio',
+  },
 }
 
 /** Home page's FAQ accordion — `faqHome` in `apps/web/src/content/faq.ts`. */

@@ -1,6 +1,6 @@
 /**
  * This site's sitemap order (kept exactly, pre-migration): the static
- * routes block — home, the six service routes spliced in after `/` and
+ * routes block — home, the service routes (8 today) spliced in after `/` and
  * before `/acabados/`, then the section index pages and the three legal
  * pages, all in `staticRoutes`, order owned by the caller (`app/sitemap.ts`)
  * — then finish routes, then projects, then service areas, then articles.

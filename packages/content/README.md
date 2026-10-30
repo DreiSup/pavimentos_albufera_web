@@ -75,7 +75,7 @@ Node's `--experimental-strip-types`, no `tsx`), but this business's content
 model genuinely differs in several places, confirmed by reading both
 codebases in full:
 
-- **`ServiceId`'s 6 values are short internal codes**, not the URL slug
+- **`ServiceId`'s 8 values are short internal codes**, not the URL slug
   (Pavivasa's `ServiceId` values ARE the slug). They're also the literal
   `?tecnica=` query-param contract, so they don't translate either.
 - **`Finish`, `Model`, `ServiceArea` are new top-level entities** with no
@@ -116,7 +116,14 @@ codebases in full:
 
 - **A new service**: add an entry to `src/data/services.ts` (in menu order)
   and a matching one to `src/data/service-catalog.ts` (kept in sync by
-  `content:validate`).
+  `content:validate`), plus the id in the `ServiceId` union and its zod
+  mirror, and a static route folder under `apps/web/src/app/`. A service
+  with no decorative finish by nature (pumping, self-levelling screed) sets
+  `hasFinishes: false`; `cardText` is the optional line under its name on
+  the home page's service grid — see both fields' comments in
+  `schemas/service.ts`. Add the route to `scripts/verify/checks/page-count.mjs`
+  and its `missing-og-url` entry to `scripts/verify/known-issues.json`. Spec
+  values (`SpecRow.value`) take `{{pending}}` markup and nothing else.
 - **A new finish**: add an entry to `src/data/finishes.ts`. `service` must
   match a real `ServiceId`; `model` (if set) a real `ModelId`; every slug in
   `projects` a real project. It becomes "published" automatically the

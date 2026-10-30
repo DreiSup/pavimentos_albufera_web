@@ -71,7 +71,7 @@ build` a secas no la dispara. Correrla a mano primero si se usa ese atajo.
 
 ```
 src/
-  app/          rutas — home, 6 páginas de servicio, /acabados + [modelo], /proyectos + [slug],
+  app/          rutas — home, 8 páginas de servicio, /acabados + [modelo], /proyectos + [slug],
                 /zonas/[municipio], /empresa, /presupuesto, /blog + [slug], legales, /lp/[slug],
                 /api/atribucion, sitemap.ts, robots.ts
   components/    layout · ui · contenido · datos · secciones

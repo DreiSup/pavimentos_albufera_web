@@ -240,9 +240,19 @@ Rejillas de escritorio, con el ancho de contenido a 1440 − 96 = **1344 px**:
 | Sección con antetítulo lateral | `grid-template-columns: 380px 1fr; gap: 64px` |
 | Dos columnas de peso igual | `1fr 1fr; gap: 72px` |
 | Muestrario | `repeat(4, 1fr); gap: 32px 24px` |
-| Proyectos y servicios | `repeat(3, 1fr); gap: 24px` |
+| Proyectos | `repeat(3, 1fr); gap: 24px` |
+| Servicios (home §04) | `repeat(4, 1fr); gap: 24px` desde 1280 · `repeat(2, 1fr)` entre 768 y 1279 |
 | Proceso en 4 pasos | `repeat(4, 1fr); gap: 32px` |
 | Pie | `repeat(4, 1fr); gap: 40px` |
+
+**Servicios, enmendado el 2026-10-30.** Eran `repeat(3, 1fr)`, igual que proyectos, con seis
+tarjetas en 3×2. Con los dos servicios nuevos (bombeo y autonivelante) son ocho, y en tres
+columnas quedaban 3+3+2: una fila coja con un hueco que no significa nada. Ocho se reparte entero
+en 4 y en 2, así que la rejilla pasa a 4×2 desde 1280 —la misma `repeat(4, 1fr)` que ya usan el
+muestrario y el proceso, con el `gap` de 24 de las tarjetas— y a 2×4 entre 768 y 1279, donde
+cuatro columnas de ~150 px no admiten el título a 26. Misma tarjeta, mismo `16/10`, sin color ni
+radio nuevos. Si el número de servicios cambia otra vez, la regla es esa: columnas que dividan el
+total, nunca una fila coja.
 
 Rejillas de móvil: una columna, salvo el muestrario (`1fr 1fr; gap: 22px 14px`). Los carruseles
 de tarjetas usan `overflow-x: auto` con margen negativo lateral para sangrar a los bordes.

@@ -30,6 +30,8 @@ export type ServicioId =
   | 'lavado'
   | 'fratasado'
   | 'desactivado'
+  | 'bombeo'
+  | 'autonivelante'
 
 export type Provincia = 'Valencia' | 'Castellón' | 'Alicante'
 

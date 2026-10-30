@@ -27,7 +27,7 @@ fuente_de_verdad: "el código; este documento lo resume"
 
 ## 1. Resumen
 
-Pavimentos Albufera es una empresa de pavimentos de hormigón decorativo (impreso, pulido, lavado, fratasado, desactivado, microcemento) en la comarca de la Albufera (Valencia). El repo es su web de marketing/captación: 6 servicios, 9 obras, 16 acabados, 8 zonas de servicio, 3 artículos, formulario de presupuesto con entrega por Resend/Telegram y Meta CAPI. Next.js 15 (App Router), 100% estático salvo una ruta dinámica (`/api/atribucion/`) y el Server Action del formulario. Migración de app Next.js plana (WordPress → Next.js 15 fue la migración anterior) a monorepo pnpm + Turborepo: la app se movió a `apps/web`, la lógica reutilizable se extrajo a 4 paquetes `@site/*` (`content`, `config`, `seo`, `tracking`) consumidos por `apps/web` a través de adaptadores legacy en español que se borran cuando el rediseño consuma `@site/*` directo. Las fases P1-P3 de esta migración están cerradas y verificadas (paridad de HTML/JS frente a la referencia pre-monorepo, E2E); WF3 añadió gates permanentes (`scripts/verify`, CI) y esta documentación. Rama local, nunca subida a `origin`.
+Pavimentos Albufera es una empresa de pavimentos de hormigón decorativo (impreso, pulido, lavado, fratasado, desactivado, microcemento) en la comarca de la Albufera (Valencia). El repo es su web de marketing/captación: 8 servicios (las 6 técnicas + bombeo de hormigón y vertido de autonivelante, 2026-10-30), 9 obras, 16 acabados, 8 zonas de servicio, 3 artículos, formulario de presupuesto con entrega por Resend/Telegram y Meta CAPI. Next.js 15 (App Router), 100% estático salvo una ruta dinámica (`/api/atribucion/`) y el Server Action del formulario. Migración de app Next.js plana (WordPress → Next.js 15 fue la migración anterior) a monorepo pnpm + Turborepo: la app se movió a `apps/web`, la lógica reutilizable se extrajo a 4 paquetes `@site/*` (`content`, `config`, `seo`, `tracking`) consumidos por `apps/web` a través de adaptadores legacy en español que se borran cuando el rediseño consuma `@site/*` directo. Las fases P1-P3 de esta migración están cerradas y verificadas (paridad de HTML/JS frente a la referencia pre-monorepo, E2E); WF3 añadió gates permanentes (`scripts/verify`, CI) y esta documentación. Rama local, nunca subida a `origin`.
 
 ### 1.1 Ramas / worktrees activos
 
@@ -151,7 +151,7 @@ Verificado con grep sobre el código real, no solo declarado:
 
 ### 6.1 Rutas
 
-20 ficheros `page.tsx` bajo `apps/web/src/app/`: 15 estáticas + 5 patrones dinámicos (`[param]`) que expanden a 36 instancias. Total de rutas prerenderizadas en el último build verificado: 15 + 36 = 51 páginas reales + `/_not-found` = 52.
+23 ficheros `page.tsx` bajo `apps/web/src/app/`: 18 estáticas + 5 patrones dinámicos (`[param]`) que expanden a 37 instancias. Total de rutas prerenderizadas en el último build verificado (2026-10-30, con `/zonas/`, la obra 10 y los dos servicios nuevos): 18 + 37 = 55 páginas reales + `/_not-found` = 56.
 
 | Ruta | Fichero | Fuente de datos | `generateStaticParams` | Indexable | JSON-LD |
 |---|---|---|---|---|---|
@@ -162,7 +162,7 @@ Verificado con grep sobre el código real, no solo declarado:
 | `/blog/` | `app/blog/page.tsx` | `@/lib/datos` | — | sí | `<Migas>` |
 | `/blog/[slug]/` (3) | `app/blog/[slug]/page.tsx` | `@/lib/datos` | sí, `dynamicParams=false` | sí | `<Migas>` |
 | `/empresa/` | `app/empresa/page.tsx` | contenido en línea | — | sí | `<Migas>` |
-| `/hormigon-{desactivado,fratasado,impreso,lavado,pulido}/`, `/microcemento/` (6) | `app/<servicio>/page.tsx` | `@/content/servicios`, `<PaginaServicio>` | — | sí | `schemaServicio` + `schemaFAQ` + `<Migas>` |
+| `/hormigon-{desactivado,fratasado,impreso,lavado,pulido}/`, `/microcemento/`, `/bombeo-de-hormigon/`, `/vertido-de-autonivelante/` (8) | `app/<servicio>/page.tsx` | `@/content/servicios`, `<PaginaServicio>` (los dos últimos con `hasFinishes: false`: sin muestrario, sin «Cómo trabajamos», «Obra ejecutada» solo con obra) | — | sí | `schemaServicio` + `schemaFAQ` + `<Migas>` |
 | `/lp/[slug]/` (4) | `app/lp/[slug]/page.tsx` | `@/content/landings` | sí, `dynamicParams=false` | **no**, `robots:{index:false}` | mismo JSON-LD que la página de servicio (reutiliza `<PaginaServicio>`, incluido `<Migas>`) |
 | `/politica-de-cookies/`, `/politica-de-privacidad/` | `app/politica-de-*/page.tsx` | `@/content/legal` | — | sí | `<Migas>` |
 | `/presupuesto/` | `app/presupuesto/page.tsx` | `@/lib/config` + Server Action `actions.ts` | — | sí | `<Migas>` |
@@ -192,7 +192,7 @@ Un comentario del propio `app/layout.tsx` cifra en "49 rutas" (aviso legal inclu
 | `contenido/` | 6 | 0 | bloques de fotos/artículos/proyectos |
 | `datos/` | 4 | 0 | `DatoPendiente` (placeholder único de dato no confirmado), `FichaObra`, `TablaFichaTecnica`, `EtiquetaTecnica` |
 | `layout/` | 10 | `Atribucion`, `Cabecera`, `Consentimiento`, `EventosGlobales`, `MenuMovil`, `ProfundidadScroll` (6) | montaje global (consentimiento, eventos, atribución, scroll), navegación |
-| `secciones/` | 6 | `Acordeon`, `FiltrosAcabados`, `FormularioPresupuesto`, `SubmenuServicio` (4) | `PaginaServicio` (plantilla de las 6 páginas de servicio + 4 landings, emite su propio JSON-LD, incluido `<Migas>`), `PlantillaLegal` |
+| `secciones/` | 6 | `Acordeon`, `FiltrosAcabados`, `FormularioPresupuesto`, `SubmenuServicio` (4) | `PaginaServicio` (plantilla de las 8 páginas de servicio + 4 landings, emite su propio JSON-LD, incluido `<Migas>`), `PlantillaLegal` |
 | `ui/` | 8 | 0 | átomos |
 
 ### 6.5 Adaptadores legacy
@@ -236,13 +236,13 @@ Fuente única: `packages/content/src/data/*.ts`, leída vía `queries/*.ts` o 4 
 
 **El README del paquete afirma que "todo slug/path de URL" es `Localized` — no es cierto de forma universal**, verificado esquema por esquema: `Project.slug`, `ServiceArea.slug`, `Article.slug`, `Service.path` **sí** son `Localized<string>`; **`Finish.slug` y `Model.id` son planos** (`string`/unión cerrada) — son también claves de búsqueda internas (`getFinish(slug)`, `getModel(id)`), el mismo carve-out que `ServiceId`/`ColorId`/`ImageKind`. Discrepancia real entre el README del paquete y el código, a reportar, no a repetir como regla universal.
 
-Campos planos confirmados: identificadores/uniones cerradas (`ServiceId` 6, `ModelId` 8, `ColorId` 7, `ImageKind` 4), referencias cruzadas a proyecto (`Finish.projects`/`ServiceArea.projects` son `ProjectId[]` = el slug `es` estable, sin resolver al locale que llama), nombres propios (`Business.name`/`town`/`province`, `Project.town`, `LegalFacts.companyName`), números/códigos internos, `CookieFact.name`.
+Campos planos confirmados: identificadores/uniones cerradas (`ServiceId` 8, `ModelId` 8, `ColorId` 7, `ImageKind` 4), referencias cruzadas a proyecto (`Finish.projects`/`ServiceArea.projects` son `ProjectId[]` = el slug `es` estable, sin resolver al locale que llama), nombres propios (`Business.name`/`town`/`province`, `Project.town`, `LegalFacts.companyName`), números/códigos internos, `CookieFact.name`.
 
 ### Entidades (recuentos verificados)
 
 | Entidad | Cifra |
 |---|---|
-| `Service` | 6 |
+| `Service` | 8 (6 técnicas + `bombeo`, `autonivelante`) |
 | `Finish` (acabado) | 16 |
 | `Model` | 8 |
 | `ServiceArea` (zona) | 8 |
@@ -256,7 +256,7 @@ Estos recuentos son del contenido en `@site/content`, no de rutas realmente cons
 
 ### Cómo añadir cada tipo (validado por `pnpm content:validate`, `packages/content/scripts/validate.ts`, salvo donde se marca [convención])
 
-- **Servicio**: editar la unión `ServiceId` [convención] + entradas en `services.ts`/`service-catalog.ts` [validado, mismo `id`/longitud]. Exige además crear una carpeta de ruta nueva bajo `apps/web/src/app/**` — **toca la zona congelada**.
+- **Servicio**: editar la unión `ServiceId` y su espejo zod [convención] + entradas en `services.ts`/`service-catalog.ts` [validado, mismo `id`/`path`/`name`/longitud] + una carpeta de ruta `apps/web/src/app/<ruta>/page.tsx` calcada de las existentes + su ruta en `STATIC_ROUTES` de `scripts/verify/checks/page-count.mjs` y su entrada `missing-og-url` en `known-issues.json`. Home, pie, sitemap y JSON-LD lo recogen solos del catálogo. Un servicio sin acabado decorativo por naturaleza declara `hasFinishes: false` [validado: ningún acabado puede apuntarle]; `cardText` da la línea de su tarjeta en la home. Los valores de `specs` admiten `{{pendiente}}` y ningún otro marcado [validado], y los `whenNotTo.alternatives[].href` deben ser rutas reales [validado].
 - **Modelo**: unión `ModelId` [convención] + `models.ts` [validado por Zod, sin check de integridad cruzada].
 - **Color**: unión `ColorId` + `colors.ts` [validado en los dos sentidos — el único caso con doble check de las 9 entidades].
 - **Acabado**: `finishes.ts`; `service`/`model`/`projects` referenciales [validados]; "publicado" solo si tiene `sample` [convención].
@@ -361,7 +361,7 @@ Toda variable de entorno nueva va también a `apps/web/.env.example` y a `global
 | Nombres de eventos GA4/Meta | `phone_click`, `whatsapp_click`, `email_click`, `generate_lead`, `calculator_use`, `samples_filter`, `scroll_depth`, `faq_open` (snake_case, inglés) | `generate_lead` (no `form_submit`) es deliberado: GA4 auto-detecta `form_submit` como su propio evento de Medición mejorada — renombrarlo evita mezclar el envío real con ese evento automático |
 | Parámetros de evento | `page_path`, `device_type` (automáticos), `evento_id` (también campo oculto del formulario y `metaEventId` de dedupe Pixel/CAPI), `MONEDA='EUR'` (sin `value`) | Registrados como dimensiones personalizadas en GA4 |
 | `data-ubicacion` | 18 valores (`header`, `hero`, `sticky_mobile`, …, `unmarked` = fallback de CTA sin marcar) | Contrato de reporting |
-| Fragmentos `@id` de JSON-LD | `<url>#negocio` (81 refs), `<url-servicio>#servicio` (6 nodos propios, uno por página de servicio) | Español a propósito, la URL varía, el fragmento no |
+| Fragmentos `@id` de JSON-LD | `<url>#negocio` (81 refs), `<url-servicio>#servicio` (8 nodos propios, uno por página de servicio) | Español a propósito, la URL varía, el fragmento no |
 | Campos del formulario | honeypot `empresa_web`; ocultos `evento_id`, `origen`; visibles `nombre`, `telefono`, `email`, `espacio`, `superficie`, `municipio`, `mensaje`, `foto`, `privacidad` | Contrato cliente↔Server Action |
 | Redirecciones | 33 `source:` en `redirects()`, todas `permanent:true` → **308**, no 301 (documentarlo como "301" sería incorrecto) | Backlinks reales de WordPress |
 | Variables de entorno | nombres de §9 | Vercel ya configurado con esos nombres |
@@ -376,7 +376,7 @@ Toda variable de entorno nueva va también a `apps/web/.env.example` y a `global
 
 **`scripts/verify` (raíz, WF3, checks a-j)**: (a) sitemap↔páginas reales; (b) enlaces internos sin 404; (c) redirects devuelven 308 (vivo, HTTP); (d) JSON-LD válido y `@id` resuelven; (e) metadata (H1 único, canonical, título/desc únicos); (f) robots.txt permite rastreadores de IA; (g) `<img>` con `alt`+tamaño; (h) presencia de `tel:`/`wa.me` en HTML renderizado (señal distinta a `verificar-landings.mjs`); (i) `verify:secrets` — fuga de secretos en `.next/static`/`.next/server/app`; (j) `page-count` — nº de páginas indexables ≥ mínimo esperado por `@site/content`. Solapamiento deliberado (parcial) con los 5 de arriba, detallado en `scripts/verify/README.md`.
 
-**`known-issues.json`**: 56 entradas exactas (54 de la migración + `/zonas/` y la obra nueva de Moraira, 2026-10-21), agrupadas en 2 claves: `(metadata, missing-og-url)` → 53 (una por página indexable; `app/layout.tsx` nunca fija `openGraph.url`) y `(metadata, duplicate-description)` → 3 (páginas legales sin `description` propia, heredan la de home). Una entrada que deja de fallar se reporta "stale" y **hace fallar el run** (a diferencia de Pavivasa, que solo lo imprime — este repo exige fallar en stale). Cualquier issue nuevo no listado también hace fallar.
+**`known-issues.json`**: 58 entradas exactas (54 de la migración + `/zonas/` y la obra nueva de Moraira, 2026-10-21, + `/bombeo-de-hormigon/` y `/vertido-de-autonivelante/`, 2026-10-30), agrupadas en 2 claves: `(metadata, missing-og-url)` → 55 (una por página indexable; `app/layout.tsx` nunca fija `openGraph.url`) y `(metadata, duplicate-description)` → 3 (páginas legales sin `description` propia, heredan la de home). Una entrada que deja de fallar se reporta "stale" y **hace fallar el run** (a diferencia de Pavivasa, que solo lo imprime — este repo exige fallar en stale). Cualquier issue nuevo no listado también hace fallar.
 
 > **Inexactitud de documentación corregida**: `README.md` citaba como ejemplo de known-issue "las landings `/lp/*` fuera del sitemap por diseño". Esa exclusión sí existe (`scripts/verify/checks/sitemap.mjs` filtra por `noindex`), pero **no es una entrada de `known-issues.json`** — es una regla estructural del propio check, no un baseline. Las 54 entradas reales son solo las dos claves de arriba. El README ya cita un ejemplo real (`metadata:missing-og-url`/`metadata:duplicate-description`).
 

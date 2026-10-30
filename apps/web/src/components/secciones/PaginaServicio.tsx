@@ -23,7 +23,9 @@ import { PASOS } from '@/content/servicios'
 import type { SeccionServicio, Servicio, TramoProsa } from '@/content/servicios'
 
 /**
- * Plantilla única de las seis páginas de servicio.
+ * Plantilla única de las páginas de servicio: las seis técnicas decorativas y,
+ * desde el 2026-10-30, los dos servicios sin acabado (`bombeo`,
+ * `autonivelante`, con `sinAcabados`).
  *
  * `04-desarrollo-y-deploy.md` §2: «un componente por concepto de diseño, no por
  * pantalla». Antes esto vivía copiado dentro de `/hormigon-impreso/`, y clonarlo
@@ -245,13 +247,31 @@ export default function PaginaServicio({ servicio }: { servicio: Servicio }) {
   // que retiró `/precios/` el 2026-09-17 y que el 2026-09-18 alcanza también a
   // la calculadora: no quiere precios en la web. No es que falte el rango, es
   // que no se pone. Reponer esta entrada exige que lo pida él. → `design/02` §A5
+  //
+  // Un servicio **sin acabado por naturaleza** (`sinAcabados`: bombeo,
+  // autonivelante) no tiene muestrario que montar, ni hoy ni cuando tenga
+  // obra: el `EstadoVacio` del muestrario promete subir «el muestrario de este
+  // acabado», y ahí no hay acabado que subir. Así que la sección no existe.
+  // «Obra ejecutada» sí puede llegar —basta una obra con `service: 'bombeo'`
+  // en `projects.ts`—, pero su estado vacío habla también «de este acabado»,
+  // así que hasta entonces no se monta, y aparece sola el día que la haya. En
+  // las seis técnicas las dos secciones se quedan siempre, vacías o no: ahí el
+  // estado vacío es la verdad («hay acabados, falta la foto»).
+  //
+  // «Cómo trabajamos» tampoco se monta ahí: `PASOS` es el proceso de una
+  // solera decorativa —equipo propio, 80-100 m² en 2 o 3 días, 24-48 h sin
+  // pisar y 28 de curado, 10 años de garantía y resellado— y nada de eso está
+  // confirmado para bombear hormigón o verter autonivelante (la bomba puede ser
+  // contratada). Escribir otros pasos sería copy inventado, así que la sección
+  // sale entera y el numerado y el submenú se cierran sobre lo que queda.
+  const sinAcabados = servicio.sinAcabados === true
   const todas: (Seccion | null)[] = [
     servicio.aplicaciones ? { id: 'seccion-aplicaciones', texto: 'Aplicaciones' } : null,
-    { id: 'seccion-muestrario', texto: 'Muestrario' },
+    sinAcabados ? null : { id: 'seccion-muestrario', texto: 'Muestrario' },
     { id: 'seccion-ficha', texto: 'Ficha técnica' },
     servicio.cuandoNo ? { id: 'seccion-cuando-no', texto: 'Cuándo NO' } : null,
-    { id: 'seccion-como', texto: 'Cómo trabajamos' },
-    { id: 'seccion-obra', texto: 'Obra ejecutada' },
+    sinAcabados ? null : { id: 'seccion-como', texto: 'Cómo trabajamos' },
+    sinAcabados && proyectos.length === 0 ? null : { id: 'seccion-obra', texto: 'Obra ejecutada' },
   ]
 
   // `ocultarSecciones` se aplica aquí y en ningún otro sitio: filtrando esta
@@ -326,9 +346,14 @@ export default function PaginaServicio({ servicio }: { servicio: Servicio }) {
               <Boton variante="primario" href="/presupuesto/">
                 Pedir presupuesto
               </Boton>
-              <Boton variante="contorno" href="#seccion-muestrario">
-                Ver acabados
-              </Boton>
+              {/* Ancla al muestrario: sin muestrario (`sinAcabados`) no hay
+                  adónde ir, y un segundo botón con otro destino sería copy
+                  nuevo. Se queda solo el primario. */}
+              {monta('seccion-muestrario') ? (
+                <Boton variante="contorno" href="#seccion-muestrario">
+                  Ver acabados
+                </Boton>
+              ) : null}
             </div>
           )}
         </div>
@@ -461,7 +486,17 @@ export default function PaginaServicio({ servicio }: { servicio: Servicio }) {
         <Aparece as="section" id="seccion-ficha" className={claseBanda('seccion-ficha')}>
           <div className="grid grid-cols-1 md:grid-cols-[380px_1fr] gap-8 md:gap-16">
             <AntetituloSeccion numero={numero('seccion-ficha')}>Ficha técnica</AntetituloSeccion>
-            <TablaFichaTecnica filas={servicio.fichaTecnica} />
+            {/* Una celda de un solo tramo de texto sale como la cadena de
+                siempre —mismo HTML y mismo payload que antes de que la ficha
+                admitiera `{{pendiente}}`—; solo la que lleva marcado pasa
+                por `Prosa`, que pinta el dato en `<DatoPendiente>`. */}
+            <TablaFichaTecnica
+              filas={servicio.fichaTecnica.map((f) => ({
+                etiqueta: f.etiqueta,
+                valor:
+                  f.valor.length === 1 && f.valor[0].type === 'text' ? f.valor[0].text : <Prosa tramos={f.valor} />,
+              }))}
+            />
           </div>
         </Aparece>
       ) : null}

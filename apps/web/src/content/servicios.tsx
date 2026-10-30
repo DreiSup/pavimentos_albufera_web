@@ -11,9 +11,10 @@ import type { Imagen, ServicioId } from '@/lib/tipos'
 /**
  * legacy adapter, delete when a new design consumes @site/* directly
  *
- * Contenido de las seis páginas de servicio. Mismos exports, misma forma,
- * mismos valores que antes de la migración — construidos ahora sobre
- * `@site/content` (locale 'es') en vez de estar escritos a mano.
+ * Contenido de las páginas de servicio (seis técnicas decorativas desde la
+ * migración, ocho desde el 2026-10-30 con `bombeo` y `autonivelante`). Mismos
+ * exports, misma forma, mismos valores que antes de la migración — construidos
+ * ahora sobre `@site/content` (locale 'es') en vez de estar escritos a mano.
  *
  * ⚠️ **`PASOS` se queda escrito a mano, con sus dos fragmentos JSX (D6).**
  * `@site/content` no modela JSX — es contenido puro, sin React — y el único
@@ -72,11 +73,26 @@ export type Servicio = {
   imagenHero?: Imagen
   /** Tarjeta del servicio en la home. Distinta de la del hero a propósito. */
   imagenTarjeta?: Imagen
+  /** Línea bajo el nombre en la tarjeta de la home (`Service.cardText`). Sin ella, la tarjeta va sin texto. */
+  textoTarjeta?: string
+  /**
+   * `true` solo en un servicio sin acabado decorativo por naturaleza (bombeo,
+   * autonivelante: `Service.hasFinishes: false`). La plantilla omite entonces
+   * el muestrario, el botón «Ver acabados» del hero y «Cómo trabajamos» (sus
+   * pasos son los de una solera decorativa), y monta «Obra ejecutada» solo
+   * cuando hay obra. Las seis técnicas no lo declaran.
+   */
+  sinAcabados?: true
   /** Banda «Qué es» tras el hero. Sin ella no se pinta. */
   guia?: GuiaServicio
   /** Solo donde hay copy aprobado que lo respalde. Si no, la sección no se renderiza. */
   aplicaciones?: { intro: string; lista: Aplicacion[] }
-  fichaTecnica: { etiqueta: string; valor: ReactNode }[]
+  /**
+   * `valor` en tramos, como la prosa de la guía: una celda puede llevar un
+   * `{{dato pendiente}}` (`SpecRow` en `@site/content`). La plantilla pinta
+   * tal cual, como texto, la celda que es un solo tramo de texto.
+   */
+  fichaTecnica: { etiqueta: string; valor: TramoProsa[] }[]
   cuandoNo?: { titulo: string; texto: string; alternativas: { href: string; texto: string }[] }
   /** Sin preguntas aplicables no hay sección de FAQ ni marcado `FAQPage`. */
   faq?: PreguntaFAQ[]
@@ -151,6 +167,8 @@ function aServicio(s: ResolvedService): Servicio {
     etiquetaHero: s.heroLabelLines,
     ...(s.heroImage ? { imagenHero: { src: s.heroImage.src, alt: s.heroImage.alt, tipo: s.heroImage.kind as Imagen['tipo'] } } : {}),
     ...(s.cardImage ? { imagenTarjeta: { src: s.cardImage.src, alt: s.cardImage.alt, tipo: s.cardImage.kind as Imagen['tipo'] } } : {}),
+    ...(s.cardText ? { textoTarjeta: s.cardText } : {}),
+    ...(s.hasFinishes ? {} : { sinAcabados: true as const }),
     ...(s.guide
       ? {
           guia: {

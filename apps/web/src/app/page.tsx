@@ -126,14 +126,30 @@ function destinoDeEspacio(d: DestinoEspacio) {
   return { href: RUTA_SERVICIO[d.id], rotulo: `Ver ${NOMBRE_SERVICIO[d.id].toLowerCase()}` }
 }
 
-const servicios = [
-  { id: 'impreso' as const, texto: 'Textura de piedra, adoquín o madera sobre una solera continua. El más pedido para exteriores.' },
-  { id: 'pulido' as const, texto: 'Superficie lisa y brillante. De la nave industrial al salón de casa.' },
-  { id: 'microcemento' as const, texto: 'Renueva suelos y paredes sin levantar lo que ya tienes.' },
-  { id: 'lavado' as const, texto: 'Árido visto, antideslizante. Ideal para zonas de paso y piscinas.' },
-  { id: 'fratasado' as const, texto: 'Acabado fino y mate. Sobrio, moderno y económico.' },
-  { id: 'desactivado' as const, texto: 'Piedra vista con la resistencia de una solera.' },
-]
+/**
+ * La línea de cada tarjeta de servicio de la sección 04, la del documento
+ * maestro, escrita aquí desde antes de la migración. Solo las seis técnicas
+ * decorativas la tienen; un servicio que la traiga en `@site/content`
+ * (`Service.cardText`) usa esa, y uno que no tenga ninguna va sin línea —nunca
+ * con una inventada—.
+ */
+const TEXTO_TARJETA: Partial<Record<ServicioId, string>> = {
+  impreso: 'Textura de piedra, adoquín o madera sobre una solera continua. El más pedido para exteriores.',
+  pulido: 'Superficie lisa y brillante. De la nave industrial al salón de casa.',
+  microcemento: 'Renueva suelos y paredes sin levantar lo que ya tienes.',
+  lavado: 'Árido visto, antideslizante. Ideal para zonas de paso y piscinas.',
+  fratasado: 'Acabado fino y mate. Sobrio, moderno y económico.',
+  desactivado: 'Piedra vista con la resistencia de una solera.',
+}
+
+/**
+ * Todos los servicios del catálogo, en el orden del menú: un servicio nuevo en
+ * `@site/content` sale en la rejilla sin tocar este archivo.
+ */
+const servicios = Object.values(SERVICIOS).map((s) => ({
+  id: s.id,
+  texto: s.textoTarjeta ?? TEXTO_TARJETA[s.id],
+}))
 
 /**
  * Las cuatro obras del carrusel del hero, en orden de pase.
@@ -252,7 +268,8 @@ const proyectosHome = proyectos
 // El valor viaja además —vía `tamanosCompartidos`— a las cuatro miniaturas de
 // obra de la sección 07, que comparten URL con el hero a propósito.
 const TAMANOS_HERO_HOME = '(min-width: 1200px) 1200px, 100vw'
-const TAMANOS_TARJETA_SERVICIO = '(min-width: 768px) 30vw, 100vw'
+/** Tarjeta de servicio: 1 columna en móvil, 2 entre 768 y 1279, 4 desde 1280. */
+const TAMANOS_TARJETA_SERVICIO = '(min-width: 1280px) 24vw, (min-width: 768px) 48vw, 100vw'
 /** Tarjeta de espacio: 2 columnas en móvil, 3 entre 768 y 1279, y 3 junto a la columna de 380 desde 1280. */
 const TAMANOS_ESPACIO =
   '(min-width: 1280px) calc(33vw - 196px), (min-width: 768px) calc(33vw - 48px), calc(50vw - 25px)'
@@ -505,7 +522,10 @@ export default function Home() {
               Todo lo que se puede hacer con hormigón
             </h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Ocho tarjetas desde el 2026-10-30: 2 columnas entre 768 y 1279 y 4
+              desde 1280, para que ninguna fila quede coja (con 3 eran 3+3+2).
+              → `design/01` §2.5, rejilla «Servicios». */}
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
             {servicios.map((s) => (
               <Link key={s.id} href={RUTA_SERVICIO[s.id]} className="flex flex-col gap-3 no-underline">
                 <Foto
@@ -518,7 +538,7 @@ export default function Home() {
                 <h3 className="font-display font-bold fs-h3 text-20 md:text-26 text-tinta m-0">
                   {NOMBRE_SERVICIO[s.id]}
                 </h3>
-                <p className="text-16 text-tinta-media m-0">{s.texto}</p>
+                {s.texto ? <p className="text-16 text-tinta-media m-0">{s.texto}</p> : null}
               </Link>
             ))}
           </div>

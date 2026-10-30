@@ -2,14 +2,25 @@ import type { Localized } from './localized.ts'
 import type { SiteImage } from './image.ts'
 
 /**
- * One of the 6 techniques (printed, polished, washed concrete…). Values are
+ * One of the 8 services: the 6 decorative techniques (printed, polished,
+ * washed concrete…) plus 2 placement services with no decorative finish
+ * (`bombeo`: concrete pumping and pouring; `autonivelante`: self-levelling
+ * screed). Values are
  * SHORT INTERNAL CODES, unlike Pavivasa's `ServiceId` (whose literal values
  * ARE the URL slug, e.g. `'hormigon-impreso'`): here the codes are also the
  * literal values of the public `?tecnica=` query param read by the sample
  * and project filters, so they don't translate either (D4 — glossary
  * override).
  */
-export type ServiceId = 'impreso' | 'pulido' | 'microcemento' | 'lavado' | 'fratasado' | 'desactivado'
+export type ServiceId =
+  | 'impreso'
+  | 'pulido'
+  | 'microcemento'
+  | 'lavado'
+  | 'fratasado'
+  | 'desactivado'
+  | 'bombeo'
+  | 'autonivelante'
 
 /**
  * A numbered section of a service page. A union, not `string`, so a typo in
@@ -26,6 +37,13 @@ export type ServiceSection =
   | 'seccion-como'
   | 'seccion-obra'
 
+/**
+ * One row of a service's spec table. `value` may carry `{{what is missing}}`
+ * (rendered as `<DatoPendiente>`, same markup as `RichText`) for a figure only
+ * the owner can give — and nothing else: a `[text](/path/)` link inside a
+ * spec cell is rejected by `content:validate`. Plain values render exactly as
+ * before the markup existed.
+ */
 export type SpecRow = { label: Localized<string>; value: Localized<string> }
 
 export type ServiceApplications = {
@@ -106,6 +124,25 @@ export type Service = {
   heroImage?: SiteImage
   /** Service-card photo on the home page — deliberately distinct from `heroImage`. */
   cardImage?: SiteImage
+  /**
+   * One-line pitch under the service name on the home page's service grid.
+   * Optional: absent, the card shows photo and name only (never a made-up
+   * line). The 6 original services still carry theirs hard-coded in
+   * `apps/web/src/app/page.tsx` (frozen-phase copy); a value here wins.
+   */
+  cardText?: Localized<string>
+  /**
+   * `false` for a service that has no decorative finish BY NATURE (pumping,
+   * self-levelling screed) — not for one whose finishes just lack photos yet.
+   * Its page then skips the sample section ("Muestrario") and the hero's
+   * "see finishes" button, skips "Cómo trabajamos" (its four steps describe
+   * laying a decorative slab — own crew, curing times, 10-year warranty and
+   * resealing — none of it confirmed for these services), and shows "Obra
+   * ejecutada" only once it has a project. Omitted means `true`: the 6 decorative techniques never set it,
+   * and an empty sample section there stays an honest empty state.
+   * `content:validate` rejects a finish pointing at a service set to `false`.
+   */
+  hasFinishes?: boolean
   /** "What it is / how it's done" band, right after the hero. See `ServiceGuide`. */
   guide?: ServiceGuide
   /** Only present where there's approved copy backing it — an absent section isn't rendered. */

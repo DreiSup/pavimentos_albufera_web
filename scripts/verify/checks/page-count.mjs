@@ -24,13 +24,13 @@ import { getProjects } from '../../../packages/content/src/queries/projects.ts'
 import { getServiceAreas } from '../../../packages/content/src/queries/service-areas.ts'
 import { getArticles } from '../../../packages/content/src/queries/articles.ts'
 
-// Routes that don't come from a @site/content collection — home, the 6
+// Routes that don't come from a @site/content collection — home, the 8
 // service pages (each its own static `app/<slug>/page.tsx`, content pulled
 // from `@site/content`'s `services.ts` but the ROUTE itself is static, not
 // generated from a dynamic segment), the 4 section indexes and the 3 legal
-// pages. Frozen for this migration phase (CLAUDE.md's "Frontend congelado")
-// — this list only changes if a route is deliberately added/removed there,
-// and that's a visible one-line diff here too.
+// pages. This list only changes if a route is deliberately added/removed
+// under `apps/web/src/app/`, and that's a visible one-line diff here too
+// (2026-10-30: `/bombeo-de-hormigon/` and `/vertido-de-autonivelante/`).
 const STATIC_ROUTES = [
   '/',
   '/hormigon-impreso/',
@@ -39,6 +39,8 @@ const STATIC_ROUTES = [
   '/hormigon-desactivado/',
   '/hormigon-fratasado/',
   '/microcemento/',
+  '/bombeo-de-hormigon/',
+  '/vertido-de-autonivelante/',
   '/acabados/',
   '/proyectos/',
   '/zonas/',

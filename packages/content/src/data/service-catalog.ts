@@ -18,4 +18,6 @@ export const serviceCatalog: ServiceCatalogEntry[] = [
   { id: 'lavado', path: { es: '/hormigon-lavado/' }, name: { es: 'Hormigón lavado' } },
   { id: 'fratasado', path: { es: '/hormigon-fratasado/' }, name: { es: 'Hormigón fratasado' } },
   { id: 'desactivado', path: { es: '/hormigon-desactivado/' }, name: { es: 'Hormigón desactivado' } },
+  { id: 'bombeo', path: { es: '/bombeo-de-hormigon/' }, name: { es: 'Bombeo de hormigón' } },
+  { id: 'autonivelante', path: { es: '/vertido-de-autonivelante/' }, name: { es: 'Vertido de autonivelante' } },
 ]
