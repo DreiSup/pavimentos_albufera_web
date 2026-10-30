@@ -29,7 +29,7 @@ export const legal: LegalFacts = {
   activity: {
     es: 'Pavimentos de hormigón: impreso, pulido, lavado, fratasado, desactivado y microcemento. Bombeo de hormigón y vertido de autonivelante',
   },
-  lastLegalReview: { es: '18 de septiembre de 2026' },
+  lastLegalReview: { es: '30 de octubre de 2026' },
   identificationRows: [
     { label: { es: 'RAZÓN SOCIAL' }, value: { es: 'Pavimentos Albufera Sociedad Limitada' } },
     { label: { es: 'NIF O CIF' }, value: { es: 'B02882090' } },

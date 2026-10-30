@@ -155,9 +155,11 @@ publicado sale de `content/legal.tsx`.
 8. El texto afirma que la web está hecha «con Next.js y **shadcn**». **Este repo no usa shadcn**: es
    Tailwind con `class-variance-authority`. No se copió esa frase a la página publicada.
 
-**La fecha de «Última actualización» es el 18 de septiembre de 2026**, puesta a petición del dueño
-sabiendo que el texto de debajo es todavía el heredado. Vive en `content/legal.tsx`
-(`ultimaRevisionLegal`) y se mueve cuando se revise el contenido.
+**La fecha de «Última actualización» es el 30 de octubre de 2026**, movida a petición del dueño al
+añadir a la fila ACTIVIDAD del aviso legal el bombeo de hormigón y el vertido de autonivelante.
+Antes marcaba el 18 de septiembre de 2026. Es una fecha común: la muestran el aviso legal y la
+política de privacidad, aunque esta última no cambió ese día, y el texto heredado de debajo sigue
+sin revisar. Vive en `lastLegalReview` (`packages/content/src/data/legal.ts`).
 
 ---
 

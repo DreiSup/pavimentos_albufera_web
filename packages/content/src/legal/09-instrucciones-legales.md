@@ -359,7 +359,7 @@ y facturación de la S.L. antes de decidir si aplica. `[PENDIENTE: comprobar]`
 `content/legal.tsx`. Hoy conviven las dos cosas y no está claro cuál manda.]`
 
 **La fecha de última revisión se mueve al día en que se publique el texto nuevo**, no antes. Hoy
-marca 18 de septiembre de 2026 sobre contenido heredado, que es lo peor de los dos mundos: aparenta
+marca 30 de octubre de 2026 (antes, 18 de septiembre) sobre contenido heredado, que es lo peor de los dos mundos: aparenta
 revisión reciente sobre un texto de 1999.
 
 ---
