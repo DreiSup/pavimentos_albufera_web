@@ -315,6 +315,10 @@ Todas consultadas el **2026-10-31**.
 
 ### A8 · Guía «Sobre suelo radiante» · **E** (+ T)
 
+> **2026-10-31: bloque retirado de la página a petición del responsable del proyecto.** El texto
+> de abajo queda como registro; no se publica. Si el cliente confirma que trabaja sobre suelo
+> radiante, se puede reponer.
+
 - **Antes:** «Sobre los tubos de un suelo radiante, una masa fluida los envuelve […].
   `{{si vertéis autonivelante sobre suelo radiante, y con qué producto}}`.»
 - **Ahora:** «… y eso ayuda a que el calor llegue parejo al pavimento. Hay productos pensados para

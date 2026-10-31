@@ -863,14 +863,6 @@ export const services = [
           ],
         },
         {
-          title: { es: 'Sobre suelo radiante' },
-          paragraphs: [
-            {
-              es: 'Sobre los tubos de un suelo radiante, una masa fluida los envuelve sin dejar bolsas de aire, y eso ayuda a que el calor llegue parejo al pavimento. Hay productos pensados para eso; algunos de anhidrita piden apenas 1,5-2 cm por encima del tubo. Antes del pavimento final, la calefacción se pone en marcha poco a poco, con el protocolo del fabricante. Si tu obra lleva suelo radiante, dínoslo al pedir el presupuesto.',
-            },
-          ],
-        },
-        {
           title: { es: 'Autonivelante, microcemento o solera nueva' },
           paragraphs: [
             {

@@ -188,10 +188,6 @@ Como referencia del sector, los de cemento van en capa fina: desde 2 o 3 mm hast
 
 Antes de poner la tarima o el vinílico se mide la humedad que queda en la base: decide eso, no el calendario. Cada producto lleva en su ficha su clase según la norma UNE-EN 13813: CT si es de cemento, CA si es de anhidrita, una C por la resistencia a compresión y una F por la de flexión. Lo habitual va de C20 a C30 y de F5 a F8. El producto concreto se elige con el espesor y el uso de tu obra, y sus cifras mandan sobre estas.
 
-#### Sobre suelo radiante
-
-Sobre los tubos de un suelo radiante, una masa fluida los envuelve sin dejar bolsas de aire, y eso ayuda a que el calor llegue parejo al pavimento. Hay productos pensados para eso; algunos de anhidrita piden apenas 1,5-2 cm por encima del tubo. Antes del pavimento final, la calefacción se pone en marcha poco a poco, con el protocolo del fabricante. Si tu obra lleva suelo radiante, dínoslo al pedir el presupuesto.
-
 #### Autonivelante, microcemento o solera nueva
 
 El microcemento es un acabado de milímetros que se queda a la vista; el autonivelante corrige la planitud y se tapa. Por eso pueden ir juntos: primero la base a nivel y, encima, el acabado continuo.
