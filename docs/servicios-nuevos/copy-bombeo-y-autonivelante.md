@@ -1,6 +1,14 @@
 # Copy de los dos servicios nuevos: bombeo de hormigón y vertido de autonivelante
 
-**Fecha:** 2026-10-30 · **Estado:** borrador **pendiente de validación del cliente**.
+**Fecha:** 2026-10-30 · **Actualizado:** 2026-10-31 · **Estado:** borrador **pendiente de validación del cliente**.
+
+> **2026-10-31 — ya no hay corchetes en pantalla.** Por decisión del responsable del proyecto,
+> los 21 `{{…}}` de estas dos páginas (B1–B13, A1–A8) se han sustituido: los datos técnicos por
+> **rangos habituales del sector**, redactados como tales («como referencia del sector», «según
+> producto»), y los hechos de la empresa **no se afirman**: la frase se ha reescrito para ser
+> verdad sin ellos, llevando la respuesta a la visita o al presupuesto. Qué había, qué hay, de
+> qué fuente sale y qué falta confirmar con el cliente: [`datos-investigados.md`](datos-investigados.md).
+> Cuando el cliente dé su dato, se sustituye el rango por su cifra.
 
 El responsable del proyecto autorizó redactar copy nuevo para estas dos páginas. El cliente solo
 ha confirmado dos cosas:
@@ -13,8 +21,9 @@ Todo lo demás es de dos tipos:
 - **Técnica explicada en general**: cómo funciona un bombeo, qué es un autonivelante, qué pide
   el soporte. Son datos del oficio, no compromisos de la empresa, y van sin cifras.
 - **Compromisos de la empresa** (alcance, caudal, volumen mínimo, producto, espesores, plazos,
-  precios, si la bomba es propia): van como `{{dato pendiente}}` y en pantalla salen como
-  `<DatoPendiente>`, entre corchetes atenuados. En este documento se ven como `` `[así]` ``.
+  precios, si la bomba es propia): iban como `{{dato pendiente}}` y en pantalla salían como
+  `<DatoPendiente>`, entre corchetes atenuados. Desde el 2026-10-31 no queda ninguno: ver el aviso
+  de arriba y `datos-investigados.md`.
 
 Lo que **no** hay, a propósito: precios, obras, fotos, testimonios, reseñas, m², municipios ni
 años. No hay ningún proyecto de estos dos servicios en `projects.ts`, así que la página no monta
@@ -54,31 +63,33 @@ Es mover el hormigón desde la cuba hasta el sitio donde se vierte por una mangu
 
 El árido es la piedra que lleva dentro el hormigón. Con un tamaño máximo de 12 mm, la mezcla pasa por una manguera de menos diámetro, que pesa menos y se mueve a mano: por un pasillo, por una puerta o por encima de una tapia.
 
-Ese tamaño encaja con soleras y capas de poco espesor, donde una piedra gruesa no tiene sitio. Si tu obra tiene proyecto y pide un árido mayor, dínoslo antes de pedir el hormigón: `[si bombeáis también hormigón con árido de más de 12 mm]`.
+Ese tamaño encaja con soleras y capas de poco espesor, donde una piedra gruesa no tiene sitio. Si tu obra tiene proyecto y pide un árido mayor, dínoslo antes de pedir el hormigón: una piedra más grande pide una tubería más gruesa, y eso cambia la bomba.
 
 #### Cómo se organiza el día del vertido
 
 La cuba descarga en la tolva de la bomba y la bomba empuja el hormigón hasta la boca de la manguera. Para que eso funcione hacen falta tres cosas: un sitio para la bomba al que la cuba pueda llegar, un recorrido libre para la manguera y la zona de vertido preparada —base, encofrado y armado— antes de que llegue el camión.
 
-La bomba que usamos: `[propia o contratada, y de qué tipo: bomba de manguera o pluma sobre camión]`. Hasta dónde llega y cuánto mueve: `[alcance en metros de manguera o de pluma, y caudal en m³/h]`. Con la medida del recorrido delante te decimos si se llega.
+Hay dos tipos de bomba. La autobomba lleva una pluma articulada sobre el camión y deja el hormigón desde arriba, por encima del tejado o de la tapia; necesita sitio en la calle para apoyar los estabilizadores. La bomba de tubería va en un remolque junto a la cuba y empuja el hormigón por un tubo tendido por el suelo, que acaba en una manguera: entra por un pasillo, un garaje o una escalera.
 
-El hormigón: `[si lo pedís vosotros a planta o lo pide el cliente, y qué resistencia y consistencia servís]`.
+Como referencia del sector, una pluma llega de 20 a 60 metros, según el camión. Una bomba de tubería lleva el hormigón de 80 a 200 metros, según el equipo, y las pequeñas mueven en torno a 15-20 m³ por hora. Cuál va en tu obra se decide al ver el acceso: con la medida del recorrido delante te decimos si se llega y con qué.
+
+El hormigón llega de planta en cuba, con la resistencia que pide la obra y árido de 12 mm. Para bombearlo tiene que venir con una consistencia mínima, porque una masa seca atasca la tubería, y eso se fija con la planta al hacer el pedido. Quién lo pide y qué hormigón lleva lo hablamos al preparar el presupuesto.
 
 #### En casa y en obra
 
 Si vas a hacer una solera en el patio de atrás y el camión no entra por la calle, el bombeo es lo que evita meter el hormigón a carretilla por el garaje o por el salón.
 
-Si eres constructor o reformista, es el vertido con la manguera hasta el tajo. Lo que entra además de bombear y verter: `[si extendéis, regleáis y fratasáis, o solo bombeo y vertido]`.
+Si eres constructor o reformista, es el vertido con la manguera hasta el tajo. Si además necesitas que se extienda, se reglee o se fratase, dínoslo al pedir el presupuesto y te decimos qué entra.
 
 #### Bomba, canaleta o carretilla
 
 Son tres maneras de llevar el hormigón al sitio. La canaleta es la del propio camión: si la cuba se arrima al tajo, descarga directa y no hace falta nada más. La carretilla sirve para poco volumen y poca distancia, a costa de viajes y de tiempo con el hormigón fraguando. La bomba es para cuando la cuba no llega y el volumen ya no se mueve a mano.
 
-Desde qué volumen compensa traer la bomba: `[volumen mínimo por servicio, en m³]`.
+Desde qué volumen compensa la bomba no tiene una cifra fija. Depende de los metros cúbicos, del recorrido y de lo que costaría hacerlo de otra manera: con esos tres datos lo vemos contigo.
 
 #### Del bombeo al pavimento
 
-La solera que se bombea puede quedarse como base o terminar en un pavimento: [fratasada](/hormigon-fratasado/), [impresa](/hormigon-impreso/) o [pulida](/hormigon-pulido/). `[si el bombeo se presupuesta junto con el pavimento o como servicio aparte]`.
+La solera que se bombea puede quedarse como base o terminar en un pavimento: [fratasada](/hormigon-fratasado/), [impresa](/hormigon-impreso/) o [pulida](/hormigon-pulido/). Si ya sabes cuál quieres, dilo al pedir el presupuesto: el espesor y el armado de la solera se plantean pensando en él.
 
 Si lo que hay que nivelar es un suelo interior antes de la tarima o el vinílico, no hace falta hormigón: eso es [vertido de autonivelante](/vertido-de-autonivelante/).
 
@@ -97,12 +108,16 @@ El bombeo resuelve un problema de acceso, no de acabado: lo que cambia es por d�
 | Etiqueta | Valor |
 |---|---|
 | TAMAÑO MÁXIMO DE ÁRIDO | 12 mm |
-| TIPO DE BOMBA | `[manguera o pluma · propia o contratada]` |
-| ALCANCE | `[metros de manguera o de pluma]` |
-| CAUDAL | `[m³/h]` |
-| VOLUMEN MÍNIMO | `[m³ por servicio]` |
-| HORMIGÓN | `[resistencia y consistencia · quién lo pide a planta]` |
-| ANTELACIÓN DE RESERVA | `[días]` |
+| TIPO DE BOMBA | Pluma o tubería, según el acceso |
+| ALCANCE | Pluma 20-60 m · tubería 80-200 m · según equipo |
+| CAUDAL | Bomba de tubería pequeña: 15-20 m³/h · según equipo |
+| EN OBRA | Sitio para la bomba y paso libre para la manguera |
+| HORMIGÓN | De planta · árido 12 mm · resistencia según obra |
+| DÍA DEL VERTIDO | Cuba y bomba a la misma hora, con la zona preparada |
+
+(Las filas VOLUMEN MÍNIMO y ANTELACIÓN DE RESERVA se sustituyeron por EN OBRA y DÍA DEL VERTIDO el
+2026-10-31: solo tenían sentido con el dato de la empresa. Ver B10, B11 y B13 en
+`datos-investigados.md`.)
 
 ### Cuándo NO hace falta bombear
 
@@ -163,17 +178,19 @@ También sirve para recrecer: subir el suelo de una habitación hasta la altura 
 
 Primero, el soporte: firme, limpio y seco, sin polvo ni piezas sueltas. Encima va una imprimación, que mejora el agarre y evita que el suelo de debajo le robe el agua a la masa. Al pie de las paredes se pone una banda perimetral, para que la capa nueva no quede pegada a ellas y pueda moverse sin fisurarse.
 
-Después se vierte y se pasa un rodillo de púas, que saca el aire y ayuda a que la masa se reparta. Cómo lo vertemos nosotros: `[a mano o con bomba]`.
+Después se vierte y se pasa un rodillo de púas, que saca el aire y ayuda a que la masa se reparta. Se puede amasar en obra y verter a mano, o mezclar y bombear con máquina, que es lo habitual en superficies grandes. Algunos llegan ya amasados en cuba, desde planta, y se bombean. Cuál conviene en tu obra depende de los metros y del acceso.
 
 #### Tipos, espesores y tiempos
 
 Hay autonivelantes de base cemento y de sulfato cálcico, la anhidrita. Cada producto tiene su espesor mínimo y máximo y sus plazos. La anhidrita no lleva bien la humedad, así que en baños, cocinas y zonas que se mojan se suele preferir el de cemento.
 
-Lo que vertemos nosotros: `[tipo y marca del autonivelante, espesor mínimo y máximo, y plazo para pisarlo y para poner el pavimento final]`.
+Como referencia del sector, los de cemento van en capa fina: desde 2 o 3 mm hasta 30 o 50, según el producto. Se pisan a las 3-12 horas y, en capa fina, admiten el pavimento al día o a los dos días. Los de anhidrita van de unos 12 a 80 mm y se pisan a las 24-48 horas. Antes del pavimento necesitan de una a tres semanas de secado en capa fina, y más cuanto más gruesa.
+
+Antes de poner la tarima o el vinílico se mide la humedad que queda en la base: decide eso, no el calendario. Cada producto lleva en su ficha su clase según la norma UNE-EN 13813: CT si es de cemento, CA si es de anhidrita, una C por la resistencia a compresión y una F por la de flexión. Lo habitual va de C20 a C30 y de F5 a F8. El producto concreto se elige con el espesor y el uso de tu obra, y sus cifras mandan sobre estas.
 
 #### Sobre suelo radiante
 
-Sobre los tubos de un suelo radiante, una masa fluida los envuelve sin dejar bolsas de aire, y eso ayuda a que el calor llegue parejo al pavimento. `[si vertéis autonivelante sobre suelo radiante, y con qué producto]`.
+Sobre los tubos de un suelo radiante, una masa fluida los envuelve sin dejar bolsas de aire, y eso ayuda a que el calor llegue parejo al pavimento. Hay productos pensados para eso; algunos de anhidrita piden apenas 1,5-2 cm por encima del tubo. Antes del pavimento final, la calefacción se pone en marcha poco a poco, con el protocolo del fabricante. Si tu obra lleva suelo radiante, dínoslo al pedir el presupuesto.
 
 #### Autonivelante, microcemento o solera nueva
 
@@ -198,11 +215,11 @@ Va en interior, entre la solera y el suelo que se ve. Casi siempre en una reform
 | USO | Interior, bajo otro pavimento |
 | SOPORTE | Firme, limpio y seco |
 | PREPARACIÓN | Imprimación y banda perimetral |
-| TIPO | `[base cemento o anhidrita · marca]` |
-| ESPESOR | `[mínimo y máximo]` |
-| RESISTENCIA | `[clase a compresión y a flexión]` |
-| PISABLE | `[horas]` |
-| LISTO PARA EL PAVIMENTO FINAL | `[días, según espesor]` |
+| TIPO | Base cemento o anhidrita, según estancia y espesor |
+| ESPESOR | Cemento 2-50 mm · anhidrita 12-80 mm · según producto |
+| RESISTENCIA | Clase UNE-EN 13813 · habitual C20-C30, F5-F8 |
+| PISABLE | Cemento 3-12 h · anhidrita 24-48 h · según producto |
+| LISTO PARA EL PAVIMENTO FINAL | Cemento 1-2 días · anhidrita 1-3 semanas o más · según espesor y humedad |
 
 ### Cuándo NO elegir autonivelante
 
@@ -243,39 +260,20 @@ No publicamos precios. Depende de la superficie, del espesor que hace falta para
 
 ## Datos pendientes del cliente
 
-Cada fila es un `{{…}}` del código. Cuando el cliente dé el dato, se sustituye y se quita el
-tratamiento de pendiente: un commit por dato (regla de `CLAUDE.md`).
+**Desde el 2026-10-31 no queda ningún `{{…}}` en estas dos páginas** (ni en `services.ts` ni en
+las preguntas `pump*`/`selfLevel*` de `faq.ts`), así que en pantalla ya no sale ningún dato entre
+corchetes atenuados. Los 21 pendientes que había se han resuelto así:
 
-### Bombeo de hormigón (`/bombeo-de-hormigon/`)
+- **Técnicos (T)** — B4, B5, B6, A2 (espesores y plazos), A4, A5, A6, A7: rango habitual del
+  sector, redactado como referencia y no como compromiso de la empresa.
+- **De la empresa (E)** — B1, B2, B3, B7, B8, B9, B10, B11, B12, B13, A1, A3, A8 (y la marca de
+  A2): no se afirma nada; la frase o la fila se ha reescrito para ser verdad sin el dato.
 
-| # | Pendiente (texto tal cual) | Dónde aparece | Qué preguntar al cliente |
-|---|---|---|---|
-| B1 | `si bombeáis también hormigón con árido de más de 12 mm` | Guía · «Por qué árido de 12 mm», 2.º párrafo | ¿Bombeáis solo con árido de 12 mm, o también con árido mayor si el proyecto lo pide? |
-| B2 | `propia o contratada, y de qué tipo: bomba de manguera o pluma sobre camión` | Guía · «Cómo se organiza el día del vertido», 2.º párrafo | ¿La bomba es vuestra o la subcontratáis? ¿Es una bomba de manguera (remolque/estática) o un camión con pluma? |
-| B3 | `manguera o pluma · propia o contratada` | Ficha técnica · TIPO DE BOMBA | Lo mismo que B2. Una sola respuesta cierra las dos. |
-| B4 | `alcance en metros de manguera o de pluma, y caudal en m³/h` | Guía · «Cómo se organiza el día del vertido», 2.º párrafo | ¿Cuántos metros de manguera lleváis (o cuánto alcanza la pluma), en horizontal y en altura? ¿Cuántos m³/h mueve la bomba? |
-| B5 | `metros de manguera o de pluma` | Ficha técnica · ALCANCE | Lo mismo que B4 (alcance). |
-| B6 | `m³/h` | Ficha técnica · CAUDAL | Lo mismo que B4 (caudal). |
-| B7 | `si lo pedís vosotros a planta o lo pide el cliente, y qué resistencia y consistencia servís` | Guía · «Cómo se organiza el día del vertido», 3.er párrafo | ¿El hormigón lo pedís vosotros a la planta o lo pide el cliente/constructor? ¿Qué hormigón soléis bombear (p. ej., resistencia HA-25, consistencia)? |
-| B8 | `resistencia y consistencia · quién lo pide a planta` | Ficha técnica · HORMIGÓN | Lo mismo que B7. |
-| B9 | `si extendéis, regleáis y fratasáis, o solo bombeo y vertido` | Guía · «En casa y en obra», 2.º párrafo | Al constructor o reformista, ¿le dais solo el bombeo y el vertido, o también extendéis, regleáis y fratasáis? |
-| B10 | `volumen mínimo por servicio, en m³` | Guía · «Bomba, canaleta o carretilla», 2.º párrafo | ¿Hay un mínimo de m³ por servicio de bombeo? ¿Cuál? |
-| B11 | `m³ por servicio` | Ficha técnica · VOLUMEN MÍNIMO | Lo mismo que B10. |
-| B12 | `si el bombeo se presupuesta junto con el pavimento o como servicio aparte` | Guía · «Del bombeo al pavimento», 1.er párrafo | Si además hacéis el pavimento (fratasado, impreso…), ¿el bombeo va dentro de ese presupuesto o aparte? ¿Dais el bombeo suelto, sin pavimento? |
-| B13 | `días` | Ficha técnica · ANTELACIÓN DE RESERVA | ¿Con cuántos días de antelación hay que reservar la bomba? |
-
-### Vertido de autonivelante (`/vertido-de-autonivelante/`)
-
-| # | Pendiente (texto tal cual) | Dónde aparece | Qué preguntar al cliente |
-|---|---|---|---|
-| A1 | `a mano o con bomba` | Guía · «Cómo se aplica», 2.º párrafo | ¿El autonivelante lo vertéis a mano (amasado en obra) o con bomba/máquina de mezcla? |
-| A2 | `tipo y marca del autonivelante, espesor mínimo y máximo, y plazo para pisarlo y para poner el pavimento final` | Guía · «Tipos, espesores y tiempos», 2.º párrafo | ¿Qué producto usáis (base cemento o anhidrita, marca y referencia)? ¿Entre qué espesores lo aplicáis? ¿Cuándo se pisa y cuándo se puede poner encima la tarima o el vinílico? |
-| A3 | `base cemento o anhidrita · marca` | Ficha técnica · TIPO | Lo mismo que A2 (tipo y marca). |
-| A4 | `mínimo y máximo` | Ficha técnica · ESPESOR | Lo mismo que A2 (espesores), en mm. |
-| A5 | `clase a compresión y a flexión` | Ficha técnica · RESISTENCIA | La clase del producto según su ficha técnica (p. ej., «CT-C20-F5» en uno de cemento). Basta con la ficha del fabricante. |
-| A6 | `horas` | Ficha técnica · PISABLE | Horas hasta poder pisarlo, según el producto que usáis. |
-| A7 | `días, según espesor` | Ficha técnica · LISTO PARA EL PAVIMENTO FINAL | Días hasta poder colocar el pavimento final, según espesor. |
-| A8 | `si vertéis autonivelante sobre suelo radiante, y con qué producto` | Guía · «Sobre suelo radiante» | ¿Hacéis autonivelante sobre suelo radiante? ¿Con qué producto? Si no lo hacéis, se quita el bloque entero. |
+La tabla completa —texto anterior, texto nuevo, tipo, fuentes con fecha de consulta y **qué
+preguntar al cliente**— está en [`datos-investigados.md`](datos-investigados.md). Las preguntas
+al cliente siguen siendo las mismas que había aquí; lo que cambia es que la web ya no espera a la
+respuesta para leerse entera. Cuando el cliente conteste, se sustituye el rango o la frase por su
+dato: un commit por dato (regla de `CLAUDE.md`).
 
 ### Datos que valen para las dos páginas y no tienen `{{…}}`
 
@@ -295,8 +293,9 @@ No son corchetes del texto, pero conviene confirmarlos con el cliente antes de p
   mismo mecanismo que `priceFactors`: de qué depende y precio cerrado tras ver la obra. No hay
   filas de precios en `packages/content/src/data` que ampliar (`/precios/` y la calculadora se
   retiraron en septiembre de 2026).
-- **Ficha técnica con `{{…}}`.** Los valores de `specs` usan el marcado de pendiente; el agente de
-  estructura amplió `SpecRow` para que la tabla lo pinte como `<DatoPendiente>`.
+- **Ficha técnica con `{{…}}`.** Los valores de `specs` admiten el marcado de pendiente; el agente
+  de estructura amplió `SpecRow` para que la tabla lo pinte como `<DatoPendiente>`. Desde el
+  2026-10-31 ninguna fila de estas dos fichas lo usa (ver `datos-investigados.md`).
 - **`legal.ts`.** La fila ACTIVIDAD del aviso legal incluye desde el 2026-10-30 los dos servicios
   nuevos: «… y microcemento. Bombeo de hormigón y vertido de autonivelante». La fecha común de última
   revisión (`lastLegalReview`) pasa al 30 de octubre de 2026, a petición del dueño.

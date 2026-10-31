@@ -576,12 +576,19 @@ export const services = [
    * pumping and placing concrete with 12 mm aggregate, and placing
    * self-levelling screed. The copy is new, authorized by the project lead
    * and still pending the owner's review
-   * (`docs/servicios-nuevos/copy-bombeo-y-autonivelante.md`, which also lists
-   * every `{{pending}}` below and what to ask). Technique is explained in
-   * general, correct trade terms; every figure or commitment of the business
-   * (reach, flow, minimum volume, who orders the concrete, own or hired pump,
-   * product, thicknesses, times, service scope) stays `{{pending}}`. No
-   * photos, no projects: the template falls back to `<BloquePosicion>`.
+   * (`docs/servicios-nuevos/copy-bombeo-y-autonivelante.md`). Technique is
+   * explained in general, correct trade terms. Since 2026-10-31 there is no
+   * `{{pending}}` left in either entry, by the project lead's decision
+   * (`docs/servicios-nuevos/datos-investigados.md`, which lists every former
+   * pending, its sources and what to confirm): figures of the trade (reach,
+   * flow, thicknesses, EN 13813 classes, times) are sector ranges worded as
+   * such («como referencia», «según producto»), never as this business's
+   * commitment; facts only the owner can give (own or hired pump, who orders
+   * the concrete, minimum volume, product and brand, service scope, booking
+   * notice, underfloor heating) are NOT stated: the sentence was rewritten
+   * so it is true without them, moving the answer to the site visit or the
+   * quote. Replace a range with the owner's own figure when they give it.
+   * No real photos, no projects.
    * `hasFinishes: false`: neither has a decorative finish to show.
    *
    * The second one is named «Vertido de autonivelante», never after the
@@ -589,7 +596,7 @@ export const services = [
    * title, name, H1, link or CTA. The guide may still say what the material
    * is, once, where it explains it.
    *
-   * `specs[].value` uses the `{{…}}` pending markup (see `SpecRow` in
+   * `specs[].value` may use the `{{…}}` pending markup (see `SpecRow` in
    * `schemas/service.ts`); no links there.
    */
   {
@@ -659,7 +666,7 @@ export const services = [
               es: 'El árido es la piedra que lleva dentro el hormigón. Con un tamaño máximo de 12 mm, la mezcla pasa por una manguera de menos diámetro, que pesa menos y se mueve a mano: por un pasillo, por una puerta o por encima de una tapia.',
             },
             {
-              es: 'Ese tamaño encaja con soleras y capas de poco espesor, donde una piedra gruesa no tiene sitio. Si tu obra tiene proyecto y pide un árido mayor, dínoslo antes de pedir el hormigón: {{si bombeáis también hormigón con árido de más de 12 mm}}.',
+              es: 'Ese tamaño encaja con soleras y capas de poco espesor, donde una piedra gruesa no tiene sitio. Si tu obra tiene proyecto y pide un árido mayor, dínoslo antes de pedir el hormigón: una piedra más grande pide una tubería más gruesa, y eso cambia la bomba.',
             },
           ],
         },
@@ -670,10 +677,13 @@ export const services = [
               es: 'La cuba descarga en la tolva de la bomba y la bomba empuja el hormigón hasta la boca de la manguera. Para que eso funcione hacen falta tres cosas: un sitio para la bomba al que la cuba pueda llegar, un recorrido libre para la manguera y la zona de vertido preparada —base, encofrado y armado— antes de que llegue el camión.',
             },
             {
-              es: 'La bomba que usamos: {{propia o contratada, y de qué tipo: bomba de manguera o pluma sobre camión}}. Hasta dónde llega y cuánto mueve: {{alcance en metros de manguera o de pluma, y caudal en m³/h}}. Con la medida del recorrido delante te decimos si se llega.',
+              es: 'Hay dos tipos de bomba. La autobomba lleva una pluma articulada sobre el camión y deja el hormigón desde arriba, por encima del tejado o de la tapia; necesita sitio en la calle para apoyar los estabilizadores. La bomba de tubería va en un remolque junto a la cuba y empuja el hormigón por un tubo tendido por el suelo, que acaba en una manguera: entra por un pasillo, un garaje o una escalera.',
             },
             {
-              es: 'El hormigón: {{si lo pedís vosotros a planta o lo pide el cliente, y qué resistencia y consistencia servís}}.',
+              es: 'Como referencia del sector, una pluma llega de 20 a 60 metros, según el camión. Una bomba de tubería lleva el hormigón de 80 a 200 metros, según el equipo, y las pequeñas mueven en torno a 15-20 m³ por hora. Cuál va en tu obra se decide al ver el acceso: con la medida del recorrido delante te decimos si se llega y con qué.',
+            },
+            {
+              es: 'El hormigón llega de planta en cuba, con la resistencia que pide la obra y árido de 12 mm. Para bombearlo tiene que venir con una consistencia mínima, porque una masa seca atasca la tubería, y eso se fija con la planta al hacer el pedido. Quién lo pide y qué hormigón lleva lo hablamos al preparar el presupuesto.',
             },
           ],
         },
@@ -684,7 +694,7 @@ export const services = [
               es: 'Si vas a hacer una solera en el patio de atrás y el camión no entra por la calle, el bombeo es lo que evita meter el hormigón a carretilla por el garaje o por el salón.',
             },
             {
-              es: 'Si eres constructor o reformista, es el vertido con la manguera hasta el tajo. Lo que entra además de bombear y verter: {{si extendéis, regleáis y fratasáis, o solo bombeo y vertido}}.',
+              es: 'Si eres constructor o reformista, es el vertido con la manguera hasta el tajo. Si además necesitas que se extienda, se reglee o se fratase, dínoslo al pedir el presupuesto y te decimos qué entra.',
             },
           ],
         },
@@ -695,7 +705,7 @@ export const services = [
               es: 'Son tres maneras de llevar el hormigón al sitio. La canaleta es la del propio camión: si la cuba se arrima al tajo, descarga directa y no hace falta nada más. La carretilla sirve para poco volumen y poca distancia, a costa de viajes y de tiempo con el hormigón fraguando. La bomba es para cuando la cuba no llega y el volumen ya no se mueve a mano.',
             },
             {
-              es: 'Desde qué volumen compensa traer la bomba: {{volumen mínimo por servicio, en m³}}.',
+              es: 'Desde qué volumen compensa la bomba no tiene una cifra fija. Depende de los metros cúbicos, del recorrido y de lo que costaría hacerlo de otra manera: con esos tres datos lo vemos contigo.',
             },
           ],
         },
@@ -703,7 +713,7 @@ export const services = [
           title: { es: 'Del bombeo al pavimento' },
           paragraphs: [
             {
-              es: 'La solera que se bombea puede quedarse como base o terminar en un pavimento: [fratasada](/hormigon-fratasado/), [impresa](/hormigon-impreso/) o [pulida](/hormigon-pulido/). {{si el bombeo se presupuesta junto con el pavimento o como servicio aparte}}.',
+              es: 'La solera que se bombea puede quedarse como base o terminar en un pavimento: [fratasada](/hormigon-fratasado/), [impresa](/hormigon-impreso/) o [pulida](/hormigon-pulido/). Si ya sabes cuál quieres, dilo al pedir el presupuesto: el espesor y el armado de la solera se plantean pensando en él.',
             },
             {
               es: 'Si lo que hay que nivelar es un suelo interior antes de la tarima o el vinílico, no hace falta hormigón: eso es [vertido de autonivelante](/vertido-de-autonivelante/).',
@@ -735,12 +745,12 @@ export const services = [
     },
     specs: [
       { label: { es: 'TAMAÑO MÁXIMO DE ÁRIDO' }, value: { es: '12 mm' } },
-      { label: { es: 'TIPO DE BOMBA' }, value: { es: '{{manguera o pluma · propia o contratada}}' } },
-      { label: { es: 'ALCANCE' }, value: { es: '{{metros de manguera o de pluma}}' } },
-      { label: { es: 'CAUDAL' }, value: { es: '{{m³/h}}' } },
-      { label: { es: 'VOLUMEN MÍNIMO' }, value: { es: '{{m³ por servicio}}' } },
-      { label: { es: 'HORMIGÓN' }, value: { es: '{{resistencia y consistencia · quién lo pide a planta}}' } },
-      { label: { es: 'ANTELACIÓN DE RESERVA' }, value: { es: '{{días}}' } },
+      { label: { es: 'TIPO DE BOMBA' }, value: { es: 'Pluma o tubería, según el acceso' } },
+      { label: { es: 'ALCANCE' }, value: { es: 'Pluma 20-60 m · tubería 80-200 m · según equipo' } },
+      { label: { es: 'CAUDAL' }, value: { es: 'Bomba de tubería pequeña: 15-20 m³/h · según equipo' } },
+      { label: { es: 'EN OBRA' }, value: { es: 'Sitio para la bomba y paso libre para la manguera' } },
+      { label: { es: 'HORMIGÓN' }, value: { es: 'De planta · árido 12 mm · resistencia según obra' } },
+      { label: { es: 'DÍA DEL VERTIDO' }, value: { es: 'Cuba y bomba a la misma hora, con la zona preparada' } },
     ],
     whenNotTo: {
       title: { es: 'Cuándo NO hace falta bombear' },
@@ -834,7 +844,7 @@ export const services = [
               es: 'Primero, el soporte: firme, limpio y seco, sin polvo ni piezas sueltas. Encima va una imprimación, que mejora el agarre y evita que el suelo de debajo le robe el agua a la masa. Al pie de las paredes se pone una banda perimetral, para que la capa nueva no quede pegada a ellas y pueda moverse sin fisurarse.',
             },
             {
-              es: 'Después se vierte y se pasa un rodillo de púas, que saca el aire y ayuda a que la masa se reparta. Cómo lo vertemos nosotros: {{a mano o con bomba}}.',
+              es: 'Después se vierte y se pasa un rodillo de púas, que saca el aire y ayuda a que la masa se reparta. Se puede amasar en obra y verter a mano, o mezclar y bombear con máquina, que es lo habitual en superficies grandes. Algunos llegan ya amasados en cuba, desde planta, y se bombean. Cuál conviene en tu obra depende de los metros y del acceso.',
             },
           ],
         },
@@ -845,7 +855,10 @@ export const services = [
               es: 'Hay autonivelantes de base cemento y de sulfato cálcico, la anhidrita. Cada producto tiene su espesor mínimo y máximo y sus plazos. La anhidrita no lleva bien la humedad, así que en baños, cocinas y zonas que se mojan se suele preferir el de cemento.',
             },
             {
-              es: 'Lo que vertemos nosotros: {{tipo y marca del autonivelante, espesor mínimo y máximo, y plazo para pisarlo y para poner el pavimento final}}.',
+              es: 'Como referencia del sector, los de cemento van en capa fina: desde 2 o 3 mm hasta 30 o 50, según el producto. Se pisan a las 3-12 horas y, en capa fina, admiten el pavimento al día o a los dos días. Los de anhidrita van de unos 12 a 80 mm y se pisan a las 24-48 horas. Antes del pavimento necesitan de una a tres semanas de secado en capa fina, y más cuanto más gruesa.',
+            },
+            {
+              es: 'Antes de poner la tarima o el vinílico se mide la humedad que queda en la base: decide eso, no el calendario. Cada producto lleva en su ficha su clase según la norma UNE-EN 13813: CT si es de cemento, CA si es de anhidrita, una C por la resistencia a compresión y una F por la de flexión. Lo habitual va de C20 a C30 y de F5 a F8. El producto concreto se elige con el espesor y el uso de tu obra, y sus cifras mandan sobre estas.',
             },
           ],
         },
@@ -853,7 +866,7 @@ export const services = [
           title: { es: 'Sobre suelo radiante' },
           paragraphs: [
             {
-              es: 'Sobre los tubos de un suelo radiante, una masa fluida los envuelve sin dejar bolsas de aire, y eso ayuda a que el calor llegue parejo al pavimento. {{si vertéis autonivelante sobre suelo radiante, y con qué producto}}.',
+              es: 'Sobre los tubos de un suelo radiante, una masa fluida los envuelve sin dejar bolsas de aire, y eso ayuda a que el calor llegue parejo al pavimento. Hay productos pensados para eso; algunos de anhidrita piden apenas 1,5-2 cm por encima del tubo. Antes del pavimento final, la calefacción se pone en marcha poco a poco, con el protocolo del fabricante. Si tu obra lleva suelo radiante, dínoslo al pedir el presupuesto.',
             },
           ],
         },
@@ -889,11 +902,14 @@ export const services = [
       { label: { es: 'USO' }, value: { es: 'Interior, bajo otro pavimento' } },
       { label: { es: 'SOPORTE' }, value: { es: 'Firme, limpio y seco' } },
       { label: { es: 'PREPARACIÓN' }, value: { es: 'Imprimación y banda perimetral' } },
-      { label: { es: 'TIPO' }, value: { es: '{{base cemento o anhidrita · marca}}' } },
-      { label: { es: 'ESPESOR' }, value: { es: '{{mínimo y máximo}}' } },
-      { label: { es: 'RESISTENCIA' }, value: { es: '{{clase a compresión y a flexión}}' } },
-      { label: { es: 'PISABLE' }, value: { es: '{{horas}}' } },
-      { label: { es: 'LISTO PARA EL PAVIMENTO FINAL' }, value: { es: '{{días, según espesor}}' } },
+      { label: { es: 'TIPO' }, value: { es: 'Base cemento o anhidrita, según estancia y espesor' } },
+      { label: { es: 'ESPESOR' }, value: { es: 'Cemento 2-50 mm · anhidrita 12-80 mm · según producto' } },
+      { label: { es: 'RESISTENCIA' }, value: { es: 'Clase UNE-EN 13813 · habitual C20-C30, F5-F8' } },
+      { label: { es: 'PISABLE' }, value: { es: 'Cemento 3-12 h · anhidrita 24-48 h · según producto' } },
+      {
+        label: { es: 'LISTO PARA EL PAVIMENTO FINAL' },
+        value: { es: 'Cemento 1-2 días · anhidrita 1-3 semanas o más · según espesor y humedad' },
+      },
     ],
     whenNotTo: {
       title: { es: 'Cuándo NO elegir autonivelante' },

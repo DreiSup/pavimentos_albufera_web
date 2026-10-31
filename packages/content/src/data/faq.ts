@@ -144,8 +144,9 @@ export const faq: Record<string, Question> = {
    * (`docs/servicios-nuevos/copy-bombeo-y-autonivelante.md`). Only general
    * trade facts and this business's stated policy (no prices on the web,
    * closed quote): no reach, flow, minimum volume, product, thickness or
-   * time of theirs — those stay `{{pending}}` in each page's guide/specs,
-   * never here (an FAQ answer is plain text and travels in `FAQPage`).
+   * time of theirs. Figures of the trade, as sector ranges, live only in each
+   * page's guide/specs (`docs/servicios-nuevos/datos-investigados.md`), never
+   * here: an FAQ answer is plain text and travels in `FAQPage`.
    * Each question names its service, because `FAQPage` lifts it out of the
    * page. `topic` values are all from the existing GA4 vocabulary.
    */
