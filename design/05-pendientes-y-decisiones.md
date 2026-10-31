@@ -176,6 +176,10 @@ tienen ni una foto del cliente. Se sustituyen en cuanto lleguen las reales.
   `HEREDADAS_A_SANGRE` de `verificar-imagenes.mjs`, que **avisa en vez de fallar** y caduca sola
   cuando cambie el ancho del archivo. No se han reescalado: eso pasaría el verificador sin ganar
   nitidez. Si el dueño las regenera a 1600 px o más, basta con sustituir el archivo.
+- **2026-10-31 — dos fotos reales de bombeo** del dueño sustituyen al hero de IA de bombeo y a
+  `ia-bombeo-galeria-3` (una de las de árido grueso). Ese hero deja de necesitar la excepción de
+  `HEREDADAS_A_SANGRE`: la foto real mide 2000 px. Matrículas pixeladas; los operarios que salen
+  necesitan su consentimiento (detalle en `INVENTARIO.md`).
 - **Lo que el dueño aceptó a sabiendas:** dos imágenes de la galería de bombeo enseñan un árido más
   grueso que 12 mm, y en otra el chorro de hormigón cae trenzado, no como cae de verdad. Los `alt`
   no afirman el tamaño del árido.

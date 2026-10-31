@@ -220,17 +220,29 @@ cuando lleguen las reales. Nunca en un proyecto, una zona ni el muestrario.
 | Archivo | Uso | Píxeles | Imagen de origen (IA) |
 |---|---|---|---|
 | `ia-bombeo-tarjeta.jpg` | `cardImage` de `bombeo` | 1086×679 | Recorte 16:10 de «Narrow Sunlit Passage with Pipeline» (1086×1448) |
-| `ia-bombeo-hero.jpg` | `heroImage` de `bombeo` | 1448×1086 | «Concrete Pump Truck at Residential Worksite» |
 | `ia-bombeo-galeria-1.jpg` | `gallery[0]` de `bombeo` | 1448×1086 | «Concreto fresco sobre malla de acero» |
 | `ia-bombeo-galeria-2.jpg` | `gallery[1]` de `bombeo` | 1086×1448 | «Mediterranean Backyard Concrete Pour» |
-| `ia-bombeo-galeria-3.jpg` | `gallery[2]` de `bombeo` | 1086×1448 | «Fresh Concrete Pour Over Steel Grid» |
 | `ia-autonivelante-tarjeta.jpg` | `cardImage` de `autonivelante` | 1448×905 | Recorte 16:10 de «Sunlit Minimalist Room Under Renovation» (1448×1086) |
 | `ia-autonivelante-hero.jpg` | `heroImage` de `autonivelante` | 1448×1086 | «Reflective Self-Leveling Floor in Progress» |
 | `ia-autonivelante-galeria-1.jpg` | `gallery[0]` de `autonivelante` | 1448×1086 | «Room Renovation with Laser Leveling Markers» |
 | `ia-autonivelante-galeria-2.jpg` | `gallery[1]` de `autonivelante` | 1086×1448 | «Rustic Renovation with Wet Screed Floor» |
 | `ia-autonivelante-galeria-3.jpg` | `gallery[2]` de `autonivelante` | 1448×1086 | «Rodillo de púas sobre suelo autonivelante» |
 
-Las diez llevan en XMP `DigitalSourceType = trainedAlgorithmicMedia`. Los dos heroes están por
-debajo de los 1600 px a sangre y avisan vía `HEREDADAS_A_SANGRE` (`design/05` §C #15). En la
-galería de bombeo, `-1` y `-3` enseñan un árido más grueso que 12 mm y `-2` un chorro de hormigón
+Llevan en XMP `DigitalSourceType = trainedAlgorithmicMedia`. El hero de autonivelante está por
+debajo de los 1600 px a sangre y avisa vía `HEREDADAS_A_SANGRE` (`design/05` §C #15). En la
+galería de bombeo, `-1` enseña un árido más grueso que 12 mm y `-2` un chorro de hormigón
 trenzado: aceptado por el dueño, son provisionales. Los `alt` no afirman el tamaño del árido.
+
+### 2026-10-31 — dos fotos reales de bombeo sustituyen a dos de IA
+
+El dueño mandó dos fotos de bombeo (2000×1500, sin EXIF ni GPS). Van a `_sin-atribuir/`: no se
+sabe de qué obra ni de qué municipio son, y no se afirma.
+
+| Archivo | Uso | Sustituye a | Qué se ha tocado |
+|---|---|---|---|
+| `_sin-atribuir/bombeo-hormigon-bomba-estacionaria.jpg` | `heroImage` de `bombeo` | `ia-bombeo-hero.jpg` (borrada) | **Matrículas pixeladas**: la de la cuba y la del remolque de la bomba |
+| `_sin-atribuir/bombeo-hormigon-solera-nave.jpg` | `gallery[2]` de `bombeo` | `ia-bombeo-galeria-3.jpg` (borrada) | Nada |
+
+⚠️ **Salen operarios**, y en la primera la cara se reconoce. La regla del sitio admite «equipo
+real si están dispuestos» (`design/README` §10), pero aquí no consta su consentimiento: el dueño
+tiene que confirmarlo. Si no lo da, se pixela la cara o se retira la foto.

@@ -613,7 +613,8 @@ export const services = [
     },
     heroLabelLines: [{ es: 'BOMBEO Y VERTIDO' }, { es: 'ÁRIDO MÁXIMO 12 MM' }],
     cardText: { es: 'Hormigón por manguera hasta donde no llega el camión. Árido de 12 mm.' },
-    // Provisional AI-generated images (card, hero, gallery) — see design/05 §C #15. Never attach to a project or a place.
+    // Card and gallery[0..1]: provisional AI-generated images — see design/05 §C #15. Hero and
+    // gallery[2]: real photos from the owner (2026-10-31). Never attach to a project or a place.
     cardImage: {
       src: '/obras/_ia-provisional/ia-bombeo-tarjeta.jpg',
       alt: {
@@ -622,9 +623,9 @@ export const services = [
       kind: 'proceso',
     },
     heroImage: {
-      src: '/obras/_ia-provisional/ia-bombeo-hero.jpg',
+      src: '/obras/_sin-atribuir/bombeo-hormigon-bomba-estacionaria.jpg',
       alt: {
-        es: 'Autobomba de hormigón con la pluma desplegada sobre una calle de chalés, junto a una hormigonera, con el perímetro balizado con conos y cinta.',
+        es: 'Bomba de hormigón sobre remolque cargando de la cuba de una hormigonera, con la manguera tendida por el suelo de un recinto industrial.',
       },
       kind: 'proceso',
     },
@@ -644,11 +645,11 @@ export const services = [
         kind: 'proceso',
       },
       {
-        src: '/obras/_ia-provisional/ia-bombeo-galeria-3.jpg',
+        src: '/obras/_sin-atribuir/bombeo-hormigon-solera-nave.jpg',
         alt: {
-          es: 'Hormigón recién vertido avanzando sobre el mallazo y la grava, junto a un encofrado de madera con regla de aluminio.',
+          es: 'Solera de una nave hormigonándose por bombeo: la manguera tendida sobre el mallazo y tres operarios extendiendo el hormigón.',
         },
-        kind: 'detalle',
+        kind: 'proceso',
       },
     ],
     hasFinishes: false,
